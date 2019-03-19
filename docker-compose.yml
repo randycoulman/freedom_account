@@ -23,7 +23,7 @@ services:
       - "./server:/app"
 
   server_test:
-    command: mix test
+    command: mix test.all
     depends_on:
       - db
     env_file:
