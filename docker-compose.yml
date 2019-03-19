@@ -1,0 +1,6 @@
+db:
+  image: postgres:11.2-alpine
+  environment:
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+    - POSTGRES_HOST=db
