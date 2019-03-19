@@ -3,9 +3,8 @@ version: "3"
 services:
   db:
     image: postgres:11.2
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+    env_file:
+      - ./config/db_variables.env
     volumes:
       - ./.db/data:/var/lib/postgresql/data
 
@@ -13,13 +12,24 @@ services:
     build: "./server"
     depends_on:
       - db
+    env_file:
+      - ./config/db_variables.env
     environment:
       - MIX_ENV=dev
       - PORT=4000
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_HOST=db
     ports:
       - "4000:4000"
+    volumes:
+      - "./server:/app"
+
+  server_test:
+    command: mix test
+    depends_on:
+      - db
+    env_file:
+      - ./config/db_variables.env
+    environment:
+      - MIX_ENV=test
+    image: freedomaccount_server
     volumes:
       - "./server:/app"
