@@ -5,6 +5,7 @@
 set -e
 
 mix deps.get
+mix deps.compile
 
 until PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -U $POSTGRES_USER -c '\q' 2>/dev/null; do
   >&2 echo "Postgres is unavailable - sleeping..."
@@ -13,8 +14,7 @@ done
 
 echo "\nPostgres is available; continuing with database setup..."
 
-mix ecto.create
-mix ecto.migrate
+mix ecto.setup
 
 echo "\nLaunching Phoenix web server..."
 mix phx.server
