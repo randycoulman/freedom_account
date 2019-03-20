@@ -5,6 +5,8 @@ defmodule FreedomAccount.Application do
 
   use Application
 
+  @spec start(Application.start_type(), start_args :: term()) ::
+          {:ok, pid()} | {:ok, pid(), Application.state()} | {:error, reason :: term()}
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
@@ -24,6 +26,8 @@ defmodule FreedomAccount.Application do
 
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
+  @spec config_change(changed, new, removed) :: :ok
+        when changed: keyword(), new: keyword(), removed: [atom()]
   def config_change(changed, _new, removed) do
     FreedomAccountWeb.Endpoint.config_change(changed, removed)
     :ok

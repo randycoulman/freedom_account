@@ -14,6 +14,8 @@ defmodule FreedomAccount.DataCase do
 
   use ExUnit.CaseTemplate
 
+  alias Ecto.Adapters.SQL.Sandbox
+
   using do
     quote do
       alias FreedomAccount.Repo
@@ -26,10 +28,10 @@ defmodule FreedomAccount.DataCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(FreedomAccount.Repo)
+    :ok = Sandbox.checkout(FreedomAccount.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(FreedomAccount.Repo, {:shared, self()})
+      Sandbox.mode(FreedomAccount.Repo, {:shared, self()})
     end
 
     :ok
@@ -43,6 +45,7 @@ defmodule FreedomAccount.DataCase do
       assert %{password: ["password is too short"]} = errors_on(changeset)
 
   """
+  @spec errors_on(Ecto.Changeset.t()) :: map()
   def errors_on(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {message, opts} ->
       Enum.reduce(opts, message, fn {key, value}, acc ->

@@ -15,6 +15,8 @@ defmodule FreedomAccountWeb.ConnCase do
 
   use ExUnit.CaseTemplate
 
+  alias Ecto.Adapters.SQL.Sandbox
+
   using do
     quote do
       # Import conveniences for testing with connections
@@ -27,10 +29,10 @@ defmodule FreedomAccountWeb.ConnCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(FreedomAccount.Repo)
+    :ok = Sandbox.checkout(FreedomAccount.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(FreedomAccount.Repo, {:shared, self()})
+      Sandbox.mode(FreedomAccount.Repo, {:shared, self()})
     end
 
     {:ok, conn: Phoenix.ConnTest.build_conn()}
