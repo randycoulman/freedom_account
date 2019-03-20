@@ -10,7 +10,12 @@ defmodule FreedomAccount.MixProject do
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      dialyzer: [
+        ignore_warnings: "config/dialyzer_ignore.exs",
+        list_unused_filters: true,
+        plt_add_apps: [:ex_unit]
+      ]
     ]
   end
 
@@ -34,6 +39,7 @@ defmodule FreedomAccount.MixProject do
   defp deps do
     [
       {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0.0-rc.4", only: [:dev, :test], runtime: false},
       {:ecto_sql, "~> 3.0"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
@@ -57,7 +63,12 @@ defmodule FreedomAccount.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate", "test"],
-      "test.all": ["test", "format --check-formatted", "credo"]
+      "test.all": [
+        "test",
+        "format --check-formatted",
+        "credo",
+        "dialyzer --format short --halt-exit-status"
+      ]
     ]
   end
 end
