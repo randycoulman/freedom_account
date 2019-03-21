@@ -55,6 +55,13 @@ release :freedom_account do
   )
 
   set(
+    commands: [
+      migrate: "rel/commands/migrate.sh",
+      seed: "rel/commands/seed.sh"
+    ]
+  )
+
+  set(
     config_providers: [
       {Mix.Releases.Config.Providers.Elixir, ["${RELEASE_ROOT_DIR}/etc/config.exs"]}
     ]
