@@ -17,6 +17,8 @@ services:
     env_file:
       - ./config/docker_prod.env
       - ./config/docker_prod_secret.env
+    ports:
+      - "5433:5432"
     volumes:
       - dbdata:/var/lib/postgresql/data
   db_setup:
