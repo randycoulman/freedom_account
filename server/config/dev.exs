@@ -51,6 +51,6 @@ config :phoenix, :plug_init_mode, :runtime
 config :freedom_account, FreedomAccount.Repo,
   username: System.get_env("POSTGRES_USER"),
   password: System.get_env("POSTGRES_PASSWORD"),
-  database: "freedom_account_dev",
+  database: System.get_env("POSTGRES_DB"),
   hostname: System.get_env("POSTGRES_HOST"),
   pool_size: 10

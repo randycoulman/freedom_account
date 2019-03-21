@@ -19,10 +19,8 @@ scratchpad to remind myself how to do things:
 - Run the server in development mode: `docker-compose up -d server`
 - Run all server tests/linting/type-checking: `docker-compose up server_test`
 - Run tests in watch mode: `docker-compose run --rm server_test mix test.watch`
-- Build the production app: `docker-compose -f docker-compose-prod.yml -p
-  freedom_account_prod build`
-- Run the production app: `docker-compose -f docker-compose-prod.yml -p
-  freedom_account_prod up -d`
+- Build the production app: `docker-compose -f docker-compose-prod.yml -p freedom_account_prod build`
+- Run the production app: `docker-compose -f docker-compose-prod.yml -p freedom_account_prod up -d`
 
 ## Approach
 

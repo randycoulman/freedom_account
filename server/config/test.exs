@@ -13,6 +13,6 @@ config :logger, level: :warn
 config :freedom_account, FreedomAccount.Repo,
   username: System.get_env("POSTGRES_USER"),
   password: System.get_env("POSTGRES_PASSWORD"),
-  database: "freedom_account_test",
+  database: System.get_env("POSTGRES_DB"),
   hostname: System.get_env("POSTGRES_HOST"),
   pool: Ecto.Adapters.SQL.Sandbox
