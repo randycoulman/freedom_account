@@ -2,31 +2,34 @@ version: "3"
 
 services:
   db:
-    image: postgres:11.2
     env_file:
       - ./config/docker_dev.env
+    image: postgres:11.2
     ports:
       - "5432:5432"
     volumes:
-      - ./.db/data:/var/lib/postgresql/data
-  server:
-    build: "./server"
+      - dbdata:/var/lib/postgresql/data
+  db_setup:
+    build: ./server
+    command: ./scripts/wait-for-it.sh db:5432 --strict -t 30 -- mix ecto.setup
     depends_on:
       - db
     env_file:
       - ./config/docker_dev.env
+  server:
+    command: mix phx.server
+    depends_on:
+      - db
+      - db_setup
+    env_file:
+      - ./config/docker_dev.env
+    image: freedomaccount_db_setup
     ports:
       - "4000:4000"
     volumes:
-      - "./server:/app"
-  server_test:
-    command: mix test.all
-    depends_on:
-      - db
-    env_file:
-      - ./config/docker_test.env
-    environment:
-      - MIX_ENV=test
-    image: freedomaccount_server
-    volumes:
-      - "./server:/app"
+      - "./server/config:/app/config"
+      - "./server/lib:/app/lib"
+      - "./server/priv:/app/priv"
+
+volumes:
+  dbdata:
