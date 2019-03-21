@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:11.2-alpine
+    env_file:
+      - ./config/docker_prod.env
+      - ./config/docker_prod_secret.env
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+  app:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.prod
+    command: foreground
+    depends_on:
+      - db
+    env_file:
+      - ./config/docker_prod.env
+      - ./config/docker_prod_secret.env
+    ports:
+      - "8080:4000"
+
+volumes:
+  dbdata:

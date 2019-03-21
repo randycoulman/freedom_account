@@ -11,6 +11,19 @@ I generally save for many different kinds of expenses ("categories" or
 "sub-accounts") in my Freedom Account, and I needed a way to track the balance
 of each category over time.  That's what this app is for.
 
+## Handy Commands
+
+I'll eventually flesh this out into better instructions; for now, this is just a
+scratchpad to remind myself how to do things:
+
+- Run the server in development mode: `docker-compose up -d server`
+- Run all server tests/linting/type-checking: `docker-compose up server_test`
+- Run tests in watch mode: `docker-compose run --rm server_test mix test.watch`
+- Build the production app: `docker-compose -f docker-compose-prod.yml -p
+  freedom_account_prod build`
+- Run the production app: `docker-compose -f docker-compose-prod.yml -p
+  freedom_account_prod up -d`
+
 ## Approach
 
 I previously built a version of this app in Smalltalk using the Seaside web
