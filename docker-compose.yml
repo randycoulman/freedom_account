@@ -4,30 +4,42 @@ services:
   db:
     image: postgres:11.2
     env_file:
-      - ./config/db_variables.env
+      - ./config/docker_dev.env
     volumes:
       - ./.db/data:/var/lib/postgresql/data
-
+  db_prod:
+    image: postgres:11.2-alpine
+    env_file:
+      - ./config/docker_prod.env
+      - ./config/docker_prod_secret.env
+  prod:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.prod
+    command: foreground
+    depends_on:
+      - db_prod
+    env_file:
+      - ./config/docker_prod.env
+      - ./config/docker_prod_secret.env
+    ports:
+      - "5000:5000"
   server:
     build: "./server"
     depends_on:
       - db
     env_file:
-      - ./config/db_variables.env
-    environment:
-      - MIX_ENV=dev
-      - PORT=4000
+      - ./config/docker_dev.env
     ports:
       - "4000:4000"
     volumes:
       - "./server:/app"
-
   server_test:
     command: mix test.all
     depends_on:
       - db
     env_file:
-      - ./config/db_variables.env
+      - ./config/docker_test.env
     environment:
       - MIX_ENV=test
     image: freedomaccount_server
