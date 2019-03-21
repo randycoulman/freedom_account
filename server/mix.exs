@@ -44,7 +44,7 @@ defmodule FreedomAccount.MixProject do
       {:ecto_sql, "~> 3.0"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
-      {:mix_test_watch, "~> 0.9", only: :test, runtime: false},
+      {:mix_test_watch, "~> 0.9", only: :dev, runtime: false},
       {:phoenix_ecto, "~> 4.0"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix, "~> 1.4.2"},

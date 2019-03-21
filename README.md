@@ -17,10 +17,17 @@ I'll eventually flesh this out into better instructions; for now, this is just a
 scratchpad to remind myself how to do things:
 
 - Run the server in development mode: `docker-compose up -d server`
-- Run all server tests/linting/type-checking: `docker-compose up server_test`
-- Run tests in watch mode: `docker-compose run --rm server_test mix test.watch`
 - Build the production app: `docker-compose -f docker-compose-prod.yml -p freedom_account_prod build`
 - Run the production app: `docker-compose -f docker-compose-prod.yml -p freedom_account_prod up -d`
+
+Local commands (run from the `server` directory):
+- Install dependencies (requires [asdf](https://github.com/asdf-vm/asdf)): `asdf install`
+- Run tests: `mix test`
+- Run tests in watch mode: `mix test.watch`
+- Run linting: `mix credo`
+- Run type checks: `mix dialyzer`
+- Format the code: `mix format`
+- Run all server tests/linting/type-checking/format-checking: `MIX_ENV=test mix test.all`
 
 ## Approach
 
