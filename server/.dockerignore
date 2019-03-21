@@ -1,0 +1,8 @@
+_build
+deps
+test
+priv/static
+Dockerfile*
+README*
+.gitignore
+.formatter.exs

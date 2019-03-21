@@ -4,30 +4,27 @@ services:
   db:
     image: postgres:11.2
     env_file:
-      - ./config/db_variables.env
+      - ./config/docker_dev.env
+    ports:
+      - "5432:5432"
     volumes:
       - ./.db/data:/var/lib/postgresql/data
-
   server:
     build: "./server"
     depends_on:
       - db
     env_file:
-      - ./config/db_variables.env
-    environment:
-      - MIX_ENV=dev
-      - PORT=4000
+      - ./config/docker_dev.env
     ports:
       - "4000:4000"
     volumes:
       - "./server:/app"
-
   server_test:
     command: mix test.all
     depends_on:
       - db
     env_file:
-      - ./config/db_variables.env
+      - ./config/docker_test.env
     environment:
       - MIX_ENV=test
     image: freedomaccount_server
