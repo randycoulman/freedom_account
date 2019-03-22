@@ -19,15 +19,20 @@ scratchpad to remind myself how to do things:
 - Run the server in development mode: `docker-compose up -d server`
 - Build the production app: `docker-compose -f docker-compose-prod.yml -p freedom_account_prod build`
 - Run the production app: `docker-compose -f docker-compose-prod.yml -p freedom_account_prod up -d`
+- Run all server tests/linting/type-checking/format-checking:
+  `docker-compose up server_test`
+- Run an individual test-related command:
+  `docker-compose run --rm server_test <command>`,
+  where command is one of:
+  - `mix test`
+  - `mix credo`
+  - `mix dialyzer`
+  - `mix format`
+  - `mix test.watch`
 
-Local commands (run from the `server` directory):
+To install locally (for use in editor integration):
 - Install dependencies (requires [asdf](https://github.com/asdf-vm/asdf)): `asdf install`
-- Run tests: `mix test`
-- Run tests in watch mode: `mix test.watch`
-- Run linting: `mix credo`
-- Run type checks: `mix dialyzer`
-- Format the code: `mix format`
-- Run all server tests/linting/type-checking/format-checking: `MIX_ENV=test mix test.all`
+- `cd server && mix do deps.get, deps.compile`
 
 ## Approach
 

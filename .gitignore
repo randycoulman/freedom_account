@@ -1,2 +1,1 @@
-.db/data/
-config/docker_prod_secret.env
+/config/docker_prod_secret.env

@@ -10,7 +10,10 @@ services:
     volumes:
       - dbdata:/var/lib/postgresql/data
   db_setup:
-    build: ./server
+    build:
+      args:
+        - MIX_ENV=dev
+      context: ./server
     command: ./scripts/wait-for-it.sh db:5432 --strict -t 30 -- mix ecto.setup
     depends_on:
       - db
@@ -27,9 +30,25 @@ services:
     ports:
       - "4000:4000"
     volumes:
-      - "./server/config:/app/config"
-      - "./server/lib:/app/lib"
-      - "./server/priv:/app/priv"
+      - "./server/config:/app/config:ro"
+      - "./server/lib:/app/lib:ro"
+      - "./server/priv:/app/priv:ro"
+  server_test:
+    build:
+      args:
+        - MIX_ENV=test
+      context: ./server
+    command: ./scripts/wait-for-it.sh db:5432 --strict -t 30 -- mix test.all
+    depends_on:
+      - db
+    env_file:
+      - ./config/docker_test.env
+    volumes:
+      - "./server/config:/app/config:ro"
+      - "./server/lib:/app/lib:ro"
+      - "./server/_plts:/app/_plts"
+      - "./server/priv:/app/priv:ro"
+      - "./server/test:/app/test:ro"
 
 volumes:
   dbdata:
