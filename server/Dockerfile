@@ -22,4 +22,4 @@ RUN mix compile
 
 EXPOSE 4000
 
-CMD ["iex -S mix"]
+CMD ["iex", "-S", "mix"]
