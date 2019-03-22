@@ -24,6 +24,8 @@ scratchpad to remind myself how to do things:
 
 - Run all server tests/linting/type-checking/format-checking:
   `docker-compose up server_test`
+- Run all client tests/linting/format-checking:
+  `docker-compose up client_test`
 
 - Run an individual server test-related command:
   `docker-compose run --rm server_test <command>`,
@@ -34,9 +36,19 @@ scratchpad to remind myself how to do things:
   - `mix format`
   - `mix test.watch`
 
+- Run an individual client test-related command:
+  `docker-compose run --rm client_test <command>`,
+  where command is one of:
+  - `npm test -- --no-watch`
+
+- For Jest interactivity to work, we need to run tests in watch mode locally,
+  rather than in a container:
+  - (from `client` directory): `npm test`
+
 To install locally (for use in editor integration):
 - Install dependencies (requires [asdf](https://github.com/asdf-vm/asdf)): `asdf install`
-- `cd server && mix do deps.get, deps.compile`
+- `cd server && mix do deps.get, deps.compile && cd -`
+- `cd client && npm install && cd -`
 
 ## Approach
 
