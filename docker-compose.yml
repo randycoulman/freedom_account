@@ -10,7 +10,7 @@ services:
       - "./client/src:/app/src:ro"
   client_test:
     build: ./client
-    command: npm test -- --no-watch
+    command: npm run validate
     volumes:
       - "./client/public:/app/public:ro"
       - "./client/src:/app/src:ro"
@@ -51,7 +51,7 @@ services:
       args:
         - MIX_ENV=test
       context: ./server
-    command: ./scripts/wait-for-it.sh db:5432 --strict -t 30 -- mix test.all
+    command: ./scripts/wait-for-it.sh db:5432 --strict -t 30 -- mix validate
     depends_on:
       - db
     env_file:
