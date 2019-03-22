@@ -51,6 +51,7 @@ defmodule FreedomAccount.MixProject do
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix, "~> 1.4.2"},
       {:plug_cowboy, "~> 2.0"},
+      {:plug_static_index_html, "~> 1.0"},
       {:postgrex, ">= 0.0.0"}
     ]
   end

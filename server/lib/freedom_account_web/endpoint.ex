@@ -5,6 +5,9 @@ defmodule FreedomAccountWeb.Endpoint do
     websocket: true,
     longpoll: false
 
+  # Configure root URL to serve `index.html`
+  plug Plug.Static.IndexHtml, at: "/"
+
   # Serve at "/" the static files from "priv/static" directory.
   #
   # You should set gzip to true if you are running phx.digest
@@ -13,7 +16,7 @@ defmodule FreedomAccountWeb.Endpoint do
     at: "/",
     from: :freedom_account,
     gzip: false,
-    only: ~w(css fonts images js favicon.ico robots.txt)
+    only: ~w(index.html favicon.ico static)
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
