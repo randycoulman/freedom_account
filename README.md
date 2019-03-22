@@ -40,6 +40,8 @@ scratchpad to remind myself how to do things:
   `docker-compose run --rm client_test <command>`,
   where command is one of:
   - `npm test -- --no-watch`
+  - `npm run format`
+  - `npm run lint:format`
 
 - For Jest interactivity to work, we need to run tests in watch mode locally,
   rather than in a container:

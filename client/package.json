@@ -2,16 +2,21 @@
   "name": "freedom-account",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "build": "react-scripts build",
+    "eject": "react-scripts eject",
+    "format": "prettier --write \"**/*.{css,gql,js,md,scss}\"",
+    "lint:format": "prettier --check \"**/*.{css,gql,js,md,scss}\"",
+    "start": "react-scripts start",
+    "test": "react-scripts test"
+  },
   "dependencies": {
     "react": "^16.8.5",
     "react-dom": "^16.8.5",
     "react-scripts": "3.0.0-next.b0cbf2ca"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+  "devDependencies": {
+    "prettier": "^1.16.4"
   },
   "eslintConfig": {
     "extends": "react-app"
