@@ -17,11 +17,15 @@ I'll eventually flesh this out into better instructions; for now, this is just a
 scratchpad to remind myself how to do things:
 
 - Run the server in development mode: `docker-compose up -d server`
+- Run the client in development mode: `docker-compose up -d client`
+
 - Build the production app: `docker-compose -f docker-compose-prod.yml -p freedom_account_prod build`
 - Run the production app: `docker-compose -f docker-compose-prod.yml -p freedom_account_prod up -d`
+
 - Run all server tests/linting/type-checking/format-checking:
   `docker-compose up server_test`
-- Run an individual test-related command:
+
+- Run an individual server test-related command:
   `docker-compose run --rm server_test <command>`,
   where command is one of:
   - `mix test`

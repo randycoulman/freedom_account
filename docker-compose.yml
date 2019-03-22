@@ -1,6 +1,13 @@
 version: "3"
 
 services:
+  client:
+    build: ./client
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./client/public:/app/public:ro"
+      - "./client/src:/app/src:ro"
   db:
     env_file:
       - ./config/docker_dev.env
