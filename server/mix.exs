@@ -14,7 +14,9 @@ defmodule FreedomAccount.MixProject do
       dialyzer: [
         ignore_warnings: "config/dialyzer_ignore.exs",
         list_unused_filters: true,
-        plt_add_apps: [:ex_unit]
+        plt_add_apps: [:ex_unit],
+        plt_core_path: "_plts",
+        plt_file: {:no_warn, "_plts/dialyzer-#{Mix.env()}.plt"}
       ]
     ]
   end
@@ -44,7 +46,7 @@ defmodule FreedomAccount.MixProject do
       {:ecto_sql, "~> 3.0"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
-      {:mix_test_watch, "~> 0.9", only: :dev, runtime: false},
+      {:mix_test_watch, "~> 0.9", only: [:dev, :test], runtime: false},
       {:phoenix_ecto, "~> 4.0"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix, "~> 1.4.2"},

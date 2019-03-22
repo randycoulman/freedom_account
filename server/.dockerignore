@@ -5,4 +5,3 @@ priv/static
 Dockerfile*
 README*
 .gitignore
-.formatter.exs
