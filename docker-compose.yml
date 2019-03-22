@@ -8,6 +8,12 @@ services:
     volumes:
       - "./client/public:/app/public:ro"
       - "./client/src:/app/src:ro"
+  client_test:
+    build: ./client
+    command: npm test -- --no-watch
+    volumes:
+      - "./client/public:/app/public:ro"
+      - "./client/src:/app/src:ro"
   db:
     env_file:
       - ./config/docker_dev.env
