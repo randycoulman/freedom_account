@@ -1,7 +1,11 @@
-_build
-deps
-test
+*
+
+!config
+!lib
+!priv
 priv/static
-Dockerfile*
-README*
-.gitignore
+!scripts
+!test
+!.formatter.exs
+!mix.exs
+!mix.lock

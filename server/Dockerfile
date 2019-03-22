@@ -10,7 +10,7 @@ RUN \
   mix local.rebar --force
 
 COPY mix.exs mix.lock ./
-COPY config ./
+COPY config ./config
 
 ARG MIX_ENV=${MIX_ENV:-dev}
 

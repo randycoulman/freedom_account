@@ -1,6 +1,6 @@
-node_modules
-.gitignore
-build
-Dockerfile*
-README*
-coverage
+*
+
+!public
+!src
+!package-lock.json
+!package.json

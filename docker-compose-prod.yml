@@ -23,7 +23,7 @@ services:
       - dbdata:/var/lib/postgresql/data
   db_setup:
     build:
-      context: ./server
+      context: .
       dockerfile: Dockerfile.prod
     command: seed
     depends_on:

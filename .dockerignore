@@ -1,0 +1,14 @@
+*
+
+!client/public
+!client/src
+!client/package-lock.json
+!client/package.json
+
+!server/config
+!server/lib
+!server/priv
+server/priv/static
+!server/mix.exs
+!server/mix.lock
+!server/rel
