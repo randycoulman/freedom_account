@@ -2,6 +2,9 @@
 
 !client/public
 !client/src
+!client/.eslintignore
+!client/.eslintrc.js
+!client/craco.config.js
 !client/package-lock.json
 !client/package.json
 

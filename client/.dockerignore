@@ -2,5 +2,10 @@
 
 !public
 !src
+!.prettierignore
+!.prettierrc.js
+!.eslintignore
+!.eslintrc.js
+!craco.config.js
 !package-lock.json
 !package.json

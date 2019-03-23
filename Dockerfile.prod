@@ -1,15 +1,17 @@
 FROM node:10.15.3-alpine AS client_build
 LABEL maintainer="Randy Coulman <randy@randycoulman.com>"
 
-ENV NODE_ENV=production
-
 WORKDIR /app
 
 COPY client/package.json client/package-lock.json ./
 
-RUN npm install --production
+RUN npm install
 
 COPY client .
+
+ENV \
+  NODE_ENV=production \
+  SKIP_PREFLIGHT_CHECK=true
 
 RUN npm run build
 
