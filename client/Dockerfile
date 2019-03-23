@@ -11,4 +11,6 @@ COPY . .
 
 EXPOSE 3000
 
+ENV SKIP_PREFLIGHT_CHECK=true
+
 CMD ["npm", "start"]
