@@ -5,9 +5,9 @@
   "scripts": {
     "build": "craco build",
     "eject": "react-scripts eject",
-    "format": "eslint --fix . && prettier --write \"**/*.{css,gql,js,md,scss}\"",
+    "format": "eslint --fix . && prettier --write \"**/*.{css,gql,html,js,md,scss}\"",
     "lint": "npm-run-all lint:*",
-    "lint:format": "prettier --check \"**/*.{css,gql,js,md,scss}\"",
+    "lint:format": "prettier --check \"**/*.{css,gql,html,js,md,scss}\"",
     "lint:js": "eslint . --max-warnings 0 --report-unused-disable-directives",
     "start": "craco start",
     "test": "craco test",
