@@ -11,8 +11,9 @@
     "lint:js": "eslint . --max-warnings 0 --report-unused-disable-directives",
     "start": "craco start",
     "test": "craco test",
+    "test:coverage": "npm test -- --coverage",
     "test:once": "npm test -- --no-watch",
-    "validate": "npm-run-all lint test:once"
+    "validate": "npm-run-all lint test:coverage"
   },
   "dependencies": {
     "@craco/craco": "^3.6.0",
@@ -45,6 +46,12 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ]
+  },
+  "jest": {
+    "coverageReporters": [
+      "lcov",
+      "text-summary"
     ]
   }
 }
