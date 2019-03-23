@@ -30,10 +30,11 @@ scratchpad to remind myself how to do things:
 - Run an individual server test-related command:
   `docker-compose run --rm server_test <command>`,
   where command is one of:
-  - `mix test`
+  - `mix coveralls.html`
   - `mix credo`
   - `mix dialyzer`
   - `mix format`
+  - `mix test`
   - `mix test.watch`
 
 - Run an individual client test-related command:
