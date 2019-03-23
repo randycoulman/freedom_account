@@ -12,6 +12,7 @@ services:
     build: ./client
     command: npm run validate
     volumes:
+      - "./client/coverage:/app/coverage"
       - "./client/public:/app/public:ro"
       - "./client/src:/app/src:ro"
   db:
