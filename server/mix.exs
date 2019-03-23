@@ -3,13 +3,9 @@ defmodule FreedomAccount.MixProject do
 
   def project do
     [
-      app: :freedom_account,
-      version: "0.1.0",
-      elixir: "~> 1.5",
-      elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
-      start_permanent: Mix.env() == :prod,
       aliases: aliases(),
+      app: :freedom_account,
+      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       deps: deps(),
       dialyzer: [
         ignore_warnings: "config/dialyzer_ignore.exs",
@@ -17,7 +13,12 @@ defmodule FreedomAccount.MixProject do
         plt_add_apps: [:ex_unit],
         plt_core_path: "_plts",
         plt_file: {:no_warn, "_plts/dialyzer-#{Mix.env()}.plt"}
-      ]
+      ],
+      elixir: "~> 1.5",
+      elixirc_paths: elixirc_paths(Mix.env()),
+      start_permanent: Mix.env() == :prod,
+      test_coverage: [tool: ExCoveralls],
+      version: "0.1.0"
     ]
   end
 
@@ -44,12 +45,13 @@ defmodule FreedomAccount.MixProject do
       {:dialyxir, "~> 1.0.0-rc.4", only: [:dev, :test], runtime: false},
       {:distillery, "~> 2.0"},
       {:ecto_sql, "~> 3.0"},
+      {:excoveralls, "~> 0.10.0", only: :test},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:mix_test_watch, "~> 0.9", only: [:dev, :test], runtime: false},
       {:phoenix_ecto, "~> 4.0"},
       {:phoenix_pubsub, "~> 1.1"},
-      {:phoenix, "~> 1.4.2"},
+      {:phoenix, "~> 1.4"},
       {:plug_cowboy, "~> 2.0"},
       {:plug_static_index_html, "~> 1.0"},
       {:postgrex, ">= 0.0.0"}
@@ -68,7 +70,7 @@ defmodule FreedomAccount.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate", "test"],
       validate: [
-        "test",
+        "coveralls.html",
         "format --check-formatted",
         "credo",
         "dialyzer --format short --halt-exit-status"

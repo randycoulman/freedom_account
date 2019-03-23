@@ -58,6 +58,7 @@ services:
       - ./config/docker_test.env
     volumes:
       - "./server/config:/app/config:ro"
+      - "./server/cover:/app/cover"
       - "./server/lib:/app/lib:ro"
       - "./server/_plts:/app/_plts"
       - "./server/priv:/app/priv:ro"
