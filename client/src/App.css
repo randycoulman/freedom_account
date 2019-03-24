@@ -1,3 +1,6 @@
+/* Temporary overrides until we start putting in our own code and styles */
+/* stylelint-disable color-named, color-no-hex */
+
 .App {
   text-align: center;
 }
@@ -9,14 +12,14 @@
 }
 
 .App-header {
+  align-items: center;
   background-color: #282c34;
-  min-height: 100vh;
+  color: white;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  justify-content: center;
+  min-height: 100vh;
 }
 
 .App-link {

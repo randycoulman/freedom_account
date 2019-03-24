@@ -10,6 +10,7 @@
     "precommit:elixir": "cd server && mix format",
     "precommit:eslint": "cd client && npx eslint --fix",
     "precommit:prettier": "cd client && npx prettier --write",
+    "precommit:stylelint": "cd client && npx stylelint --fix",
     "prod": "docker-compose -f docker-compose-prod.yml -p freedom_account_prod build",
     "server": "docker-compose run --rm server_test mix",
     "setup": "npm-run-all setup:asdf --parallel setup:server setup:client",
@@ -32,10 +33,16 @@
   },
   "lint-staged": {
     "ignore": [
-      "**/.eslintrc.js"
+      "**/.eslintrc.js",
+      "**/.stylelintrc.js"
     ],
     "linters": {
-      "client/**/*.{css,gql,html,md,scss}": [
+      "client/**/*.{css,scss}": [
+        "npm run -s precommit:stylelint",
+        "npm run -s precommit:prettier",
+        "git add"
+      ],
+      "client/**/*.{gql,html,md}": [
         "npm run -s precommit:prettier",
         "git add"
       ],
