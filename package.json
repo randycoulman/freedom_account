@@ -1,0 +1,31 @@
+{
+  "name": "freedom-account-dev",
+  "version": "1.0.0",
+  "description": "Development support for Freedom Account app",
+  "private": true,
+  "scripts": {
+    "precommit:elixir": "cd server && mix format",
+    "precommit:eslint": "cd client && npx eslint --fix",
+    "precommit:prettier": "cd client && npx prettier --write",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "husky": "^1.3.1",
+    "lint-staged": "^8.1.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "ignore": [
+      "**/.eslintrc.js"
+    ],
+    "linters": {
+      "client/**/*.{css,gql,html,md,scss}": ["npm run -s precommit:prettier", "git add"],
+      "client/**/*.js": ["npm run -s precommit:eslint", "npm run -s precommit:prettier", "git add"],
+      "server/**/*.{ex,exs}": ["npm run -s precommit:elixir", "git add"]
+    }
+  }
+}
