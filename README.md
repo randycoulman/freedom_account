@@ -16,45 +16,38 @@ of each category over time.  That's what this app is for.
 I'll eventually flesh this out into better instructions; for now, this is just a
 scratchpad to remind myself how to do things:
 
-- Run the server in development mode: `docker-compose up -d server`
-- Run the client in development mode: `docker-compose up -d client`
+- Run development servers: `npm run dev`
+- Stop development servers: `npm run dev:stop`
 
-- Build the production app: `docker-compose -f docker-compose-prod.yml -p freedom_account_prod build`
-- Run the production app: `docker-compose -f docker-compose-prod.yml -p freedom_account_prod up -d`
+- Build the production app: `npm run prod`
+- Run the production app: `npm start`
+- Stop the production app: `npm stop`
 
-- Run all server tests/linting/type-checking/format-checking:
-  `docker-compose up server_test`
-- Run all client tests/linting/format-checking:
-  `docker-compose up client_test`
+- Run all tests/linting/type-checking/format-checking: `npm test`
 
 - Run an individual server test-related command:
-  `docker-compose run --rm server_test <command>`,
-  where command is one of:
-  - `mix coveralls.html`
-  - `mix credo`
-  - `mix dialyzer`
-  - `mix format`
-  - `mix test`
-  - `mix test.watch`
+  `npm run server <mix task>`.  Available mix tasks include:
+  - `coveralls.html`
+  - `credo`
+  - `dialyzer`
+  - `format`
+  - `test`
+  - `test.watch`
 
 - Run an individual client test-related command:
-  `docker-compose run --rm client_test <command>`,
-  where command is one of:
-  - `npm run format`
-  - `npm run lint`
-  - `npm run lint:format`
-  - `npm run lint:js`
-  - `npm run test:coverage`
-  - `npm run test:once`
+  `npm run client <npm script>`.  Available scripts include:
+  - `format`
+  - `lint`
+  - `lint:format`
+  - `lint:js`
+  - `test:coverage`
+  - `test:once`
 
 - For Jest interactivity to work, we need to run tests in watch mode locally,
   rather than in a container:
   - (from `client` directory): `npm test`
 
-To install locally (for use in editor integration):
-- Install dependencies (requires [asdf](https://github.com/asdf-vm/asdf)): `asdf install`
-- `cd server && mix do deps.get, deps.compile && cd -`
-- `cd client && npm install && cd -`
+To install locally (for use in editor integration): `npm run setup`
 
 ## Approach
 
