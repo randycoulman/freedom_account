@@ -14,7 +14,7 @@ services:
     volumes:
       - "./client/coverage:/app/coverage"
       - "./client/public:/app/public:ro"
-      - "./client/src:/app/src:ro"
+      - "./client/src:/app/src"
   db:
     env_file:
       - ./config/docker_dev.env
@@ -58,12 +58,12 @@ services:
     env_file:
       - ./config/docker_test.env
     volumes:
-      - "./server/config:/app/config:ro"
+      - "./server/config:/app/config"
       - "./server/cover:/app/cover"
-      - "./server/lib:/app/lib:ro"
+      - "./server/lib:/app/lib"
       - "./server/_plts:/app/_plts"
       - "./server/priv:/app/priv:ro"
-      - "./server/test:/app/test:ro"
+      - "./server/test:/app/test"
 
 volumes:
   dbdata:
