@@ -7,9 +7,12 @@
     "client": "docker-compose run --rm client_test npm run",
     "dev": "docker-compose up --build -d client server",
     "dev:stop": "docker-compose down",
-    "precommit:elixir": "cd server && mix format",
-    "precommit:eslint": "cd client && npx eslint --fix",
-    "precommit:prettier": "cd client && npx prettier --write",
+    "e2e": "docker-compose up --build e2e",
+    "precommit:format:server": "cd server && mix format",
+    "precommit:format:client": "cd client && npx prettier --write",
+    "precommit:format:e2e": "cd e2e && npx prettier --write",
+    "precommit:lint:client": "cd client && npx eslint --fix",
+    "precommit:lint:e2e": "cd e2e && npx eslint --fix",
     "precommit:stylelint": "cd client && npx stylelint --fix",
     "prod": "docker-compose -f docker-compose-prod.yml -p freedom_account_prod build",
     "server": "docker-compose run --rm server_test mix",
@@ -19,7 +22,7 @@
     "setup:server": "cd server && mix do deps.get, deps.compile",
     "start": "docker-compose -f docker-compose-prod.yml -p freedom_account_prod up -d",
     "stop": "docker-compose -f docker-compose-prod.yml -p freedom_account_prod down",
-    "test": "docker-compose up --build server_test client_test"
+    "test": "docker-compose up --build server_test client_test e2e"
   },
   "devDependencies": {
     "husky": "^1.3.1",
@@ -38,21 +41,30 @@
     ],
     "linters": {
       "client/**/*.{css,scss}": [
-        "npm run -s precommit:stylelint",
-        "npm run -s precommit:prettier",
+        "npm run -s precommit:stylelint:client",
+        "npm run -s precommit:format:client",
         "git add"
       ],
-      "client/**/*.{gql,html,md}": [
-        "npm run -s precommit:prettier",
+      "client/**/*.{gql,html,json,md}": [
+        "npm run -s precommit:format:client",
         "git add"
       ],
       "client/**/*.js": [
-        "npm run -s precommit:eslint",
-        "npm run -s precommit:prettier",
+        "npm run -s precommit:lint:client",
+        "npm run -s precommit:format:client",
+        "git add"
+      ],
+      "e2e/**/*.{gql,html,json,md}": [
+        "npm run -s precommit:format:e2e",
+        "git add"
+      ],
+      "e2e/**/*.js": [
+        "npm run -s precommit:lint:e2e",
+        "npm run -s precommit:format:e2e",
         "git add"
       ],
       "server/**/*.{ex,exs}": [
-        "npm run -s precommit:elixir",
+        "npm run -s precommit:format:server",
         "git add"
       ]
     }
