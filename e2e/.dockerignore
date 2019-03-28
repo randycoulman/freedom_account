@@ -1,0 +1,11 @@
+*
+
+!cypress
+!scripts
+!.prettierignore
+!.prettierrc.js
+!.eslintignore
+!.eslintrc.js
+!cypress.json
+!package-lock.json
+!package.json
