@@ -36,10 +36,10 @@ services:
   e2e:
     build: ./e2e
     command: ./scripts/wait-for-it.sh client:3000 --strict -t 30 -- npm test
-    # depends_on:
-    #   - client
-    # environment:
-    #   - CYPRESS_baseUrl=http://client:3000
+    depends_on:
+      - client
+    environment:
+      - CYPRESS_baseUrl=http://client:3000
     volumes:
       - "./e2e/cypress/screenshots:/app/cypress/screenshots"
       - "./e2e/cypress/videos:/app/cypress/videos"
