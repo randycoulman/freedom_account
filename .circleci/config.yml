@@ -4,7 +4,15 @@ jobs:
     machine: true
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-plt-cache-{{ checksum "server/mix.lock" }}
+            - v1-plt-cache
       - run: docker-compose up --build server_test
+      - save_cache:
+          key: v1-plt-cache-{{ checksum "server/mix.lock" }}
+          paths:
+            - server/_plts
   test_client:
     machine: true
     steps:
