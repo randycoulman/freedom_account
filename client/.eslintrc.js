@@ -95,6 +95,7 @@ module.exports = {
     "import/no-mutable-exports": "warn",
     "import/no-named-default": "warn",
     "import/no-self-import": "warn",
+    "import/no-unused-modules": "warn",
     "import/no-useless-path-segments": "warn",
     "import/no-webpack-loader-syntax": "warn",
     "import-helpers/order-imports": [
