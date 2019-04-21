@@ -1,9 +1,34 @@
 version: 2
 jobs:
-  build:
+  test_server:
     machine: true
     steps:
       - checkout
-      - run: docker-compose up server_test client_test e2e
+      - restore_cache:
+          keys:
+            - v1-plt-cache-{{ checksum "server/mix.lock" }}
+            - v1-plt-cache
+      - run: docker-compose up --build server_test
+      - save_cache:
+          key: v1-plt-cache-{{ checksum "server/mix.lock" }}
+          paths:
+            - server/_plts
+  test_client:
+    machine: true
+    steps:
+      - checkout
+      - run: docker-compose up --build client_test
+  test_e2e:
+    machine: true
+    steps:
+      - checkout
+      - run: docker-compose up --build e2e
       - store_artifacts:
           path: ./e2e/cypress/screenshots
+workflows:
+  version: 2
+  test_all:
+    jobs:
+      - test_server
+      - test_client
+      - test_e2e
