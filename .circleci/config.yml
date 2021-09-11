@@ -61,6 +61,26 @@ jobs:
       - run:
           command: npm run validate
           working_directory: client
+  test_e2e:
+    docker:
+      - image: cimg/node:10.15.3
+    steps:
+      - checkout
+      - restore-cache:
+          keys:
+            - v1-e2e-deps-cache-{{ checksum "e2e/package-lock.json" }}
+            - v1-e2e-deps-cache
+      - run:
+          command: npm install
+          working_directory: e2e
+      - save_cache:
+          key: v1-e2e-deps-cache-{{ checksum "e2e/package-lock.json" }}
+          paths:
+            - e2e/node_modules
+      - run:
+          command: npm run validate
+          working_directory: e2e
+
   # test_e2e:
   #   machine: true
   #   steps:
@@ -74,4 +94,4 @@ workflows:
     jobs:
       - test_server
       - test_client
-      # - test_e2e
+      - test_e2e
