@@ -42,11 +42,25 @@ jobs:
             MIX_ENV=test mix compile
             mix validate
           working_directory: server
-  # test_client:
-  #   machine: true
-  #   steps:
-  #     - checkout
-  #     - run: docker-compose up --build client_test
+  test_client:
+    docker:
+      - image: cimg/node:10.15.3
+    steps:
+      - checkout
+      - restore-cache:
+          keys:
+            - v1-node-deps-cache-{{ checksum "client/package-lock.json" }}
+            - v1-node-deps-cache
+      - run:
+          command: npm install
+          working_directory: client
+      - save_cache:
+          key: v1-node-deps-cache-{{ checksum "client/package-lock.json" }}
+          paths:
+            - client/node_modules
+      - run:
+          command: npm run validate
+          working_directory: client
   # test_e2e:
   #   machine: true
   #   steps:
@@ -59,5 +73,5 @@ workflows:
   test_all:
     jobs:
       - test_server
-      # - test_client
+      - test_client
       # - test_e2e
