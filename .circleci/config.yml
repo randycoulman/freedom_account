@@ -1,34 +1,63 @@
 version: 2
 jobs:
   test_server:
-    machine: true
+    docker:
+      - image: cimg/elixir:1.8.1
+      - image: postgres:11.2-alpine
     steps:
       - checkout
       - restore_cache:
           keys:
-            - v1-plt-cache-{{ checksum "server/mix.lock" }}
-            - v1-plt-cache
-      - run: docker-compose up --build server_test
+            - v3-deps-cache-{{ checksum "server/mix.lock" }}
+            - v3-deps-cache
+      - run:
+          command: |
+            mix local.hex --force
+            mix local.rebar --force
+            mix deps.get
+            mix deps.compile
+            MIX_ENV=test mix deps.compile
+          working_directory: server
       - save_cache:
-          key: v1-plt-cache-{{ checksum "server/mix.lock" }}
+          key: v3-deps-cache-{{ checksum "server/mix.lock" }}
           paths:
-            - server/_plts
-  test_client:
-    machine: true
-    steps:
-      - checkout
-      - run: docker-compose up --build client_test
-  test_e2e:
-    machine: true
-    steps:
-      - checkout
-      - run: docker-compose up --build e2e_test e2e
-      - store_artifacts:
-          path: ./e2e/cypress/screenshots
+            - server/_build
+            - server/deps
+            - ~/.mix
+      - restore_cache:
+          keys:
+            - v2-plt-cache-{{ checksum "server/mix.lock" }}
+            - v2-plt-cache
+      - run:
+          command: mix dialyzer --plt
+          working_directory: server
+      - save_cache:
+          key: v2-plt-cache-{{ checksum "server/mix.lock" }}
+          paths:
+            - server/_build
+            - ~/.mix
+      - run:
+          command: |
+            mix compile
+            MIX_ENV=test mix compile
+            mix validate
+          working_directory: server
+  # test_client:
+  #   machine: true
+  #   steps:
+  #     - checkout
+  #     - run: docker-compose up --build client_test
+  # test_e2e:
+  #   machine: true
+  #   steps:
+  #     - checkout
+  #     - run: docker-compose up --build e2e_test e2e
+  #     - store_artifacts:
+  #         path: ./e2e/cypress/screenshots
 workflows:
   version: 2
   test_all:
     jobs:
       - test_server
-      - test_client
-      - test_e2e
+      # - test_client
+      # - test_e2e
