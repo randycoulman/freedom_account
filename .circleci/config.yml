@@ -11,6 +11,7 @@ jobs:
             - v3-deps-cache-{{ checksum "server/mix.lock" }}
             - v3-deps-cache
       - run:
+          name: Install and compile dependencies
           command: |
             mix local.hex --force
             mix local.rebar --force
@@ -37,6 +38,7 @@ jobs:
             - server/_build
             - ~/.mix
       - run:
+          name: Compile and run validations
           command: |
             mix compile
             MIX_ENV=test mix compile
@@ -52,7 +54,7 @@ jobs:
             - v1-node-deps-cache-{{ checksum "client/package-lock.json" }}
             - v1-node-deps-cache
       - run:
-          command: npm install
+          command: npm ci
           working_directory: client
       - save_cache:
           key: v1-node-deps-cache-{{ checksum "client/package-lock.json" }}
@@ -71,7 +73,7 @@ jobs:
             - v1-e2e-deps-cache-{{ checksum "e2e/package-lock.json" }}
             - v1-e2e-deps-cache
       - run:
-          command: npm install
+          command: npm ci
           working_directory: e2e
       - save_cache:
           key: v1-e2e-deps-cache-{{ checksum "e2e/package-lock.json" }}
@@ -81,13 +83,6 @@ jobs:
           command: npm run validate
           working_directory: e2e
 
-  # test_e2e:
-  #   machine: true
-  #   steps:
-  #     - checkout
-  #     - run: docker-compose up --build e2e_test e2e
-  #     - store_artifacts:
-  #         path: ./e2e/cypress/screenshots
 workflows:
   version: 2
   test_all:

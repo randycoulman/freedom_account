@@ -4,7 +4,7 @@
   "description": "Development support for Freedom Account app",
   "private": true,
   "scripts": {
-    "build": "npm run prod -- build",
+    "build": "docker build -t freedom_account .",
     "client": "cd client && npm run",
     "console": "cd server && scripts/console.sh",
     "db": "npm run dev -- up --build -d",
