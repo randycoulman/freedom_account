@@ -10,12 +10,16 @@ defmodule FreedomAccount.MixProject do
       dialyzer: [
         ignore_warnings: "config/dialyzer_ignore.exs",
         list_unused_filters: true,
-        plt_add_apps: [:ex_unit],
-        plt_core_path: "_plts",
-        plt_file: {:no_warn, "_plts/dialyzer-#{Mix.env()}.plt"}
+        plt_add_apps: [:ex_unit]
       ],
       elixir: "~> 1.5",
       elixirc_paths: elixirc_paths(Mix.env()),
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ],
       start_permanent: Mix.env() == :prod,
       test_coverage: [tool: ExCoveralls],
       version: "0.1.0"
@@ -68,9 +72,13 @@ defmodule FreedomAccount.MixProject do
     [
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
+      s: [
+        "ecto.setup",
+        "cmd scripts/zombie-killer.sh elixir --sname server -S mix phx.server"
+      ],
       test: ["ecto.create --quiet", "ecto.migrate", "test"],
       validate: [
-        "coveralls.html",
+        "cmd MIX_ENV=test mix coveralls.html",
         "format --check-formatted",
         "credo",
         "dialyzer --format short --halt-exit-status"

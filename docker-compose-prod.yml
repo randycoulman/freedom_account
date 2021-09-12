@@ -9,7 +9,7 @@ services:
     env_file:
       - ./config/docker_prod.env
       - ./config/docker_prod_secret.env
-    image: freedom_account_prod_db_setup
+    image: freedom_account
     ports:
       - "8080:4000"
   db:
@@ -22,15 +22,13 @@ services:
     volumes:
       - dbdata:/var/lib/postgresql/data
   db_setup:
-    build:
-      context: .
-      dockerfile: Dockerfile.prod
     command: seed
     depends_on:
       - db
     env_file:
       - ./config/docker_prod.env
       - ./config/docker_prod_secret.env
+    image: freedom_account
 
 volumes:
   dbdata:
