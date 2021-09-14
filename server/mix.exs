@@ -45,7 +45,7 @@ defmodule FreedomAccount.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:credo, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0.0-rc.4", only: [:dev, :test], runtime: false},
       {:distillery, "~> 2.1"},
       {:ecto_sql, "~> 3.4"},
