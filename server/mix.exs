@@ -12,7 +12,7 @@ defmodule FreedomAccount.MixProject do
         list_unused_filters: true,
         plt_add_apps: [:ex_unit]
       ],
-      elixir: "~> 1.5",
+      elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),
       preferred_cli_env: [
         coveralls: :test,
@@ -47,18 +47,20 @@ defmodule FreedomAccount.MixProject do
     [
       {:credo, "~> 1.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0.0-rc.4", only: [:dev, :test], runtime: false},
-      {:distillery, "~> 2.0"},
-      {:ecto_sql, "~> 3.0"},
+      {:distillery, "~> 2.1"},
+      {:ecto_sql, "~> 3.4"},
       {:excoveralls, "~> 0.10.0", only: :test},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:mix_test_watch, "~> 0.9", only: [:dev, :test], runtime: false},
-      {:phoenix_ecto, "~> 4.0"},
-      {:phoenix_pubsub, "~> 1.1"},
-      {:phoenix, "~> 1.4"},
+      {:phoenix_ecto, "~> 4.4"},
+      {:phoenix_live_dashboard, "~> 0.4"},
+      {:phoenix, "~> 1.5.12"},
       {:plug_cowboy, "~> 2.0"},
       {:plug_static_index_html, "~> 1.0"},
-      {:postgrex, ">= 0.0.0"}
+      {:postgrex, ">= 0.0.0"},
+      {:telemetry_metrics, "~> 0.4"},
+      {:telemetry_poller, "~> 0.4"}
     ]
   end
 
@@ -76,7 +78,8 @@ defmodule FreedomAccount.MixProject do
         "ecto.setup",
         "cmd scripts/zombie-killer.sh elixir --sname server -S mix phx.server"
       ],
-      test: ["ecto.create --quiet", "ecto.migrate", "test"],
+      setup: ["deps.get", "ecto.setup"],
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       validate: [
         "cmd MIX_ENV=test mix coveralls.html",
         "format --check-formatted",

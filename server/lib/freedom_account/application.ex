@@ -8,10 +8,13 @@ defmodule FreedomAccount.Application do
   @spec start(Application.start_type(), start_args :: term()) ::
           {:ok, pid()} | {:ok, pid(), Application.state()} | {:error, reason :: term()}
   def start(_type, _args) do
-    # List all child processes to be supervised
     children = [
       # Start the Ecto repository
       FreedomAccount.Repo,
+      # Start the Telemetry supervisor
+      FreedomAccountWeb.Telemetry,
+      # Start the PubSub system
+      {Phoenix.PubSub, name: FreedomAccount.PubSub},
       # Start the endpoint when the application starts
       FreedomAccountWeb.Endpoint
       # Starts a worker by calling: FreedomAccount.Worker.start_link(arg)

@@ -6,68 +6,37 @@ defmodule FreedomAccount.ReleaseTasks do
   application.  They are used by custom distillery commands (see
   `server/rel/commands`).
 
-  Adapted from https://hexdocs.pm/distillery/guides/running_migrations.html
-  with inpout from https://gist.github.com/jswny/83e03537830b0d997924e8f1965d88bc.
+  Adapted from https://hexdocs.pm/ecto_sql/Ecto.Migrator.html.
   """
+  @app :freedom_account
 
-  @start_apps [
-    :crypto,
-    :ssl,
-    :postgrex,
-    :ecto,
-    :ecto_sql
-  ]
+  @spec migrate() :: :ok
+  def migrate do
+    for repo <- repos() do
+      {:ok, _, _} = Ecto.Migrator.with_repo(repo, &run_migrations/1)
+    end
 
-  @otp_app :freedom_account
-  @repos Application.get_env(@otp_app, :ecto_repos, [])
-
-  @spec migrate([String.t()]) :: :ok
-  def migrate(_argv) do
-    start_services()
-    run_migrations()
-    stop_services()
+    :ok
   end
 
-  @spec seed([String.t()]) :: :ok
-  def seed(_argv) do
-    start_services()
-    run_migrations()
-    run_seeds()
-    stop_services()
+  @spec seed() :: :ok
+  def seed do
+    for repo <- repos() do
+      {:ok, _, _} =
+        Ecto.Migrator.with_repo(repo, fn repo ->
+          run_migrations(repo)
+          run_seeds(repo)
+        end)
+    end
+
+    :ok
   end
 
-  defp start_services do
-    IO.puts("Loading #{@otp_app}..")
-    :ok = Application.load(@otp_app)
-
-    IO.puts("Starting dependencies..")
-    Enum.each(@start_apps, &Application.ensure_all_started/1)
-
-    IO.puts("Starting repos..")
-    Enum.each(@repos, & &1.start_link(pool_size: 2))
+  defp run_migrations(repo) do
+    Ecto.Migrator.run(repo, :up, all: true)
   end
 
-  defp stop_services do
-    IO.puts("Success!")
-    :init.stop()
-  end
-
-  defp run_migrations do
-    Enum.each(@repos, &run_migrations_for/1)
-  end
-
-  defp run_migrations_for(repo) do
-    app = Keyword.get(repo.config, :otp_app)
-    IO.puts("Running migrations for #{app}")
-    migrations_path = priv_path_for(repo, "migrations")
-    Ecto.Migrator.run(repo, migrations_path, :up, all: true)
-  end
-
-  defp run_seeds do
-    Enum.each(@repos, &run_seeds_for/1)
-  end
-
-  defp run_seeds_for(repo) do
+  defp run_seeds(repo) do
     seed_script = priv_path_for(repo, "seeds.exs")
 
     if File.exists?(seed_script) do
@@ -88,5 +57,10 @@ defmodule FreedomAccount.ReleaseTasks do
     priv_dir = "#{:code.priv_dir(app)}"
 
     Path.join([priv_dir, repo_underscore, filename])
+  end
+
+  defp repos do
+    Application.load(@app)
+    Application.fetch_env!(@app, :ecto_repos)
   end
 end

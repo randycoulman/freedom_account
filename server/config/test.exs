@@ -10,9 +10,13 @@ config :freedom_account, FreedomAccountWeb.Endpoint,
 config :logger, level: :warn
 
 # Configure your database
+#
+# The MIX_TEST_PARTITION environment variable can be used
+# to provide built-in test partitioning in CI environment.
+# Run `mix help test` for more information.
 config :freedom_account, FreedomAccount.Repo,
   username: "postgres",
   password: "postgres",
-  database: "freedom_account_test",
+  database: "freedom_account_test#{System.get_env("MIX_TEST_PARTITION")}",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox

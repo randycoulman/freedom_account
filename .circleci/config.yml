@@ -2,14 +2,14 @@ version: 2
 jobs:
   test_server:
     docker:
-      - image: cimg/elixir:1.8.1
+      - image: cimg/elixir:1.12.2
       - image: postgres:11.2-alpine
     steps:
       - checkout
       - restore_cache:
           keys:
-            - v3-deps-cache-{{ checksum "server/mix.lock" }}
-            - v3-deps-cache
+            - v1-server-deps-{{ checksum "server/mix.lock" }}
+            - v1-server-deps
       - run:
           name: Install and compile dependencies
           command: |
@@ -20,20 +20,20 @@ jobs:
             MIX_ENV=test mix deps.compile
           working_directory: server
       - save_cache:
-          key: v3-deps-cache-{{ checksum "server/mix.lock" }}
+          key: v1-server-deps-{{ checksum "server/mix.lock" }}
           paths:
             - server/_build
             - server/deps
             - ~/.mix
       - restore_cache:
           keys:
-            - v2-plt-cache-{{ checksum "server/mix.lock" }}
-            - v2-plt-cache
+            - v1-server-plt-{{ checksum "server/mix.lock" }}
+            - v1-server-plt
       - run:
           command: mix dialyzer --plt
           working_directory: server
       - save_cache:
-          key: v2-plt-cache-{{ checksum "server/mix.lock" }}
+          key: v1-server-plt-{{ checksum "server/mix.lock" }}
           paths:
             - server/_build
             - ~/.mix

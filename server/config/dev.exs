@@ -53,4 +53,5 @@ config :freedom_account, FreedomAccount.Repo,
   password: "postgres",
   database: "freedom_account_dev",
   hostname: "localhost",
+  show_sensitive_data_on_connection_error: true,
   pool_size: 10
