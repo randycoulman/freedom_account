@@ -15,7 +15,8 @@ config :freedom_account, FreedomAccountWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "odok5kW5BGc7DH/58dbxwKM7RJWjsJ7xc6kj3mY1o1LMxlBjeZMXyQYKQjRLfV6x",
   render_errors: [view: FreedomAccountWeb.ErrorView, accepts: ~w(json)],
-  pubsub: [name: FreedomAccount.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub_server: FreedomAccount.PubSub,
+  live_view: [signing_salt: "PcFHsb2S"]
 
 # Configures Elixir's Logger
 config :logger, :console,

@@ -1,9 +1,20 @@
 defmodule FreedomAccountWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :freedom_account
 
+  # The session will be stored in the cookie and signed,
+  # this means its contents can be read but not tampered with.
+  # Set :encryption_salt if you would also like to encrypt it.
+  @session_options [
+    store: :cookie,
+    key: "_freedom_account_key",
+    signing_salt: "ibPEuDH1"
+  ]
+
   socket "/socket", FreedomAccountWeb.UserSocket,
     websocket: true,
     longpoll: false
+
+  socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
 
   # Configure root URL to serve `index.html`
   plug Plug.Static.IndexHtml, at: "/"
@@ -22,10 +33,15 @@ defmodule FreedomAccountWeb.Endpoint do
   # :code_reloader configuration of your endpoint.
   if code_reloading? do
     plug Phoenix.CodeReloader
+    plug Phoenix.Ecto.CheckRepoStatus, otp_app: :freedom_account
   end
 
+  plug Phoenix.LiveDashboard.RequestLogger,
+    param_key: "request_logger",
+    cookie_key: "request_logger"
+
   plug Plug.RequestId
-  plug Plug.Logger
+  plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
 
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
@@ -34,14 +50,6 @@ defmodule FreedomAccountWeb.Endpoint do
 
   plug Plug.MethodOverride
   plug Plug.Head
-
-  # The session will be stored in the cookie and signed,
-  # this means its contents can be read but not tampered with.
-  # Set :encryption_salt if you would also like to encrypt it.
-  plug Plug.Session,
-    store: :cookie,
-    key: "_freedom_account_key",
-    signing_salt: "tgmo77j+"
-
+  plug Plug.Session, @session_options
   plug FreedomAccountWeb.Router
 end

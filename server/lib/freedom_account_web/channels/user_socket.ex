@@ -17,6 +17,7 @@ defmodule FreedomAccountWeb.UserSocket do
   # performing token verification on connect.
   @spec connect(params :: map(), Phoenix.Socket.t(), connect_info :: map()) ::
           {:ok, Phoenix.Socket.t()} | :error
+  @impl Phoenix.Socket
   def connect(_params, socket, _connect_info) do
     {:ok, socket}
   end
@@ -32,5 +33,6 @@ defmodule FreedomAccountWeb.UserSocket do
   #
   # Returning `nil` makes this socket anonymous.
   @spec id(Phoenix.Socket.t()) :: String.t() | nil
+  @impl Phoenix.Socket
   def id(_socket), do: nil
 end
