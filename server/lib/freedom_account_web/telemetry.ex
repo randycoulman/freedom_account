@@ -26,6 +26,7 @@ defmodule FreedomAccountWeb.Telemetry do
     Supervisor.init(children, strategy: :one_for_one)
   end
 
+  @spec metrics :: [Telemetry.Metrics.t()]
   def metrics do
     [
       # Phoenix Metrics

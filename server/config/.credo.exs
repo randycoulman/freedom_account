@@ -10,7 +10,7 @@
   configs: [
     %{
       #
-      # Run any exec using `mix credo -C <name>`. If no exec name is given
+      # Run any config using `mix credo -C <name>`. If no config name is given
       # "default" is used.
       #
       name: "default",
@@ -21,9 +21,22 @@
         # You can give explicit globs or simply directories.
         # In the latter case `**/*.{ex,exs}` will be used.
         #
-        included: ["lib/", "src/", "test/", "web/", "apps/"],
+        included: [
+          "lib/",
+          "src/",
+          "test/",
+          "web/",
+          "apps/*/lib/",
+          "apps/*/src/",
+          "apps/*/test/",
+          "apps/*/web/"
+        ],
         excluded: [~r"/_build/", ~r"/deps/", ~r"/node_modules/"]
       },
+      #
+      # Load and configure plugins here:
+      #
+      plugins: [],
       #
       # If you create your own checks, you must specify the source files for
       # them here, so they can be loaded by Credo before running the analysis.
@@ -34,6 +47,10 @@
       # experience, you can change `strict` to `true` below:
       #
       strict: true,
+      #
+      # To modify the timeout for parsing files, change this value:
+      #
+      parse_timeout: 5000,
       #
       # If you want to use uncolored output by default, you can change `color`
       # to `false` below:
@@ -79,7 +96,7 @@
         {Credo.Check.Readability.AliasOrder, []},
         {Credo.Check.Readability.FunctionNames, []},
         {Credo.Check.Readability.LargeNumbers, []},
-        {Credo.Check.Readability.MaxLineLength, [priority: :low, max_length: 98]},
+        {Credo.Check.Readability.MaxLineLength, [priority: :low, max_length: 120]},
         {Credo.Check.Readability.ModuleAttributeNames, []},
         {Credo.Check.Readability.ModuleDoc, []},
         {Credo.Check.Readability.ModuleNames, []},
@@ -93,8 +110,7 @@
         {Credo.Check.Readability.StringSigils, []},
         {Credo.Check.Readability.TrailingBlankLine, []},
         {Credo.Check.Readability.TrailingWhiteSpace, []},
-        # TODO: enable by default in Credo 1.1
-        {Credo.Check.Readability.UnnecessaryAliasExpansion, false},
+        {Credo.Check.Readability.UnnecessaryAliasExpansion, []},
         {Credo.Check.Readability.VariableNames, []},
 
         #
@@ -102,30 +118,26 @@
         #
         {Credo.Check.Refactor.CondStatements, []},
         {Credo.Check.Refactor.CyclomaticComplexity, []},
-        {Credo.Check.Refactor.FunctionArity, []},
+        {Credo.Check.Refactor.FunctionArity, [max_arity: 3]},
         {Credo.Check.Refactor.LongQuoteBlocks, []},
-        # not needed in Elixir > 1.8
-        {Credo.Check.Refactor.MapInto, false},
+        # {Credo.Check.Refactor.MapInto, []},
         {Credo.Check.Refactor.MatchInCondition, []},
         {Credo.Check.Refactor.NegatedConditionsInUnless, []},
         {Credo.Check.Refactor.NegatedConditionsWithElse, []},
         {Credo.Check.Refactor.Nesting, []},
-        {Credo.Check.Refactor.PipeChainStart,
-         [
-           excluded_argument_types: [:atom, :binary, :fn, :keyword, :number],
-           excluded_functions: []
-         ]},
         {Credo.Check.Refactor.UnlessWithElse, []},
+        {Credo.Check.Refactor.WithClauses, []},
 
         #
         ## Warnings
         #
+        {Credo.Check.Warning.ApplicationConfigInModuleAttribute, []},
         {Credo.Check.Warning.BoolOperationOnSameValues, []},
         {Credo.Check.Warning.ExpensiveEmptyEnumCheck, []},
         {Credo.Check.Warning.IExPry, []},
         {Credo.Check.Warning.IoInspect, []},
-        # not needed in Elixir > 1.7
-        {Credo.Check.Warning.LazyLogging, false},
+        # {Credo.Check.Warning.LazyLogging, []},
+        {Credo.Check.Warning.MixEnv, false},
         {Credo.Check.Warning.OperationOnSameValues, []},
         {Credo.Check.Warning.OperationWithConstantResult, []},
         {Credo.Check.Warning.RaiseInsideRescue, []},
@@ -137,18 +149,35 @@
         {Credo.Check.Warning.UnusedRegexOperation, []},
         {Credo.Check.Warning.UnusedStringOperation, []},
         {Credo.Check.Warning.UnusedTupleOperation, []},
+        {Credo.Check.Warning.UnsafeExec, []},
+
+        #
+        # Checks scheduled for next check update (opt-in for now, just replace `false` with `[]`)
 
         #
         # Controversial and experimental checks (opt-in, just replace `false` with `[]`)
         #
         {Credo.Check.Consistency.MultiAliasImportRequireUse, []},
+        {Credo.Check.Consistency.UnusedVariableNames, []},
         {Credo.Check.Design.DuplicatedCode, false},
+        {Credo.Check.Readability.AliasAs, false},
+        {Credo.Check.Readability.BlockPipe, false},
+        {Credo.Check.Readability.ImplTrue, []},
+        {Credo.Check.Readability.MultiAlias, false},
+        {Credo.Check.Readability.SeparateAliasRequire, []},
+        {Credo.Check.Readability.SinglePipe, false},
         {Credo.Check.Readability.Specs, []},
+        {Credo.Check.Readability.StrictModuleLayout,
+         ignore: [:behaviour], order: [:shortdoc, :moduledoc, :use, :import, :alias, :require]},
+        {Credo.Check.Readability.WithCustomTaggedTuple, []},
         {Credo.Check.Refactor.ABCSize, false},
         {Credo.Check.Refactor.AppendSingleItem, false},
         {Credo.Check.Refactor.DoubleBooleanNegation, false},
         {Credo.Check.Refactor.ModuleDependencies, false},
-        {Credo.Check.Refactor.VariableRebinding, []},
+        {Credo.Check.Refactor.NegatedIsNil, false},
+        {Credo.Check.Refactor.PipeChainStart, false},
+        {Credo.Check.Refactor.VariableRebinding, false},
+        {Credo.Check.Warning.LeakyEnvironment, false},
         {Credo.Check.Warning.MapGetUnsafePass, false},
         {Credo.Check.Warning.UnsafeToAtom, false}
 
