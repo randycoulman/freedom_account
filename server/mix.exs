@@ -50,7 +50,7 @@ defmodule FreedomAccount.MixProject do
       {:distillery, "~> 2.1"},
       {:ecto_sql, "~> 3.7"},
       {:excoveralls, "~> 0.14.2", only: :test},
-      {:gettext, "~> 0.11"},
+      {:gettext, "~> 0.18.2"},
       {:jason, "~> 1.0"},
       {:mix_test_watch, "~> 0.9", only: [:dev, :test], runtime: false},
       {:phoenix_ecto, "~> 4.4"},
