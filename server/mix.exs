@@ -52,7 +52,7 @@ defmodule FreedomAccount.MixProject do
       {:excoveralls, "~> 0.14.2", only: :test},
       {:gettext, "~> 0.18.2"},
       {:jason, "~> 1.0"},
-      {:mix_test_watch, "~> 0.9", only: [:dev, :test], runtime: false},
+      {:mix_test_interactive, "~> 1.0", only: :dev, runtime: false},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_live_dashboard, "~> 0.4"},
       {:phoenix, "~> 1.5.12"},
