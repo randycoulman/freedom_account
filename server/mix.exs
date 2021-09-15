@@ -48,7 +48,7 @@ defmodule FreedomAccount.MixProject do
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.1.0", only: [:dev, :test], runtime: false},
       {:distillery, "~> 2.1"},
-      {:ecto_sql, "~> 3.4"},
+      {:ecto_sql, "~> 3.7"},
       {:excoveralls, "~> 0.10.0", only: :test},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
