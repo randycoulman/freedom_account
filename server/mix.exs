@@ -56,7 +56,7 @@ defmodule FreedomAccount.MixProject do
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_live_dashboard, "~> 0.4"},
       {:phoenix, "~> 1.5.12"},
-      {:plug_cowboy, "~> 2.0"},
+      {:plug_cowboy, "~> 2.5"},
       {:plug_static_index_html, "~> 1.0"},
       {:postgrex, ">= 0.0.0"},
       {:telemetry_metrics, "~> 0.4"},
