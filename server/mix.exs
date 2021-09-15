@@ -49,7 +49,7 @@ defmodule FreedomAccount.MixProject do
       {:dialyxir, "~> 1.1.0", only: [:dev, :test], runtime: false},
       {:distillery, "~> 2.1"},
       {:ecto_sql, "~> 3.7"},
-      {:excoveralls, "~> 0.10.0", only: :test},
+      {:excoveralls, "~> 0.14.2", only: :test},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:mix_test_watch, "~> 0.9", only: [:dev, :test], runtime: false},
