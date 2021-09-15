@@ -46,7 +46,7 @@ defmodule FreedomAccount.MixProject do
   defp deps do
     [
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0.0-rc.4", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.1.0", only: [:dev, :test], runtime: false},
       {:distillery, "~> 2.1"},
       {:ecto_sql, "~> 3.4"},
       {:excoveralls, "~> 0.10.0", only: :test},
@@ -84,7 +84,7 @@ defmodule FreedomAccount.MixProject do
         "cmd MIX_ENV=test mix coveralls.html",
         "format --check-formatted",
         "credo",
-        "dialyzer --format short --halt-exit-status"
+        "dialyzer"
       ]
     ]
   end
