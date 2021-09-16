@@ -6,6 +6,7 @@ defmodule FreedomAccount.MixProject do
       aliases: aliases(),
       app: :freedom_account,
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      default_release: :freedom_account,
       deps: deps(),
       dialyzer: [
         ignore_warnings: "config/dialyzer_ignore.exs",
@@ -19,6 +20,11 @@ defmodule FreedomAccount.MixProject do
         "coveralls.detail": :test,
         "coveralls.post": :test,
         "coveralls.html": :test
+      ],
+      releases: [
+        freedom_account: [
+          include_executables_for: [:unix]
+        ]
       ],
       start_permanent: Mix.env() == :prod,
       test_coverage: [tool: ExCoveralls],
@@ -47,7 +53,6 @@ defmodule FreedomAccount.MixProject do
     [
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.1.0", only: [:dev, :test], runtime: false},
-      {:distillery, "~> 2.1"},
       {:ecto_psql_extras, "~> 0.7"},
       {:ecto_sql, "~> 3.7"},
       {:excoveralls, "~> 0.14.2", only: :test},

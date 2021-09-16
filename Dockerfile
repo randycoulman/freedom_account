@@ -35,17 +35,17 @@ COPY server .
 
 COPY --from=client_build /app/build ./priv/static
 
-RUN mix do compile, distillery.release --no-tar
+RUN mix do compile, release
 
-FROM erlang:24.0.6
+FROM debian:buster
 LABEL maintainer="Randy Coulman <randy@randycoulman.com>"
 
-ENV MIX_ENV=prod
+ENV LANG=C.UTF-8
+
+RUN apt-get update && apt-get install -y openssl
 
 WORKDIR /app
 
 COPY --from=server_build /app/_build/prod/rel/freedom_account ./
-
-ENV REPLACE_OS_VARS=true
 
 ENTRYPOINT ["/app/bin/freedom_account"]

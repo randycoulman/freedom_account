@@ -2,8 +2,6 @@ version: "3.8"
 
 services:
   db:
-    env_file:
-      - ./config/docker_dev.env
     image: postgres:11.2
     ports:
       - "5432:5432"

@@ -2,7 +2,7 @@ version: "3"
 
 services:
   app:
-    command: foreground
+    command: start
     depends_on:
       - db
       - db_setup
@@ -22,7 +22,7 @@ services:
     volumes:
       - dbdata:/var/lib/postgresql/data
   db_setup:
-    command: seed
+    command: eval "FreedomAccount.ReleaseTasks.seed()"
     depends_on:
       - db
     env_file:
