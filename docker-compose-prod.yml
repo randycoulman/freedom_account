@@ -22,7 +22,7 @@ services:
     volumes:
       - dbdata:/var/lib/postgresql/data
   db_setup:
-    command: eval "FreedomAccount.ReleaseTasks.seed()"
+    command: eval "FreedomAccount.Release.seed()"
     depends_on:
       - db
     env_file:
