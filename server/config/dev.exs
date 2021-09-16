@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
@@ -51,10 +51,4 @@ config :phoenix, :stacktrace_depth, 20
 config :phoenix, :plug_init_mode, :runtime
 
 # Configure your database
-config :freedom_account, FreedomAccount.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "freedom_account_dev",
-  hostname: "localhost",
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+config :freedom_account, FreedomAccount.Repo, show_sensitive_data_on_connection_error: true

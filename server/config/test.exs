@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
@@ -14,9 +14,4 @@ config :logger, level: :warn
 # The MIX_TEST_PARTITION environment variable can be used
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
-config :freedom_account, FreedomAccount.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "freedom_account_test#{System.get_env("MIX_TEST_PARTITION")}",
-  hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox
+config :freedom_account, FreedomAccount.Repo, pool: Ecto.Adapters.SQL.Sandbox

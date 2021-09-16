@@ -1,4 +1,4 @@
-defmodule FreedomAccount.ReleaseTasks do
+defmodule FreedomAccount.Release do
   @moduledoc """
   Tasks to run in a released application.
 
@@ -10,7 +10,7 @@ defmodule FreedomAccount.ReleaseTasks do
   """
   @app :freedom_account
 
-  @spec migrate() :: :ok
+  @spec migrate :: :ok
   def migrate do
     for repo <- repos() do
       {:ok, _, _} = Ecto.Migrator.with_repo(repo, &run_migrations/1)
@@ -19,7 +19,13 @@ defmodule FreedomAccount.ReleaseTasks do
     :ok
   end
 
-  @spec seed() :: :ok
+  @spec rollback(Ecto.Repo.t(), binary) :: :ok
+  def rollback(repo, version) do
+    {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :down, to: version))
+    :ok
+  end
+
+  @spec seed :: :ok
   def seed do
     for repo <- repos() do
       {:ok, _, _} =
