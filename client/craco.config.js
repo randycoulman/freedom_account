@@ -3,7 +3,7 @@ const StylelintBarePlugin = require("stylelint-bare-webpack-plugin");
 
 module.exports = {
   eslint: {
-    loaderOptions: eslintOptions => ({
+    loaderOptions: (eslintOptions) => ({
       ...eslintOptions,
       eslintPath: require.resolve("eslint"),
     }),
