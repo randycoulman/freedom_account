@@ -61,18 +61,18 @@ jobs:
           working_directory: server
   test_client:
     docker:
-      - image: cimg/node:10.15.3
+      - image: cimg/node:16.8.0
     steps:
       - checkout
       - restore-cache:
           keys:
-            - v1-node-deps-cache-{{ checksum "client/package-lock.json" }}
-            - v1-node-deps-cache
+            - v2-node-deps-cache-{{ checksum "client/package-lock.json" }}
+            - v2-node-deps-cache
       - run:
           command: npm ci
           working_directory: client
       - save_cache:
-          key: v1-node-deps-cache-{{ checksum "client/package-lock.json" }}
+          key: v2-node-deps-cache-{{ checksum "client/package-lock.json" }}
           paths:
             - client/node_modules
       - run:
@@ -80,18 +80,18 @@ jobs:
           working_directory: client
   test_e2e:
     docker:
-      - image: cimg/node:10.15.3
+      - image: cimg/node:16.8.0
     steps:
       - checkout
       - restore-cache:
           keys:
-            - v1-e2e-deps-cache-{{ checksum "e2e/package-lock.json" }}
-            - v1-e2e-deps-cache
+            - v2-e2e-deps-cache-{{ checksum "e2e/package-lock.json" }}
+            - v2-e2e-deps-cache
       - run:
           command: npm ci
           working_directory: e2e
       - save_cache:
-          key: v1-e2e-deps-cache-{{ checksum "e2e/package-lock.json" }}
+          key: v2-e2e-deps-cache-{{ checksum "e2e/package-lock.json" }}
           paths:
             - e2e/node_modules
       - run:
