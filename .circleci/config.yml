@@ -66,13 +66,13 @@ jobs:
       - checkout
       - restore-cache:
           keys:
-            - v2-node-deps-cache-{{ checksum "client/package-lock.json" }}
-            - v2-node-deps-cache
+            - v1-client-deps-{{ checksum "client/package-lock.json" }}
+            - v1-client-deps
       - run:
           command: npm ci
           working_directory: client
       - save_cache:
-          key: v2-node-deps-cache-{{ checksum "client/package-lock.json" }}
+          key: v1-client-deps-{{ checksum "client/package-lock.json" }}
           paths:
             - client/node_modules
       - run:
@@ -85,13 +85,13 @@ jobs:
       - checkout
       - restore-cache:
           keys:
-            - v2-e2e-deps-cache-{{ checksum "e2e/package-lock.json" }}
-            - v2-e2e-deps-cache
+            - v1-e2e-deps-{{ checksum "e2e/package-lock.json" }}
+            - v1-e2e-deps
       - run:
           command: npm ci
           working_directory: e2e
       - save_cache:
-          key: v2-e2e-deps-cache-{{ checksum "e2e/package-lock.json" }}
+          key: v1-e2e-deps-{{ checksum "e2e/package-lock.json" }}
           paths:
             - e2e/node_modules
       - run:
