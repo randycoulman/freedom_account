@@ -20,6 +20,7 @@
     "precommit:lint:client": "cd client && npx eslint --fix",
     "precommit:lint:e2e": "cd e2e && npx eslint --fix",
     "precommit:stylelint": "cd client && npx stylelint --fix",
+    "prepare": "husky install",
     "prod": "docker compose -f docker-compose-prod.yml -p freedom_account_prod",
     "server": "cd server && mix",
     "setup": "npm-run-all setup:asdf --parallel setup:server setup:client",
@@ -36,14 +37,9 @@
     "test:server": "npm run server validate"
   },
   "devDependencies": {
-    "husky": "^1.3.1",
+    "husky": "^7.0.0",
     "lint-staged": "^8.1.5",
     "npm-run-all": "^4.1.5"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "lint-staged": {
     "ignore": [
