@@ -38,42 +38,30 @@
   },
   "devDependencies": {
     "husky": "^7.0.0",
-    "lint-staged": "^8.1.5",
+    "lint-staged": "^11.1.2",
     "npm-run-all": "^4.1.5"
   },
   "lint-staged": {
-    "ignore": [
-      "**/.eslintrc.js",
-      "**/.stylelintrc.js"
+    "client/**/*.{css,scss}": [
+      "npm run -s precommit:stylelint:client",
+      "npm run -s precommit:format:client"
     ],
-    "linters": {
-      "client/**/*.{css,scss}": [
-        "npm run -s precommit:stylelint:client",
-        "npm run -s precommit:format:client",
-        "git add"
-      ],
-      "client/**/*.{gql,html,json,md}": [
-        "npm run -s precommit:format:client",
-        "git add"
-      ],
-      "client/**/*.js": [
-        "npm run -s precommit:lint:client",
-        "npm run -s precommit:format:client",
-        "git add"
-      ],
-      "e2e/**/*.{gql,html,json,md}": [
-        "npm run -s precommit:format:e2e",
-        "git add"
-      ],
-      "e2e/**/*.js": [
-        "npm run -s precommit:lint:e2e",
-        "npm run -s precommit:format:e2e",
-        "git add"
-      ],
-      "server/**/*.{ex,exs}": [
-        "npm run -s precommit:format:server",
-        "git add"
-      ]
-    }
+    "client/**/*.{gql,html,json,md}": [
+      "npm run -s precommit:format:client"
+    ],
+    "client/**/*.js": [
+      "npm run -s precommit:lint:client",
+      "npm run -s precommit:format:client"
+    ],
+    "e2e/**/*.{gql,html,json,md}": [
+      "npm run -s precommit:format:e2e"
+    ],
+    "e2e/**/*.js": [
+      "npm run -s precommit:lint:e2e",
+      "npm run -s precommit:format:e2e"
+    ],
+    "server/**/*.{ex,exs}": [
+      "npm run -s precommit:format:server"
+    ]
   }
 }
