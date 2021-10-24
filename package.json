@@ -43,7 +43,7 @@
   },
   "lint-staged": {
     "client/**/*.{css,scss}": [
-      "npm run -s precommit:stylelint:client",
+      "npm run -s precommit:stylelint",
       "npm run -s precommit:format:client"
     ],
     "client/**/*.{gql,html,json,md}": [
