@@ -71,7 +71,7 @@ jobs:
       - image: cimg/node:<< pipeline.parameters.nodejs >>
     steps:
       - checkout
-      - restore-cache:
+      - restore_cache:
           keys:
             - v1-client-deps-<< pipeline.parameters.nodejs >>-{{ checksum "client/package-lock.json" }}
             - v1-client-deps-<< pipeline.parameters.nodejs >>
@@ -90,7 +90,7 @@ jobs:
       - image: cimg/node:<< pipeline.parameters.nodejs >>
     steps:
       - checkout
-      - restore-cache:
+      - restore_cache:
           keys:
             - v1-e2e-deps-<< pipeline.parameters.nodejs >>-{{ checksum "e2e/package-lock.json" }}
             - v1-e2e-deps-<< pipeline.parameters.nodejs >>
