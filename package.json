@@ -42,8 +42,8 @@
     "npm-run-all": "^4.1.5"
   },
   "lint-staged": {
-    "client/**/*.{css,scss}": [
-      "npm run -s precommit:stylelint:client",
+    "client/**/*.css": [
+      "npm run -s precommit:stylelint",
       "npm run -s precommit:format:client"
     ],
     "client/**/*.{gql,html,json,md}": [

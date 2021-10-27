@@ -51,7 +51,7 @@ module.exports = {
     "guard-for-in": "warn",
     "handle-callback-err": "warn",
     "import/dynamic-import-chunkname": "warn",
-    "import/extensions": ["warn", "never", { scss: "always" }],
+    "import/extensions": ["warn", "never"],
     "import/first": "warn",
     "import/newline-after-import": "warn",
     "import/no-absolute-path": "warn",

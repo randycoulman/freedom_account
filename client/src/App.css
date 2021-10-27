@@ -1,14 +1,18 @@
-/* Temporary overrides until we start putting in our own code and styles */
-/* stylelint-disable color-named, color-no-hex */
+/* stylelint-disable color-named, color-no-hex, keyframes-name-pattern, selector-class-pattern -- Temporary overrides until we start putting in our own styles. */
 
 .App {
   text-align: center;
 }
 
 .App-logo {
-  animation: App-logo-spin infinite 20s linear;
   height: 40vmin;
   pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
 }
 
 .App-header {
@@ -30,6 +34,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
