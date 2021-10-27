@@ -1,4 +1,4 @@
-FROM node:16.9.1-alpine AS client_build
+FROM node:16.12.0-buster AS client_build
 LABEL maintainer="Randy Coulman <randy@randycoulman.com>"
 
 WORKDIR /app

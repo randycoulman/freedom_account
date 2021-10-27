@@ -1,8 +1,15 @@
-version: 2
+version: 2.1
+parameters:
+  elixir:
+    type: string
+    default: 1.12.3
+  nodejs:
+    type: string
+    default: 16.12.0
 jobs:
   test_server:
     docker:
-      - image: cimg/elixir:1.12.3
+      - image: cimg/elixir:<< pipeline.parameters.elixir >>
       - image: postgres:11.2-alpine
     steps:
       - checkout
@@ -61,18 +68,18 @@ jobs:
           working_directory: server
   test_client:
     docker:
-      - image: cimg/node:16.8.0
+      - image: cimg/node:<< pipeline.parameters.nodejs >>
     steps:
       - checkout
-      - restore-cache:
+      - restore_cache:
           keys:
-            - v1-client-deps-{{ checksum "client/package-lock.json" }}
-            - v1-client-deps
+            - v1-client-deps-<< pipeline.parameters.nodejs >>-{{ checksum "client/package-lock.json" }}
+            - v1-client-deps-<< pipeline.parameters.nodejs >>
       - run:
           command: npm ci
           working_directory: client
       - save_cache:
-          key: v1-client-deps-{{ checksum "client/package-lock.json" }}
+          key: v1-client-deps-<< pipeline.parameters.nodejs >>-{{ checksum "client/package-lock.json" }}
           paths:
             - client/node_modules
       - run:
@@ -80,18 +87,18 @@ jobs:
           working_directory: client
   test_e2e:
     docker:
-      - image: cimg/node:16.8.0
+      - image: cimg/node:<< pipeline.parameters.nodejs >>
     steps:
       - checkout
-      - restore-cache:
+      - restore_cache:
           keys:
-            - v1-e2e-deps-{{ checksum "e2e/package-lock.json" }}
-            - v1-e2e-deps
+            - v1-e2e-deps-<< pipeline.parameters.nodejs >>-{{ checksum "e2e/package-lock.json" }}
+            - v1-e2e-deps-<< pipeline.parameters.nodejs >>
       - run:
           command: npm ci
           working_directory: e2e
       - save_cache:
-          key: v1-e2e-deps-{{ checksum "e2e/package-lock.json" }}
+          key: v1-e2e-deps-<< pipeline.parameters.nodejs >>-{{ checksum "e2e/package-lock.json" }}
           paths:
             - e2e/node_modules
       - run:
