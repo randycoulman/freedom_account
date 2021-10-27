@@ -3,26 +3,27 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "react-scripts build",
+    "build": "craco build",
     "eject": "react-scripts eject",
     "format": "npm-run-all --parallel format:*",
-    "format:css": "stylelint --fix \"**/*.{css,scss}\" && prettier --write \"**/*.{css,scss}\"",
+    "format:css": "stylelint --fix \"**/*.css\" && prettier --write \"**/*.css\"",
     "format:js": "eslint --fix . && prettier --write \"**/*.{gql,html,js,json,md}\"",
     "lint": "npm-run-all lint:*",
-    "lint:css": "stylelint \"**/*.{css,scss}\" --max-warnings 0",
-    "lint:format": "prettier --check \"**/*.{css,gql,html,js,json,md,scss}\"",
+    "lint:css": "stylelint \"**/*.css\" --rdd --risd --rd --max-warnings 0",
+    "lint:format": "prettier --check \"**/*.{css,gql,html,js,json,md}\"",
     "lint:js": "eslint . --max-warnings 0 --report-unused-disable-directives",
-    "start": "react-scripts start",
-    "test": "react-scripts test",
+    "start": "craco start",
+    "test": "craco test",
     "test:coverage": "npm run test:once -- --coverage",
     "test:once": "npm test -- --no-watch",
     "validate": "npm-run-all lint test:coverage"
   },
   "dependencies": {
-    "@craco/craco": "^4.1.0",
+    "@craco/craco": "^6.4.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
+    "stylelint-bare-webpack-plugin": "^2.1.0",
     "web-vitals": "^1.1.2"
   },
   "devDependencies": {
@@ -35,13 +36,10 @@
     "eslint-plugin-eslint-comments": "^3.2.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.4.1",
-    "stylelint": "^10.0.1",
-    "stylelint-bare-webpack-plugin": "^1.1.1",
-    "stylelint-config-prettier": "^5.1.0",
-    "stylelint-config-recommended-scss": "^3.3.0",
-    "stylelint-config-standard": "^18.3.0",
-    "stylelint-order": "^3.0.0",
-    "stylelint-scss": "^3.6.0"
+    "stylelint": "^14.0.1",
+    "stylelint-config-prettier": "^9.0.3",
+    "stylelint-config-standard": "^23.0.0",
+    "stylelint-order": "^5.0.0"
   },
   "browserslist": {
     "production": [

@@ -1,7 +1,7 @@
 module.exports = {
   defaultSeverity: "warning",
   extends: ["stylelint-config-standard", "stylelint-config-prettier"],
-  plugins: ["stylelint-order", "stylelint-scss"],
+  plugins: ["stylelint-order"],
   rules: {
     "at-rule-no-vendor-prefix": true,
     "color-named": "never",

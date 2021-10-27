@@ -69,7 +69,7 @@ module.exports = {
     "func-style": ["warn", "declaration", { allowArrowFunctions: true }],
     "guard-for-in": "warn",
     "import/dynamic-import-chunkname": "warn",
-    "import/extensions": ["warn", "never", { scss: "always" }],
+    "import/extensions": ["warn", "never"],
     "import/newline-after-import": "warn",
     "import/no-absolute-path": "warn",
     "import/no-cycle": "warn",
@@ -218,7 +218,7 @@ module.exports = {
     yoda: "warn",
   },
   settings: {
-    //   "import/ignore": ["node_modules", ".(scss|sass|less|css|png|jpg|svg)$"],
+    //   "import/ignore": ["node_modules", ".(css|png|jpg|svg)$"],
     jest: { version: 26 },
   },
 };
