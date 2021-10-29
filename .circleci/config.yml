@@ -71,6 +71,8 @@ jobs:
           name: Run validations
           command: mix validate
           working_directory: server
+      - store_test_results:
+          path: server/_build/test/lib/freedom_account
   test_client:
     docker:
       - image: cimg/node:<< pipeline.parameters.nodejs >>
@@ -90,6 +92,8 @@ jobs:
       - run:
           command: npm run validate
           working_directory: client
+      - store_test_results:
+          path: client/test_results
   test_e2e:
     docker:
       - image: cimg/node:<< pipeline.parameters.nodejs >>
