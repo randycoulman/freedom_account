@@ -5,7 +5,7 @@ parameters:
     default: 1.12.3
   postgres:
     type: string
-    default: 14.0
+    default: "14.0"
   nodejs:
     type: string
     default: 16.12.0
