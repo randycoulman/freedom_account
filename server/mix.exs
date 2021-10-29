@@ -5,7 +5,7 @@ defmodule FreedomAccount.MixProject do
     [
       aliases: aliases(),
       app: :freedom_account,
-      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      compilers: [:gettext] ++ Mix.compilers(),
       default_release: :freedom_account,
       deps: deps(),
       dialyzer: [
@@ -60,13 +60,13 @@ defmodule FreedomAccount.MixProject do
       {:jason, "~> 1.0"},
       {:mix_test_interactive, "~> 1.1", only: :dev, runtime: false},
       {:phoenix_ecto, "~> 4.4"},
-      {:phoenix_live_dashboard, "~> 0.5.1"},
-      {:phoenix, "~> 1.5.12"},
+      {:phoenix_live_dashboard, "~> 0.6"},
+      {:phoenix, "~> 1.6"},
       {:plug_cowboy, "~> 2.5.2"},
       {:plug_static_index_html, "~> 1.0"},
       {:postgrex, ">= 0.0.0"},
-      {:telemetry_metrics, "~> 0.4"},
-      {:telemetry_poller, "~> 0.4"}
+      {:telemetry_metrics, "~> 0.6"},
+      {:telemetry_poller, "~> 0.5"}
     ]
   end
 
