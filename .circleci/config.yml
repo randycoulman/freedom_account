@@ -3,6 +3,9 @@ parameters:
   elixir:
     type: string
     default: 1.12.3
+  postgres:
+    type: string
+    default: "14.0"
   nodejs:
     type: string
     default: 16.12.0
@@ -10,7 +13,9 @@ jobs:
   test_server:
     docker:
       - image: cimg/elixir:<< pipeline.parameters.elixir >>
-      - image: postgres:11.2-alpine
+      - image: postgres:<< pipeline.parameters.postgres >>
+        environment:
+          POSTGRES_PASSWORD: postgres
     steps:
       - checkout
       - restore_cache:
