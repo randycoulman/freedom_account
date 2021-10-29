@@ -14,6 +14,8 @@ jobs:
     docker:
       - image: cimg/elixir:<< pipeline.parameters.elixir >>
       - image: postgres:<< pipeline.parameters.postgres >>
+        environment:
+          POSTGRES_PASSWORD: postgres
     steps:
       - checkout
       - restore_cache:
