@@ -10,9 +10,65 @@ module.exports = {
     "plugin:cypress/recommended",
     "plugin:eslint-comments/recommended",
     "plugin:import/recommended",
+    "plugin:import/typescript",
     "prettier",
   ],
   globals: {},
+  overrides: [
+    // Borrowed from eslint-config-react-app
+    {
+      files: ["**/*.ts"],
+      parser: "@typescript-eslint/parser",
+      parserOptions: {
+        ecmaVersion: "2018",
+        sourceType: "module",
+        warnOnUnsupportedTypeScriptVersion: true,
+      },
+      plugins: ["@typescript-eslint"],
+      rules: {
+        "@typescript-eslint/consistent-type-assertions": "warn",
+        "@typescript-eslint/no-array-constructor": "warn",
+        "@typescript-eslint/no-redeclare": "warn",
+        "@typescript-eslint/no-unused-expressions": [
+          "error",
+          {
+            allowShortCircuit: true,
+            allowTaggedTemplates: true,
+            allowTernary: true,
+          },
+        ],
+        "@typescript-eslint/no-unused-vars": [
+          "warn",
+          {
+            args: "none",
+            ignoreRestSiblings: true,
+          },
+        ],
+        "@typescript-eslint/no-use-before-define": [
+          "warn",
+          {
+            classes: false,
+            functions: false,
+            typedefs: false,
+            variables: false,
+          },
+        ],
+        "@typescript-eslint/no-useless-constructor": "warn",
+        // TypeScript's `noFallthroughCasesInSwitch` option is more robust (#6906)
+        "default-case": "off",
+        "no-array-constructor": "off",
+        // 'tsc' already handles this (https://github.com/typescript-eslint/typescript-eslint/issues/291)
+        "no-dupe-class-members": "off",
+        "no-redeclare": "off",
+        // 'tsc' already handles this (https://github.com/typescript-eslint/typescript-eslint/issues/477)
+        "no-undef": "off",
+        "no-unused-expressions": "off",
+        "no-unused-vars": "off",
+        "no-use-before-define": "off",
+        "no-useless-constructor": "off",
+      },
+    },
+  ],
   parser: "@babel/eslint-parser",
   parserOptions: {
     ecmaVersion: 2021,
@@ -160,7 +216,7 @@ module.exports = {
     "require-await": "warn",
     "sort-keys": ["warn", "asc", { natural: true }],
     "sort-vars": "warn",
-    "spaced-comment": "warn",
+    "spaced-comment": ["warn", "always", { markers: ["/"] }],
     strict: ["warn", "never"],
     "symbol-description": "warn",
     "vars-on-top": "warn",

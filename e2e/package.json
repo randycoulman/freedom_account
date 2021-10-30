@@ -13,6 +13,8 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.14.7",
+    "@typescript-eslint/eslint-plugin": "^5.2.0",
+    "@typescript-eslint/parser": "^5.2.0",
     "cypress": "^8.7.0",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
