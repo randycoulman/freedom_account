@@ -11,8 +11,8 @@ import FundList from "./FundList";
 const App = () => {
   return (
     <Router>
-      <div className={styles.container}>
-        <header>
+      <div>
+        <header className={styles.header}>
           <h1>Freedom Account</h1>
         </header>
         <main>
