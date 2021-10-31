@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 
 import "./App.module.css";
+import FundList from "./FundList";
 
 const App = () => {
   return (
@@ -17,7 +18,7 @@ const App = () => {
         <main>
           <Switch>
             <Route path="/funds">
-              <h2>Funds</h2>
+              <FundList />
             </Route>
           </Switch>
           <Redirect to="/funds" />
