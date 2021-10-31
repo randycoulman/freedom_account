@@ -51,11 +51,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2021,
   },
-  plugins: [
-    "eslint-comments",
-    //   "import-helpers",
-    "ramda",
-  ],
+  plugins: ["eslint-comments", "import-helpers", "ramda"],
   root: true,
   rules: {
     "accessor-pairs": "warn",
@@ -81,31 +77,14 @@ module.exports = {
     "import/no-named-default": "warn",
     "import/no-self-import": "warn",
     "import/no-useless-path-segments": "warn",
-    "import/order": [
+    "import-helpers/order-imports": [
       "warn",
       {
         alphabetize: { order: "asc" },
-        groups: [
-          ["builtin", "external"],
-          "internal",
-          "parent",
-          ["sibling", "index"],
-        ],
-        "newlines-between": "always",
+        groups: ["module", "parent", ["sibling", "index"]],
+        newlinesBetween: "always",
       },
     ],
-    //   "import-helpers/order-imports": [
-    //     "warn",
-    //     {
-    //       alphabetize: { order: "asc" },
-    //       groups: [
-    //         "module",
-    //         "parent",
-    //         ["sibling", "index"],
-    //       ],
-    //       "newlinesBetween": "always",
-    //     },
-    //   ],
     "init-declarations": "warn",
     "lines-between-class-members": [
       "warn",

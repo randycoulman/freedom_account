@@ -80,20 +80,20 @@ module.exports = {
     "cypress",
     "eslint-comments",
     "import",
-    // "import-helpers",
+    "import-helpers",
   ],
   root: true,
   rules: {
     "accessor-pairs": "warn",
     "block-scoped-var": "warn",
     camelcase: "warn",
-    // "chai-friendly/no-unused-expressions": [
-    //   "warn",
-    //   {
-    //     allowShortCircuit: true,
-    //     allowTernary: true,
-    //   },
-    // ],
+    "chai-friendly/no-unused-expressions": [
+      "warn",
+      {
+        allowShortCircuit: true,
+        allowTernary: true,
+      },
+    ],
     complexity: ["warn", 5],
     "consistent-return": "warn",
     "consistent-this": ["warn", "self"],
@@ -117,32 +117,14 @@ module.exports = {
     "import/no-named-default": "warn",
     "import/no-self-import": "warn",
     "import/no-useless-path-segments": "warn",
-    "import/order": [
+    "import-helpers/order-imports": [
       "warn",
       {
         alphabetize: { order: "asc" },
-        groups: [
-          ["builtin", "external"],
-          "internal",
-          "parent",
-          ["sibling", "index"],
-        ],
-        "newlines-between": "always",
+        groups: ["module", "parent", ["sibling", "index"]],
+        newlinesBetween: "always",
       },
     ],
-    // "import-helpers/order-imports": [
-    //   "warn",
-    //   {
-    //     alphabetize: { order: "asc" },
-    //     groups: [
-    //       ["builtin", "external"],
-    //       "internal",
-    //       "parent",
-    //       ["sibling", "index"],
-    //     ],
-    //     "newlines-between": "always",
-    //   },
-    // ],
     "init-declarations": "warn",
     "lines-between-class-members": [
       "warn",

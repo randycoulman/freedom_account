@@ -5,13 +5,13 @@ import {
   Switch,
 } from "react-router-dom";
 
-import "./App.module.css";
+import styles from "./App.module.css";
 import FundList from "./FundList";
 
 const App = () => {
   return (
     <Router>
-      <div className="container">
+      <div className={styles.container}>
         <header>
           <h1>Freedom Account</h1>
         </header>
