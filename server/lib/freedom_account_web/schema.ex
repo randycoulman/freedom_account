@@ -11,7 +11,7 @@ defmodule FreedomAccountWeb.Schema do
 
   query do
     @desc "List all funds"
-    field :funds, list_of(:fund) do
+    field :funds, non_null(list_of(non_null(:fund))) do
       resolve &Resolvers.Fund.list_funds/2
     end
   end

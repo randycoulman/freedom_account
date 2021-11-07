@@ -19,6 +19,19 @@ module.exports = {
   ],
   overrides: [
     {
+      files: ["**/*.ts?(x)"],
+      rules: {
+        "@typescript-eslint/no-use-before-define": [
+          "warn",
+          {
+            functions: false,
+            typedefs: false,
+          },
+        ],
+        "no-use-before-define": "off",
+      },
+    },
+    {
       files: ["**/__tests__/**/*", "**/*.(spec|test).*"],
       rules: {
         "func-names": "off",
