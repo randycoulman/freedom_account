@@ -14,6 +14,7 @@
     "deve": "npm run e2e dev",
     "devs": "cd server && ./scripts/wait-for-it.sh localhost:5432 --strict -t 30 -- mix s",
     "e2e": "cd e2e && npm run",
+    "prebuild": "npm run client generate",
     "precommit:format:server": "cd server && mix format",
     "precommit:format:client": "cd client && npx prettier --write",
     "precommit:format:e2e": "cd e2e && npx prettier --write",

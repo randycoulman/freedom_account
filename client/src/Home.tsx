@@ -1,26 +1,11 @@
 import { useErrorHandler } from "react-error-boundary";
-import { gql, useQuery } from "urql";
+import { gql } from "urql";
 
-import FundList, { Fund } from "./FundList";
-
-type FundsResponse = {
-  funds: Fund[];
-};
-
-const fundsQuery = gql`
-  query Funds {
-    funds {
-      icon
-      id
-      name
-    }
-  }
-`;
+import FundList from "./FundList";
+import { useFundsQuery } from "./graphql";
 
 const Home = () => {
-  const [{ data, error }] = useQuery<FundsResponse>({
-    query: fundsQuery,
-  });
+  const [{ data, error }] = useFundsQuery();
 
   useErrorHandler(error);
 
@@ -31,5 +16,15 @@ const Home = () => {
     </article>
   );
 };
+
+Home.query = gql`
+  query Funds {
+    funds {
+      icon
+      id
+      name
+    }
+  }
+`;
 
 export default Home;
