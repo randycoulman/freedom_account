@@ -1,6 +1,6 @@
 context("fund list", () => {
   beforeEach(() => {
-    cy.visit("/funds");
+    cy.visit("/");
   });
 
   describe("fund list page", () => {

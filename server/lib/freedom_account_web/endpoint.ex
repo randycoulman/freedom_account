@@ -26,8 +26,7 @@ defmodule FreedomAccountWeb.Endpoint do
   plug Plug.Static,
     at: "/",
     from: :freedom_account,
-    gzip: false,
-    only: ~w(index.html favicon.ico static)
+    gzip: false
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

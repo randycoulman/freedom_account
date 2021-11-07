@@ -9,6 +9,7 @@
 !client/craco.config.js
 !client/package-lock.json
 !client/package.json
+!client/tsconfig.json
 
 !server/config
 !server/lib

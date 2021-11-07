@@ -20,12 +20,15 @@
   },
   "dependencies": {
     "@craco/craco": "^6.4.0",
+    "graphql": "^15.7.2",
     "ramda": "^0.27.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-error-boundary": "^3.1.4",
     "react-router-dom": "^5.3.0",
     "react-scripts": "4.0.3",
     "stylelint-bare-webpack-plugin": "^2.1.0",
+    "urql": "^2.0.5",
     "web-vitals": "^1.1.2"
   },
   "devDependencies": {
@@ -73,5 +76,6 @@
   },
   "jest-junit": {
     "outputDirectory": "test_results"
-  }
+  },
+  "proxy": "http://localhost:4000"
 }
