@@ -38,6 +38,13 @@ export type RootQueryType = {
   funds: Array<Fund>;
 };
 
+export type FundPartsFragment = {
+  __typename?: "Fund";
+  icon: string;
+  id: string;
+  name: string;
+};
+
 export type FundsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type FundsQuery = {
@@ -45,14 +52,20 @@ export type FundsQuery = {
   funds: Array<{ __typename?: "Fund"; icon: string; id: string; name: string }>;
 };
 
+export const FundPartsFragmentDoc = gql`
+  fragment FundParts on Fund {
+    icon
+    id
+    name
+  }
+`;
 export const FundsDocument = gql`
   query Funds {
     funds {
-      icon
-      id
-      name
+      ...FundParts
     }
   }
+  ${FundPartsFragmentDoc}
 `;
 
 export function useFundsQuery(
