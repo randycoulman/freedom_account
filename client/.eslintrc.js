@@ -12,7 +12,7 @@ module.exports = {
     "plugin:jest/recommended",
     "plugin:jest/style",
     "plugin:jsx-a11y/recommended",
-    // "plugin:ramda/recommended",
+    "plugin:ramda/recommended",
     "plugin:react/recommended",
     "plugin:react/jsx-runtime",
     "prettier",
@@ -51,11 +51,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2021,
   },
-  plugins: [
-    "eslint-comments",
-    //   "import-helpers",
-    //   "ramda",
-  ],
+  plugins: ["eslint-comments", "import-helpers", "ramda"],
   root: true,
   rules: {
     "accessor-pairs": "warn",
@@ -81,31 +77,14 @@ module.exports = {
     "import/no-named-default": "warn",
     "import/no-self-import": "warn",
     "import/no-useless-path-segments": "warn",
-    "import/order": [
+    "import-helpers/order-imports": [
       "warn",
       {
         alphabetize: { order: "asc" },
-        groups: [
-          ["builtin", "external"],
-          "internal",
-          "parent",
-          ["sibling", "index"],
-        ],
-        "newlines-between": "always",
+        groups: ["module", "parent", ["sibling", "index"]],
+        newlinesBetween: "always",
       },
     ],
-    //   "import-helpers/order-imports": [
-    //     "warn",
-    //     {
-    //       alphabetize: { order: "asc" },
-    //       groups: [
-    //         "module",
-    //         "parent",
-    //         ["sibling", "index"],
-    //       ],
-    //       "newlinesBetween": "always",
-    //     },
-    //   ],
     "init-declarations": "warn",
     "lines-between-class-members": [
       "warn",
@@ -175,11 +154,11 @@ module.exports = {
     "prefer-spread": "warn",
     "prefer-template": "warn",
     radix: "warn",
-    //   "ramda/always-simplification": "warn",
-    //   "ramda/compose-simplification": "warn",
-    //   "ramda/eq-by-simplification": "warn",
-    //   "ramda/pipe-simplification": "warn",
-    //   "ramda/prefer-complement": "warn",
+    "ramda/always-simplification": "warn",
+    "ramda/compose-simplification": "warn",
+    "ramda/eq-by-simplification": "warn",
+    "ramda/pipe-simplification": "warn",
+    "ramda/prefer-complement": "warn",
     "react/button-has-type": "warn",
     "react/default-props-match-prop-types": "warn",
     "react/destructuring-assignment": "warn",

@@ -1,24 +1,21 @@
-import logo from "./logo.svg";
-import "./App.css";
+import { Provider } from "urql";
+
+import styles from "./App.module.css";
+import Root from "./Root";
+import { client } from "./client";
 
 const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img alt="logo" className="App-logo" src={logo} />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Provider value={client}>
+      <div>
+        <header className={styles.header}>
+          <h1>Freedom Account</h1>
+        </header>
+        <main>
+          <Root />
+        </main>
+      </div>
+    </Provider>
   );
 };
 

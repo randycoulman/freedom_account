@@ -49,14 +49,14 @@
     "client/**/*.{gql,html,json,md}": [
       "npm run -s precommit:format:client"
     ],
-    "client/**/*.js": [
+    "client/**/*.{js,ts,tsx}": [
       "npm run -s precommit:lint:client",
       "npm run -s precommit:format:client"
     ],
     "e2e/**/*.{gql,html,json,md}": [
       "npm run -s precommit:format:e2e"
     ],
-    "e2e/**/*.js": [
+    "e2e/**/*.{js,ts}": [
       "npm run -s precommit:lint:e2e",
       "npm run -s precommit:format:e2e"
     ],

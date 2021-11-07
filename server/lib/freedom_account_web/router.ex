@@ -1,12 +1,12 @@
 defmodule FreedomAccountWeb.Router do
   use FreedomAccountWeb, :router
 
-  pipeline :api do
-    plug :accepts, ["json"]
-  end
+  alias FreedomAccountWeb.Schema
 
-  scope "/api", FreedomAccountWeb do
-    pipe_through :api
+  forward "/api", Absinthe.Plug, schema: Schema
+
+  if Mix.env() == :dev do
+    forward "/graphiql", Absinthe.Plug.GraphiQL, schema: Schema
   end
 
   # Enables LiveDashboard only for development
