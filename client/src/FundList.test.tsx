@@ -5,17 +5,17 @@ import FundList, { Fund } from "./FundList";
 const fakeFunds: Fund[] = [
   {
     icon: "🏚️",
-    id: 1,
+    id: "1",
     name: "Home Repairs",
   },
   {
     icon: "🚘",
-    id: 2,
+    id: "2",
     name: "Car Repairs",
   },
   {
     icon: "💸",
-    id: 3,
+    id: "3",
     name: "Property Taxes",
   },
 ];

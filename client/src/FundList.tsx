@@ -2,7 +2,7 @@ import { prop, sortBy } from "ramda";
 
 export type Fund = {
   icon: string;
-  id: number;
+  id: string;
   name: string;
 };
 
