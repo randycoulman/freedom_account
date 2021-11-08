@@ -6,25 +6,18 @@ defmodule FreedomAccountWeb.ConnCase do
   Such tests rely on `Phoenix.ConnTest` and also
   import other functionality to make it easier
   to build common data structures and query the data layer.
-
-  Finally, if the test case interacts with the database,
-  we enable the SQL sandbox, so changes done to the database
-  are reverted at the end of every test. If you are using
-  PostgreSQL, you can even run database tests asynchronously
-  by setting `use FreedomAccountWeb.ConnCase, async: true`, although
-  this option is not recommended for other databases.
   """
 
   use ExUnit.CaseTemplate
 
-  alias Ecto.Adapters.SQL.Sandbox
-
-  using do
+  using opts do
     quote do
+      use FreedomAccount.Case, unquote(opts)
+
       # Import conveniences for testing with connections
-      import Plug.Conn
       import Phoenix.ConnTest
-      import FreedomAccountWeb.ConnCase
+      import Plug.Conn
+      import unquote(__MODULE__)
 
       alias FreedomAccountWeb.Router.Helpers, as: Routes
 
@@ -33,13 +26,7 @@ defmodule FreedomAccountWeb.ConnCase do
     end
   end
 
-  setup tags do
-    :ok = Sandbox.checkout(FreedomAccount.Repo)
-
-    unless tags[:async] do
-      Sandbox.mode(FreedomAccount.Repo, {:shared, self()})
-    end
-
+  setup _context do
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end

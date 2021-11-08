@@ -18,14 +18,16 @@ defmodule FreedomAccount.DataCase do
 
   alias Ecto.Adapters.SQL.Sandbox
 
-  using do
+  using opts do
     quote do
-      alias FreedomAccount.Repo
+      use FreedomAccount.Case, unquote(opts)
 
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import FreedomAccount.DataCase
+      import unquote(__MODULE__)
+
+      alias FreedomAccount.Repo
     end
   end
 

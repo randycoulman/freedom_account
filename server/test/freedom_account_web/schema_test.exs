@@ -16,6 +16,22 @@ defmodule FreedomAccountWeb.SchemaTest do
   """
 
   test "query: account", %{conn: conn} do
+    account = build(:account)
+    funds = build_list(3, :fund)
+
+    FreedomAccountMock
+    |> stub(:my_account, fn -> {:ok, account} end)
+    |> stub(:list_funds, fn ^account -> {:ok, funds} end)
+
+    expected_funds =
+      Enum.map(funds, fn fund ->
+        %{
+          "icon" => fund.icon,
+          "id" => fund.id,
+          "name" => fund.name
+        }
+      end)
+
     response =
       conn
       |> post("/api", %{query: @account_query})
@@ -24,25 +40,9 @@ defmodule FreedomAccountWeb.SchemaTest do
     assert %{
              "data" => %{
                "my_account" => %{
-                 "funds" => [
-                   %{
-                     "icon" => "🏚️",
-                     "id" => "1",
-                     "name" => "Home Repairs"
-                   },
-                   %{
-                     "icon" => "🚘",
-                     "id" => "2",
-                     "name" => "Car Repairs"
-                   },
-                   %{
-                     "icon" => "💸",
-                     "id" => "3",
-                     "name" => "Property Taxes"
-                   }
-                 ],
-                 "id" => "100",
-                 "name" => "Initial Account"
+                 "funds" => expected_funds,
+                 "id" => account.id,
+                 "name" => account.name
                }
              }
            } == response

@@ -5,35 +5,17 @@ defmodule FreedomAccountWeb.Resolvers.Fund do
 
   use FreedomAccountWeb.Resolvers.Base
 
-  alias FreedomAccountWeb.Resolvers.Account
-
-  @type account :: Account.account()
+  @type account :: FreedomAccount.account()
   @type fund :: %{
           icon: String.t(),
           id: String.t(),
           name: String.t()
         }
 
-  @fake_funds [
-    %{
-      icon: "🏚️",
-      id: "1",
-      name: "Home Repairs"
-    },
-    %{
-      icon: "🚘",
-      id: "2",
-      name: "Car Repairs"
-    },
-    %{
-      icon: "💸",
-      id: "3",
-      name: "Property Taxes"
-    }
-  ]
-
   @spec list_funds(account :: account, args :: %{}, resolution :: resolution) :: result([fund])
-  def list_funds(_account, _args, _resolution) do
-    {:ok, @fake_funds}
+  def list_funds(account, _args, _resolution) do
+    with {:ok, funds} <- FreedomAccount.list_funds(account) do
+      {:ok, funds}
+    end
   end
 end

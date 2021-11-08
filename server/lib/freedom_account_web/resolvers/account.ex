@@ -5,18 +5,12 @@ defmodule FreedomAccountWeb.Resolvers.Account do
 
   use FreedomAccountWeb.Resolvers.Base
 
-  @type account :: %{
-          id: String.t(),
-          name: String.t()
-        }
-
-  @fake_account %{
-    id: "100",
-    name: "Initial Account"
-  }
+  @type account :: FreedomAccount.account()
 
   @spec my_account(args :: %{}, resolution :: resolution) :: result(account)
   def my_account(_args, _resolution) do
-    {:ok, @fake_account}
+    with {:ok, account} <- FreedomAccount.my_account() do
+      {:ok, account}
+    end
   end
 end
