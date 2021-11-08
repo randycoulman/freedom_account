@@ -2,6 +2,9 @@ defmodule FreedomAccount.Factory do
   # use ExMachina.Ecto, repo: FreedomAccount.Repo
   use ExMachina
 
+  alias FreedomAccount.Accounts.Account
+  alias FreedomAccount.Funds.Fund
+
   @emoji [
     "🎨",
     "⚡️",
@@ -71,18 +74,11 @@ defmodule FreedomAccount.Factory do
   ]
 
   def account_factory do
-    %{
-      id: Faker.UUID.v4(),
-      name: Faker.Company.name()
-    }
+    Account.new(Faker.Company.name())
   end
 
   def fund_factory do
-    %{
-      icon: random_emoji(),
-      id: Faker.UUID.v4(),
-      name: Faker.Commerce.product_name()
-    }
+    Fund.new(random_emoji(), Faker.Commerce.product_name())
   end
 
   defp random_emoji do
