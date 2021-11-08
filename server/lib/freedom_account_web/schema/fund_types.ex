@@ -7,8 +7,11 @@ defmodule FreedomAccountWeb.Schema.FundTypes do
 
   @desc "A savings fund"
   object :fund do
-    field :icon, non_null(:string), description: "An icon for the fund (in the form of an emoji)"
-    field :id, non_null(:id), description: "The fund's unique identifier"
-    field :name, non_null(:string), description: "The name of the fund"
+    @desc "An icon for the fund (in the form of an emoji)"
+    field :icon, non_null(:string)
+    @desc "The fund's unique identifier"
+    field :id, non_null(:id)
+    @desc "The name of the fund"
+    field :name, non_null(:string)
   end
 end

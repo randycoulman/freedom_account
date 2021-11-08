@@ -1,41 +1,49 @@
 defmodule FreedomAccountWeb.SchemaTest do
   use FreedomAccountWeb.ConnCase, async: true
 
-  @funds_query """
-  query listFunds {
-    funds {
-      icon
+  @account_query """
+  query account {
+    my_account {
+      funds {
+        icon
+        id
+        name
+      }
       id
       name
     }
   }
   """
 
-  test "query: funds", %{conn: conn} do
+  test "query: account", %{conn: conn} do
     response =
       conn
-      |> post("/api", %{query: @funds_query})
+      |> post("/api", %{query: @account_query})
       |> json_response(200)
 
     assert %{
              "data" => %{
-               "funds" => [
-                 %{
-                   "icon" => "🏚️",
-                   "id" => "1",
-                   "name" => "Home Repairs"
-                 },
-                 %{
-                   "icon" => "🚘",
-                   "id" => "2",
-                   "name" => "Car Repairs"
-                 },
-                 %{
-                   "icon" => "💸",
-                   "id" => "3",
-                   "name" => "Property Taxes"
-                 }
-               ]
+               "my_account" => %{
+                 "funds" => [
+                   %{
+                     "icon" => "🏚️",
+                     "id" => "1",
+                     "name" => "Home Repairs"
+                   },
+                   %{
+                     "icon" => "🚘",
+                     "id" => "2",
+                     "name" => "Car Repairs"
+                   },
+                   %{
+                     "icon" => "💸",
+                     "id" => "3",
+                     "name" => "Property Taxes"
+                   }
+                 ],
+                 "id" => "100",
+                 "name" => "Initial Account"
+               }
              }
            } == response
   end

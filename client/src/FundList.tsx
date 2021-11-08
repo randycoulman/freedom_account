@@ -20,12 +20,16 @@ export const FundList = ({ funds }: Props) => {
   );
 };
 
-export const FundListQuery = gql`
-  query Funds {
-    funds {
-      ...FundParts
+FundList.fragments = {
+  funds: gql`
+    fragment AccountFunds on Account {
+      funds {
+        ...FundParts
+      }
+      id
+      name
     }
-  }
 
-  ${Fund.fragments.fund}
-`;
+    ${Fund.fragments.fund}
+  `,
+};

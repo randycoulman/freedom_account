@@ -1,22 +1,36 @@
 import { useErrorHandler } from "react-error-boundary";
+import { gql } from "urql";
 
 import { FundList } from "./FundList";
-import { useFundsQuery } from "./graphql";
+import { useMyAccountQuery } from "./graphql";
 
 export const Account = () => {
-  const [{ data, error }] = useFundsQuery();
+  const [{ data, error }] = useMyAccountQuery();
 
   useErrorHandler(error);
+
+  const { funds, name } = data!.myAccount;
 
   return (
     <>
       <section>
-        <h2>My Freedom Account</h2>
+        <h2>{name}</h2>
       </section>
       <article>
         <h3>Funds</h3>
-        <FundList funds={data!.funds} />
+        <FundList funds={funds} />
       </article>
     </>
   );
 };
+
+export const AccountQuery = gql`
+  query MyAccount {
+    myAccount {
+      ...AccountFunds
+      name
+    }
+  }
+
+  ${FundList.fragments.funds}
+`;

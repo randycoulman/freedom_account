@@ -5,14 +5,14 @@ defmodule FreedomAccountWeb.Schema do
 
   use Absinthe.Schema
 
-  import_types FreedomAccountWeb.Schema.FundTypes
+  import_types FreedomAccountWeb.Schema.AccountTypes
 
   alias FreedomAccountWeb.Resolvers
 
   query do
-    @desc "List all funds"
-    field :funds, non_null(list_of(non_null(:fund))) do
-      resolve &Resolvers.Fund.list_funds/2
+    @desc "My freedom account"
+    field :my_account, non_null(:account) do
+      resolve &Resolvers.Account.my_account/2
     end
   end
 end
