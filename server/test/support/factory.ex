@@ -1,4 +1,10 @@
 defmodule FreedomAccount.Factory do
+  @moduledoc """
+  Factories for building test data.
+  """
+
+  # credo:disable-for-this-file Credo.Check.Readability.Specs
+
   use ExMachina.Ecto, repo: FreedomAccount.Repo
 
   alias FreedomAccount.Accounts.Account
@@ -80,7 +86,11 @@ defmodule FreedomAccount.Factory do
   end
 
   def fund_factory do
-    Fund.new(random_emoji(), Faker.Commerce.product_name())
+    %Fund{
+      icon: random_emoji(),
+      id: Ecto.UUID.generate(),
+      name: Faker.Commerce.product_name()
+    }
   end
 
   defp random_emoji do

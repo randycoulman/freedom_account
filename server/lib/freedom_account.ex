@@ -14,7 +14,7 @@ defmodule FreedomAccount do
   @type account :: Accounts.account()
   @type fund :: Funds.fund()
 
-  @callback list_funds(account) :: {:ok, [fund]} | {:error, term}
+  @callback list_funds(account) :: [fund]
   @callback my_account :: {:ok, account} | {:error, :not_found}
 end
 

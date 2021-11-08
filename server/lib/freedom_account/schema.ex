@@ -5,6 +5,12 @@ defmodule FreedomAccount.Schema do
   See `Ecto.Schema`.
   """
 
+  alias Ecto.Schema
+
+  @type belongs_to(t) :: Schema.belongs_to(t)
+  @type has_many(t) :: Schema.has_many(t)
+  @type id :: Ecto.UUID.t()
+
   defmacro __using__(_opts) do
     quote do
       use Ecto.Schema

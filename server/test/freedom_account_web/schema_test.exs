@@ -21,7 +21,7 @@ defmodule FreedomAccountWeb.SchemaTest do
 
     FreedomAccountMock
     |> stub(:my_account, fn -> {:ok, account} end)
-    |> stub(:list_funds, fn ^account -> {:ok, funds} end)
+    |> stub(:list_funds, fn ^account -> funds end)
 
     expected_funds =
       Enum.map(funds, fn fund ->

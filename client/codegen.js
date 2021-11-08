@@ -1,4 +1,7 @@
 module.exports = {
+  config: {
+    gqlImport: "urql#gql",
+  },
   documents: "src/**/*.tsx",
   generates: {
     "src/graphql.ts": {
@@ -7,9 +10,6 @@ module.exports = {
   },
   hooks: {
     afterOneFileWrite: ["eslint --fix", "prettier --write"],
-  },
-  options: {
-    gqlImport: "urql#gql",
   },
   overwrite: true,
   schema: "http://localhost:4000/api",

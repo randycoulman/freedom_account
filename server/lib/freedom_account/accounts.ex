@@ -1,4 +1,8 @@
 defmodule FreedomAccount.Accounts do
+  @moduledoc """
+  Context for working with Freedom Accounts.
+  """
+
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Repo
 

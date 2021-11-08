@@ -1,17 +1,18 @@
 defmodule FreedomAccount.Funds do
+  @moduledoc """
+  Context for working with funds in a Freedom Account.
+  """
+
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.Repo
 
   @type fund :: Fund.t()
 
-  @fake_funds [
-    Fund.new("🏚️", "Home Repairs"),
-    Fund.new("🚘", "Car Repairs"),
-    Fund.new("💸", "Property Taxes")
-  ]
-
-  @spec list_funds(account :: Account.t()) :: {:ok, [fund]} | {:error, term}
-  def list_funds(_account) do
-    {:ok, @fake_funds}
+  @spec list_funds(account :: Account.t()) :: [fund]
+  def list_funds(account) do
+    account
+    |> Ecto.assoc(:funds)
+    |> Repo.all()
   end
 end
