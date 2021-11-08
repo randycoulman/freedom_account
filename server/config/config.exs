@@ -10,6 +10,10 @@ import Config
 config :freedom_account,
   ecto_repos: [FreedomAccount.Repo]
 
+config :freedom_account, FreedomAccount.Repo,
+  migration_primary_key: [type: :binary_id],
+  migration_timestamps: [type: :utc_datetime]
+
 # Configures the endpoint
 config :freedom_account, FreedomAccountWeb.Endpoint,
   url: [host: "localhost"],

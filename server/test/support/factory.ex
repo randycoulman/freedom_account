@@ -1,6 +1,5 @@
 defmodule FreedomAccount.Factory do
-  # use ExMachina.Ecto, repo: FreedomAccount.Repo
-  use ExMachina
+  use ExMachina.Ecto, repo: FreedomAccount.Repo
 
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Funds.Fund
@@ -74,7 +73,10 @@ defmodule FreedomAccount.Factory do
   ]
 
   def account_factory do
-    Account.new(Faker.Company.name())
+    %Account{
+      id: Ecto.UUID.generate(),
+      name: Faker.Company.name()
+    }
   end
 
   def fund_factory do

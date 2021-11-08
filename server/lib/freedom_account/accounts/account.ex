@@ -5,20 +5,17 @@ defmodule FreedomAccount.Accounts.Account do
   @type name :: String.t()
   @type t :: %__MODULE__{
           id: id,
-          name: name
+          inserted_at: DateTime.t() | nil,
+          name: name,
+          updated_at: DateTime.t() | nil
         }
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
-  embedded_schema do
+  schema "accounts" do
     field :name, :string
-  end
 
-  def new(name \\ "My Freedom Account", id \\ Ecto.UUID.generate()) do
-    %__MODULE__{
-      id: id,
-      name: name
-    }
+    timestamps()
   end
 end
