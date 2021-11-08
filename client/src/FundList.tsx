@@ -1,27 +1,35 @@
 import { prop, sortBy } from "ramda";
+import { gql } from "urql";
 
-export type Fund = {
-  icon: string;
-  id: string;
-  name: string;
-};
+import { Fund } from "./Fund";
+import { Fund as FundType } from "./graphql";
 
 type Props = {
-  funds: Fund[];
+  funds: FundType[];
 };
 
-const FundList = ({ funds }: Props) => {
+export const FundList = ({ funds }: Props) => {
   const sortedFunds = sortBy(prop("name"), funds);
 
   return (
     <ul>
       {sortedFunds.map((fund) => (
-        <li key={fund.id}>
-          {fund.icon} {fund.name}
-        </li>
+        <Fund fund={fund} key={fund.id} />
       ))}
     </ul>
   );
 };
 
-export default FundList;
+FundList.fragments = {
+  funds: gql`
+    fragment AccountFunds on Account {
+      funds {
+        ...FundParts
+      }
+      id
+      name
+    }
+
+    ${Fund.fragments.fund}
+  `,
+};

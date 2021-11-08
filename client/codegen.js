@@ -1,16 +1,11 @@
 module.exports = {
+  config: {
+    gqlImport: "urql#gql",
+  },
   documents: "src/**/*.tsx",
   generates: {
     "src/graphql.ts": {
-      plugins: [
-        "typescript",
-        "typescript-operations",
-        {
-          "typescript-urql": {
-            gqlImport: "urql#gql",
-          },
-        },
-      ],
+      plugins: ["typescript", "typescript-operations", "typescript-urql"],
     },
   },
   hooks: {

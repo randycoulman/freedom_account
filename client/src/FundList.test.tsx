@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 
-import FundList, { Fund } from "./FundList";
+import { FundList } from "./FundList";
+import { Fund } from "./graphql";
 
 const fakeFunds: Fund[] = [
   {

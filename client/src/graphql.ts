@@ -21,6 +21,17 @@ export type Scalars = {
   Float: number;
 };
 
+/** A Freedom Account */
+export type Account = {
+  __typename?: "Account";
+  /** The individual funds in the account */
+  funds: Array<Fund>;
+  /** The account's unique ID */
+  id: Scalars["ID"];
+  /** The name of the account */
+  name: Scalars["String"];
+};
+
 /** A savings fund */
 export type Fund = {
   __typename?: "Fund";
@@ -34,29 +45,73 @@ export type Fund = {
 
 export type RootQueryType = {
   __typename?: "RootQueryType";
-  /** List all funds */
-  funds: Array<Fund>;
+  /** My freedom account */
+  myAccount: Account;
 };
 
-export type FundsQueryVariables = Exact<{ [key: string]: never }>;
+export type MyAccountQueryVariables = Exact<{ [key: string]: never }>;
 
-export type FundsQuery = {
+export type MyAccountQuery = {
   __typename?: "RootQueryType";
+  myAccount: {
+    __typename?: "Account";
+    name: string;
+    id: string;
+    funds: Array<{
+      __typename?: "Fund";
+      icon: string;
+      id: string;
+      name: string;
+    }>;
+  };
+};
+
+export type FundPartsFragment = {
+  __typename?: "Fund";
+  icon: string;
+  id: string;
+  name: string;
+};
+
+export type AccountFundsFragment = {
+  __typename?: "Account";
+  id: string;
+  name: string;
   funds: Array<{ __typename?: "Fund"; icon: string; id: string; name: string }>;
 };
 
-export const FundsDocument = gql`
-  query Funds {
+export const FundPartsFragmentDoc = gql`
+  fragment FundParts on Fund {
+    icon
+    id
+    name
+  }
+`;
+export const AccountFundsFragmentDoc = gql`
+  fragment AccountFunds on Account {
     funds {
-      icon
-      id
+      ...FundParts
+    }
+    id
+    name
+  }
+  ${FundPartsFragmentDoc}
+`;
+export const MyAccountDocument = gql`
+  query MyAccount {
+    myAccount {
+      ...AccountFunds
       name
     }
   }
+  ${AccountFundsFragmentDoc}
 `;
 
-export function useFundsQuery(
-  options: Omit<Urql.UseQueryArgs<FundsQueryVariables>, "query"> = {}
+export function useMyAccountQuery(
+  options: Omit<Urql.UseQueryArgs<MyAccountQueryVariables>, "query"> = {}
 ) {
-  return Urql.useQuery<FundsQuery>({ query: FundsDocument, ...options });
+  return Urql.useQuery<MyAccountQuery>({
+    query: MyAccountDocument,
+    ...options,
+  });
 }

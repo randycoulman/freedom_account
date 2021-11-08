@@ -1,41 +1,49 @@
 defmodule FreedomAccountWeb.SchemaTest do
   use FreedomAccountWeb.ConnCase, async: true
 
-  @funds_query """
-  query listFunds {
-    funds {
-      icon
+  @account_query """
+  query account {
+    my_account {
+      funds {
+        icon
+        id
+        name
+      }
       id
       name
     }
   }
   """
 
-  test "query: funds", %{conn: conn} do
+  test "query: account", %{conn: conn} do
+    account = build(:account)
+    funds = build_list(3, :fund)
+
+    FreedomAccountMock
+    |> stub(:my_account, fn -> {:ok, account} end)
+    |> stub(:list_funds, fn ^account -> funds end)
+
+    expected_funds =
+      Enum.map(funds, fn fund ->
+        %{
+          "icon" => fund.icon,
+          "id" => fund.id,
+          "name" => fund.name
+        }
+      end)
+
     response =
       conn
-      |> post("/api", %{query: @funds_query})
+      |> post("/api", %{query: @account_query})
       |> json_response(200)
 
     assert %{
              "data" => %{
-               "funds" => [
-                 %{
-                   "icon" => "🏚️",
-                   "id" => "1",
-                   "name" => "Home Repairs"
-                 },
-                 %{
-                   "icon" => "🚘",
-                   "id" => "2",
-                   "name" => "Car Repairs"
-                 },
-                 %{
-                   "icon" => "💸",
-                   "id" => "3",
-                   "name" => "Property Taxes"
-                 }
-               ]
+               "my_account" => %{
+                 "funds" => expected_funds,
+                 "id" => account.id,
+                 "name" => account.name
+               }
              }
            } == response
   end

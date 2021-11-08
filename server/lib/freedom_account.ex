@@ -1,9 +1,34 @@
 defmodule FreedomAccount do
   @moduledoc """
-  FreedomAccount keeps the contexts that define your domain
-  and business logic.
-
-  Contexts are also responsible for managing your data, regardless
-  if it comes from the database, an external API or others.
+  FreedomAccount domain and business logic.
   """
+
+  use Knigge,
+    config_key: :freedom_account,
+    default: __MODULE__.Impl,
+    otp_app: :freedom_account
+
+  alias FreedomAccount.Accounts
+  alias FreedomAccount.Funds
+
+  @type account :: Accounts.account()
+  @type fund :: Funds.fund()
+
+  @callback list_funds(account) :: [fund]
+  @callback my_account :: {:ok, account} | {:error, :not_found}
+end
+
+defmodule FreedomAccount.Impl do
+  @moduledoc false
+
+  alias FreedomAccount.Accounts
+  alias FreedomAccount.Funds
+
+  @behaviour FreedomAccount
+
+  @impl FreedomAccount
+  defdelegate list_funds(account), to: Funds
+
+  @impl FreedomAccount
+  defdelegate my_account, to: Accounts, as: :only_account
 end
