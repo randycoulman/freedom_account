@@ -36,10 +36,10 @@ module.exports = {
       rules: {
         "func-names": "off",
         "jest/consistent-test-it": "warn",
-        //       "jest/expect-expect": [
-        //         "warn",
-        //         { assertFunctionNames: ["expect", "td.verify"] },
-        //       ],
+        "jest/expect-expect": [
+          "warn",
+          { assertFunctionNames: ["expect", "td.verify"] },
+        ],
         "jest/lowercase-name": ["warn", { ignore: ["describe"] }],
         "jest/no-focused-tests": "warn",
         "jest/no-large-snapshots": "warn",

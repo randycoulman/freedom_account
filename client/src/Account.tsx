@@ -1,6 +1,7 @@
 import { useErrorHandler } from "react-error-boundary";
 import { gql } from "urql";
 
+import { AccountHeader } from "./AccountHeader";
 import { FundList } from "./FundList";
 import { useMyAccountQuery } from "./graphql";
 
@@ -9,16 +10,16 @@ export const Account = () => {
 
   useErrorHandler(error);
 
-  const { funds, name } = data!.myAccount;
+  const account = data!.myAccount;
 
   return (
     <>
       <section>
-        <h2>{name}</h2>
+        <AccountHeader account={account} />
       </section>
       <article>
         <h3>Funds</h3>
-        <FundList funds={funds} />
+        <FundList funds={account.funds} />
       </article>
     </>
   );
