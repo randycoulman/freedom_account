@@ -10,9 +10,12 @@ defmodule FreedomAccount.Schema do
   @type belongs_to(t) :: Schema.belongs_to(t)
   @type has_many(t) :: Schema.has_many(t)
   @type id :: Ecto.UUID.t()
+  @type t :: Schema.t()
 
   defmacro __using__(_opts) do
     quote do
+      import Ecto.Changeset
+
       use Ecto.Schema
 
       import unquote(__MODULE__)

@@ -32,6 +32,14 @@ export type Account = {
   name: Scalars["String"];
 };
 
+/** Account settings input */
+export type AccountInput = {
+  /** The account's unique ID */
+  id: Scalars["ID"];
+  /** The name of the account */
+  name: Scalars["String"];
+};
+
 /** A savings fund */
 export type Fund = {
   __typename?: "Fund";
@@ -41,6 +49,16 @@ export type Fund = {
   id: Scalars["ID"];
   /** The name of the fund */
   name: Scalars["String"];
+};
+
+export type RootMutationType = {
+  __typename?: "RootMutationType";
+  /** Update account settings */
+  updateAccount: Account;
+};
+
+export type RootMutationTypeUpdateAccountArgs = {
+  input: AccountInput;
 };
 
 export type RootQueryType = {
