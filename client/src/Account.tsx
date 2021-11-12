@@ -3,19 +3,24 @@ import { gql } from "urql";
 
 import { AccountHeader } from "./AccountHeader";
 import { FundList } from "./FundList";
-import { useMyAccountQuery } from "./graphql";
+import { useMyAccountQuery, useUpdateAccountMutation } from "./graphql";
 
 export const Account = () => {
-  const [{ data, error }] = useMyAccountQuery();
+  const [queryResult] = useMyAccountQuery();
+  const [mutationResult, updateAccount] = useUpdateAccountMutation();
 
-  useErrorHandler(error);
+  useErrorHandler(queryResult.error);
+  useErrorHandler(mutationResult.error);
 
-  const account = data!.myAccount;
+  const account = queryResult.data!.myAccount;
 
   return (
     <>
       <section>
-        <AccountHeader account={account} />
+        <AccountHeader
+          account={account}
+          onUpdate={(input) => updateAccount({ input })}
+        />
       </section>
       <article>
         <h3>Funds</h3>
@@ -28,10 +33,21 @@ export const Account = () => {
 export const AccountQuery = gql`
   query MyAccount {
     myAccount {
+      ...AccountFields
       ...AccountFunds
-      name
     }
   }
 
+  ${AccountHeader.fragments.account}
   ${FundList.fragments.funds}
+`;
+
+export const UpdateAccountMutation = gql`
+  mutation UpdateAccount($input: AccountInput!) {
+    updateAccount(input: $input) {
+      ...AccountFields
+    }
+  }
+
+  ${AccountHeader.fragments.account}
 `;

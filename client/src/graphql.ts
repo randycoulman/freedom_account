@@ -73,8 +73,8 @@ export type MyAccountQuery = {
   __typename?: "RootQueryType";
   myAccount: {
     __typename?: "Account";
-    name: string;
     id: string;
+    name: string;
     funds: Array<{
       __typename?: "Fund";
       icon: string;
@@ -84,7 +84,22 @@ export type MyAccountQuery = {
   };
 };
 
-export type FundPartsFragment = {
+export type UpdateAccountMutationVariables = Exact<{
+  input: AccountInput;
+}>;
+
+export type UpdateAccountMutation = {
+  __typename?: "RootMutationType";
+  updateAccount: { __typename?: "Account"; id: string; name: string };
+};
+
+export type AccountFieldsFragment = {
+  __typename?: "Account";
+  id: string;
+  name: string;
+};
+
+export type FundFieldsFragment = {
   __typename?: "Fund";
   icon: string;
   id: string;
@@ -98,8 +113,14 @@ export type AccountFundsFragment = {
   funds: Array<{ __typename?: "Fund"; icon: string; id: string; name: string }>;
 };
 
-export const FundPartsFragmentDoc = gql`
-  fragment FundParts on Fund {
+export const AccountFieldsFragmentDoc = gql`
+  fragment AccountFields on Account {
+    id
+    name
+  }
+`;
+export const FundFieldsFragmentDoc = gql`
+  fragment FundFields on Fund {
     icon
     id
     name
@@ -108,20 +129,21 @@ export const FundPartsFragmentDoc = gql`
 export const AccountFundsFragmentDoc = gql`
   fragment AccountFunds on Account {
     funds {
-      ...FundParts
+      ...FundFields
     }
     id
     name
   }
-  ${FundPartsFragmentDoc}
+  ${FundFieldsFragmentDoc}
 `;
 export const MyAccountDocument = gql`
   query MyAccount {
     myAccount {
+      ...AccountFields
       ...AccountFunds
-      name
     }
   }
+  ${AccountFieldsFragmentDoc}
   ${AccountFundsFragmentDoc}
 `;
 
@@ -132,4 +154,19 @@ export function useMyAccountQuery(
     query: MyAccountDocument,
     ...options,
   });
+}
+export const UpdateAccountDocument = gql`
+  mutation UpdateAccount($input: AccountInput!) {
+    updateAccount(input: $input) {
+      ...AccountFields
+    }
+  }
+  ${AccountFieldsFragmentDoc}
+`;
+
+export function useUpdateAccountMutation() {
+  return Urql.useMutation<
+    UpdateAccountMutation,
+    UpdateAccountMutationVariables
+  >(UpdateAccountDocument);
 }

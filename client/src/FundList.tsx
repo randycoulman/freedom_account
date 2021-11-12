@@ -24,7 +24,7 @@ FundList.fragments = {
   funds: gql`
     fragment AccountFunds on Account {
       funds {
-        ...FundParts
+        ...FundFields
       }
       id
       name

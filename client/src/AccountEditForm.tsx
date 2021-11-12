@@ -1,20 +1,23 @@
-import { assoc, pick } from "ramda";
+import { pick } from "ramda";
 import { ChangeEvent, FormEvent, useState } from "react";
 
-import { Account } from "./graphql";
+import { Account, AccountInput } from "./graphql";
 
 type Props = {
   account: Account;
   onCancel: () => void;
-  onUpdate: (_values: Partial<Account>) => void;
+  onUpdate: (_values: AccountInput) => void;
 };
 
 export const AccountEditForm = ({ account, onCancel, onUpdate }: Props) => {
-  const [values, updateValues] = useState<Partial<Account>>(
+  const [values, updateValues] = useState<AccountInput>(
     pick(["id", "name"], account)
   );
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) =>
-    updateValues(assoc(e.currentTarget.name, e.currentTarget.value));
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.currentTarget;
+
+    updateValues((state) => ({ ...state, [name]: value }));
+  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();

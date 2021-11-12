@@ -1,16 +1,17 @@
 import { useState } from "react";
+import { gql } from "urql";
 
 import { AccountEditForm } from "./AccountEditForm";
-import { Account } from "./graphql";
+import { Account, AccountInput } from "./graphql";
 
 export type Props = {
   account: Account;
-  onUpdate: (_values: Partial<Account>) => void;
+  onUpdate: (_values: AccountInput) => void;
 };
 
 export const AccountHeader = ({ account, onUpdate }: Props) => {
   const [isEditing, beEditing] = useState(false);
-  const handleUpdate = (values: Partial<Account>) => {
+  const handleUpdate = (values: AccountInput) => {
     onUpdate(values);
     beEditing(false);
   };
@@ -32,7 +33,16 @@ export const AccountHeader = ({ account, onUpdate }: Props) => {
 };
 
 AccountHeader.defaultProps = {
-  onUpdate: (_values: Partial<Account>) => {
+  onUpdate: (_values: AccountInput) => {
     /* noop */
   },
+};
+
+AccountHeader.fragments = {
+  account: gql`
+    fragment AccountFields on Account {
+      id
+      name
+    }
+  `,
 };
