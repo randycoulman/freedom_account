@@ -24,6 +24,8 @@ export type Scalars = {
 /** A Freedom Account */
 export type Account = {
   __typename?: "Account";
+  /** How many regular deposits will be made per year? */
+  depositsPerYear: Scalars["Int"];
   /** The individual funds in the account */
   funds: Array<Fund>;
   /** The account's unique ID */
@@ -34,6 +36,8 @@ export type Account = {
 
 /** Account settings input */
 export type AccountInput = {
+  /** How many regular deposits will be made per year? */
+  depositsPerYear: Scalars["Int"];
   /** The account's unique ID */
   id: Scalars["ID"];
   /** The name of the account */
@@ -73,6 +77,7 @@ export type MyAccountQuery = {
   __typename?: "RootQueryType";
   myAccount: {
     __typename?: "Account";
+    depositsPerYear: number;
     id: string;
     name: string;
     funds: Array<{
@@ -90,11 +95,17 @@ export type UpdateAccountMutationVariables = Exact<{
 
 export type UpdateAccountMutation = {
   __typename?: "RootMutationType";
-  updateAccount: { __typename?: "Account"; id: string; name: string };
+  updateAccount: {
+    __typename?: "Account";
+    depositsPerYear: number;
+    id: string;
+    name: string;
+  };
 };
 
 export type AccountFieldsFragment = {
   __typename?: "Account";
+  depositsPerYear: number;
   id: string;
   name: string;
 };
@@ -115,6 +126,7 @@ export type AccountFundsFragment = {
 
 export const AccountFieldsFragmentDoc = gql`
   fragment AccountFields on Account {
+    depositsPerYear
     id
     name
   }

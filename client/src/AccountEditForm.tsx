@@ -11,12 +11,13 @@ type Props = {
 
 export const AccountEditForm = ({ account, onCancel, onUpdate }: Props) => {
   const [values, updateValues] = useState<AccountInput>(
-    pick(["id", "name"], account)
+    pick(["depositsPerYear", "id", "name"], account)
   );
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.currentTarget;
+    const { name, type, value } = e.currentTarget;
+    const parsedValue = type === "number" ? parseInt(value, 10) : value;
 
-    updateValues((state) => ({ ...state, [name]: value }));
+    updateValues((state) => ({ ...state, [name]: parsedValue }));
   };
 
   const handleSubmit = (e: FormEvent) => {
@@ -34,6 +35,15 @@ export const AccountEditForm = ({ account, onCancel, onUpdate }: Props) => {
         onChange={handleChange}
         type="text"
         value={values.name}
+      />
+      <label htmlFor="depositsPerYear">Deposits / year</label>
+      <input
+        id="depositsPerYear"
+        min={1}
+        name="depositsPerYear"
+        onChange={handleChange}
+        type="number"
+        value={values.depositsPerYear}
       />
       <button type="submit">Update</button>
       <button onClick={onCancel} type="button">

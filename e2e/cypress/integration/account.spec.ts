@@ -12,10 +12,13 @@ context("account settings", () => {
       cy.findByRole("heading", { name: "Initial Account" });
       cy.findByRole("button", { name: /edit/i }).click();
       cy.findByLabelText(/name/i).clear().type("My New Account");
+      cy.findByLabelText(/deposits/i)
+        .clear()
+        .type("18");
       cy.findByRole("button", { name: /update/i }).click();
 
       cy.findByRole("heading", { name: "My New Account" }).should("exist");
-      cy.findByRole("button", { name: /edit/i }).should("not.exist");
+      cy.findByRole("button", { name: /update/i }).should("not.exist");
     });
   });
 });

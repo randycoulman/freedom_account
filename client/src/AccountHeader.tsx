@@ -46,6 +46,7 @@ AccountHeader.defaultProps = {
 AccountHeader.fragments = {
   account: gql`
     fragment AccountFields on Account {
+      depositsPerYear
       id
       name
     }

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { ByRoleOptions, Matcher, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as td from "testdouble";
 
@@ -6,13 +6,28 @@ import { AccountHeader, Props } from "./AccountHeader";
 import { Account } from "./graphql";
 
 const account: Account = {
+  depositsPerYear: 21,
   funds: [],
   id: "1",
   name: "Initial",
 };
 
 type OnUpdate = Props["onUpdate"];
+type TextMatch = ByRoleOptions["name"];
+
+const { isA } = td.matchers;
 const neverCalled = { ignoreExtraArgs: true, times: 0 };
+
+const clickButton = (name: TextMatch) => {
+  userEvent.click(screen.getByRole("button", { name }));
+};
+
+const fillInput = (name: Matcher, value: string) => {
+  const input = screen.getByLabelText(name);
+
+  userEvent.clear(input);
+  userEvent.type(input, value);
+};
 
 const renderHeader = (props: Partial<Props> = {}) =>
   render(<AccountHeader account={account} {...props} />);
@@ -26,7 +41,7 @@ it("shows a heading by default", () => {
 it("allows editing", () => {
   renderHeader();
 
-  userEvent.click(screen.getByRole("button", { name: /edit/i }));
+  clickButton(/edit/i);
 
   expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
 });
@@ -36,17 +51,16 @@ it("updates the account and returns to heading on submit", () => {
 
   renderHeader({ onUpdate });
 
-  userEvent.click(screen.getByRole("button", { name: /edit/i }));
-
-  const input = screen.getByLabelText(/name/i);
-
-  userEvent.clear(input);
-  userEvent.type(input, "New Name");
-  userEvent.click(screen.getByRole("button", { name: /update/i }));
+  clickButton(/edit/i);
+  fillInput(/name/i, "New Name");
+  fillInput(/deposits/i, "13");
+  clickButton(/update/i);
 
   expect(screen.queryByLabelText(/name/i)).not.toBeInTheDocument();
 
-  td.verify(onUpdate({ id: account.id, name: "New Name" }));
+  td.verify(
+    onUpdate({ depositsPerYear: 13, id: account.id, name: "New Name" })
+  );
 });
 
 it("returns to heading after cancelling", () => {
@@ -54,10 +68,10 @@ it("returns to heading after cancelling", () => {
 
   renderHeader({ onUpdate });
 
-  userEvent.click(screen.getByRole("button", { name: /edit/i }));
-  userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+  clickButton(/edit/i);
+  clickButton(/cancel/i);
 
   expect(screen.queryByLabelText(/name/i)).not.toBeInTheDocument();
 
-  td.verify(onUpdate({}), neverCalled);
+  td.verify(onUpdate(isA(Object)), neverCalled);
 });

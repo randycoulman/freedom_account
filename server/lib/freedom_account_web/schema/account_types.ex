@@ -15,6 +15,8 @@ defmodule FreedomAccountWeb.Schema.AccountTypes do
     field :id, non_null(:id)
     @desc "The name of the account"
     field :name, non_null(:string)
+    @desc "How many regular deposits will be made per year?"
+    field :deposits_per_year, non_null(:integer)
 
     @desc "The individual funds in the account"
     field :funds, non_null(list_of(non_null(:fund))) do
@@ -28,5 +30,7 @@ defmodule FreedomAccountWeb.Schema.AccountTypes do
     field :id, non_null(:id)
     @desc "The name of the account"
     field :name, non_null(:string)
+    @desc "How many regular deposits will be made per year?"
+    field :deposits_per_year, non_null(:integer)
   end
 end
