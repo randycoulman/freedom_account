@@ -16,18 +16,23 @@ export const AccountHeader = ({ account, onUpdate }: Props) => {
     beEditing(false);
   };
 
-  return isEditing ? (
-    <AccountEditForm
-      account={account}
-      onCancel={() => beEditing(false)}
-      onUpdate={handleUpdate}
-    />
-  ) : (
+  return (
     <>
       <h2>{account.name}</h2>
-      <button onClick={() => beEditing(true)} type="button">
-        Edit
-      </button>
+      {isEditing ? (
+        <>
+          <h3>Account Settings</h3>
+          <AccountEditForm
+            account={account}
+            onCancel={() => beEditing(false)}
+            onUpdate={handleUpdate}
+          />
+        </>
+      ) : (
+        <button onClick={() => beEditing(true)} type="button">
+          Edit
+        </button>
+      )}
     </>
   );
 };

@@ -44,9 +44,7 @@ it("updates the account and returns to heading on submit", () => {
   userEvent.type(input, "New Name");
   userEvent.click(screen.getByRole("button", { name: /update/i }));
 
-  expect(
-    screen.getByRole("heading", { name: account.name })
-  ).toBeInTheDocument();
+  expect(screen.queryByLabelText(/name/i)).not.toBeInTheDocument();
 
   td.verify(onUpdate({ id: account.id, name: "New Name" }));
 });
@@ -59,9 +57,7 @@ it("returns to heading after cancelling", () => {
   userEvent.click(screen.getByRole("button", { name: /edit/i }));
   userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-  expect(
-    screen.getByRole("heading", { name: account.name })
-  ).toBeInTheDocument();
+  expect(screen.queryByLabelText(/name/i)).not.toBeInTheDocument();
 
   td.verify(onUpdate({}), neverCalled);
 });
