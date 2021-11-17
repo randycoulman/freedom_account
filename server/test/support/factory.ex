@@ -80,6 +80,7 @@ defmodule FreedomAccount.Factory do
 
   def account_factory do
     %Account{
+      deposits_per_year: Faker.random_between(12, 26),
       id: Ecto.UUID.generate(),
       name: Faker.Company.name()
     }

@@ -1,4 +1,4 @@
-import React from "react";
+import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { Provider } from "urql";
@@ -17,7 +17,7 @@ export const App = () => {
       </header>
       <main>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <React.Suspense fallback={<Loader />}>
+          <Suspense fallback={<Loader />}>
             <BrowserRouter>
               <Switch>
                 <Route path="/">
@@ -25,7 +25,7 @@ export const App = () => {
                 </Route>
               </Switch>
             </BrowserRouter>
-          </React.Suspense>
+          </Suspense>
         </ErrorBoundary>
       </main>
     </Provider>

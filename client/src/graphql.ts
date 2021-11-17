@@ -24,8 +24,20 @@ export type Scalars = {
 /** A Freedom Account */
 export type Account = {
   __typename?: "Account";
+  /** How many regular deposits will be made per year? */
+  depositsPerYear: Scalars["Int"];
   /** The individual funds in the account */
   funds: Array<Fund>;
+  /** The account's unique ID */
+  id: Scalars["ID"];
+  /** The name of the account */
+  name: Scalars["String"];
+};
+
+/** Account settings input */
+export type AccountInput = {
+  /** How many regular deposits will be made per year? */
+  depositsPerYear: Scalars["Int"];
   /** The account's unique ID */
   id: Scalars["ID"];
   /** The name of the account */
@@ -43,6 +55,16 @@ export type Fund = {
   name: Scalars["String"];
 };
 
+export type RootMutationType = {
+  __typename?: "RootMutationType";
+  /** Update account settings */
+  updateAccount: Account;
+};
+
+export type RootMutationTypeUpdateAccountArgs = {
+  input: AccountInput;
+};
+
 export type RootQueryType = {
   __typename?: "RootQueryType";
   /** My freedom account */
@@ -55,8 +77,9 @@ export type MyAccountQuery = {
   __typename?: "RootQueryType";
   myAccount: {
     __typename?: "Account";
-    name: string;
+    depositsPerYear: number;
     id: string;
+    name: string;
     funds: Array<{
       __typename?: "Fund";
       icon: string;
@@ -66,7 +89,28 @@ export type MyAccountQuery = {
   };
 };
 
-export type FundPartsFragment = {
+export type UpdateAccountMutationVariables = Exact<{
+  input: AccountInput;
+}>;
+
+export type UpdateAccountMutation = {
+  __typename?: "RootMutationType";
+  updateAccount: {
+    __typename?: "Account";
+    depositsPerYear: number;
+    id: string;
+    name: string;
+  };
+};
+
+export type AccountFieldsFragment = {
+  __typename?: "Account";
+  depositsPerYear: number;
+  id: string;
+  name: string;
+};
+
+export type FundFieldsFragment = {
   __typename?: "Fund";
   icon: string;
   id: string;
@@ -80,8 +124,15 @@ export type AccountFundsFragment = {
   funds: Array<{ __typename?: "Fund"; icon: string; id: string; name: string }>;
 };
 
-export const FundPartsFragmentDoc = gql`
-  fragment FundParts on Fund {
+export const AccountFieldsFragmentDoc = gql`
+  fragment AccountFields on Account {
+    depositsPerYear
+    id
+    name
+  }
+`;
+export const FundFieldsFragmentDoc = gql`
+  fragment FundFields on Fund {
     icon
     id
     name
@@ -90,20 +141,21 @@ export const FundPartsFragmentDoc = gql`
 export const AccountFundsFragmentDoc = gql`
   fragment AccountFunds on Account {
     funds {
-      ...FundParts
+      ...FundFields
     }
     id
     name
   }
-  ${FundPartsFragmentDoc}
+  ${FundFieldsFragmentDoc}
 `;
 export const MyAccountDocument = gql`
   query MyAccount {
     myAccount {
+      ...AccountFields
       ...AccountFunds
-      name
     }
   }
+  ${AccountFieldsFragmentDoc}
   ${AccountFundsFragmentDoc}
 `;
 
@@ -114,4 +166,19 @@ export function useMyAccountQuery(
     query: MyAccountDocument,
     ...options,
   });
+}
+export const UpdateAccountDocument = gql`
+  mutation UpdateAccount($input: AccountInput!) {
+    updateAccount(input: $input) {
+      ...AccountFields
+    }
+  }
+  ${AccountFieldsFragmentDoc}
+`;
+
+export function useUpdateAccountMutation() {
+  return Urql.useMutation<
+    UpdateAccountMutation,
+    UpdateAccountMutationVariables
+  >(UpdateAccountDocument);
 }

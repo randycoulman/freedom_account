@@ -1,24 +1,30 @@
 import { useErrorHandler } from "react-error-boundary";
 import { gql } from "urql";
 
+import { AccountHeader } from "./AccountHeader";
 import { FundList } from "./FundList";
-import { useMyAccountQuery } from "./graphql";
+import { useMyAccountQuery, useUpdateAccountMutation } from "./graphql";
 
 export const Account = () => {
-  const [{ data, error }] = useMyAccountQuery();
+  const [queryResult] = useMyAccountQuery();
+  const [mutationResult, updateAccount] = useUpdateAccountMutation();
 
-  useErrorHandler(error);
+  useErrorHandler(queryResult.error);
+  useErrorHandler(mutationResult.error);
 
-  const { funds, name } = data!.myAccount;
+  const account = queryResult.data!.myAccount;
 
   return (
     <>
       <section>
-        <h2>{name}</h2>
+        <AccountHeader
+          account={account}
+          onUpdate={(input) => updateAccount({ input })}
+        />
       </section>
       <article>
         <h3>Funds</h3>
-        <FundList funds={funds} />
+        <FundList funds={account.funds} />
       </article>
     </>
   );
@@ -27,10 +33,21 @@ export const Account = () => {
 export const AccountQuery = gql`
   query MyAccount {
     myAccount {
+      ...AccountFields
       ...AccountFunds
-      name
     }
   }
 
+  ${AccountHeader.fragments.account}
   ${FundList.fragments.funds}
+`;
+
+export const UpdateAccountMutation = gql`
+  mutation UpdateAccount($input: AccountInput!) {
+    updateAccount(input: $input) {
+      ...AccountFields
+    }
+  }
+
+  ${AccountHeader.fragments.account}
 `;

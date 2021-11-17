@@ -14,7 +14,7 @@ export const Fund = ({ fund }: Props) => (
 
 Fund.fragments = {
   fund: gql`
-    fragment FundParts on Fund {
+    fragment FundFields on Fund {
       icon
       id
       name
