@@ -3,7 +3,11 @@ import { gql } from "urql";
 
 import { AccountHeader } from "./AccountHeader";
 import { FundList } from "./FundList";
-import { useMyAccountQuery, useUpdateAccountMutation } from "./graphql";
+import {
+  AccountInput,
+  useMyAccountQuery,
+  useUpdateAccountMutation,
+} from "./graphql";
 
 export const Account = () => {
   const [queryResult] = useMyAccountQuery();
@@ -19,7 +23,7 @@ export const Account = () => {
       <section>
         <AccountHeader
           account={account}
-          onUpdate={(input) => updateAccount({ input })}
+          onUpdate={(input: AccountInput) => updateAccount({ input })}
         />
       </section>
       <article>

@@ -32,7 +32,7 @@ module.exports = {
       },
     },
     {
-      files: ["**/__tests__/**/*", "**/*.(spec|test).*"],
+      files: ["**/__tests__/**/*", "**/*.{spec,test}.*"],
       rules: {
         "func-names": "off",
         "jest/consistent-test-it": "warn",

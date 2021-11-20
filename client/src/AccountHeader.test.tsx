@@ -1,4 +1,10 @@
-import { ByRoleOptions, Matcher, render, screen } from "@testing-library/react";
+import {
+  ByRoleOptions,
+  Matcher,
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as td from "testdouble";
 
@@ -32,46 +38,48 @@ const fillInput = (name: Matcher, value: string) => {
 const renderHeader = (props: Partial<Props> = {}) =>
   render(<AccountHeader account={account} {...props} />);
 
-it("shows a heading by default", () => {
-  renderHeader();
+describe("AccountHeader", () => {
+  it("shows a heading by default", () => {
+    renderHeader();
 
-  expect(screen.getByRole("heading")).toHaveTextContent(account.name);
-});
+    expect(screen.getByRole("heading")).toHaveTextContent(account.name);
+  });
 
-it("allows editing", () => {
-  renderHeader();
+  it("allows editing", () => {
+    renderHeader();
 
-  clickButton(/edit/i);
+    clickButton(/edit/i);
 
-  expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
-});
+    expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
+  });
 
-it("updates the account and returns to heading on submit", () => {
-  const onUpdate = td.func<OnUpdate>();
+  it("updates the account and returns to heading on submit", async () => {
+    const onUpdate = td.func<OnUpdate>();
 
-  renderHeader({ onUpdate });
+    renderHeader({ onUpdate });
 
-  clickButton(/edit/i);
-  fillInput(/name/i, "New Name");
-  fillInput(/deposits/i, "13");
-  clickButton(/update/i);
+    clickButton(/edit/i);
+    fillInput(/name/i, "New Name");
+    fillInput(/deposits/i, "13");
+    clickButton(/update/i);
 
-  expect(screen.queryByLabelText(/name/i)).not.toBeInTheDocument();
+    await waitForElementToBeRemoved(screen.queryByLabelText(/name/i));
 
-  td.verify(
-    onUpdate({ depositsPerYear: 13, id: account.id, name: "New Name" })
-  );
-});
+    td.verify(
+      onUpdate({ depositsPerYear: 13, id: account.id, name: "New Name" })
+    );
+  });
 
-it("returns to heading after cancelling", () => {
-  const onUpdate = td.func<OnUpdate>();
+  it("returns to heading after cancelling", () => {
+    const onUpdate = td.func<OnUpdate>();
 
-  renderHeader({ onUpdate });
+    renderHeader({ onUpdate });
 
-  clickButton(/edit/i);
-  clickButton(/cancel/i);
+    clickButton(/edit/i);
+    clickButton(/cancel/i);
 
-  expect(screen.queryByLabelText(/name/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/name/i)).not.toBeInTheDocument();
 
-  td.verify(onUpdate(isA(Object)), neverCalled);
+    td.verify(onUpdate(isA(Object)), neverCalled);
+  });
 });
