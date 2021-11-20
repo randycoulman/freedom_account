@@ -1,7 +1,8 @@
-import { ErrorMessage, Field, Form, Formik } from "formik";
+import { Form, Formik } from "formik";
 import { pick } from "ramda";
 import * as yup from "yup";
 
+import { Input } from "./Input";
 import { Account, AccountInput } from "./graphql";
 
 type Props = {
@@ -32,12 +33,8 @@ export const AccountEditForm = ({ account, onCancel, onUpdate }: Props) => {
     >
       {({ isSubmitting }) => (
         <Form>
-          <label htmlFor="name">Name</label>
-          <Field id="name" name="name" type="text" />
-          <ErrorMessage name="name" />
-          <label htmlFor="depositsPerYear">Deposits / year</label>
-          <Field id="depositsPerYear" name="depositsPerYear" type="number" />
-          <ErrorMessage name="depositsPerYear" />
+          <Input label="Name" name="name" type="text" />
+          <Input label="Deposits / year" name="depositsPerYear" type="number" />
           <button disabled={isSubmitting} type="submit">
             Update
           </button>
