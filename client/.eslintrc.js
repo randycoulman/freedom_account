@@ -32,13 +32,13 @@ module.exports = {
       },
     },
     {
-      files: ["**/__tests__/**/*", "**/*.(spec|test).*"],
+      files: ["**/__tests__/**/*", "**/*.{spec,test}.*"],
       rules: {
         "func-names": "off",
         "jest/consistent-test-it": "warn",
         "jest/expect-expect": [
           "warn",
-          { assertFunctionNames: ["expect", "td.verify"] },
+          { assertFunctionNames: ["expect", "expectError", "td.verify"] },
         ],
         "jest/lowercase-name": ["warn", { ignore: ["describe"] }],
         "jest/no-focused-tests": "warn",

@@ -24,6 +24,7 @@
   "dependencies": {
     "@craco/craco": "^6.4.0",
     "@urql/devtools": "^2.0.3",
+    "formik": "^2.2.9",
     "graphql": "^15.7.2",
     "ramda": "^0.27.1",
     "react": "^17.0.2",
@@ -33,7 +34,8 @@
     "react-scripts": "4.0.3",
     "stylelint-bare-webpack-plugin": "^2.1.0",
     "urql": "^2.0.5",
-    "web-vitals": "^1.1.2"
+    "web-vitals": "^1.1.2",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.14.7",
@@ -44,6 +46,7 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
+    "@types/faker": "^5.5.9",
     "@types/jest": "^26.0.24",
     "@types/node": "^12.20.36",
     "@types/ramda": "^0.27.46",
@@ -56,6 +59,8 @@
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-import-helpers": "^1.1.0",
     "eslint-plugin-ramda": "^2.5.1",
+    "faker": "^5.5.3",
+    "fishery": "^2.1.0",
     "jest-junit": "^13.0.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.4.1",

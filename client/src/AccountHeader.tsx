@@ -6,10 +6,17 @@ import { Account, AccountInput } from "./graphql";
 
 export type Props = {
   account: Account;
-  onUpdate: (_values: AccountInput) => void;
+  onUpdate?: (_values: AccountInput) => void;
 };
 
-export const AccountHeader = ({ account, onUpdate }: Props) => {
+const defaultOnUpdate = (_values: AccountInput) => {
+  /* noop */
+};
+
+export const AccountHeader = ({
+  account,
+  onUpdate = defaultOnUpdate,
+}: Props) => {
   const [isEditing, beEditing] = useState(false);
   const handleUpdate = (values: AccountInput) => {
     onUpdate(values);
@@ -35,12 +42,6 @@ export const AccountHeader = ({ account, onUpdate }: Props) => {
       )}
     </>
   );
-};
-
-AccountHeader.defaultProps = {
-  onUpdate: (_values: AccountInput) => {
-    /* noop */
-  },
 };
 
 AccountHeader.fragments = {
