@@ -9,14 +9,9 @@ import userEvent from "@testing-library/user-event";
 import * as td from "testdouble";
 
 import { AccountHeader, Props } from "./AccountHeader";
-import { Account } from "./graphql";
+import { accountFactory } from "./testSupport/factories";
 
-const account: Account = {
-  depositsPerYear: 21,
-  funds: [],
-  id: "1",
-  name: "Initial",
-};
+const account = accountFactory.build();
 
 type OnUpdate = Props["onUpdate"];
 type TextMatch = ByRoleOptions["name"];
