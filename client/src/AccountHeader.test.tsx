@@ -1,34 +1,20 @@
 import {
-  ByRoleOptions,
-  Matcher,
   render,
   screen,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import * as td from "testdouble";
 
 import { AccountHeader, Props } from "./AccountHeader";
 import { accountFactory } from "./testSupport/factories";
+import { clickButton, fillInput } from "./testSupport/formHelpers";
 import { neverCalled } from "./testSupport/neverCalled";
 
 const account = accountFactory.build();
 
 type OnUpdate = Props["onUpdate"];
-type TextMatch = ByRoleOptions["name"];
 
 const { isA } = td.matchers;
-
-const clickButton = (name: TextMatch) => {
-  userEvent.click(screen.getByRole("button", { name }));
-};
-
-const fillInput = (name: Matcher, value: string) => {
-  const input = screen.getByLabelText(name);
-
-  userEvent.clear(input);
-  userEvent.type(input, value);
-};
 
 const renderHeader = (props: Partial<Props> = {}) =>
   render(<AccountHeader account={account} {...props} />);
