@@ -10,6 +10,7 @@ import * as td from "testdouble";
 
 import { AccountHeader, Props } from "./AccountHeader";
 import { accountFactory } from "./testSupport/factories";
+import { neverCalled } from "./testSupport/neverCalled";
 
 const account = accountFactory.build();
 
@@ -17,7 +18,6 @@ type OnUpdate = Props["onUpdate"];
 type TextMatch = ByRoleOptions["name"];
 
 const { isA } = td.matchers;
-const neverCalled = { ignoreExtraArgs: true, times: 0 };
 
 const clickButton = (name: TextMatch) => {
   userEvent.click(screen.getByRole("button", { name }));
