@@ -12,7 +12,7 @@ import { neverCalled } from "./testSupport/neverCalled";
 
 const account = accountFactory.build();
 
-type OnUpdate = Props["onUpdate"];
+type OnUpdate = NonNullable<Props["onUpdate"]>;
 
 const { isA } = td.matchers;
 

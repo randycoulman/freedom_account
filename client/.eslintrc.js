@@ -38,7 +38,7 @@ module.exports = {
         "jest/consistent-test-it": "warn",
         "jest/expect-expect": [
           "warn",
-          { assertFunctionNames: ["expect", "td.verify"] },
+          { assertFunctionNames: ["expect", "expectError", "td.verify"] },
         ],
         "jest/lowercase-name": ["warn", { ignore: ["describe"] }],
         "jest/no-focused-tests": "warn",

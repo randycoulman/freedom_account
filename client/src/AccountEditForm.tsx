@@ -5,10 +5,18 @@ import * as yup from "yup";
 import { Input } from "./Input";
 import { Account, AccountInput } from "./graphql";
 
-type Props = {
+export type Props = {
   account: Account;
-  onCancel: () => void;
-  onUpdate: (_values: AccountInput) => void;
+  onCancel?: () => void;
+  onUpdate?: (_values: AccountInput) => void;
+};
+
+const defaultOnUpdate = (_values: AccountInput) => {
+  /* noop */
+};
+
+const defaultOnCancel = () => {
+  /* noop */
 };
 
 const validationSchema = yup.object({
@@ -16,7 +24,11 @@ const validationSchema = yup.object({
   name: yup.string().max(50).required().trim(),
 });
 
-export const AccountEditForm = ({ account, onCancel, onUpdate }: Props) => {
+export const AccountEditForm = ({
+  account,
+  onCancel = defaultOnCancel,
+  onUpdate = defaultOnUpdate,
+}: Props) => {
   const initialValues: AccountInput = pick(
     ["depositsPerYear", "id", "name"],
     account
@@ -38,7 +50,7 @@ export const AccountEditForm = ({ account, onCancel, onUpdate }: Props) => {
           <button disabled={isSubmitting} type="submit">
             Update
           </button>
-          <button onClick={onCancel} type="button">
+          <button onClick={(_e) => onCancel()} type="button">
             Cancel
           </button>
         </Form>
