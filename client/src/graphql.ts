@@ -59,6 +59,8 @@ export type RootMutationType = {
   __typename?: "RootMutationType";
   /** Log into the application */
   login: User;
+  /** Log out of the application */
+  logout: Scalars["Boolean"];
   /** Update account settings */
   updateAccount: Account;
 };

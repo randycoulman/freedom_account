@@ -60,6 +60,39 @@ defmodule FreedomAccountWeb.SchemaTest do
     end
   end
 
+  describe "mutation: logout" do
+    @logout_mutation """
+    mutation Logout {
+      logout
+    }
+    """
+
+    test "logs the user out and removes them from the session", %{conn: conn} do
+      user = build(:user)
+
+      result_conn =
+        conn
+        |> sign_in(user)
+        |> post("/api", %{query: @logout_mutation})
+
+      response = json_response(result_conn, 200)
+
+      assert %{"data" => %{"logout" => true}} == response
+      assert Authentication.current_user(result_conn) == nil
+    end
+
+    test "does nothing if no user is logged in", %{conn: conn} do
+      result_conn =
+        conn
+        |> post("/api", %{query: @logout_mutation})
+
+      response = json_response(result_conn, 200)
+
+      assert %{"data" => %{"logout" => true}} == response
+      assert Authentication.current_user(result_conn) == nil
+    end
+  end
+
   describe "query: myAccount" do
     @account_query """
     query MyAccount {

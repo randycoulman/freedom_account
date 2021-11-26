@@ -9,7 +9,7 @@ defmodule FreedomAccountWeb.Schema do
   import_types FreedomAccountWeb.Schema.UserTypes
 
   alias FreedomAccountWeb.Resolvers.Account
-  alias FreedomAccountWeb.Resolvers.User
+  alias FreedomAccountWeb.Resolvers.Authentication
 
   query do
     @desc "My freedom account"
@@ -22,9 +22,16 @@ defmodule FreedomAccountWeb.Schema do
     @desc "Log into the application"
     field :login, non_null(:user) do
       arg :username, non_null(:string)
-      resolve &User.login/2
+      resolve &Authentication.login/2
 
-      middleware &User.login_middleware/2
+      middleware &Authentication.login_middleware/2
+    end
+
+    @desc "Log out of the application"
+    field :logout, non_null(:boolean) do
+      resolve &Authentication.logout/2
+
+      middleware &Authentication.logout_middleware/2
     end
 
     @desc "Update account settings"

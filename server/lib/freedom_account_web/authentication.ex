@@ -9,14 +9,18 @@ defmodule FreedomAccountWeb.Authentication do
   alias FreedomAccount.Authentication.User
   alias Plug.Conn
 
+  @type context :: map()
+
+  @context_key :authentication
+
   @spec absinthe_before_send(conn :: Conn.t(), blueprint :: Blueprint.t()) :: Conn.t()
   def absinthe_before_send(conn, %Blueprint{} = blueprint) do
     context = blueprint.execution.context
 
-    if user = context[:sign_in] do
-      sign_in(conn, user)
-    else
-      conn
+    case Map.fetch(context, @context_key) do
+      {:ok, nil} -> sign_out(conn)
+      {:ok, user} -> sign_in(conn, user)
+      :error -> conn
     end
   end
 
@@ -25,9 +29,24 @@ defmodule FreedomAccountWeb.Authentication do
     __MODULE__.Plug.current_resource(conn)
   end
 
+  @spec note_signed_in(context :: context, user :: FreedomAccount.user()) :: context
+  def note_signed_in(context, user) do
+    Map.put(context, @context_key, user)
+  end
+
+  @spec note_signed_out(context :: context) :: context
+  def note_signed_out(context) do
+    Map.put(context, @context_key, nil)
+  end
+
   @spec sign_in(conn :: Conn.t(), user :: FreedomAccount.user()) :: Conn.t()
   def sign_in(conn, user) do
     __MODULE__.Plug.sign_in(conn, user)
+  end
+
+  @spec sign_out(conn :: Conn.t()) :: Conn.t()
+  def sign_out(conn) do
+    __MODULE__.Plug.sign_out(conn)
   end
 
   @impl Guardian

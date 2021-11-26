@@ -10,6 +10,8 @@ defmodule FreedomAccountWeb.ConnCase do
 
   use ExUnit.CaseTemplate
 
+  alias FreedomAccountWeb.Authentication
+
   using opts do
     quote do
       use FreedomAccount.Case, unquote(opts)
@@ -28,5 +30,9 @@ defmodule FreedomAccountWeb.ConnCase do
 
   setup _context do
     {:ok, conn: Phoenix.ConnTest.build_conn()}
+  end
+
+  def sign_in(conn, user) do
+    Authentication.sign_in(conn, user)
   end
 end
