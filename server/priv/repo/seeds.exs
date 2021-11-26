@@ -4,6 +4,8 @@
 #
 
 defmodule Seeds do
+  import Ecto.Query
+
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Repo
@@ -11,22 +13,28 @@ defmodule Seeds do
 
   def call do
     ensure_user_exists("randy")
-    ensure_user_exists("cypress")
-    ensure_account_exists()
+    # ensure_user_exists("cypress")
   end
 
   defp ensure_user_exists(name) do
-    case Repo.get_by(User, name: name) do
-      nil -> Repo.insert!(%User{name: name})
-      user -> user
-    end
+    user =
+      case Repo.get_by(User, name: name) do
+        nil -> Repo.insert!(%User{name: name})
+        user -> user
+      end
+
+    ensure_account_exists(user)
+    user
   end
 
-  defp ensure_account_exists do
+  defp ensure_account_exists(user) do
     account =
-      case Repo.one(Account) do
+      Account
+      |> where(user_id: ^user.id)
+      |> Repo.one()
+      |> case do
         nil ->
-          Repo.insert!(%Account{name: "Initial Account"})
+          Repo.insert!(%Account{name: "Initial Account", user: user})
 
         account ->
           account

@@ -7,6 +7,7 @@ defmodule FreedomAccount.Case do
 
   using do
     quote do
+      import Assertions
       import FreedomAccount.Factory
       import Hammox
       import unquote(__MODULE__)

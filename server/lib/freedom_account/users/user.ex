@@ -5,6 +5,8 @@ defmodule FreedomAccount.Users.User do
 
   use FreedomAccount.Schema
 
+  alias FreedomAccount.Schema
+
   @type id :: Schema.id()
   @type name :: String.t()
   @type t :: %__MODULE__{
