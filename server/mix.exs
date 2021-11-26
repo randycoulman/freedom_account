@@ -62,6 +62,7 @@ defmodule FreedomAccount.MixProject do
       {:excoveralls, "~> 0.14.2", only: :test},
       {:faker, "~> 0.16.0", only: :test},
       {:gettext, "~> 0.18.2"},
+      {:guardian, "~> 2.2"},
       {:hammox, "~> 0.5.0", only: :test},
       {:jason, "~> 1.0"},
       {:junit_formatter, "~> 3.3", only: [:test]},

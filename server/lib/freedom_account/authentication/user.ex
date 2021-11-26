@@ -1,4 +1,4 @@
-defmodule FreedomAccount.Users.User do
+defmodule FreedomAccount.Authentication.User do
   @moduledoc """
   A user.
   """

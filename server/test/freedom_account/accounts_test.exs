@@ -67,7 +67,7 @@ defmodule FreedomAccount.AccountsTest do
     end
 
     test "returns not found error if no matching account" do
-      params = %{id: Ecto.UUID.generate(), name: "NEW NAME"}
+      params = %{id: generate_id(), name: "NEW NAME"}
 
       assert {:error, :not_found} = Accounts.update_account(params)
     end

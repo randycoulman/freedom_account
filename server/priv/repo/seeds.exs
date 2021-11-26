@@ -7,9 +7,9 @@ defmodule Seeds do
   import Ecto.Query
 
   alias FreedomAccount.Accounts.Account
+  alias FreedomAccount.Authentication.User
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Repo
-  alias FreedomAccount.Users.User
 
   def call do
     ensure_user_exists("randy")

@@ -9,9 +9,9 @@ defmodule FreedomAccount.Accounts.Account do
 
   alias Ecto.Changeset
   alias Ecto.Queryable
+  alias FreedomAccount.Authentication.User
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Schema
-  alias FreedomAccount.Users.User
 
   @type deposit_count :: non_neg_integer()
   @type id :: Schema.id()

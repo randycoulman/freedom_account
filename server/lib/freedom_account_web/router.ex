@@ -1,12 +1,25 @@
 defmodule FreedomAccountWeb.Router do
   use FreedomAccountWeb, :router
 
+  alias FreedomAccountWeb.Authentication
   alias FreedomAccountWeb.Schema
 
-  forward "/api", Absinthe.Plug, schema: Schema
+  pipeline :api do
+    plug :fetch_session
+  end
 
-  if Mix.env() == :dev do
-    forward "/graphiql", Absinthe.Plug.GraphiQL, schema: Schema
+  scope "/" do
+    pipe_through :api
+
+    forward "/api", Absinthe.Plug,
+      before_send: {Authentication, :absinthe_before_send},
+      schema: Schema
+
+    if Mix.env() == :dev do
+      forward "/graphiql", Absinthe.Plug.GraphiQL,
+        before_send: {Authentication, :absinthe_before_send},
+        schema: Schema
+    end
   end
 
   # Enables LiveDashboard only for development

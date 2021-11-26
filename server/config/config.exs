@@ -14,6 +14,10 @@ config :freedom_account, FreedomAccount.Repo,
   migration_primary_key: [type: :binary_id],
   migration_timestamps: [type: :utc_datetime]
 
+config :freedom_account, FreedomAccountWeb.Authentication,
+  issuer: "freedom_account",
+  secret_key: "Q6F60egwfiDH3fr1CcYR4qf9a3LQVy4RFOdyfb0pqWYrZDyznxQduKiiKLnGOWm5"
+
 # Configures the endpoint
 config :freedom_account, FreedomAccountWeb.Endpoint,
   url: [host: "localhost"],

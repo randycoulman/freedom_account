@@ -1,91 +1,154 @@
 defmodule FreedomAccountWeb.SchemaTest do
   use FreedomAccountWeb.ConnCase, async: true
 
-  @account_query """
-  query MyAccount {
-    myAccount {
-      depositsPerYear
-      funds {
-        icon
+  alias FreedomAccountWeb.Authentication
+
+  describe "mutation: login" do
+    @login_mutation """
+    mutation Login($username: String!) {
+      login(username: $username) {
+        id
+      }
+    }
+    """
+
+    test "logs the user in and remembers them in the session", %{conn: conn} do
+      user = build(:user)
+      username = user.name
+
+      FreedomAccountMock
+      |> expect(:authenticate, fn ^username -> {:ok, user} end)
+
+      result_conn =
+        conn
+        |> post("/api", %{
+          query: @login_mutation,
+          variables: %{username: username}
+        })
+
+      response = json_response(result_conn, 200)
+
+      assert %{
+               "data" => %{
+                 "login" => %{
+                   "id" => user.id
+                 }
+               }
+             } == response
+
+      assert Authentication.current_user(result_conn) == user
+    end
+
+    test "returns an error for an unknown user", %{conn: conn} do
+      FreedomAccountMock
+      |> stub(:authenticate, fn _username -> {:error, :unauthorized} end)
+
+      result_conn =
+        conn
+        |> post("/api", %{
+          query: @login_mutation,
+          variables: %{username: "no_such_user"}
+        })
+
+      response = json_response(result_conn, 200)
+
+      assert %{
+               "errors" => [%{"message" => "unauthorized"}]
+             } = response
+
+      assert Authentication.current_user(result_conn) == nil
+    end
+  end
+
+  describe "query: myAccount" do
+    @account_query """
+    query MyAccount {
+      myAccount {
+        depositsPerYear
+        funds {
+          icon
+          id
+          name
+        }
         id
         name
       }
-      id
-      name
     }
-  }
-  """
+    """
 
-  test "query: myAccount", %{conn: conn} do
-    account = build(:account)
-    funds = build_list(3, :fund)
+    test "returns the user's account", %{conn: conn} do
+      account = build(:account)
+      funds = build_list(3, :fund)
 
-    FreedomAccountMock
-    |> stub(:my_account, fn -> {:ok, account} end)
-    |> stub(:list_funds, fn ^account -> funds end)
+      FreedomAccountMock
+      |> stub(:my_account, fn -> {:ok, account} end)
+      |> stub(:list_funds, fn ^account -> funds end)
 
-    expected_funds =
-      Enum.map(funds, fn fund ->
-        %{
-          "icon" => fund.icon,
-          "id" => fund.id,
-          "name" => fund.name
-        }
-      end)
+      expected_funds =
+        Enum.map(funds, fn fund ->
+          %{
+            "icon" => fund.icon,
+            "id" => fund.id,
+            "name" => fund.name
+          }
+        end)
 
-    response =
-      conn
-      |> post("/api", %{query: @account_query})
-      |> json_response(200)
+      response =
+        conn
+        |> post("/api", %{query: @account_query})
+        |> json_response(200)
 
-    assert %{
-             "data" => %{
-               "myAccount" => %{
-                 "depositsPerYear" => account.deposits_per_year,
-                 "funds" => expected_funds,
-                 "id" => account.id,
-                 "name" => account.name
+      assert %{
+               "data" => %{
+                 "myAccount" => %{
+                   "depositsPerYear" => account.deposits_per_year,
+                   "funds" => expected_funds,
+                   "id" => account.id,
+                   "name" => account.name
+                 }
                }
-             }
-           } == response
+             } == response
+    end
   end
 
-  @update_account_mutation """
-  mutation UpdateAccount($input: AccountInput!) {
-    updateAccount(input: $input) {
-      depositsPerYear
-      id
-      name
+  describe "mutation: updateAccount" do
+    @update_account_mutation """
+    mutation UpdateAccount($input: AccountInput!) {
+      updateAccount(input: $input) {
+        depositsPerYear
+        id
+        name
+      }
     }
-  }
-  """
+    """
 
-  test "mutation: updateAccount", %{conn: conn} do
-    account = build(:account)
-    deposits_per_year = 26
-    name = "NEW NAME"
-    updated_account = %{account | deposits_per_year: deposits_per_year, name: name}
-    params = %{deposits_per_year: deposits_per_year, id: account.id, name: name}
+    test "updates account properties", %{conn: conn} do
+      account = build(:account)
+      deposits_per_year = 26
+      name = "NEW NAME"
+      updated_account = %{account | deposits_per_year: deposits_per_year, name: name}
+      params = %{deposits_per_year: deposits_per_year, id: account.id, name: name}
 
-    FreedomAccountMock
-    |> expect(:update_account, fn ^params -> {:ok, updated_account} end)
+      FreedomAccountMock
+      |> expect(:update_account, fn ^params -> {:ok, updated_account} end)
 
-    response =
-      conn
-      |> post("/api", %{
-        query: @update_account_mutation,
-        variables: %{input: params}
-      })
-      |> json_response(200)
+      response =
+        conn
+        |> post("/api", %{
+          query: @update_account_mutation,
+          variables: %{input: params}
+        })
+        |> json_response(200)
 
-    assert %{
-             "data" => %{
-               "updateAccount" => %{
-                 "depositsPerYear" => deposits_per_year,
-                 "id" => account.id,
-                 "name" => name
+      assert %{
+               "data" => %{
+                 "updateAccount" => %{
+                   "depositsPerYear" => deposits_per_year,
+                   "id" => account.id,
+                   "name" => name
+                 }
                }
-             }
-           } == response
+             } == response
+    end
   end
 end

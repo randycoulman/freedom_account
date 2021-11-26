@@ -5,8 +5,8 @@ defmodule FreedomAccount.Accounts do
 
   alias Ecto.Changeset
   alias FreedomAccount.Accounts.Account
+  alias FreedomAccount.Authentication.User
   alias FreedomAccount.Repo
-  alias FreedomAccount.Users.User
 
   @type account :: Account.t()
   @type account_params :: Account.params()

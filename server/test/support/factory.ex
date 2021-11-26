@@ -8,8 +8,8 @@ defmodule FreedomAccount.Factory do
   use ExMachina.Ecto, repo: FreedomAccount.Repo
 
   alias FreedomAccount.Accounts.Account
+  alias FreedomAccount.Authentication.User
   alias FreedomAccount.Funds.Fund
-  alias FreedomAccount.Users.User
 
   @emoji [
     "🎨",
@@ -82,7 +82,7 @@ defmodule FreedomAccount.Factory do
   def account_factory do
     %Account{
       deposits_per_year: Faker.random_between(12, 26),
-      id: Ecto.UUID.generate(),
+      id: generate_id(),
       name: Faker.Company.name(),
       user: build(:user)
     }
@@ -91,16 +91,20 @@ defmodule FreedomAccount.Factory do
   def fund_factory do
     %Fund{
       icon: random_emoji(),
-      id: Ecto.UUID.generate(),
+      id: generate_id(),
       name: Faker.Commerce.product_name()
     }
   end
 
   def user_factory do
     %User{
-      id: Ecto.UUID.generate(),
+      id: generate_id(),
       name: Faker.Person.first_name()
     }
+  end
+
+  def generate_id do
+    Ecto.UUID.generate()
   end
 
   defp random_emoji do

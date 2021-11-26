@@ -57,8 +57,14 @@ export type Fund = {
 
 export type RootMutationType = {
   __typename?: "RootMutationType";
+  /** Log into the application */
+  login: User;
   /** Update account settings */
   updateAccount: Account;
+};
+
+export type RootMutationTypeLoginArgs = {
+  username: Scalars["String"];
 };
 
 export type RootMutationTypeUpdateAccountArgs = {
@@ -69,6 +75,15 @@ export type RootQueryType = {
   __typename?: "RootQueryType";
   /** My freedom account */
   myAccount: Account;
+};
+
+/** A user */
+export type User = {
+  __typename?: "User";
+  /** The user's unique ID */
+  id: Scalars["ID"];
+  /** The name of the user */
+  name: Scalars["String"];
 };
 
 export type MyAccountQueryVariables = Exact<{ [key: string]: never }>;
