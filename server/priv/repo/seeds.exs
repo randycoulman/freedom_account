@@ -13,7 +13,7 @@ defmodule Seeds do
 
   def call do
     ensure_user_exists("randy")
-    # ensure_user_exists("cypress")
+    ensure_user_exists("cypress")
   end
 
   defp ensure_user_exists(name) do
