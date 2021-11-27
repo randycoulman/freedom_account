@@ -57,8 +57,16 @@ export type Fund = {
 
 export type RootMutationType = {
   __typename?: "RootMutationType";
+  /** Log into the application */
+  login: User;
+  /** Log out of the application */
+  logout: Scalars["Boolean"];
   /** Update account settings */
   updateAccount: Account;
+};
+
+export type RootMutationTypeLoginArgs = {
+  username: Scalars["String"];
 };
 
 export type RootMutationTypeUpdateAccountArgs = {
@@ -69,6 +77,15 @@ export type RootQueryType = {
   __typename?: "RootQueryType";
   /** My freedom account */
   myAccount: Account;
+};
+
+/** A user */
+export type User = {
+  __typename?: "User";
+  /** The user's unique ID */
+  id: Scalars["ID"];
+  /** The name of the user */
+  name: Scalars["String"];
 };
 
 export type MyAccountQueryVariables = Exact<{ [key: string]: never }>;
@@ -122,6 +139,22 @@ export type AccountFundsFragment = {
   id: string;
   name: string;
   funds: Array<{ __typename?: "Fund"; icon: string; id: string; name: string }>;
+};
+
+export type LoginMutationVariables = Exact<{
+  username: Scalars["String"];
+}>;
+
+export type LoginMutation = {
+  __typename?: "RootMutationType";
+  login: { __typename?: "User"; id: string };
+};
+
+export type LogoutMutationVariables = Exact<{ [key: string]: never }>;
+
+export type LogoutMutation = {
+  __typename?: "RootMutationType";
+  logout: boolean;
 };
 
 export const AccountFieldsFragmentDoc = gql`
@@ -181,4 +214,26 @@ export function useUpdateAccountMutation() {
     UpdateAccountMutation,
     UpdateAccountMutationVariables
   >(UpdateAccountDocument);
+}
+export const LoginDocument = gql`
+  mutation Login($username: String!) {
+    login(username: $username) {
+      id
+    }
+  }
+`;
+
+export function useLoginMutation() {
+  return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
+}
+export const LogoutDocument = gql`
+  mutation Logout {
+    logout
+  }
+`;
+
+export function useLogoutMutation() {
+  return Urql.useMutation<LogoutMutation, LogoutMutationVariables>(
+    LogoutDocument
+  );
 }

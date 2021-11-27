@@ -41,6 +41,13 @@ config :freedom_account, FreedomAccount.Repo,
 # before starting your production server.
 
 if config_env() == :prod do
+  authentication_key =
+    System.get_env("AUTHENTICATION_KEY") ||
+      raise("""
+      environment variable AUTHENTICATION_KEY is missing.
+      You can generate one by calling: mix guardian.gen.secret
+      """)
+
   host =
     System.get_env("HOSTNAME") ||
       raise """
@@ -55,6 +62,8 @@ if config_env() == :prod do
       environment variable SECRET_KEY_BASE is missing.
       You can generate one by calling: mix phx.gen.secret
       """
+
+  config :freedom_account, FreedomAccountWeb.Authentication, secret_key: authentication_key
 
   config :freedom_account, FreedomAccountWeb.Endpoint,
     # cache_static_manifest: "priv/static/cache_manifest.json"

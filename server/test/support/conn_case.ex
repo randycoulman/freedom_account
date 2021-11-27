@@ -10,6 +10,9 @@ defmodule FreedomAccountWeb.ConnCase do
 
   use ExUnit.CaseTemplate
 
+  alias FreedomAccountWeb.Authentication
+  alias Plug.Conn
+
   using opts do
     quote do
       use FreedomAccount.Case, unquote(opts)
@@ -28,5 +31,15 @@ defmodule FreedomAccountWeb.ConnCase do
 
   setup _context do
     {:ok, conn: Phoenix.ConnTest.build_conn()}
+  end
+
+  @spec sign_in(conn :: Conn.t(), user :: FreedomAccount.user()) :: Conn.t()
+  def sign_in(conn, user) do
+    user_id = user.id
+
+    FreedomAccountMock
+    |> Hammox.stub(:find_user, fn ^user_id -> {:ok, user} end)
+
+    Authentication.sign_in(conn, user)
   end
 end

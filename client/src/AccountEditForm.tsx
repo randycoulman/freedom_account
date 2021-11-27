@@ -37,9 +37,8 @@ export const AccountEditForm = ({
   return (
     <Formik
       initialValues={initialValues}
-      onSubmit={(values, { setSubmitting }) => {
-        onUpdate(values);
-        setSubmitting(false);
+      onSubmit={async (values) => {
+        await onUpdate(values);
       }}
       validationSchema={validationSchema}
     >

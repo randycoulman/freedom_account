@@ -14,6 +14,7 @@ defmodule FreedomAccount.MixProject do
         plt_add_apps: [:ex_unit]
       ],
       elixir: "~> 1.7",
+      elixirc_options: elixirc_options(Mix.env()),
       elixirc_paths: elixirc_paths(Mix.env()),
       preferred_cli_env: [
         coveralls: :test,
@@ -42,6 +43,28 @@ defmodule FreedomAccount.MixProject do
     ]
   end
 
+  defp elixirc_options(:dev) do
+    [
+      all_warnings: true,
+      ignore_module_conflict: true,
+      warnings_as_errors: false
+    ]
+  end
+
+  defp elixirc_options(:test) do
+    [
+      all_warnings: true,
+      warnings_as_errors: false
+    ]
+  end
+
+  defp elixirc_options(_) do
+    [
+      all_warnings: true,
+      warnings_as_errors: true
+    ]
+  end
+
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
@@ -53,6 +76,7 @@ defmodule FreedomAccount.MixProject do
     [
       {:absinthe, "~> 1.6"},
       {:absinthe_plug, "~> 1.5"},
+      {:assertions, "~> 0.19.0", only: :test},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.1.0", only: [:dev, :test], runtime: false},
       {:ecto_psql_extras, "~> 0.7"},
@@ -61,6 +85,7 @@ defmodule FreedomAccount.MixProject do
       {:excoveralls, "~> 0.14.2", only: :test},
       {:faker, "~> 0.16.0", only: :test},
       {:gettext, "~> 0.18.2"},
+      {:guardian, "~> 2.2"},
       {:hammox, "~> 0.5.0", only: :test},
       {:jason, "~> 1.0"},
       {:junit_formatter, "~> 3.3", only: [:test]},

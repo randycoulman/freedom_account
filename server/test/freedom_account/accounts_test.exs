@@ -4,22 +4,29 @@ defmodule FreedomAccount.AccountsTest do
   alias FreedomAccount.Accounts
   alias FreedomAccount.Accounts.Account
 
-  describe "retrieving the only account" do
-    test "returns the single account if present" do
-      account = insert(:account)
-
-      assert {:ok, ^account} = Accounts.only_account()
+  describe "retrieving the account for a user" do
+    setup do
+      %{user: insert(:user)}
     end
 
-    test "returns error tuple if no account" do
-      assert {:error, :not_found} = Accounts.only_account()
+    test "returns the user's single account if present", %{user: user} do
+      other_user = insert(:user)
+      account = insert(:account, user: user)
+      _other_account = insert(:account, user: other_user)
+
+      assert {:ok, found} = Accounts.account_for_user(user)
+      assert_structs_equal(account, found, [:deposits_per_year, :id, :name])
     end
 
-    test "raises if more than one account" do
-      insert_list(2, :account)
+    test "returns error tuple if no account", %{user: user} do
+      assert {:error, :not_found} = Accounts.account_for_user(user)
+    end
+
+    test "raises if more than one account", %{user: user} do
+      insert_list(2, :account, user: user)
 
       assert_raise Ecto.MultipleResultsError, fn ->
-        Accounts.only_account()
+        Accounts.account_for_user(user)
       end
     end
   end
@@ -39,7 +46,7 @@ defmodule FreedomAccount.AccountsTest do
     end
 
     test "returns not found error if no matching account" do
-      params = %{id: Ecto.UUID.generate(), name: "NEW NAME"}
+      params = %{id: generate_id(), name: "NEW NAME"}
 
       assert {:error, :not_found} = Accounts.update_account(params)
     end

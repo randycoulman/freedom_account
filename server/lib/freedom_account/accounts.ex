@@ -5,15 +5,19 @@ defmodule FreedomAccount.Accounts do
 
   alias Ecto.Changeset
   alias FreedomAccount.Accounts.Account
+  alias FreedomAccount.Authentication.User
   alias FreedomAccount.Repo
 
   @type account :: Account.t()
   @type account_params :: Account.params()
   @type update_error :: :not_found | Changeset.t()
 
-  @spec only_account :: {:ok, account} | {:error, :not_found}
-  def only_account do
-    case Repo.one(Account) do
+  @spec account_for_user(user :: User.t()) :: {:ok, account} | {:error, :not_found}
+  def account_for_user(%User{} = user) do
+    Account
+    |> Account.for_user(user)
+    |> Repo.one()
+    |> case do
       nil -> {:error, :not_found}
       account -> {:ok, account}
     end

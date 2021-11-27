@@ -5,7 +5,11 @@ defmodule FreedomAccount.Accounts.Account do
 
   use FreedomAccount.Schema
 
+  import Ecto.Query, only: [from: 2]
+
   alias Ecto.Changeset
+  alias Ecto.Queryable
+  alias FreedomAccount.Authentication.User
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Schema
 
@@ -23,13 +27,15 @@ defmodule FreedomAccount.Accounts.Account do
           id: id,
           inserted_at: DateTime.t() | nil,
           name: name,
-          updated_at: DateTime.t() | nil
+          updated_at: DateTime.t() | nil,
+          user: Schema.belongs_to(User.t())
         }
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
   schema "accounts" do
+    belongs_to :user, User
     has_many :funds, Fund
     field :deposits_per_year, :integer
     field :name, :string
@@ -44,5 +50,10 @@ defmodule FreedomAccount.Accounts.Account do
     |> validate_required([:deposits_per_year, :name])
     |> validate_number(:deposits_per_year, greater_than: 0)
     |> validate_length(:name, max: 50)
+  end
+
+  @spec for_user(query :: Queryable.t(), user :: User.t()) :: Queryable.t()
+  def for_user(query, %User{id: user_id}) do
+    from a in query, where: a.user_id == ^user_id
   end
 end
