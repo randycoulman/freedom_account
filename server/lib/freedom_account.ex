@@ -31,8 +31,8 @@ defmodule FreedomAccount.Impl do
   @moduledoc false
 
   alias FreedomAccount.Accounts
-  alias FreedomAccount.Funds
   alias FreedomAccount.Authentication
+  alias FreedomAccount.Funds
 
   @behaviour FreedomAccount
 

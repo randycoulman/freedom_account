@@ -3,8 +3,9 @@ defmodule FreedomAccountWeb.Resolvers.Account do
   GraphQL resolvers for accounts.
   """
 
-  alias FreedomAccount.Authentication.User
   use FreedomAccountWeb.Resolvers.Base
+
+  alias FreedomAccount.Authentication.User
 
   @type account :: FreedomAccount.account()
   @type account_input :: %{

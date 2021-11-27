@@ -11,6 +11,7 @@ defmodule FreedomAccountWeb.ConnCase do
   use ExUnit.CaseTemplate
 
   alias FreedomAccountWeb.Authentication
+  alias Plug.Conn
 
   using opts do
     quote do
@@ -32,6 +33,7 @@ defmodule FreedomAccountWeb.ConnCase do
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 
+  @spec sign_in(conn :: Conn.t(), user :: FreedomAccount.user()) :: Conn.t()
   def sign_in(conn, user) do
     user_id = user.id
 

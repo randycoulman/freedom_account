@@ -19,9 +19,7 @@ defmodule FreedomAccountWeb.Router do
       schema: Schema
 
     if Mix.env() == :dev do
-      forward "/graphiql", Absinthe.Plug.GraphiQL,
-        before_send: {Authentication, :absinthe_before_send},
-        schema: Schema
+      forward "/graphiql", Absinthe.Plug.GraphiQL, schema: Schema
     end
   end
 
