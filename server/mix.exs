@@ -14,6 +14,7 @@ defmodule FreedomAccount.MixProject do
         plt_add_apps: [:ex_unit]
       ],
       elixir: "~> 1.7",
+      elixirc_options: elixirc_options(Mix.env()),
       elixirc_paths: elixirc_paths(Mix.env()),
       preferred_cli_env: [
         coveralls: :test,
@@ -39,6 +40,28 @@ defmodule FreedomAccount.MixProject do
     [
       mod: {FreedomAccount.Application, []},
       extra_applications: [:logger, :runtime_tools]
+    ]
+  end
+
+  defp elixirc_options(:dev) do
+    [
+      all_warnings: true,
+      ignore_module_conflict: true,
+      warnings_as_errors: false
+    ]
+  end
+
+  defp elixirc_options(:test) do
+    [
+      all_warnings: true,
+      warnings_as_errors: false
+    ]
+  end
+
+  defp elixirc_options(_) do
+    [
+      all_warnings: true,
+      warnings_as_errors: true
     ]
   end
 
