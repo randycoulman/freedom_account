@@ -10,18 +10,33 @@ import "@testing-library/cypress/add-commands";
 // https://on.cypress.io/custom-commands
 // ***********************************************
 //
-//
-// -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This is will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add("ignoreErrorBoundary", (message: string) => {
+  cy.on("uncaught:exception", (err) => {
+    if (err.message.includes(message)) {
+      return false;
+    }
+    return true;
+  });
+});
+
+Cypress.Commands.add("login", () => {
+  cy.logout();
+  cy.visit("/login");
+  cy.findByLabelText(/username/i)
+    .clear()
+    .type("cypress");
+  cy.findByRole("button", { name: /login/i }).click();
+  cy.shouldHaveLocation("/");
+});
+
+Cypress.Commands.add("logout", () => {
+  cy.visit("/login");
+  cy.findByRole("button", { name: /logout/i });
+});
+
+Cypress.Commands.add("shouldHaveLocation", (expectedPathname: string) => {
+  cy.location().should(({ pathname }) => {
+    expect(pathname).to.eq(expectedPathname);
+  });
+});

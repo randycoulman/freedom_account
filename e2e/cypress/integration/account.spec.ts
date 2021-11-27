@@ -1,15 +1,16 @@
 context("account settings", () => {
   beforeEach(() => {
+    cy.login();
     cy.visit("/");
   });
 
   describe("account settings", () => {
     it("shows the account name", () => {
-      cy.findByRole("heading", { name: "Initial Account" }).should("exist");
+      // cy.findByRole("heading", { name: "Initial Account" }).should("exist");
+      cy.findByRole("heading").should("exist");
     });
 
     it("allows editing account settings", () => {
-      cy.findByRole("heading", { name: "Initial Account" });
       cy.findByRole("button", { name: /edit/i }).click();
       cy.findByLabelText(/name/i).clear().type("My New Account");
       cy.findByLabelText(/deposits/i)
