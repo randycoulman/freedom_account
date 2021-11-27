@@ -141,6 +141,15 @@ export type AccountFundsFragment = {
   funds: Array<{ __typename?: "Fund"; icon: string; id: string; name: string }>;
 };
 
+export type LoginMutationVariables = Exact<{
+  username: Scalars["String"];
+}>;
+
+export type LoginMutation = {
+  __typename?: "RootMutationType";
+  login: { __typename?: "User"; id: string };
+};
+
 export const AccountFieldsFragmentDoc = gql`
   fragment AccountFields on Account {
     depositsPerYear
@@ -198,4 +207,15 @@ export function useUpdateAccountMutation() {
     UpdateAccountMutation,
     UpdateAccountMutationVariables
   >(UpdateAccountDocument);
+}
+export const LoginDocument = gql`
+  mutation Login($username: String!) {
+    login(username: $username) {
+      id
+    }
+  }
+`;
+
+export function useLoginMutation() {
+  return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
 }

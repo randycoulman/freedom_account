@@ -17,14 +17,12 @@ export const Account = () => {
   useErrorHandler(mutationResult.error);
 
   const account = queryResult.data!.myAccount;
+  const onUpdate = (input: AccountInput) => updateAccount({ input });
 
   return (
     <>
       <section>
-        <AccountHeader
-          account={account}
-          onUpdate={(input: AccountInput) => updateAccount({ input })}
-        />
+        <AccountHeader account={account} onUpdate={onUpdate} />
       </section>
       <article>
         <h3>Funds</h3>

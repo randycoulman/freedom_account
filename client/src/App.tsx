@@ -7,6 +7,8 @@ import { Account } from "./Account";
 import styles from "./App.module.css";
 import { ErrorFallback } from "./ErrorFallback";
 import { Loader } from "./Loader";
+import { Login } from "./Login";
+import { NoMatch } from "./NoMatch";
 import { client } from "./client";
 
 export const App = () => {
@@ -16,17 +18,23 @@ export const App = () => {
         <h1>Freedom Account</h1>
       </header>
       <main>
-        <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <Suspense fallback={<Loader />}>
-            <BrowserRouter>
+        <BrowserRouter>
+          <ErrorBoundary FallbackComponent={ErrorFallback}>
+            <Suspense fallback={<Loader />}>
               <Switch>
-                <Route path="/">
+                <Route path="/login">
+                  <Login />
+                </Route>
+                <Route exact path="/">
                   <Account />
                 </Route>
+                <Route>
+                  <NoMatch />
+                </Route>
               </Switch>
-            </BrowserRouter>
-          </Suspense>
-        </ErrorBoundary>
+            </Suspense>
+          </ErrorBoundary>
+        </BrowserRouter>
       </main>
     </Provider>
   );
