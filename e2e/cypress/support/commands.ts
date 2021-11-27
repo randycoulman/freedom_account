@@ -21,7 +21,6 @@ Cypress.Commands.add("ignoreErrorBoundary", (message: string) => {
 });
 
 Cypress.Commands.add("login", () => {
-  cy.logout();
   cy.visit("/login");
   cy.findByLabelText(/username/i)
     .clear()

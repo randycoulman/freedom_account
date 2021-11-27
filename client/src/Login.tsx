@@ -3,6 +3,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import { gql } from "urql";
 
 import { LoginForm } from "./LoginForm";
+import { useClient } from "./client";
 import { useLoginMutation } from "./graphql";
 
 interface LocationState {
@@ -13,11 +14,13 @@ export const Login = () => {
   const [result, login] = useLoginMutation();
   const location = useLocation<LocationState>();
   const history = useHistory();
+  const { resetClient } = useClient();
   const path = location.state?.from || "/";
 
   useErrorHandler(result.error);
 
   const onSubmit = async (username: string) => {
+    resetClient();
     await login({ username });
     history.replace(path);
   };
