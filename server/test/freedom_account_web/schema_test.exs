@@ -109,12 +109,13 @@ defmodule FreedomAccountWeb.SchemaTest do
     }
     """
 
-    test "returns the user's account", %{conn: conn} do
-      account = build(:account)
-      funds = build_list(3, :fund)
+    test "returns the logged-in user's account", %{conn: conn} do
+      user = build(:user)
+      account = build(:account, user: user)
+      funds = build_list(3, :fund, account: account)
 
       FreedomAccountMock
-      |> stub(:my_account, fn -> {:ok, account} end)
+      |> stub(:my_account, fn ^user -> {:ok, account} end)
       |> stub(:list_funds, fn ^account -> funds end)
 
       expected_funds =
@@ -128,6 +129,7 @@ defmodule FreedomAccountWeb.SchemaTest do
 
       response =
         conn
+        |> sign_in(user)
         |> post("/api", %{query: @account_query})
         |> json_response(200)
 
@@ -141,6 +143,17 @@ defmodule FreedomAccountWeb.SchemaTest do
                  }
                }
              } == response
+    end
+
+    test "returns an error if there is no logged-in user", %{conn: conn} do
+      response =
+        conn
+        |> post("/api", %{query: @account_query})
+        |> json_response(200)
+
+      assert %{
+               "errors" => [%{"message" => "unauthorized"}]
+             } = response
     end
   end
 
@@ -179,6 +192,38 @@ defmodule FreedomAccountWeb.SchemaTest do
                    "depositsPerYear" => deposits_per_year,
                    "id" => account.id,
                    "name" => name
+                 }
+               }
+             } == response
+    end
+  end
+
+  describe "session persistence" do
+    test "recovers session after logging in", %{conn: conn} do
+      user = build(:user)
+      account = build(:account, user: user)
+      user_id = user.id
+      username = user.name
+
+      FreedomAccountMock
+      |> stub(:authenticate, fn ^username -> {:ok, user} end)
+      |> stub(:find_user, fn ^user_id -> {:ok, user} end)
+      |> stub(:my_account, fn ^user -> {:ok, account} end)
+      |> stub(:list_funds, fn ^account -> [] end)
+
+      response =
+        conn
+        |> post("/api", %{query: @login_mutation, variables: %{username: username}})
+        |> post("/api", %{query: @account_query})
+        |> json_response(200)
+
+      assert %{
+               "data" => %{
+                 "myAccount" => %{
+                   "depositsPerYear" => account.deposits_per_year,
+                   "funds" => [],
+                   "id" => account.id,
+                   "name" => account.name
                  }
                }
              } == response

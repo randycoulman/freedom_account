@@ -23,7 +23,7 @@ defmodule FreedomAccount do
   @callback authenticate(username :: username) :: {:ok, user} | {:error, :unauthorized}
   @callback find_user(id :: user_id) :: {:ok, user} | {:error, :not_found}
   @callback list_funds(account :: account) :: [fund]
-  @callback my_account :: {:ok, account} | {:error, :not_found}
+  @callback my_account(user :: user) :: {:ok, account} | {:error, :not_found}
   @callback update_account(params :: account_params) :: {:ok, account} | {:error, update_error}
 end
 
@@ -46,7 +46,7 @@ defmodule FreedomAccount.Impl do
   defdelegate list_funds(account), to: Funds
 
   @impl FreedomAccount
-  defdelegate my_account, to: Accounts, as: :only_account
+  defdelegate my_account(user), to: Accounts, as: :account_for_user
 
   @impl FreedomAccount
   defdelegate update_account(params), to: Accounts

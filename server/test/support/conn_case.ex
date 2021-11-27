@@ -33,6 +33,11 @@ defmodule FreedomAccountWeb.ConnCase do
   end
 
   def sign_in(conn, user) do
+    user_id = user.id
+
+    FreedomAccountMock
+    |> Hammox.stub(:find_user, fn ^user_id -> {:ok, user} end)
+
     Authentication.sign_in(conn, user)
   end
 end

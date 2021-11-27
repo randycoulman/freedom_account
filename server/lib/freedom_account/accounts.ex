@@ -23,14 +23,6 @@ defmodule FreedomAccount.Accounts do
     end
   end
 
-  @spec only_account :: {:ok, account} | {:error, :not_found}
-  def only_account do
-    case Repo.one(Account) do
-      nil -> {:error, :not_found}
-      account -> {:ok, account}
-    end
-  end
-
   @spec update_account(params :: account_params) :: {:ok, account} | {:error, update_error}
   def update_account(params) do
     with {id, params} <- Map.pop(params, :id),

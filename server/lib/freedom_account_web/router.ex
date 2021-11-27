@@ -2,10 +2,13 @@ defmodule FreedomAccountWeb.Router do
   use FreedomAccountWeb, :router
 
   alias FreedomAccountWeb.Authentication
+  alias FreedomAccountWeb.Plugs
   alias FreedomAccountWeb.Schema
 
   pipeline :api do
     plug :fetch_session
+    plug Plugs.AuthPipeline
+    plug Plugs.Context
   end
 
   scope "/" do

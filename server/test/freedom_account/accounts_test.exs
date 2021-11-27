@@ -31,27 +31,6 @@ defmodule FreedomAccount.AccountsTest do
     end
   end
 
-  describe "retrieving the only account" do
-    test "returns the single account if present" do
-      account = insert(:account)
-
-      assert {:ok, found} = Accounts.only_account()
-      assert_structs_equal(account, found, [:deposits_per_year, :id, :name])
-    end
-
-    test "returns error tuple if no account" do
-      assert {:error, :not_found} = Accounts.only_account()
-    end
-
-    test "raises if more than one account" do
-      insert_list(2, :account)
-
-      assert_raise Ecto.MultipleResultsError, fn ->
-        Accounts.only_account()
-      end
-    end
-  end
-
   describe "updating account settings" do
     test "returns the updated account" do
       account = insert(:account)

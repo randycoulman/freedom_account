@@ -3,6 +3,7 @@ defmodule FreedomAccountWeb.Resolvers.Account do
   GraphQL resolvers for accounts.
   """
 
+  alias FreedomAccount.Authentication.User
   use FreedomAccountWeb.Resolvers.Base
 
   @type account :: FreedomAccount.account()
@@ -11,9 +12,9 @@ defmodule FreedomAccountWeb.Resolvers.Account do
         }
 
   @spec my_account(args :: %{}, resolution :: resolution) :: result(account)
-  def my_account(_args, _resolution) do
-    with {:ok, account} <- FreedomAccount.my_account() do
-      {:ok, account}
+  def my_account(_args, %{context: context}) do
+    with %User{} = user <- Map.get(context, :current_user, {:error, :unauthorized}) do
+      FreedomAccount.my_account(user)
     end
   end
 
