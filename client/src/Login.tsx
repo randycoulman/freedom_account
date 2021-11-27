@@ -15,12 +15,12 @@ export const Login = () => {
   const history = useHistory();
   const path = location.state?.from || "/";
 
+  useErrorHandler(result.error);
+
   const onSubmit = async (username: string) => {
     await login({ username });
     history.replace(path);
   };
-
-  useErrorHandler(result.error);
 
   return (
     <>

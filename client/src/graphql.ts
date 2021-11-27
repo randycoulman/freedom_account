@@ -150,6 +150,13 @@ export type LoginMutation = {
   login: { __typename?: "User"; id: string };
 };
 
+export type LogoutMutationVariables = Exact<{ [key: string]: never }>;
+
+export type LogoutMutation = {
+  __typename?: "RootMutationType";
+  logout: boolean;
+};
+
 export const AccountFieldsFragmentDoc = gql`
   fragment AccountFields on Account {
     depositsPerYear
@@ -218,4 +225,15 @@ export const LoginDocument = gql`
 
 export function useLoginMutation() {
   return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
+}
+export const LogoutDocument = gql`
+  mutation Logout {
+    logout
+  }
+`;
+
+export function useLogoutMutation() {
+  return Urql.useMutation<LogoutMutation, LogoutMutationVariables>(
+    LogoutDocument
+  );
 }
