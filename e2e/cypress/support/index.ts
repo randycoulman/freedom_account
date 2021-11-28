@@ -22,6 +22,7 @@ declare global {
       ignoreErrorBoundary(message: string): void;
       login(): void;
       logout(): void;
+      resetAccount(): void;
       shouldHaveLocation(expectedPathname: string): void;
     }
   }

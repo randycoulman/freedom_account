@@ -60,4 +60,26 @@ defmodule FreedomAccount.AccountsTest do
       assert "can't be blank" in errors_on(changeset).name
     end
   end
+
+  describe "resetting an account" do
+    test "deletes and recreates the user's account and funds" do
+      user = insert(:user)
+      account = insert(:account, user: user)
+      funds = insert_list(2, :fund, account: account)
+
+      assert :ok = Accounts.reset_account(account)
+
+      assert Repo.reload(account) == nil
+      refute Repo.reload(funds) |> Enum.any?()
+
+      assert {:ok, new_account} = Accounts.account_for_user(user)
+      new_funds = Ecto.assoc(new_account, :funds) |> Repo.all()
+
+      assert new_account.name == "Initial Account"
+
+      new_funds
+      |> Enum.map(& &1.name)
+      |> assert_lists_equal(["Home Repairs", "Car Repairs", "Property Taxes"])
+    end
+  end
 end

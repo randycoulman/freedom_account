@@ -34,6 +34,19 @@ Cypress.Commands.add("logout", () => {
   cy.findByRole("button", { name: /logout/i });
 });
 
+const query = "mutation ResetTestAccount { resetTestAccount }";
+
+Cypress.Commands.add("resetAccount", () => {
+  cy.request({
+    body: {
+      operationName: "ResetTestAccount",
+      query,
+    },
+    method: "POST",
+    url: "/api",
+  });
+});
+
 Cypress.Commands.add("shouldHaveLocation", (expectedPathname: string) => {
   cy.location().should(({ pathname }) => {
     expect(pathname).to.eq(expectedPathname);

@@ -4,13 +4,15 @@ defmodule FreedomAccountWeb.SchemaTest do
   alias FreedomAccountWeb.Authentication
 
   describe "mutation: login" do
-    @login_mutation """
-    mutation Login($username: String!) {
-      login(username: $username) {
-        id
+    defp login_mutation do
+      """
+      mutation Login($username: String!) {
+        login(username: $username) {
+          #{document_for(:user)}
+        }
       }
-    }
-    """
+      """
+    end
 
     test "logs the user in and remembers them in the session", %{conn: conn} do
       user = build(:user)
@@ -22,7 +24,7 @@ defmodule FreedomAccountWeb.SchemaTest do
       result_conn =
         conn
         |> post("/api", %{
-          query: @login_mutation,
+          query: login_mutation(),
           variables: %{username: username}
         })
 
@@ -31,7 +33,9 @@ defmodule FreedomAccountWeb.SchemaTest do
       assert %{
                "data" => %{
                  "login" => %{
-                   "id" => user.id
+                   "__typename" => "User",
+                   "id" => user.id,
+                   "name" => user.name
                  }
                }
              } == response
@@ -46,7 +50,7 @@ defmodule FreedomAccountWeb.SchemaTest do
       result_conn =
         conn
         |> post("/api", %{
-          query: @login_mutation,
+          query: login_mutation(),
           variables: %{username: "no_such_user"}
         })
 
@@ -61,11 +65,13 @@ defmodule FreedomAccountWeb.SchemaTest do
   end
 
   describe "mutation: logout" do
-    @logout_mutation """
-    mutation Logout {
-      logout
-    }
-    """
+    defp logout_mutation do
+      """
+      mutation Logout {
+        logout
+      }
+      """
+    end
 
     test "logs the user out and removes them from the session", %{conn: conn} do
       user = build(:user)
@@ -73,7 +79,7 @@ defmodule FreedomAccountWeb.SchemaTest do
       result_conn =
         conn
         |> sign_in(user)
-        |> post("/api", %{query: @logout_mutation})
+        |> post("/api", %{query: logout_mutation()})
 
       response = json_response(result_conn, 200)
 
@@ -84,7 +90,7 @@ defmodule FreedomAccountWeb.SchemaTest do
     test "does nothing if no user is logged in", %{conn: conn} do
       result_conn =
         conn
-        |> post("/api", %{query: @logout_mutation})
+        |> post("/api", %{query: logout_mutation()})
 
       response = json_response(result_conn, 200)
 
@@ -94,20 +100,15 @@ defmodule FreedomAccountWeb.SchemaTest do
   end
 
   describe "query: myAccount" do
-    @account_query """
-    query MyAccount {
-      myAccount {
-        depositsPerYear
-        funds {
-          icon
-          id
-          name
+    defp my_account_query do
+      """
+      query MyAccount {
+        myAccount {
+          #{document_for(:account)}
         }
-        id
-        name
       }
-    }
-    """
+      """
+    end
 
     test "returns the logged-in user's account", %{conn: conn} do
       user = build(:user)
@@ -121,6 +122,7 @@ defmodule FreedomAccountWeb.SchemaTest do
       expected_funds =
         Enum.map(funds, fn fund ->
           %{
+            "__typename" => "Fund",
             "icon" => fund.icon,
             "id" => fund.id,
             "name" => fund.name
@@ -130,12 +132,13 @@ defmodule FreedomAccountWeb.SchemaTest do
       response =
         conn
         |> sign_in(user)
-        |> post("/api", %{query: @account_query})
+        |> post("/api", %{query: my_account_query()})
         |> json_response(200)
 
       assert %{
                "data" => %{
                  "myAccount" => %{
+                   "__typename" => "Account",
                    "depositsPerYear" => account.deposits_per_year,
                    "funds" => expected_funds,
                    "id" => account.id,
@@ -148,7 +151,7 @@ defmodule FreedomAccountWeb.SchemaTest do
     test "returns an error if there is no logged-in user", %{conn: conn} do
       response =
         conn
-        |> post("/api", %{query: @account_query})
+        |> post("/api", %{query: my_account_query()})
         |> json_response(200)
 
       assert %{
@@ -158,15 +161,15 @@ defmodule FreedomAccountWeb.SchemaTest do
   end
 
   describe "mutation: updateAccount" do
-    @update_account_mutation """
-    mutation UpdateAccount($input: AccountInput!) {
-      updateAccount(input: $input) {
-        depositsPerYear
-        id
-        name
-      }
-    }
-    """
+    defp update_account_mutation do
+      """
+        mutation UpdateAccount($input: AccountInput!) {
+          updateAccount(input: $input) {
+            #{document_for(:account, 1)}
+          }
+        }
+      """
+    end
 
     test "updates account properties", %{conn: conn} do
       account = build(:account)
@@ -181,7 +184,7 @@ defmodule FreedomAccountWeb.SchemaTest do
       response =
         conn
         |> post("/api", %{
-          query: @update_account_mutation,
+          query: update_account_mutation(),
           variables: %{input: params}
         })
         |> json_response(200)
@@ -189,12 +192,35 @@ defmodule FreedomAccountWeb.SchemaTest do
       assert %{
                "data" => %{
                  "updateAccount" => %{
+                   "__typename" => "Account",
                    "depositsPerYear" => deposits_per_year,
                    "id" => account.id,
                    "name" => name
                  }
                }
              } == response
+    end
+  end
+
+  describe "mutation: resetTestAccount" do
+    defp reset_test_account_mutation do
+      """
+      mutation ResetTestAccount {
+        resetTestAccount
+      }
+      """
+    end
+
+    test "resets the test user's account", %{conn: conn} do
+      FreedomAccountMock
+      |> expect(:reset_test_account, fn -> :ok end)
+
+      response =
+        conn
+        |> post("/api", %{query: reset_test_account_mutation()})
+        |> json_response(200)
+
+      assert %{"data" => %{"resetTestAccount" => true}} == response
     end
   end
 
@@ -213,13 +239,14 @@ defmodule FreedomAccountWeb.SchemaTest do
 
       response =
         conn
-        |> post("/api", %{query: @login_mutation, variables: %{username: username}})
-        |> post("/api", %{query: @account_query})
+        |> post("/api", %{query: login_mutation(), variables: %{username: username}})
+        |> post("/api", %{query: my_account_query()})
         |> json_response(200)
 
       assert %{
                "data" => %{
                  "myAccount" => %{
+                   "__typename" => "Account",
                    "depositsPerYear" => account.deposits_per_year,
                    "funds" => [],
                    "id" => account.id,

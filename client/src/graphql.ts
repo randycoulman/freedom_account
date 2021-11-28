@@ -61,6 +61,13 @@ export type RootMutationType = {
   login: User;
   /** Log out of the application */
   logout: Scalars["Boolean"];
+  /**
+   * Reset the test user's account
+   *
+   * Hard-codes the username of the test account; only intended to be used by
+   * end-to-end tests that need a consistent set of data to start from.
+   */
+  resetTestAccount: Scalars["Boolean"];
   /** Update account settings */
   updateAccount: Account;
 };

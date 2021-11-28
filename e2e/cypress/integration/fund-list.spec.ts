@@ -1,5 +1,6 @@
 context("fund list", () => {
   beforeEach(() => {
+    cy.resetAccount();
     cy.login();
     cy.visit("/");
   });

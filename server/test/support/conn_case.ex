@@ -16,6 +16,7 @@ defmodule FreedomAccountWeb.ConnCase do
   using opts do
     quote do
       use FreedomAccount.Case, unquote(opts)
+      use Assertions.AbsintheCase, schema: FreedomAccountWeb.Schema
 
       # Import conveniences for testing with connections
       import Phoenix.ConnTest

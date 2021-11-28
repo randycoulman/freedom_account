@@ -19,6 +19,13 @@ defmodule FreedomAccountWeb.Resolvers.Account do
     end
   end
 
+  @spec reset_test_account(args :: %{}, resolution :: resolution) :: result(boolean)
+  def reset_test_account(_args, _resolution) do
+    with :ok <- FreedomAccount.reset_test_account() do
+      {:ok, true}
+    end
+  end
+
   @spec update_account(args :: account_input, resolution :: resolution) ::
           result(account)
   def update_account(%{input: params}, _resolution) do
