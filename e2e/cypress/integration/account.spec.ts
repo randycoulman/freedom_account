@@ -1,13 +1,13 @@
 context("account settings", () => {
   beforeEach(() => {
+    cy.resetAccount();
     cy.login();
     cy.visit("/");
   });
 
   describe("account settings", () => {
     it("shows the account name", () => {
-      // cy.findByRole("heading", { name: "Initial Account" }).should("exist");
-      cy.findByRole("heading").should("exist");
+      cy.findByRole("heading", { name: "Initial Account" }).should("exist");
     });
 
     it("allows editing account settings", () => {
