@@ -1,6 +1,5 @@
 defmodule FreedomAccountWeb.SchemaTest do
   use FreedomAccountWeb.ConnCase, async: true
-  use Assertions.AbsintheCase, schema: FreedomAccountWeb.Schema
 
   alias FreedomAccountWeb.Authentication
 
