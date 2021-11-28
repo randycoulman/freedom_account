@@ -203,6 +203,28 @@ defmodule FreedomAccountWeb.SchemaTest do
     end
   end
 
+  describe "mutation: resetTestAccount" do
+    defp reset_test_account_mutation do
+      """
+      mutation ResetTestAccount {
+        resetTestAccount
+      }
+      """
+    end
+
+    test "resets the test user's account", %{conn: conn} do
+      FreedomAccountMock
+      |> expect(:reset_test_account, fn -> :ok end)
+
+      response =
+        conn
+        |> post("/api", %{query: reset_test_account_mutation()})
+        |> json_response(200)
+
+      assert %{"data" => %{"resetTestAccount" => true}} == response
+    end
+  end
+
   describe "session persistence" do
     test "recovers session after logging in", %{conn: conn} do
       user = build(:user)

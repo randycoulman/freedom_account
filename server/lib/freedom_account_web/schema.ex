@@ -34,6 +34,16 @@ defmodule FreedomAccountWeb.Schema do
       middleware &Authentication.logout_middleware/2
     end
 
+    @desc """
+    Reset the test user's account
+
+    Hard-codes the username of the test account; only intended to be used by
+    end-to-end tests that need a consistent set of data to start from.
+    """
+    field :reset_test_account, non_null(:boolean) do
+      resolve &Account.reset_test_account/2
+    end
+
     @desc "Update account settings"
     field :update_account, non_null(:account) do
       arg :input, non_null(:account_input)
