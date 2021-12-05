@@ -10,6 +10,7 @@ defmodule FreedomAccount.Case do
       import Assertions
       import FreedomAccount.Factory
       import Hammox
+      import ShorterMaps
       import unquote(__MODULE__)
     end
   end

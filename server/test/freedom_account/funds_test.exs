@@ -9,21 +9,21 @@ defmodule FreedomAccount.FundsTest do
       account = insert(:account)
       params = params_for(:fund)
 
-      %{account: account, params: params}
+      ~M{account, params}
     end
 
-    test "returns the created fund", %{account: account, params: params} do
-      %{icon: icon, name: name} = params
+    test "returns the created fund", ~M{account, params} do
+      ~M{icon, name} = params
 
       assert {:ok, %Fund{icon: ^icon, name: ^name}} = Funds.create_fund(account, params)
     end
 
-    test "associates the fund to its account", %{account: account, params: params} do
+    test "associates the fund to its account", ~M{account, params} do
       {:ok, fund} = Funds.create_fund(account, params)
       assert fund.account_id == account.id
     end
 
-    test "uses provided ID", %{account: account, params: params} do
+    test "uses provided ID", ~M{account, params} do
       id = generate_id()
       params = Map.put(params, :id, id)
 
@@ -31,7 +31,7 @@ defmodule FreedomAccount.FundsTest do
       assert fund.id == id
     end
 
-    test "returns a changeset error if the icon is missing", %{account: account, params: params} do
+    test "returns a changeset error if the icon is missing", ~M{account, params} do
       params = Map.put(params, :icon, "")
 
       assert {:error, changeset} = Funds.create_fund(account, params)
@@ -39,7 +39,7 @@ defmodule FreedomAccount.FundsTest do
       assert "can't be blank" in errors_on(changeset).icon
     end
 
-    test "returns a changeset error if the name is blank", %{account: account, params: params} do
+    test "returns a changeset error if the name is blank", ~M{account, params} do
       params = Map.put(params, :name, "")
 
       assert {:error, changeset} = Funds.create_fund(account, params)

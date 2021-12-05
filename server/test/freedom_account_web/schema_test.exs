@@ -14,7 +14,7 @@ defmodule FreedomAccountWeb.SchemaTest do
       """
     end
 
-    test "returns the logged-in user's account", %{conn: conn} do
+    test "returns the logged-in user's account", ~M{conn} do
       user = build(:user)
       account = build(:account, user: user)
       funds = build_list(3, :fund, account: account)
@@ -52,7 +52,7 @@ defmodule FreedomAccountWeb.SchemaTest do
              } == response
     end
 
-    test "returns an error if there is no logged-in user", %{conn: conn} do
+    test "returns an error if there is no logged-in user", ~M{conn} do
       response =
         conn
         |> post("/api", %{query: my_account_query()})
@@ -75,7 +75,7 @@ defmodule FreedomAccountWeb.SchemaTest do
       """
     end
 
-    test "creates fund with specified ID", %{conn: conn} do
+    test "creates fund with specified ID", ~M{conn} do
       account = build(:account)
       account_id = account.id
       fund = build(:fund)
@@ -104,7 +104,7 @@ defmodule FreedomAccountWeb.SchemaTest do
              } == response
     end
 
-    test "creates fund without ID", %{conn: conn} do
+    test "creates fund without ID", ~M{conn} do
       account = build(:account)
       account_id = account.id
       fund = build(:fund)
@@ -145,7 +145,7 @@ defmodule FreedomAccountWeb.SchemaTest do
       """
     end
 
-    test "logs the user in and remembers them in the session", %{conn: conn} do
+    test "logs the user in and remembers them in the session", ~M{conn} do
       user = build(:user)
       username = user.name
 
@@ -174,7 +174,7 @@ defmodule FreedomAccountWeb.SchemaTest do
       assert Authentication.current_user(result_conn) == user
     end
 
-    test "returns an error for an unknown user", %{conn: conn} do
+    test "returns an error for an unknown user", ~M{conn} do
       FreedomAccountMock
       |> stub(:authenticate, fn _username -> {:error, :unauthorized} end)
 
@@ -204,7 +204,7 @@ defmodule FreedomAccountWeb.SchemaTest do
       """
     end
 
-    test "logs the user out and removes them from the session", %{conn: conn} do
+    test "logs the user out and removes them from the session", ~M{conn} do
       user = build(:user)
 
       result_conn =
@@ -218,7 +218,7 @@ defmodule FreedomAccountWeb.SchemaTest do
       assert Authentication.current_user(result_conn) == nil
     end
 
-    test "does nothing if no user is logged in", %{conn: conn} do
+    test "does nothing if no user is logged in", ~M{conn} do
       result_conn =
         conn
         |> post("/api", %{query: logout_mutation()})
@@ -241,12 +241,12 @@ defmodule FreedomAccountWeb.SchemaTest do
       """
     end
 
-    test "updates account properties", %{conn: conn} do
+    test "updates account properties", ~M{conn} do
       account = build(:account)
       deposits_per_year = 26
       name = "NEW NAME"
       updated_account = %{account | deposits_per_year: deposits_per_year, name: name}
-      params = %{deposits_per_year: deposits_per_year, id: account.id, name: name}
+      params = ~M{deposits_per_year, id: account.id, name}
 
       FreedomAccountMock
       |> expect(:update_account, fn ^params -> {:ok, updated_account} end)
@@ -281,7 +281,7 @@ defmodule FreedomAccountWeb.SchemaTest do
       """
     end
 
-    test "resets the test user's account", %{conn: conn} do
+    test "resets the test user's account", ~M{conn} do
       FreedomAccountMock
       |> expect(:reset_test_account, fn -> :ok end)
 
@@ -295,7 +295,7 @@ defmodule FreedomAccountWeb.SchemaTest do
   end
 
   describe "session persistence" do
-    test "recovers session after logging in", %{conn: conn} do
+    test "recovers session after logging in", ~M{conn} do
       user = build(:user)
       account = build(:account, user: user)
       user_id = user.id
