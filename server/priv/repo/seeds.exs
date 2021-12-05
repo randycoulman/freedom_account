@@ -8,7 +8,6 @@ defmodule Seeds do
 
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Authentication.User
-  alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Repo
 
   def call do
@@ -40,30 +39,7 @@ defmodule Seeds do
           account
       end
 
-    ensure_funds_exist(account)
     account
-  end
-
-  defp ensure_funds_exist(account) do
-    unless Ecto.assoc(account, :funds) |> Repo.exists?() do
-      Repo.insert!(%Fund{
-        account: account,
-        icon: "🏚️",
-        name: "Home Repairs"
-      })
-
-      Repo.insert!(%Fund{
-        account: account,
-        icon: "🚘",
-        name: "Car Repairs"
-      })
-
-      Repo.insert!(%Fund{
-        account: account,
-        icon: "💸",
-        name: "Property Taxes"
-      })
-    end
   end
 end
 
