@@ -55,8 +55,20 @@ export type Fund = {
   name: Scalars["String"];
 };
 
+/** Fund settings input */
+export type FundInput = {
+  /** An icon for the fund (in the form of an emoji) */
+  icon: Scalars["String"];
+  /** The fund's unique identifier */
+  id?: Maybe<Scalars["ID"]>;
+  /** The name of the fund */
+  name: Scalars["String"];
+};
+
 export type RootMutationType = {
   __typename?: "RootMutationType";
+  /** Create a new fund in an account */
+  createFund: Fund;
   /** Log into the application */
   login: User;
   /** Log out of the application */
@@ -70,6 +82,11 @@ export type RootMutationType = {
   resetTestAccount: Scalars["Boolean"];
   /** Update account settings */
   updateAccount: Account;
+};
+
+export type RootMutationTypeCreateFundArgs = {
+  accountId: Scalars["ID"];
+  input: FundInput;
 };
 
 export type RootMutationTypeLoginArgs = {

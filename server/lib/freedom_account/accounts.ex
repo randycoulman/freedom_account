@@ -10,6 +10,7 @@ defmodule FreedomAccount.Accounts do
   alias FreedomAccount.Repo
 
   @type account :: Account.t()
+  @type account_id :: Account.id()
   @type account_params :: Account.params()
   @type update_error :: :not_found | Changeset.t()
 
@@ -19,6 +20,14 @@ defmodule FreedomAccount.Accounts do
     |> Account.for_user(user)
     |> Repo.one()
     |> case do
+      nil -> {:error, :not_found}
+      account -> {:ok, account}
+    end
+  end
+
+  @spec find_account(id :: account_id) :: {:ok, account} | {:error, :not_found}
+  def find_account(id) do
+    case Repo.get(Account, id) do
       nil -> {:error, :not_found}
       account -> {:ok, account}
     end

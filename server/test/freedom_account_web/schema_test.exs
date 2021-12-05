@@ -3,6 +3,137 @@ defmodule FreedomAccountWeb.SchemaTest do
 
   alias FreedomAccountWeb.Authentication
 
+  describe "query: myAccount" do
+    defp my_account_query do
+      """
+      query MyAccount {
+        myAccount {
+          #{document_for(:account)}
+        }
+      }
+      """
+    end
+
+    test "returns the logged-in user's account", %{conn: conn} do
+      user = build(:user)
+      account = build(:account, user: user)
+      funds = build_list(3, :fund, account: account)
+
+      FreedomAccountMock
+      |> stub(:my_account, fn ^user -> {:ok, account} end)
+      |> stub(:list_funds, fn ^account -> funds end)
+
+      expected_funds =
+        Enum.map(funds, fn fund ->
+          %{
+            "__typename" => "Fund",
+            "icon" => fund.icon,
+            "id" => fund.id,
+            "name" => fund.name
+          }
+        end)
+
+      response =
+        conn
+        |> sign_in(user)
+        |> post("/api", %{query: my_account_query()})
+        |> json_response(200)
+
+      assert %{
+               "data" => %{
+                 "myAccount" => %{
+                   "__typename" => "Account",
+                   "depositsPerYear" => account.deposits_per_year,
+                   "funds" => expected_funds,
+                   "id" => account.id,
+                   "name" => account.name
+                 }
+               }
+             } == response
+    end
+
+    test "returns an error if there is no logged-in user", %{conn: conn} do
+      response =
+        conn
+        |> post("/api", %{query: my_account_query()})
+        |> json_response(200)
+
+      assert %{
+               "errors" => [%{"message" => "unauthorized"}]
+             } = response
+    end
+  end
+
+  describe "mutation: createFund" do
+    defp create_fund_mutation do
+      """
+      mutation CreateFund($accountId: ID!, $input: FundInput!) {
+        createFund(accountId: $accountId, input: $input) {
+          #{document_for(:fund)}
+        }
+      }
+      """
+    end
+
+    test "creates fund with specified ID", %{conn: conn} do
+      account = build(:account)
+      account_id = account.id
+      fund = build(:fund)
+      params = %{icon: fund.icon, id: fund.id, name: fund.name}
+
+      FreedomAccountMock
+      |> expect(:create_fund, fn ^account_id, ^params -> {:ok, fund} end)
+
+      response =
+        conn
+        |> post("/api", %{
+          query: create_fund_mutation(),
+          variables: %{accountId: account_id, input: params}
+        })
+        |> json_response(200)
+
+      assert %{
+               "data" => %{
+                 "createFund" => %{
+                   "__typename" => "Fund",
+                   "icon" => fund.icon,
+                   "id" => fund.id,
+                   "name" => fund.name
+                 }
+               }
+             } == response
+    end
+
+    test "creates fund without ID", %{conn: conn} do
+      account = build(:account)
+      account_id = account.id
+      fund = build(:fund)
+      params = %{icon: fund.icon, name: fund.name}
+
+      FreedomAccountMock
+      |> expect(:create_fund, fn ^account_id, ^params -> {:ok, fund} end)
+
+      response =
+        conn
+        |> post("/api", %{
+          query: create_fund_mutation(),
+          variables: %{accountId: account_id, input: params}
+        })
+        |> json_response(200)
+
+      assert %{
+               "data" => %{
+                 "createFund" => %{
+                   "__typename" => "Fund",
+                   "icon" => fund.icon,
+                   "id" => fund.id,
+                   "name" => fund.name
+                 }
+               }
+             } == response
+    end
+  end
+
   describe "mutation: login" do
     defp login_mutation do
       """
@@ -96,67 +227,6 @@ defmodule FreedomAccountWeb.SchemaTest do
 
       assert %{"data" => %{"logout" => true}} == response
       assert Authentication.current_user(result_conn) == nil
-    end
-  end
-
-  describe "query: myAccount" do
-    defp my_account_query do
-      """
-      query MyAccount {
-        myAccount {
-          #{document_for(:account)}
-        }
-      }
-      """
-    end
-
-    test "returns the logged-in user's account", %{conn: conn} do
-      user = build(:user)
-      account = build(:account, user: user)
-      funds = build_list(3, :fund, account: account)
-
-      FreedomAccountMock
-      |> stub(:my_account, fn ^user -> {:ok, account} end)
-      |> stub(:list_funds, fn ^account -> funds end)
-
-      expected_funds =
-        Enum.map(funds, fn fund ->
-          %{
-            "__typename" => "Fund",
-            "icon" => fund.icon,
-            "id" => fund.id,
-            "name" => fund.name
-          }
-        end)
-
-      response =
-        conn
-        |> sign_in(user)
-        |> post("/api", %{query: my_account_query()})
-        |> json_response(200)
-
-      assert %{
-               "data" => %{
-                 "myAccount" => %{
-                   "__typename" => "Account",
-                   "depositsPerYear" => account.deposits_per_year,
-                   "funds" => expected_funds,
-                   "id" => account.id,
-                   "name" => account.name
-                 }
-               }
-             } == response
-    end
-
-    test "returns an error if there is no logged-in user", %{conn: conn} do
-      response =
-        conn
-        |> post("/api", %{query: my_account_query()})
-        |> json_response(200)
-
-      assert %{
-               "errors" => [%{"message" => "unauthorized"}]
-             } = response
     end
   end
 

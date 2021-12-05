@@ -31,6 +31,20 @@ defmodule FreedomAccount.AccountsTest do
     end
   end
 
+  describe "finding an account by id" do
+    test "returns the account when present" do
+      account = insert(:account)
+      _other_account = insert(:account)
+
+      assert {:ok, found} = Accounts.find_account(account.id)
+      assert_structs_equal(account, found, [:deposits_per_year, :id, :name])
+    end
+
+    test "returns not found error when missing" do
+      assert {:error, :not_found} = Accounts.find_account(generate_id())
+    end
+  end
+
   describe "updating account settings" do
     test "returns the updated account" do
       account = insert(:account)

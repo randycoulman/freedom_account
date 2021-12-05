@@ -10,6 +10,7 @@ defmodule FreedomAccountWeb.Schema do
 
   alias FreedomAccountWeb.Resolvers.Account
   alias FreedomAccountWeb.Resolvers.Authentication
+  alias FreedomAccountWeb.Resolvers.Fund
 
   query do
     @desc "My freedom account"
@@ -19,6 +20,14 @@ defmodule FreedomAccountWeb.Schema do
   end
 
   mutation do
+    @desc "Create a new fund in an account"
+    field :create_fund, non_null(:fund) do
+      arg :account_id, non_null(:id)
+      arg :input, non_null(:fund_input)
+
+      resolve &Fund.create_fund/2
+    end
+
     @desc "Log into the application"
     field :login, non_null(:user) do
       arg :username, non_null(:string)
