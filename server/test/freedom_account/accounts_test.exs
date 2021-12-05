@@ -77,7 +77,7 @@ defmodule FreedomAccount.AccountsTest do
   end
 
   describe "resetting an account" do
-    test "deletes and recreates the user's account and funds" do
+    test "deletes and recreates the user's account" do
       user = insert(:user)
       account = insert(:account, user: user)
       funds = insert_list(2, :fund, account: account)
@@ -91,10 +91,7 @@ defmodule FreedomAccount.AccountsTest do
       new_funds = Ecto.assoc(new_account, :funds) |> Repo.all()
 
       assert new_account.name == "Initial Account"
-
-      new_funds
-      |> Enum.map(& &1.name)
-      |> assert_lists_equal(["Home Repairs", "Car Repairs", "Property Taxes"])
+      assert new_funds == []
     end
   end
 end

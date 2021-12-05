@@ -6,7 +6,6 @@ defmodule FreedomAccount.Accounts do
   alias Ecto.Changeset
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Authentication.User
-  alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Repo
 
   @type account :: Account.t()
@@ -37,27 +36,7 @@ defmodule FreedomAccount.Accounts do
   def reset_account(%Account{} = account) do
     user_id = account.user_id
     Repo.delete!(account)
-
-    new_account = Repo.insert!(%Account{name: "Initial Account", user_id: user_id})
-
-    Repo.insert!(%Fund{
-      account: new_account,
-      icon: "🏚️",
-      name: "Home Repairs"
-    })
-
-    Repo.insert!(%Fund{
-      account: new_account,
-      icon: "🚘",
-      name: "Car Repairs"
-    })
-
-    Repo.insert!(%Fund{
-      account: new_account,
-      icon: "💸",
-      name: "Property Taxes"
-    })
-
+    Repo.insert!(%Account{name: "Initial Account", user_id: user_id})
     :ok
   end
 
