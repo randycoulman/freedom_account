@@ -5,19 +5,27 @@ import { AccountHeader } from "./AccountHeader";
 import { FundList } from "./FundList";
 import {
   AccountInput,
+  FundInput,
+  useCreateFundMutation,
   useMyAccountQuery,
   useUpdateAccountMutation,
 } from "./graphql";
 
+const queryContext = { additionalTypenames: ["Fund"] };
+
 export const Account = () => {
-  const [queryResult] = useMyAccountQuery();
-  const [mutationResult, updateAccount] = useUpdateAccountMutation();
+  const [queryResult] = useMyAccountQuery({ context: queryContext });
+  const [updateAccountResult, updateAccount] = useUpdateAccountMutation();
+  const [createFundResult, createFund] = useCreateFundMutation();
 
   useErrorHandler(queryResult.error);
-  useErrorHandler(mutationResult.error);
+  useErrorHandler(updateAccountResult.error);
+  useErrorHandler(createFundResult.error);
 
   const account = queryResult.data!.myAccount;
   const onUpdate = (input: AccountInput) => updateAccount({ input });
+  const onAddFund = (input: FundInput) =>
+    createFund({ accountId: account.id, input });
 
   return (
     <>
@@ -26,7 +34,7 @@ export const Account = () => {
       </section>
       <article>
         <h3>Funds</h3>
-        <FundList funds={account.funds} />
+        <FundList funds={account.funds} onAddFund={onAddFund} />
       </article>
     </>
   );
@@ -42,6 +50,16 @@ export const AccountQuery = gql`
 
   ${AccountHeader.fragments.account}
   ${FundList.fragments.funds}
+`;
+
+export const CreateFundMutation = gql`
+  mutation CreateFund($accountId: ID!, $input: FundInput!) {
+    createFund(accountId: $accountId, input: $input) {
+      ...FundFields
+    }
+  }
+
+  ${FundList.fragments.fund}
 `;
 
 export const UpdateAccountMutation = gql`

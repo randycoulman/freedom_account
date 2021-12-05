@@ -130,6 +130,16 @@ export type MyAccountQuery = {
   };
 };
 
+export type CreateFundMutationVariables = Exact<{
+  accountId: Scalars["ID"];
+  input: FundInput;
+}>;
+
+export type CreateFundMutation = {
+  __typename?: "RootMutationType";
+  createFund: { __typename?: "Fund"; icon: string; id: string; name: string };
+};
+
 export type UpdateAccountMutationVariables = Exact<{
   input: AccountInput;
 }>;
@@ -223,6 +233,20 @@ export function useMyAccountQuery(
     query: MyAccountDocument,
     ...options,
   });
+}
+export const CreateFundDocument = gql`
+  mutation CreateFund($accountId: ID!, $input: FundInput!) {
+    createFund(accountId: $accountId, input: $input) {
+      ...FundFields
+    }
+  }
+  ${FundFieldsFragmentDoc}
+`;
+
+export function useCreateFundMutation() {
+  return Urql.useMutation<CreateFundMutation, CreateFundMutationVariables>(
+    CreateFundDocument
+  );
 }
 export const UpdateAccountDocument = gql`
   mutation UpdateAccount($input: AccountInput!) {
