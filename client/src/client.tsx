@@ -14,9 +14,7 @@ type ClientState = {
 };
 
 const ClientContext = createContext<ClientState>({
-  resetClient: () => {
-    /* noop */
-  },
+  resetClient: () => {},
 });
 
 type Props = {

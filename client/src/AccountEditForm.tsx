@@ -11,13 +11,8 @@ export type Props = {
   onUpdate?: (_values: AccountInput) => void;
 };
 
-const defaultOnUpdate = (_values: AccountInput) => {
-  /* noop */
-};
-
-const defaultOnCancel = () => {
-  /* noop */
-};
+const defaultOnUpdate = (_values: AccountInput) => {};
+const defaultOnCancel = () => {};
 
 const validationSchema = yup.object({
   depositsPerYear: yup.number().integer().positive().required(),

@@ -7,9 +7,7 @@ export type Props = {
   onSubmit?: (_username: string) => void;
 };
 
-const defaultOnSubmit = (_username: string) => {
-  /* noop */
-};
+const defaultOnSubmit = (_username: string) => {};
 
 const validationSchema = yup.object({
   username: yup.string().max(20).required().trim(),

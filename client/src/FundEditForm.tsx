@@ -9,13 +9,8 @@ export type Props = {
   onSave?: (_values: FundInput) => void;
 };
 
-const defaultOnSave = (_values: FundInput) => {
-  /* noop */
-};
-
-const defaultOnCancel = () => {
-  /* noop */
-};
+const defaultOnSave = (_values: FundInput) => {};
+const defaultOnCancel = () => {};
 
 const validationSchema = yup.object({
   icon: yup.string().max(10).required().trim(),
