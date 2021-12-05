@@ -5,12 +5,18 @@ defmodule FreedomAccount.Funds.Fund do
 
   use FreedomAccount.Schema
 
+  alias Ecto.Changeset
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Schema
 
   @type icon :: String.t()
   @type id :: Schema.id()
   @type name :: String.t()
+  @type params :: %{
+          :icon => icon,
+          :name => name,
+          optional(:id) => id
+        }
   @type t :: %__MODULE__{
           account: Schema.belongs_to(Account.t()),
           icon: icon,
@@ -29,5 +35,14 @@ defmodule FreedomAccount.Funds.Fund do
     field :name, :string
 
     timestamps()
+  end
+
+  @spec changeset(fund :: Changeset.t() | Schema.t(), params :: params) :: Changeset.t()
+  def changeset(fund, params) do
+    fund
+    |> cast(params, [:icon, :id, :name])
+    |> validate_required([:icon, :name])
+    |> validate_length(:icon, max: 10)
+    |> validate_length(:name, max: 50)
   end
 end

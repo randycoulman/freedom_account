@@ -55,8 +55,20 @@ export type Fund = {
   name: Scalars["String"];
 };
 
+/** Fund settings input */
+export type FundInput = {
+  /** An icon for the fund (in the form of an emoji) */
+  icon: Scalars["String"];
+  /** The fund's unique identifier */
+  id?: Maybe<Scalars["ID"]>;
+  /** The name of the fund */
+  name: Scalars["String"];
+};
+
 export type RootMutationType = {
   __typename?: "RootMutationType";
+  /** Create a new fund in an account */
+  createFund: Fund;
   /** Log into the application */
   login: User;
   /** Log out of the application */
@@ -70,6 +82,11 @@ export type RootMutationType = {
   resetTestAccount: Scalars["Boolean"];
   /** Update account settings */
   updateAccount: Account;
+};
+
+export type RootMutationTypeCreateFundArgs = {
+  accountId: Scalars["ID"];
+  input: FundInput;
 };
 
 export type RootMutationTypeLoginArgs = {
@@ -111,6 +128,16 @@ export type MyAccountQuery = {
       name: string;
     }>;
   };
+};
+
+export type CreateFundMutationVariables = Exact<{
+  accountId: Scalars["ID"];
+  input: FundInput;
+}>;
+
+export type CreateFundMutation = {
+  __typename?: "RootMutationType";
+  createFund: { __typename?: "Fund"; icon: string; id: string; name: string };
 };
 
 export type UpdateAccountMutationVariables = Exact<{
@@ -206,6 +233,20 @@ export function useMyAccountQuery(
     query: MyAccountDocument,
     ...options,
   });
+}
+export const CreateFundDocument = gql`
+  mutation CreateFund($accountId: ID!, $input: FundInput!) {
+    createFund(accountId: $accountId, input: $input) {
+      ...FundFields
+    }
+  }
+  ${FundFieldsFragmentDoc}
+`;
+
+export function useCreateFundMutation() {
+  return Urql.useMutation<CreateFundMutation, CreateFundMutationVariables>(
+    CreateFundDocument
+  );
 }
 export const UpdateAccountDocument = gql`
   mutation UpdateAccount($input: AccountInput!) {

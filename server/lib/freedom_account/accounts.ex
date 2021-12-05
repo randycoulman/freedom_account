@@ -6,10 +6,10 @@ defmodule FreedomAccount.Accounts do
   alias Ecto.Changeset
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Authentication.User
-  alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Repo
 
   @type account :: Account.t()
+  @type account_id :: Account.id()
   @type account_params :: Account.params()
   @type update_error :: :not_found | Changeset.t()
 
@@ -24,31 +24,19 @@ defmodule FreedomAccount.Accounts do
     end
   end
 
+  @spec find_account(id :: account_id) :: {:ok, account} | {:error, :not_found}
+  def find_account(id) do
+    case Repo.get(Account, id) do
+      nil -> {:error, :not_found}
+      account -> {:ok, account}
+    end
+  end
+
   @spec reset_account(account :: account) :: :ok
   def reset_account(%Account{} = account) do
     user_id = account.user_id
     Repo.delete!(account)
-
-    new_account = Repo.insert!(%Account{name: "Initial Account", user_id: user_id})
-
-    Repo.insert!(%Fund{
-      account: new_account,
-      icon: "🏚️",
-      name: "Home Repairs"
-    })
-
-    Repo.insert!(%Fund{
-      account: new_account,
-      icon: "🚘",
-      name: "Car Repairs"
-    })
-
-    Repo.insert!(%Fund{
-      account: new_account,
-      icon: "💸",
-      name: "Property Taxes"
-    })
-
+    Repo.insert!(%Account{name: "Initial Account", user_id: user_id})
     :ok
   end
 

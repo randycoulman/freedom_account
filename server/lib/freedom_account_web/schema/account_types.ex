@@ -11,12 +11,12 @@ defmodule FreedomAccountWeb.Schema.AccountTypes do
 
   @desc "A Freedom Account"
   object :account do
+    @desc "How many regular deposits will be made per year?"
+    field :deposits_per_year, non_null(:integer)
     @desc "The account's unique ID"
     field :id, non_null(:id)
     @desc "The name of the account"
     field :name, non_null(:string)
-    @desc "How many regular deposits will be made per year?"
-    field :deposits_per_year, non_null(:integer)
 
     @desc "The individual funds in the account"
     field :funds, non_null(list_of(non_null(:fund))) do
@@ -26,11 +26,11 @@ defmodule FreedomAccountWeb.Schema.AccountTypes do
 
   @desc "Account settings input"
   input_object :account_input do
+    @desc "How many regular deposits will be made per year?"
+    field :deposits_per_year, non_null(:integer)
     @desc "The account's unique ID"
     field :id, non_null(:id)
     @desc "The name of the account"
     field :name, non_null(:string)
-    @desc "How many regular deposits will be made per year?"
-    field :deposits_per_year, non_null(:integer)
   end
 end

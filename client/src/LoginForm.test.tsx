@@ -34,7 +34,7 @@ describe("LoginForm", () => {
     const loginButton = clickButton(/login/i);
 
     await waitFor(() => {
-      expect(loginButton).not.toBeDisabled();
+      expect(loginButton()).not.toBeDisabled();
     });
 
     td.verify(onSubmit("USERNAME"));

@@ -9,17 +9,17 @@ import userEvent from "@testing-library/user-event";
 type TextMatch = ByRoleOptions["name"];
 
 export const clearInput = (name: Matcher) => {
-  const input = screen.getByLabelText(name);
+  const selector = () => screen.getByLabelText(name);
 
-  userEvent.clear(input);
-  return input;
+  userEvent.clear(selector());
+  return selector;
 };
 
 export const clickButton = (name: TextMatch) => {
-  const button = screen.getByRole("button", { name });
+  const selector = () => screen.getByRole("button", { name });
 
-  userEvent.click(button);
-  return button;
+  userEvent.click(selector());
+  return selector;
 };
 
 export const expectError = (message: Matcher) =>
@@ -28,8 +28,8 @@ export const expectError = (message: Matcher) =>
   });
 
 export const fillInput = (name: Matcher, value: string) => {
-  const input = clearInput(name);
+  const selector = clearInput(name);
 
-  userEvent.type(input, value);
-  return input;
+  userEvent.type(selector(), value);
+  return selector;
 };

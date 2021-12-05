@@ -13,8 +13,10 @@ defmodule FreedomAccount do
   alias FreedomAccount.Funds
 
   @type account :: Accounts.account()
+  @type account_id :: Accounts.account_id()
   @type account_params :: Accounts.account_params()
   @type fund :: Funds.fund()
+  @type fund_params :: Funds.fund_params()
   @type reset_error :: Accounts.update_error() | {:error, :unauthorized}
   @type update_error :: Accounts.update_error()
   @type user :: Authentication.user()
@@ -22,6 +24,8 @@ defmodule FreedomAccount do
   @type username :: Authentication.username()
 
   @callback authenticate(username :: username) :: {:ok, user} | {:error, :unauthorized}
+  @callback create_fund(account_id :: account_id, params :: fund_params) ::
+              {:ok, fund} | {:error, :not_found | Funds.create_error()}
   @callback find_user(id :: user_id) :: {:ok, user} | {:error, :not_found}
   @callback list_funds(account :: account) :: [fund]
   @callback my_account(user :: user) :: {:ok, account} | {:error, :not_found}
@@ -44,6 +48,13 @@ defmodule FreedomAccount.Impl do
   defdelegate authenticate(username), to: Authentication
 
   @impl FreedomAccount
+  def create_fund(account_id, params) do
+    with {:ok, account} <- Accounts.find_account(account_id) do
+      Funds.create_fund(account, params)
+    end
+  end
+
+  @impl FreedomAccount
   defdelegate find_user(user_id), to: Authentication
 
   @impl FreedomAccount
@@ -51,6 +62,7 @@ defmodule FreedomAccount.Impl do
 
   @impl FreedomAccount
   defdelegate my_account(user), to: Accounts, as: :account_for_user
+
   @impl FreedomAccount
   def reset_test_account do
     with {:ok, test_user} <- authenticate(@test_username),

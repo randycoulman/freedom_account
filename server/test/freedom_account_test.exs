@@ -18,8 +18,7 @@ defmodule FreedomAccountTest do
       refute Repo.reload(funds) |> Enum.any?()
 
       assert {:ok, new_account} = Impl.my_account(user)
-      new_funds = Impl.list_funds(new_account)
-      assert length(new_funds) == 3
+      assert Impl.list_funds(new_account) == []
     end
   end
 end

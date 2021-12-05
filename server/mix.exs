@@ -99,6 +99,7 @@ defmodule FreedomAccount.MixProject do
       {:plug_cowboy, "~> 2.5.2"},
       {:plug_static_index_html, "~> 1.0"},
       {:postgrex, ">= 0.0.0"},
+      {:shorter_maps, "~> 2.2", only: :test},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 0.5"}
     ]
