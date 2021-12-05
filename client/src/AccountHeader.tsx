@@ -9,9 +9,7 @@ export type Props = {
   onUpdate?: (_values: AccountInput) => void;
 };
 
-const defaultOnUpdate = (_values: AccountInput) => {
-  /* noop */
-};
+const defaultOnUpdate = (_values: AccountInput) => {};
 
 export const AccountHeader = ({
   account,

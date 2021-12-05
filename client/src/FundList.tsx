@@ -11,9 +11,7 @@ export type Props = {
   onAddFund?: (_values: FundInput) => void;
 };
 
-const defaultOnAddFund = (_values: FundInput) => {
-  /* noop */
-};
+const defaultOnAddFund = (_values: FundInput) => {};
 
 export const FundList = ({ funds, onAddFund = defaultOnAddFund }: Props) => {
   const [isAdding, beAdding] = useState(false);

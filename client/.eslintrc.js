@@ -119,7 +119,6 @@ module.exports = {
     "no-debugger": "warn",
     "no-div-regex": "warn",
     "no-else-return": "warn",
-    "no-empty-function": "warn",
     "no-implicit-coercion": "warn",
     "no-implicit-globals": "warn",
     "no-inner-declarations": ["warn", "both"],
