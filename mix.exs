@@ -61,8 +61,11 @@ defmodule FreedomAccount.MixProject do
   defp aliases do
     [
       "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
+      dev: ["cmd docker compose -f docker-compose-dev.yml up --build -d"],
+      "dev.stop": ["cmd docker compose -f docker-compose-dev.yml down"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+      s: ["phx.server"],
       setup: ["deps.get", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
     ]
