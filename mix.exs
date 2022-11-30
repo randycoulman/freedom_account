@@ -7,6 +7,7 @@ defmodule FreedomAccount.MixProject do
       app: :freedom_account,
       deps: deps(),
       elixir: "~> 1.14",
+      elixirc_options: elixirc_options(Mix.env()),
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       version: "0.1.0",
@@ -20,6 +21,28 @@ defmodule FreedomAccount.MixProject do
     [
       mod: {FreedomAccount.Application, []},
       extra_applications: [:logger, :runtime_tools]
+    ]
+  end
+
+  defp elixirc_options(:dev) do
+    [
+      all_warnings: true,
+      ignore_module_conflict: true,
+      warnings_as_errors: false
+    ]
+  end
+
+  defp elixirc_options(:test) do
+    [
+      all_warnings: true,
+      warnings_as_errors: false
+    ]
+  end
+
+  defp elixirc_options(_) do
+    [
+      all_warnings: true,
+      warnings_as_errors: true
     ]
   end
 
