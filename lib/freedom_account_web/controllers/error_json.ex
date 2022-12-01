@@ -1,4 +1,8 @@
 defmodule FreedomAccountWeb.ErrorJSON do
+  @moduledoc """
+  Define error responses for JSON routes.
+  """
+
   # If you want to customize a particular status code,
   # you may add your own clauses, such as:
   #
@@ -9,6 +13,7 @@ defmodule FreedomAccountWeb.ErrorJSON do
   # By default, Phoenix returns the status message from
   # the template name. For example, "404.json" becomes
   # "Not Found".
+  @spec render(String.t(), map) :: map
   def render(template, _assigns) do
     %{errors: %{detail: Phoenix.Controller.status_message_from_template(template)}}
   end

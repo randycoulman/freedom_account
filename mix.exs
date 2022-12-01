@@ -10,7 +10,7 @@ defmodule FreedomAccount.MixProject do
       elixirc_options: elixirc_options(Mix.env()),
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
-      version: "0.1.0",
+      version: "0.1.0"
     ]
   end
 
@@ -55,6 +55,7 @@ defmodule FreedomAccount.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:ecto_sql, "~> 3.6"},
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
       {:floki, ">= 0.30.0", only: :test},
@@ -71,7 +72,7 @@ defmodule FreedomAccount.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:tailwind, "~> 0.1.8", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 0.6"},
-      {:telemetry_poller, "~> 1.0"},
+      {:telemetry_poller, "~> 1.0"}
     ]
   end
 
@@ -90,7 +91,7 @@ defmodule FreedomAccount.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       s: ["phx.server"],
       setup: ["deps.get", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
     ]
   end
 end

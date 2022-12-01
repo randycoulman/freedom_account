@@ -2,7 +2,9 @@ defmodule FreedomAccountWeb.ErrorJSONTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   test "renders 404" do
-    assert FreedomAccountWeb.ErrorJSON.render("404.json", %{}) == %{errors: %{detail: "Not Found"}}
+    assert FreedomAccountWeb.ErrorJSON.render("404.json", %{}) == %{
+             errors: %{detail: "Not Found"}
+           }
   end
 
   test "renders 500" do
