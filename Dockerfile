@@ -1,51 +1,91 @@
-FROM node:16.13.0-buster AS client_build
-LABEL maintainer="Randy Coulman <randy@randycoulman.com>"
+# Find eligible builder and runner images on Docker Hub. We use Ubuntu/Debian
+# instead of Alpine to avoid DNS resolution issues in production.
+#
+# https://hub.docker.com/r/hexpm/elixir/tags?page=1&name=ubuntu
+# https://hub.docker.com/_/ubuntu?tab=tags
+#
+# This file is based on these images:
+#
+#   - https://hub.docker.com/r/hexpm/elixir/tags - for the build image
+#   - https://hub.docker.com/_/debian?tab=tags&page=1&name=bullseye-20221004-slim - for the release image
+#   - https://pkgs.org/ - resource for finding needed packages
+#   - Ex: hexpm/elixir:1.14.2-erlang-25.1.2-debian-bullseye-20221004-slim
+#
+ARG ELIXIR_VERSION=1.14.2
+ARG OTP_VERSION=25.1.2
+ARG DEBIAN_VERSION=bullseye-20221004-slim
 
+ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
+ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
+
+FROM ${BUILDER_IMAGE} as builder
+
+# install build dependencies
+RUN apt-get update -y && apt-get install -y build-essential git \
+    && apt-get clean && rm -f /var/lib/apt/lists/*_*
+
+# prepare build dir
 WORKDIR /app
 
-COPY client/package.json client/package-lock.json ./
+# install hex + rebar
+RUN mix local.hex --force && \
+    mix local.rebar --force
 
-RUN npm install
+# set build ENV
+ENV MIX_ENV="prod"
 
-COPY client .
+# install mix dependencies
+COPY mix.exs mix.lock ./
+RUN mix deps.get --only $MIX_ENV
+RUN mkdir config
 
-ENV \
-  NODE_ENV=production \
-  SKIP_PREFLIGHT_CHECK=true
+# copy compile-time config files before we compile dependencies
+# to ensure any relevant config change will trigger the dependencies
+# to be re-compiled.
+COPY config/config.exs config/${MIX_ENV}.exs config/
+RUN mix deps.compile
 
-RUN npm run build
+COPY priv priv
 
-FROM elixir:1.12.3 AS server_build
-LABEL maintainer="Randy Coulman <randy@randycoulman.com>"
+COPY lib lib
 
-WORKDIR /app
+COPY assets assets
 
-RUN \
-  mix local.hex --force && \
-  mix local.rebar --force
+# compile assets
+RUN mix assets.deploy
 
-ENV MIX_ENV=prod
+# Compile the release
+RUN mix compile
 
-COPY server/mix.exs server/mix.lock ./
-COPY server/config ./config
+# Changes to config/runtime.exs don't require recompiling the code
+COPY config/runtime.exs config/
 
-RUN mix do deps.get --only prod, deps.compile
+COPY rel rel
+RUN mix release
 
-COPY server .
+# start a new build stage so that the final image will only contain
+# the compiled release and other runtime necessities
+FROM ${RUNNER_IMAGE}
 
-COPY --from=client_build /app/build ./priv/static
+RUN apt-get update -y && apt-get install -y libstdc++6 openssl libncurses5 locales \
+  && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
-RUN mix do compile, release
+# Set the locale
+RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
 
-FROM debian:buster
-LABEL maintainer="Randy Coulman <randy@randycoulman.com>"
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
-ENV LANG=C.UTF-8
+WORKDIR "/app"
+RUN chown nobody /app
 
-RUN apt-get update && apt-get install -y openssl
+# set runner ENV
+ENV MIX_ENV="prod"
 
-WORKDIR /app
+# Only copy the final release from the build stage
+COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/freedom_account ./
 
-COPY --from=server_build /app/_build/prod/rel/freedom_account ./
+USER nobody
 
-ENTRYPOINT ["/app/bin/freedom_account"]
+CMD ["/app/bin/server"]

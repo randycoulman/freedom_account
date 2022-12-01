@@ -18,3 +18,7 @@ config :freedom_account, FreedomAccountWeb.Endpoint,
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :freedom_account, FreedomAccount.Repo, pool: Ecto.Adapters.SQL.Sandbox
+
+config :junit_formatter,
+  include_filename?: true,
+  include_file_line?: true
