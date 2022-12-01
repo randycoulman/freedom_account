@@ -9,6 +9,7 @@ defmodule FreedomAccount.MixProject do
       elixir: "~> 1.14",
       elixirc_options: elixirc_options(Mix.env()),
       elixirc_paths: elixirc_paths(Mix.env()),
+      preferred_cli_env: [validate: :test],
       start_permanent: Mix.env() == :prod,
       version: "0.1.0"
     ]
@@ -91,7 +92,12 @@ defmodule FreedomAccount.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       s: ["phx.server"],
       setup: ["deps.get", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      validate: [
+        "test",
+        "format --check-formatted",
+        "credo"
+      ]
     ]
   end
 end
