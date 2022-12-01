@@ -103,14 +103,14 @@ defmodule FreedomAccount.MixProject do
     [
       "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
       build: ["cmd docker build -t freedom_account:#{@version} ."],
-      dev: ["cmd docker compose -f docker-compose-dev.yml up --build -d"],
-      "dev.stop": ["cmd docker compose -f docker-compose-dev.yml down"],
+      dev: ["cmd docker compose up --build -d"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-      prod: ["cmd docker compose -f docker-compose-prod.yml -p freedom_account_prod up -d"],
-      "prod.stop": ["cmd docker compose -f docker-compose-prod.yml -p freedom_account_prod down"],
+      prod: ["cmd docker compose up -d app"],
+      "prod.debug": ["cmd docker compose up app"],
       s: ["phx.server"],
       setup: ["deps.get", "ecto.setup"],
+      stop: ["cmd docker compose --profile prod down"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       validate: [
         "test",

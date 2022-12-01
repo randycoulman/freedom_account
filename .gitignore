@@ -32,9 +32,10 @@ freedom_account-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Secrets
+/config/*_secret.env
 
 ### Old - to review
-/config/docker_prod_secret.env
 /node_modules
 /.pnp
 .pnp.js

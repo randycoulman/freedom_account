@@ -20,7 +20,6 @@ scratchpad to remind myself how to do things:
 - [Install Docker](https://docs.docker.com/desktop/install/mac-install/)
 - Install tools: `asdf install`
 - Start development Docker containers: `mix dev`
-- Stop development Docker containers: `mix dev.stop`
 - Initial dev setup: `mix setup`
 - Run the development server: `mix s`
 - Format the code: `mix format`
@@ -31,7 +30,7 @@ scratchpad to remind myself how to do things:
 - Run type checks: `mix dialyzer`
 - Build the production app: `mix build`
 - Run the production app: `mix prod`
-- Stop the production app: `mix prod.stop`
+- Stop all Docker containers: `mix stop`
 
 ### To be ported/eliminated:
 
