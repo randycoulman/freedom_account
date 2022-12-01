@@ -23,28 +23,18 @@ scratchpad to remind myself how to do things:
 - Stop development Docker containers: `mix dev.stop`
 - Initial dev setup: `mix setup`
 - Run the development server: `mix s`
+- Format the code: `mix format`
+- Run all tests and checks: `mix validate`
 - Run tests: `mix test`
+- Run tests, watching for changes: `mix test.interactive --stale`
+- Run lint checks: `mix credo`
+- Run type checks: `mix dialyzer`
 
 ### To be ported/eliminated:
 
 - Build the production app: `npm run build`
 - Run the production app: `npm start`
 - Stop the production app: `npm stop`
-
-- Run all tests/linting/type-checking/format-checking:
-
-  - Ensure that the db, dev server, and dev client are running
-  - Run `npm test`
-
-- Run an individual server test-related command:
-  `npm run server <mix task>`. Available mix tasks include:
-
-  - `coveralls.html`
-  - `credo`
-  - `dialyzer`
-  - `format`
-  - `test`
-  - `test.watch`
 
 - Run an individual client test-related command:
   `npm run client <npm script>`. Available scripts include:
