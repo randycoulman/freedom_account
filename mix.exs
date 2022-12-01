@@ -78,6 +78,7 @@ defmodule FreedomAccount.MixProject do
       {:gettext, "~> 0.20"},
       {:heroicons, "~> 0.5"},
       {:jason, "~> 1.2"},
+      {:junit_formatter, "~> 3.3", only: [:test]},
       {:mix_test_interactive, "~> 1.2", only: :dev, runtime: false},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 3.0"},
