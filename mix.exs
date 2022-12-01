@@ -1,6 +1,14 @@
 defmodule FreedomAccount.MixProject do
+  @moduledoc false
+
   use Mix.Project
 
+  # credo:disable-for-this-file Credo.Check.Warning.MixEnv
+  # Reason: Use of Mix.env() is perfectly valid in this file.
+
+  @version "0.1.0"
+
+  @spec project :: Keyword.t()
   def project do
     [
       aliases: aliases(),
@@ -16,13 +24,14 @@ defmodule FreedomAccount.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       preferred_cli_env: [validate: :test],
       start_permanent: Mix.env() == :prod,
-      version: "0.1.0"
+      version: @version
     ]
   end
 
   # Configuration for the OTP application.
   #
   # Type `mix help compile.app` for more information.
+  @spec application :: Keyword.t()
   def application do
     [
       mod: {FreedomAccount.Application, []},
@@ -93,10 +102,13 @@ defmodule FreedomAccount.MixProject do
   defp aliases do
     [
       "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
+      build: ["cmd docker build -t freedom_account:#{@version} ."],
       dev: ["cmd docker compose -f docker-compose-dev.yml up --build -d"],
       "dev.stop": ["cmd docker compose -f docker-compose-dev.yml down"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+      prod: ["cmd docker compose -f docker-compose-prod.yml -p freedom_account_prod up -d"],
+      "prod.stop": ["cmd docker compose -f docker-compose-prod.yml -p freedom_account_prod down"],
       s: ["phx.server"],
       setup: ["deps.get", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],

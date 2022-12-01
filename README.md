@@ -29,22 +29,11 @@ scratchpad to remind myself how to do things:
 - Run tests, watching for changes: `mix test.interactive --stale`
 - Run lint checks: `mix credo`
 - Run type checks: `mix dialyzer`
+- Build the production app: `mix build`
+- Run the production app: `mix prod`
+- Stop the production app: `mix prod.stop`
 
 ### To be ported/eliminated:
-
-- Build the production app: `npm run build`
-- Run the production app: `npm start`
-- Stop the production app: `npm stop`
-
-- Run an individual client test-related command:
-  `npm run client <npm script>`. Available scripts include:
-
-  - `format`
-  - `lint`
-  - `lint:format`
-  - `lint:js`
-  - `test:coverage`
-  - `test:once`
 
 - Run an individual end-to-end test-related command:
   `npm run e2e <npm script>`. Available scripts include:
