@@ -1,7 +1,7 @@
 version: 2.1
 parameters:
   cache-version:
-    default: v1
+    default: v2
     type: string
   elixir:
     type: string
@@ -39,6 +39,8 @@ jobs:
             MIX_ENV: test
       - run:
           command: mix dialyzer --plt
+          environment:
+            MIX_ENV: test
       - save_cache:
           key: <<pipeline.parameters.cache-version>>-deps-<<pipeline.parameters.elixir>>-{{ checksum "mix.lock" }}
           paths:
