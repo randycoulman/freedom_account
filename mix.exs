@@ -6,6 +6,11 @@ defmodule FreedomAccount.MixProject do
       aliases: aliases(),
       app: :freedom_account,
       deps: deps(),
+      dialyzer: [
+        ignore_warnings: "config/dialyzer_ignore.exs",
+        list_unused_filters: true,
+        plt_add_apps: [:ex_unit]
+      ],
       elixir: "~> 1.14",
       elixirc_options: elixirc_options(Mix.env()),
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -57,6 +62,7 @@ defmodule FreedomAccount.MixProject do
   defp deps do
     [
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.2.0", only: [:dev, :test], runtime: false},
       {:ecto_sql, "~> 3.6"},
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
       {:floki, ">= 0.30.0", only: :test},
@@ -96,7 +102,8 @@ defmodule FreedomAccount.MixProject do
       validate: [
         "test",
         "format --check-formatted",
-        "credo"
+        "credo",
+        "dialyzer"
       ]
     ]
   end
