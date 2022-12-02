@@ -20,7 +20,7 @@ defmodule FreedomAccountWeb.Endpoint do
   plug Plug.Static,
     at: "/",
     from: :freedom_account,
-    gzip: false,
+    gzip: true,
     only: FreedomAccountWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the

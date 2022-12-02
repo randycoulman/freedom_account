@@ -17,7 +17,7 @@ defmodule FreedomAccountWeb.Router do
   scope "/", FreedomAccountWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    live "/", AccountLive.Show, :show
   end
 
   # Other scopes may use custom stacks.

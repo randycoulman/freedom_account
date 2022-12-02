@@ -74,6 +74,7 @@ defmodule FreedomAccount.MixProject do
       {:dialyxir, "~> 1.2.0", only: [:dev, :test], runtime: false},
       {:ecto_sql, "~> 3.6"},
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
+      {:faker, "~> 0.17", only: :test},
       {:floki, ">= 0.30.0", only: :test},
       {:gettext, "~> 0.20"},
       {:heroicons, "~> 0.5"},
@@ -90,7 +91,8 @@ defmodule FreedomAccount.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:tailwind, "~> 0.1.8", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 0.6"},
-      {:telemetry_poller, "~> 1.0"}
+      {:telemetry_poller, "~> 1.0"},
+      {:typed_ecto_schema, "~> 0.4.1"}
     ]
   end
 
