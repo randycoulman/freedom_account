@@ -19,6 +19,13 @@ defmodule FreedomAccountWeb.Router do
 
     live "/", AccountLive.Show, :show
     live "/edit", AccountLive.Show, :edit
+
+    # live "/funds", FundLive.Index, :index
+    # live "/funds/new", FundLive.Index, :new
+    # live "/funds/:id/edit", FundLive.Index, :edit
+
+    # live "/funds/:id", FundLive.Show, :show
+    # live "/funds/:id/show/edit", FundLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.

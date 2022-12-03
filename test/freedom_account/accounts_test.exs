@@ -13,12 +13,12 @@ defmodule FreedomAccount.AccountsTest do
     test "creates an account with valid data" do
       valid_attrs = Factory.account_attrs()
 
-      assert {:ok, account} = Accounts.create_account(valid_attrs)
+      assert {:ok, %Account{} = account} = Accounts.create_account(valid_attrs)
       assert account.deposits_per_year == valid_attrs[:deposits_per_year]
       assert account.name == valid_attrs[:name]
     end
 
-    test "create_account/1 with invalid data returns error changeset" do
+    test "returns error changeset for invalid data" do
       assert {:error, %Ecto.Changeset{}} = Accounts.create_account(@invalid_attrs)
     end
   end

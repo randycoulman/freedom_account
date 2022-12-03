@@ -6,6 +6,7 @@
     </.link>
   </:actions>
 </.header>
+<.live_component module={FreedomAccountWeb.FundLive.Index} id={@account.id} account={@account} />
 
 <.modal :if={@live_action == :edit} id="account-modal" show on_cancel={JS.patch(~p"/")}>
   <.live_component

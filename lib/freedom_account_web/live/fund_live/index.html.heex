@@ -1,0 +1,46 @@
+<article>
+  <.header>
+    Funds
+    <%!-- <:actions>
+    <.link patch={~p"/funds/new"}>
+      <.button>New Fund</.button>
+    </.link>
+  </:actions> --%>
+  </.header>
+
+  <%!-- <.table id="funds" rows={@funds} row_click={&JS.navigate(~p"/funds/#{&1}")}> --%>
+  <.table :if={@funds != []} id="funds" rows={@funds}>
+    <:col :let={fund} label="Icon"><%= fund.icon %></:col>
+    <:col :let={fund} label="Name"><%= fund.name %></:col>
+    <%!-- <:action :let={fund}>
+    <div class="sr-only">
+      <.link navigate={~p"/funds/#{fund}"}>Show</.link>
+    </div>
+    <.link patch={~p"/funds/#{fund}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={fund}>
+    <.link phx-click={JS.push("delete", value: %{id: fund.id})} data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action> --%>
+  </.table>
+  <div :if={@funds == []}>
+    This account has no funds yet. Use the Add Fund button to add one.
+  </div>
+
+  <%!-- <.modal
+    :if={@live_action in [:new, :edit]}
+    id="fund-modal"
+    show
+    on_cancel={JS.navigate(~p"/funds")}
+  >
+    <.live_component
+      module={FreedomAccountWeb.FundLive.FormComponent}
+      id={@fund.id || :new}
+      title={@page_title}
+      action={@live_action}
+      fund={@fund}
+      navigate={~p"/funds"}
+    />
+  </.modal> --%>
+</article>

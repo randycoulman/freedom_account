@@ -3,7 +3,6 @@ defmodule FreedomAccount.Accounts.Account do
   A Freedom Account.
   """
 
-  use Ecto.Schema
   use TypedEctoSchema
 
   import Ecto.Changeset
