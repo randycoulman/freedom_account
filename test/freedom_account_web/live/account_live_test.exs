@@ -21,13 +21,11 @@ defmodule FreedomAccountWeb.AccountLiveTest do
       {:ok, _show_live, html} = live(conn, ~p"/")
 
       assert html =~ "Freedom Account"
-      assert html =~ account.name
+      assert html =~ escaped(account.name)
     end
 
     test "updates account within modal", %{conn: conn} do
-      updated_deposits = Factory.deposit_count()
-      updated_name = Factory.account_name()
-      update_attrs = %{deposits_per_year: updated_deposits, name: updated_name}
+      update_attrs = Factory.account_attrs()
 
       {:ok, show_live, _html} = live(conn, ~p"/")
 
@@ -47,7 +45,7 @@ defmodule FreedomAccountWeb.AccountLiveTest do
         |> follow_redirect(conn, ~p"/")
 
       assert html =~ "Account updated successfully"
-      assert html =~ updated_name
+      assert html =~ escaped(update_attrs[:name])
     end
   end
 end

@@ -11,15 +11,11 @@ defmodule FreedomAccount.AccountsTest do
 
   describe "creating an account" do
     test "creates an account with valid data" do
-      deposits = Factory.deposit_count()
-      name = Factory.account_name()
-      valid_attrs = %{deposits_per_year: deposits, name: name}
+      valid_attrs = Factory.account_attrs()
 
-      assert {:ok,
-              %Account{
-                deposits_per_year: ^deposits,
-                name: ^name
-              }} = Accounts.create_account(valid_attrs)
+      assert {:ok, account} = Accounts.create_account(valid_attrs)
+      assert account.deposits_per_year == valid_attrs[:deposits_per_year]
+      assert account.name == valid_attrs[:name]
     end
 
     test "create_account/1 with invalid data returns error changeset" do
@@ -45,13 +41,11 @@ defmodule FreedomAccount.AccountsTest do
   describe "updating an account's settings" do
     test "update_account/2 with valid data updates the account" do
       account = Factory.account()
-      updated_deposits = Factory.deposit_count()
-      updated_name = Factory.account_name()
-      update_attrs = %{deposits_per_year: updated_deposits, name: updated_name}
+      update_attrs = Factory.account_attrs()
 
       assert {:ok, %Account{} = account} = Accounts.update_account(account, update_attrs)
-      assert account.deposits_per_year == updated_deposits
-      assert account.name == updated_name
+      assert account.deposits_per_year == update_attrs[:deposits_per_year]
+      assert account.name == update_attrs[:name]
     end
 
     test "update_account/2 with invalid data returns error changeset" do
