@@ -1,20 +1,19 @@
 <.header>
   <%= @account.name %>
-  <%!-- <:subtitle>This is a account record from your database.</:subtitle> --%>
-  <%!-- <:actions>
-    <.link patch={~p"/accounts/#{@account}/show/edit"} phx-click={JS.push_focus()}>
-      <.button>Edit account</.button>
+  <:actions>
+    <.link patch={~p"/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit</.button>
     </.link>
-  </:actions> --%>
+  </:actions>
 </.header>
 
-<%!-- <.modal :if={@live_action == :edit} id="account-modal" show on_cancel={JS.patch(~p"/accounts/#{@account}")}>
+<.modal :if={@live_action == :edit} id="account-modal" show on_cancel={JS.patch(~p"/")}>
   <.live_component
     module={FreedomAccountWeb.AccountLive.FormComponent}
     id={@account.id}
     title={@page_title}
     action={@live_action}
     account={@account}
-    navigate={~p"/accounts/#{@account}"}
+    navigate={~p"/"}
   />
-</.modal> --%>
+</.modal>

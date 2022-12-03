@@ -1,82 +1,87 @@
 defmodule FreedomAccountWeb.AccountLive.FormComponent do
-  # use FreedomAccountWeb, :live_component
+  @moduledoc """
+  For for editing account settings.
+  """
 
-  # alias FreedomAccount.Accounts
+  use FreedomAccountWeb, :live_component
 
-  # @impl true
-  # def render(assigns) do
-  #   ~H"""
-  #   <div>
-  #     <.header>
-  #       <%= @title %>
-  #       <:subtitle>Use this form to manage account records in your database.</:subtitle>
-  #     </.header>
+  alias FreedomAccount.Accounts
+  alias Phoenix.LiveComponent
 
-  #     <.simple_form
-  #       :let={f}
-  #       for={@changeset}
-  #       id="account-form"
-  #       phx-target={@myself}
-  #       phx-change="validate"
-  #       phx-submit="save"
-  #     >
-  #       <.input field={{f, :deposits_per_year}} type="number" label="deposits_per_year" />
-  #       <.input field={{f, :name}} type="text" label="name" />
-  #       <:actions>
-  #         <.button phx-disable-with="Saving...">Save Account</.button>
-  #       </:actions>
-  #     </.simple_form>
-  #   </div>
-  #   """
-  # end
+  @impl LiveComponent
+  def render(assigns) do
+    ~H"""
+    <div>
+      <.header>
+        <%= @title %>
+        <:subtitle>Use this form to modify account settings.</:subtitle>
+      </.header>
 
-  # @impl true
-  # def update(%{account: account} = assigns, socket) do
-  #   changeset = Accounts.change_account(account)
+      <.simple_form
+        :let={f}
+        for={@changeset}
+        id="account-form"
+        phx-target={@myself}
+        phx-change="validate"
+        phx-submit="save"
+      >
+        <.input field={{f, :deposits_per_year}} type="number" label="Deposits / year" />
+        <.input field={{f, :name}} type="text" label="Name" />
+        <:actions>
+          <.button phx-disable-with="Saving...">Save Account</.button>
+        </:actions>
+      </.simple_form>
+    </div>
+    """
+  end
 
-  #   {:ok,
-  #    socket
-  #    |> assign(assigns)
-  #    |> assign(:changeset, changeset)}
-  # end
+  @impl LiveComponent
+  def update(%{account: account} = assigns, socket) do
+    changeset = Accounts.change_account(account)
 
-  # @impl true
-  # def handle_event("validate", %{"account" => account_params}, socket) do
-  #   changeset =
-  #     socket.assigns.account
-  #     |> Accounts.change_account(account_params)
-  #     |> Map.put(:action, :validate)
+    {:ok,
+     socket
+     |> assign(assigns)
+     |> assign(:changeset, changeset)}
+  end
 
-  #   {:noreply, assign(socket, :changeset, changeset)}
-  # end
+  @impl LiveComponent
+  def handle_event("validate", %{"account" => account_params}, socket) do
+    changeset =
+      socket.assigns.account
+      |> Accounts.change_account(account_params)
+      |> Map.put(:action, :validate)
 
-  # def handle_event("save", %{"account" => account_params}, socket) do
-  #   save_account(socket, socket.assigns.action, account_params)
-  # end
+    {:noreply, assign(socket, :changeset, changeset)}
+  end
 
-  # defp save_account(socket, :edit, account_params) do
-  #   case Accounts.update_account(socket.assigns.account, account_params) do
-  #     {:ok, _account} ->
-  #       {:noreply,
-  #        socket
-  #        |> put_flash(:info, "Account updated successfully")
-  #        |> push_navigate(to: socket.assigns.navigate)}
+  def handle_event("save", %{"account" => account_params}, socket) do
+    save_account(socket, socket.assigns.action, account_params)
+  end
 
-  #     {:error, %Ecto.Changeset{} = changeset} ->
-  #       {:noreply, assign(socket, :changeset, changeset)}
-  #   end
-  # end
+  defp save_account(socket, :edit, account_params) do
+    case Accounts.update_account(socket.assigns.account, account_params) do
+      {:ok, _account} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "Account updated successfully")
+         |> push_navigate(to: socket.assigns.navigate)}
 
-  # defp save_account(socket, :new, account_params) do
-  #   case Accounts.create_account(account_params) do
-  #     {:ok, _account} ->
-  #       {:noreply,
-  #        socket
-  #        |> put_flash(:info, "Account created successfully")
-  #        |> push_navigate(to: socket.assigns.navigate)}
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign(socket, :changeset, changeset)}
+    end
+  end
 
-  #     {:error, %Ecto.Changeset{} = changeset} ->
-  #       {:noreply, assign(socket, changeset: changeset)}
-  #   end
-  # end
+  defp save_account(socket, :new, account_params) do
+    case Accounts.create_account(account_params) do
+      {:ok, _account} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "Account created successfully")
+         |> push_navigate(to: socket.assigns.navigate)}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign(socket, changeset: changeset)}
+    end
+  end
 end
