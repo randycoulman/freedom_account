@@ -116,10 +116,10 @@ defmodule FreedomAccount.MixProject do
       stop: ["cmd docker compose --profile prod down"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       validate: [
-        "test",
         "format --check-formatted",
         "credo",
-        "dialyzer"
+        "dialyzer",
+        "test"
       ]
     ]
   end

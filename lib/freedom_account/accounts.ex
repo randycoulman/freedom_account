@@ -29,34 +29,22 @@ defmodule FreedomAccount.Accounts do
     |> Repo.insert()
   end
 
-  # @doc """
-  # Updates a account.
+  @doc """
+  Updates a account.
+  """
+  @spec update_account(Account.t(), Account.attrs()) ::
+          {:ok, Account.t()} | {:error, Changeset.t()}
+  def update_account(%Account{} = account, attrs) do
+    account
+    |> Account.changeset(attrs)
+    |> Repo.update()
+  end
 
-  # ## Examples
-
-  #     iex> update_account(account, %{field: new_value})
-  #     {:ok, %Account{}}
-
-  #     iex> update_account(account, %{field: bad_value})
-  #     {:error, %Ecto.Changeset{}}
-
-  # """
-  # def update_account(%Account{} = account, attrs) do
-  #   account
-  #   |> Account.changeset(attrs)
-  #   |> Repo.update()
-  # end
-
-  # @doc """
-  # Returns an `%Ecto.Changeset{}` for tracking account changes.
-
-  # ## Examples
-
-  #     iex> change_account(account)
-  #     %Ecto.Changeset{data: %Account{}}
-
-  # """
-  # def change_account(%Account{} = account, attrs \\ %{}) do
-  #   Account.changeset(account, attrs)
-  # end
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking account changes.
+  """
+  @spec change_account(Account.t(), Account.attrs()) :: Changeset.t()
+  def change_account(%Account{} = account, attrs \\ %{}) do
+    Account.changeset(account, attrs)
+  end
 end

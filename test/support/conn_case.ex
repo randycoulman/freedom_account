@@ -35,4 +35,9 @@ defmodule FreedomAccountWeb.ConnCase do
     FreedomAccount.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
+
+  @spec escaped(String.t()) :: String.t()
+  def escaped(string) do
+    string |> Phoenix.HTML.html_escape() |> Phoenix.HTML.safe_to_string()
+  end
 end

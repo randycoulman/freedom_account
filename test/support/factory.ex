@@ -14,12 +14,18 @@ defmodule FreedomAccount.Factory do
   def account(attrs \\ %{}) do
     {:ok, account} =
       attrs
-      |> Enum.into(%{
-        deposits_per_year: deposit_count(),
-        name: account_name()
-      })
+      |> account_attrs()
       |> Accounts.create_account()
 
     account
+  end
+
+  @spec account_attrs(Account.attrs()) :: Account.attrs()
+  def account_attrs(overrides \\ %{}) do
+    overrides
+    |> Enum.into(%{
+      deposits_per_year: deposit_count(),
+      name: account_name()
+    })
   end
 end
