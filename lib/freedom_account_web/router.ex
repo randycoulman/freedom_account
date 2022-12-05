@@ -17,10 +17,9 @@ defmodule FreedomAccountWeb.Router do
   scope "/", FreedomAccountWeb do
     pipe_through :browser
 
-    live "/", AccountLive.Show, :show
-    live "/edit", AccountLive.Show, :edit
-
-    live "/funds/new", AccountLive.Show, :new_fund
+    live "/", HomeLive.Show, :show
+    live "/edit", HomeLive.Show, :edit
+    live "/funds/new", HomeLive.Show, :new_fund
     # live "/funds/:id/edit", FundLive.Index, :edit
 
     # live "/funds/:id", FundLive.Show, :show

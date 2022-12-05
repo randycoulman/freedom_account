@@ -35,13 +35,13 @@
     on_cancel={JS.patch(~p"/")}
   >
     <.live_component
-      module={FreedomAccountWeb.FundLive.FormComponent}
       account={@account}
-      id={@fund.id || :new}
-      title={@page_title}
       action={@live_action}
       fund={@fund}
+      id={@fund.id || :new}
+      module={FreedomAccountWeb.FundLive.FormComponent}
       navigate={~p"/"}
+      title={@page_title}
     />
   </.modal>
 </article>

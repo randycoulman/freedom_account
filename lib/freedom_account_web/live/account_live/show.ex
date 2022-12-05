@@ -1,25 +1,18 @@
 defmodule FreedomAccountWeb.AccountLive.Show do
   @moduledoc false
 
-  use FreedomAccountWeb, :live_view
+  use FreedomAccountWeb, :live_component
 
-  alias FreedomAccount.Accounts
-  alias Phoenix.LiveView
+  alias Phoenix.LiveComponent
 
-  @impl LiveView
-  def mount(_params, _session, socket) do
+  @impl LiveComponent
+  def update(%{account: account, action: action, title: title}, socket) do
+    socket =
+      socket
+      |> assign(:account, account)
+      |> assign(:live_action, action)
+      |> assign(:page_title, title)
+
     {:ok, socket}
   end
-
-  @impl LiveView
-  def handle_params(_params, _uri, socket) do
-    {:noreply,
-     socket
-     |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:account, Accounts.only_account())}
-  end
-
-  defp page_title(:show), do: "Freedom Account"
-  defp page_title(:edit), do: "Edit Account Settings"
-  defp page_title(:new_fund), do: "Add Fund"
 end
