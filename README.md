@@ -16,41 +16,23 @@ of each category over time. That's what this app is for.
 I'll eventually flesh this out into better instructions; for now, this is just a
 scratchpad to remind myself how to do things:
 
-- Install everything locally: `npm run setup`
+- [Install asdf](https://asdf-vm.com/guide/getting-started.html)
+- [Install Docker](https://docs.docker.com/desktop/install/mac-install/)
+- Install tools: `asdf install`
+- Start development Docker containers: `mix dev`
+- Initial dev setup: `mix setup`
+- Run the development server: `mix s`
+- Format the code: `mix format`
+- Run all tests and checks: `mix validate`
+- Run tests: `mix test`
+- Run tests, watching for changes: `mix test.interactive --stale`
+- Run lint checks: `mix credo`
+- Run type checks: `mix dialyzer`
+- Build the production app: `mix build`
+- Run the production app: `mix prod`
+- Stop all Docker containers: `mix stop`
 
-- Run development servers in separate terminals:
-  - `npm run db && npm run devs`
-  - `npm run devc`
-- Stop the database Docker container: `npm run db:stop`
-
-- Build the production app: `npm run build`
-- Run the production app: `npm start`
-- Stop the production app: `npm stop`
-
-- Run all tests/linting/type-checking/format-checking:
-
-  - Ensure that the db, dev server, and dev client are running
-  - Run `npm test`
-
-- Run an individual server test-related command:
-  `npm run server <mix task>`. Available mix tasks include:
-
-  - `coveralls.html`
-  - `credo`
-  - `dialyzer`
-  - `format`
-  - `test`
-  - `test.watch`
-
-- Run an individual client test-related command:
-  `npm run client <npm script>`. Available scripts include:
-
-  - `format`
-  - `lint`
-  - `lint:format`
-  - `lint:js`
-  - `test:coverage`
-  - `test:once`
+### To be ported/eliminated:
 
 - Run an individual end-to-end test-related command:
   `npm run e2e <npm script>`. Available scripts include:
@@ -88,6 +70,11 @@ Here's what I hope to learn by doing this project:
 
 ### Technologies/Languages/Tools
 
+- Phoenix LiveView: I've been hearing/reading a lot about this and I really want
+  to learn it. This is a new direction as of 2022-11, and replaces some of the
+  technologies listed below (like GraphQL, Absinthe, React, Jest, etc.). I'm
+  leaving them there for posterity.
+
 - GraphQL: I've been using this on client projects at work and want to continue
   to get more familiar with it.
 
@@ -97,6 +84,8 @@ Here's what I hope to learn by doing this project:
   maintained a very small internal Elixir/Phoenix application at work. I want
   to gain more experience with Phoenix, and I've heard good things about
   Absinthe for building GraphQL servers, so I wanted to try that out as well.
+  **Update 2022-11:** I've been working in Elixir/Phoenix for the past three
+  years, so now have quite a bit of experience with it.
 
 - Modern React: I've been working in React for three years now, but I've never
   had the chance to start a project from the very beginning and control how

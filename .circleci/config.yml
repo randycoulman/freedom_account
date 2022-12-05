@@ -1,16 +1,16 @@
 version: 2.1
 parameters:
+  cache-version:
+    default: v2
+    type: string
   elixir:
     type: string
-    default: 1.12.3
+    default: 1.14.2
   postgres:
     type: string
-    default: "14.0"
-  nodejs:
-    type: string
-    default: 16.13.0
+    default: "15.1"
 jobs:
-  test_server:
+  test:
     docker:
       - image: cimg/elixir:<< pipeline.parameters.elixir >>
       - image: postgres:<< pipeline.parameters.postgres >>
@@ -20,104 +20,57 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v2-server-deps-{{ checksum "server/mix.lock" }}
-            - v2-server-deps
+            - <<pipeline.parameters.cache-version>>-deps-<<pipeline.parameters.elixir>>-{{ checksum "mix.lock" }}
+            - <<pipeline.parameters.cache-version>>-deps-<<pipeline.parameters.elixir>>
+            - <<pipeline.parameters.cache-version>>-deps
       - run:
           name: Install dependencies
           command: |
             mix local.hex --force --if-missing
             mix local.rebar --force
             mix deps.get
-          working_directory: server
       - run:
           name: Compile dependencies for dev
           command: mix deps.compile
-          working_directory: server
       - run:
           name: Compile dependencies for test
           command: mix deps.compile
           environment:
             MIX_ENV: test
-          working_directory: server
+      - run:
+          command: mix dialyzer --plt
+          environment:
+            MIX_ENV: test
       - save_cache:
-          key: v2-server-deps-{{ checksum "server/mix.lock" }}
+          key: <<pipeline.parameters.cache-version>>-deps-<<pipeline.parameters.elixir>>-{{ checksum "mix.lock" }}
           paths:
-            - server/_build
-            - server/deps
+            - _build
+            - deps
             - ~/.mix
       - restore_cache:
           keys:
-            - v2-server-plt-{{ checksum "server/mix.lock" }}
-            - v2-server-plt
-      - run:
-          command: mix dialyzer --plt
-          working_directory: server
-      - save_cache:
-          key: v2-server-plt-{{ checksum "server/mix.lock" }}
-          paths:
-            - server/_build
-            - ~/.mix
+            - <<pipeline.parameters.cache-version>>-compile-<<pipeline.parameters.elixir>>-{{ checksum "mix.lock" }}
       - run:
           name: Compile for dev
           command: mix compile
-          working_directory: server
       - run:
           name: Compile for test
           command: mix compile
           environment:
             MIX_ENV: test
-          working_directory: server
+      - save_cache:
+          key: <<pipeline.parameters.cache-version>>-compile-<<pipeline.parameters.elixir>>-{{ checksum "mix.lock" }}
+          paths:
+            - _build
       - run:
           name: Run validations
           command: mix validate
-          working_directory: server
       - store_test_results:
-          path: server/_build/test/lib/freedom_account
-  test_client:
-    docker:
-      - image: cimg/node:<< pipeline.parameters.nodejs >>
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - v1-client-deps-<< pipeline.parameters.nodejs >>-{{ checksum "client/package-lock.json" }}
-            - v1-client-deps-<< pipeline.parameters.nodejs >>
-      - run:
-          command: npm ci
-          working_directory: client
-      - save_cache:
-          key: v1-client-deps-<< pipeline.parameters.nodejs >>-{{ checksum "client/package-lock.json" }}
-          paths:
-            - client/node_modules
-      - run:
-          command: npm run validate
-          working_directory: client
-      - store_test_results:
-          path: client/test_results
-  test_e2e:
-    docker:
-      - image: cimg/node:<< pipeline.parameters.nodejs >>
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - v1-e2e-deps-<< pipeline.parameters.nodejs >>-{{ checksum "e2e/package-lock.json" }}
-            - v1-e2e-deps-<< pipeline.parameters.nodejs >>
-      - run:
-          command: npm ci
-          working_directory: e2e
-      - save_cache:
-          key: v1-e2e-deps-<< pipeline.parameters.nodejs >>-{{ checksum "e2e/package-lock.json" }}
-          paths:
-            - e2e/node_modules
-      - run:
-          command: npm run validate
-          working_directory: e2e
+          path: _build/test/lib/freedom_account/test-junit-report.xml
 
 workflows:
-  version: 2
   test_all:
     jobs:
-      - test_server
-      - test_client
-      - test_e2e
+      - test
+
+# VS Code Extension Version: 1.2.2

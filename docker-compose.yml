@@ -1,0 +1,40 @@
+version: "3"
+
+services:
+  app:
+    depends_on:
+      - db
+      - db_setup
+    env_file:
+      - ./config/db_secret.env
+      - ./config/docker_prod.env
+      - ./config/docker_prod_secret.env
+    image: freedom_account:0.1.0
+    ports:
+      - "8080:4000"
+    profiles:
+      - prod
+
+  db:
+    env_file:
+      - ./config/db_secret.env
+    image: postgres:15.1
+    ports:
+      - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+  db_setup:
+    command: "/app/bin/migrate"
+    depends_on:
+      - db
+    env_file:
+      - ./config/db_secret.env
+      - ./config/docker_prod.env
+      - ./config/docker_prod_secret.env
+    image: freedom_account:0.1.0
+    profiles:
+      - prod
+
+volumes:
+  dbdata:

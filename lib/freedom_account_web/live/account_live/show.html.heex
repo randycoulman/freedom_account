@@ -1,0 +1,26 @@
+<.header>
+  <%= @account.name %>
+  <:actions>
+    <.link patch={~p"/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit</.button>
+    </.link>
+  </:actions>
+</.header>
+<.live_component
+  account={@account}
+  action={@live_action}
+  id={@account.id}
+  module={FreedomAccountWeb.FundLive.Index}
+  title={@page_title}
+/>
+
+<.modal :if={@live_action == :edit} id="account-modal" show on_cancel={JS.patch(~p"/")}>
+  <.live_component
+    module={FreedomAccountWeb.AccountLive.FormComponent}
+    id={@account.id}
+    title={@page_title}
+    action={@live_action}
+    account={@account}
+    navigate={~p"/"}
+  />
+</.modal>
