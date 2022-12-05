@@ -20,8 +20,7 @@ defmodule FreedomAccountWeb.Router do
     live "/", AccountLive.Show, :show
     live "/edit", AccountLive.Show, :edit
 
-    # live "/funds", FundLive.Index, :index
-    # live "/funds/new", FundLive.Index, :new
+    live "/funds/new", AccountLive.Show, :new_fund
     # live "/funds/:id/edit", FundLive.Index, :edit
 
     # live "/funds/:id", FundLive.Show, :show

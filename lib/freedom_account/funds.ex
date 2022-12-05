@@ -80,16 +80,11 @@ defmodule FreedomAccount.Funds do
   #   Repo.delete(fund)
   # end
 
-  # @doc """
-  # Returns an `%Ecto.Changeset{}` for tracking fund changes.
-
-  # ## Examples
-
-  #     iex> change_fund(fund)
-  #     %Ecto.Changeset{data: %Fund{}}
-
-  # """
-  # def change_fund(%Fund{} = fund, attrs \\ %{}) do
-  #   Fund.changeset(fund, attrs)
-  # end
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking fund changes.
+  """
+  @spec change_fund(Fund.t(), Fund.attrs()) :: Changeset.t()
+  def change_fund(%Fund{} = fund, attrs \\ %{}) do
+    Fund.changeset(fund, attrs)
+  end
 end

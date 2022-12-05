@@ -8,9 +8,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
   alias FreedomAccount.Factory
 
-  # @create_attrs %{icon: "some icon", name: "some name"}
-  # @update_attrs %{icon: "some updated icon", name: "some updated name"}
-  # @invalid_attrs %{icon: nil, name: nil}
+  @invalid_attrs %{icon: nil, name: nil}
 
   defp create_account(_context) do
     account = Factory.account()
@@ -27,7 +25,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
       assert html =~ "Funds"
       assert html =~ fund.icon
-      assert html =~ fund.name
+      assert html =~ escaped(fund.name)
     end
 
     test "shows prompt when list is empty", %{conn: conn} do
@@ -37,27 +35,29 @@ defmodule FreedomAccountWeb.FundLiveTest do
       assert html =~ "no funds"
     end
 
-    #   test "saves new fund", %{conn: conn} do
-    #     {:ok, index_live, _html} = live(conn, ~p"/funds")
+    test "saves new fund", %{conn: conn} do
+      attrs = Factory.fund_attrs()
+      {:ok, index_live, _html} = live(conn, ~p"/")
 
-    #     assert index_live |> element("a", "New Fund") |> render_click() =~
-    #              "New Fund"
+      assert index_live |> element("a", "Add Fund") |> render_click() =~
+               "Add Fund"
 
-    #     assert_patch(index_live, ~p"/funds/new")
+      assert_patch(index_live, ~p"/funds/new")
 
-    #     assert index_live
-    #            |> form("#fund-form", fund: @invalid_attrs)
-    #            |> render_change() =~ "can&#39;t be blank"
+      assert index_live
+             |> form("#fund-form", fund: @invalid_attrs)
+             |> render_change() =~ "can&#39;t be blank"
 
-    #     {:ok, _, html} =
-    #       index_live
-    #       |> form("#fund-form", fund: @create_attrs)
-    #       |> render_submit()
-    #       |> follow_redirect(conn, ~p"/funds")
+      {:ok, _view, html} =
+        index_live
+        |> form("#fund-form", fund: attrs)
+        |> render_submit()
+        |> follow_redirect(conn, ~p"/")
 
-    #     assert html =~ "Fund created successfully"
-    #     assert html =~ "some icon"
-    #   end
+      assert html =~ "Fund created successfully"
+      assert html =~ attrs[:icon]
+      assert html =~ escaped(attrs[:name])
+    end
 
     #   test "updates fund in listing", %{conn: conn, fund: fund} do
     #     {:ok, index_live, _html} = live(conn, ~p"/funds")

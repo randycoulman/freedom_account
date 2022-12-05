@@ -6,6 +6,7 @@ defmodule FreedomAccountWeb.AccountLive.FormComponent do
   use FreedomAccountWeb, :live_component
 
   alias FreedomAccount.Accounts
+  alias FreedomAccountWeb.Params
   alias Phoenix.LiveComponent
 
   @impl LiveComponent
@@ -56,7 +57,7 @@ defmodule FreedomAccountWeb.AccountLive.FormComponent do
   end
 
   def handle_event("save", %{"account" => account_params}, socket) do
-    save_account(socket, socket.assigns.action, account_params)
+    save_account(socket, socket.assigns.action, Params.atomize_keys(account_params))
   end
 
   defp save_account(socket, :edit, account_params) do
@@ -69,19 +70,6 @@ defmodule FreedomAccountWeb.AccountLive.FormComponent do
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, :changeset, changeset)}
-    end
-  end
-
-  defp save_account(socket, :new, account_params) do
-    case Accounts.create_account(account_params) do
-      {:ok, _account} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Account created successfully")
-         |> push_navigate(to: socket.assigns.navigate)}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, changeset: changeset)}
     end
   end
 end

@@ -2,13 +2,20 @@ defmodule FreedomAccountWeb.FundLive.Index do
   use FreedomAccountWeb, :live_component
 
   alias FreedomAccount.Funds
-  # alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.Funds.Fund
   alias Phoenix.LiveComponent
 
   @impl LiveComponent
-  def update(%{account: account}, socket) do
-    # {:ok, assign(socket, :funds, Funds.list_funds(account))}
-    {:ok, assign(socket, :funds, list_funds(account))}
+  def update(%{account: account, action: action, title: title} = params, socket) do
+    socket =
+      socket
+      |> assign(:account, account)
+      |> assign(:funds, list_funds(account))
+      |> assign(:live_action, action)
+      |> assign(:page_title, title)
+      |> apply_action(action, params)
+
+    {:ok, socket}
   end
 
   # @impl LiveComponent
@@ -16,23 +23,19 @@ defmodule FreedomAccountWeb.FundLive.Index do
   #   {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   # end
 
-  # defp apply_action(socket, :edit, %{"id" => id}) do
+  # defp apply_action(socket, :edit_fund, %{"id" => id}) do
   #   socket
-  #   |> assign(:page_title, "Edit Fund")
   #   |> assign(:fund, Funds.get_fund!(id))
   # end
 
-  # defp apply_action(socket, :new, _params) do
-  #   socket
-  #   |> assign(:page_title, "New Fund")
-  #   |> assign(:fund, %Fund{})
-  # end
+  defp apply_action(socket, :new_fund, _params) do
+    socket
+    |> assign(:fund, %Fund{})
+  end
 
-  # defp apply_action(socket, :index, _params) do
-  #   socket
-  #   |> assign(:page_title, "Listing Funds")
-  #   |> assign(:fund, nil)
-  # end
+  defp apply_action(socket, _action, _params) do
+    assign(socket, :fund, nil)
+  end
 
   # @impl LiveComponent
   # def handle_event("delete", %{"id" => id}, socket) do
