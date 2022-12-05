@@ -21,4 +21,5 @@ defmodule FreedomAccountWeb.AccountLive.Show do
 
   defp page_title(:show), do: "Freedom Account"
   defp page_title(:edit), do: "Edit Account Settings"
+  defp page_title(:new_fund), do: "Add Fund"
 end
