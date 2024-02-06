@@ -1,7 +1,7 @@
 defmodule FreedomAccountWeb.AccountLiveTest do
   @moduledoc false
 
-  use FreedomAccountWeb.ConnCase
+  use FreedomAccountWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
 
