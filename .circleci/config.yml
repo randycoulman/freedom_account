@@ -5,7 +5,7 @@ parameters:
     type: string
   elixir:
     type: string
-    default: 1.16.1
+    default: 1.16.0
   postgres:
     type: string
     default: "15.1"
