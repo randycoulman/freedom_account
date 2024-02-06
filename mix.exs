@@ -70,9 +70,9 @@ defmodule FreedomAccount.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.2.0", only: [:dev, :test], runtime: false},
-      {:ecto_sql, "~> 3.6"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:ecto_sql, "~> 3.11"},
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
       {:faker, "~> 0.17", only: :test},
       {:floki, ">= 0.30.0", only: :test},
