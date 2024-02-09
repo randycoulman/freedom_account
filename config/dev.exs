@@ -14,8 +14,8 @@ config :freedom_account, FreedomAccount.Repo,
 # debugging and code reloading.
 #
 # The watchers configuration can be used to run external
-# watchers to your application. For example, we use it
-# with esbuild to bundle .js and .css sources.
+# watchers to your application. For example, we can use it
+# to bundle .js and .css sources.
 config :freedom_account, FreedomAccountWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
@@ -25,8 +25,8 @@ config :freedom_account, FreedomAccountWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "+dElIq5C0x20jjfhPai0HyJOod0VbrtqhfA9H3MjSCdDHP/zHTlvQcrID72sOXlo",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
+    esbuild: {Esbuild, :install_and_run, [:freedom_account, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:freedom_account, ~w(--watch)]}
   ]
 
 # ## SSL Support
@@ -56,10 +56,9 @@ config :freedom_account, FreedomAccountWeb.Endpoint,
 config :freedom_account, FreedomAccountWeb.Endpoint,
   live_reload: [
     patterns: [
-      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/freedom_account_web/(live|views)/.*(ex)$",
-      ~r"lib/freedom_account_web/templates/.*(eex)$"
+      ~r"lib/freedom_account_web/(controllers|live|components)/.*(ex|heex)$"
     ]
   ]
 
@@ -78,3 +77,6 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+# Include HEEx debug annotations as HTML comments in rendered markup
+config :phoenix_live_view, :debug_heex_annotations, true

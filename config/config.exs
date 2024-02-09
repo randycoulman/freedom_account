@@ -8,11 +8,13 @@
 import Config
 
 config :freedom_account,
-  ecto_repos: [FreedomAccount.Repo]
+  ecto_repos: [FreedomAccount.Repo],
+  generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint
 config :freedom_account, FreedomAccountWeb.Endpoint,
   url: [host: "localhost"],
+  adapter: Bandit.PhoenixAdapter,
   render_errors: [
     formats: [html: FreedomAccountWeb.ErrorHTML, json: FreedomAccountWeb.ErrorJSON],
     layout: false
@@ -22,8 +24,8 @@ config :freedom_account, FreedomAccountWeb.Endpoint,
 
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.14.41",
-  default: [
+  version: "0.17.11",
+  freedom_account: [
     args:
       ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
@@ -32,8 +34,8 @@ config :esbuild,
 
 # Configure tailwind (the version is required)
 config :tailwind,
-  version: "3.1.8",
-  default: [
+  version: "3.4.0",
+  freedom_account: [
     args: ~w(
       --config=tailwind.config.js
       --input=css/app.css

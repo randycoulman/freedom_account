@@ -70,14 +70,22 @@ defmodule FreedomAccount.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:bandit, "~> 1.2"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:dns_cluster, "~> 0.1.1"},
       {:ecto_sql, "~> 3.11"},
       {:esbuild, "~> 0.8.1", runtime: Mix.env() == :dev},
       {:faker, "~> 0.17", only: :test},
       {:floki, ">= 0.35.3", only: :test},
       {:gettext, "~> 0.24.0"},
-      {:heroicons, "~> 0.5.3"},
+      {:heroicons,
+       github: "tailwindlabs/heroicons",
+       tag: "v2.1.1",
+       sparse: "optimized",
+       app: false,
+       compile: false,
+       depth: 1},
       {:jason, "~> 1.2"},
       {:junit_formatter, "~> 3.3", only: [:test]},
       {:mix_test_interactive, "~> 2.0", only: :dev, runtime: false},
@@ -87,7 +95,6 @@ defmodule FreedomAccount.MixProject do
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.20.5"},
       {:phoenix, "~> 1.7"},
-      {:plug_cowboy, "~> 2.5"},
       {:postgrex, ">= 0.0.0"},
       {:tailwind, "~> 0.2.2", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 0.6.2"},
@@ -104,7 +111,13 @@ defmodule FreedomAccount.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
+      "assets.build": ["tailwind freedom_account", "esbuild freedom_account"],
+      "assets.deploy": [
+        "tailwind freedom_account --minify",
+        "esbuild freedome_account --minify",
+        "phx.digest"
+      ],
+      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       build: ["cmd docker build -t freedom_account:#{@version} ."],
       dev: ["cmd docker compose up --build -d"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
@@ -112,7 +125,7 @@ defmodule FreedomAccount.MixProject do
       prod: ["cmd docker compose up -d app"],
       "prod.debug": ["cmd docker compose up app"],
       s: ["phx.server"],
-      setup: ["deps.get", "ecto.setup"],
+      setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
       stop: ["cmd docker compose --profile prod down"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       validate: [

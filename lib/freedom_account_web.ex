@@ -43,7 +43,6 @@ defmodule FreedomAccountWeb do
   def controller do
     quote do
       use Phoenix.Controller,
-        namespace: FreedomAccountWeb,
         formats: [:html, :json],
         layouts: [html: FreedomAccountWeb.Layouts]
 

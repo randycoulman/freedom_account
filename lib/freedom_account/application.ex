@@ -8,16 +8,14 @@ defmodule FreedomAccount.Application do
   @impl Application
   def start(_type, _args) do
     children = [
-      # Start the Telemetry supervisor
       FreedomAccountWeb.Telemetry,
-      # Start the Ecto repository
       FreedomAccount.Repo,
-      # Start the PubSub system
+      {DNSCluster, query: Application.get_env(:freedom_account, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: FreedomAccount.PubSub},
-      # Start the Endpoint (http/https)
-      FreedomAccountWeb.Endpoint
       # Start a worker by calling: FreedomAccount.Worker.start_link(arg)
-      # {FreedomAccount.Worker, arg}
+      # {FreedomAccount.Worker, arg},
+      # Start to serve requests, typically the last entry
+      FreedomAccountWeb.Endpoint
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -15,15 +15,14 @@ defmodule FreedomAccountWeb.FundLive.FormComponent do
       </.header>
 
       <.simple_form
-        :let={f}
-        for={@changeset}
+        for={@form}
         id="fund-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={{f, :icon}} type="text" label="Icon" />
-        <.input field={{f, :name}} type="text" label="Name" />
+        <.input field={@form[:icon]} label="Icon" type="text" />
+        <.input field={@form[:name]} label="Name" type="text" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Fund</.button>
         </:actions>
@@ -39,7 +38,7 @@ defmodule FreedomAccountWeb.FundLive.FormComponent do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:changeset, changeset)}
+     |> assign(:form, to_form(changeset))}
   end
 
   @impl LiveComponent
@@ -49,7 +48,7 @@ defmodule FreedomAccountWeb.FundLive.FormComponent do
       |> Funds.change_fund(fund_params)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign(socket, :changeset, changeset)}
+    {:noreply, assign(socket, :form, to_form(changeset))}
   end
 
   def handle_event("save", %{"fund" => fund_params}, socket) do
