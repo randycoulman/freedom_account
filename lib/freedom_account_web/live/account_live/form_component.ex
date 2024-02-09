@@ -19,15 +19,14 @@ defmodule FreedomAccountWeb.AccountLive.FormComponent do
       </.header>
 
       <.simple_form
-        :let={f}
-        for={@changeset}
+        for={@form}
         id="account-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={{f, :deposits_per_year}} type="number" label="Deposits / year" />
-        <.input field={{f, :name}} type="text" label="Name" />
+        <.input field={@form[:deposits_per_year]} label="Deposits / year" type="number" />
+        <.input field={@form[:name]} label="Name" type="text" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Account</.button>
         </:actions>
@@ -43,7 +42,7 @@ defmodule FreedomAccountWeb.AccountLive.FormComponent do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:changeset, changeset)}
+     |> assign(:form, to_form(changeset))}
   end
 
   @impl LiveComponent
@@ -53,7 +52,7 @@ defmodule FreedomAccountWeb.AccountLive.FormComponent do
       |> Accounts.change_account(account_params)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign(socket, :changeset, changeset)}
+    {:noreply, assign(socket, :form, to_form(changeset))}
   end
 
   def handle_event("save", %{"account" => account_params}, socket) do
