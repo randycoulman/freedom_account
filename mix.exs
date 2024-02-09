@@ -76,7 +76,7 @@ defmodule FreedomAccount.MixProject do
       {:esbuild, "~> 0.8.1", runtime: Mix.env() == :dev},
       {:faker, "~> 0.17", only: :test},
       {:floki, ">= 0.35.3", only: :test},
-      {:gettext, "~> 0.20"},
+      {:gettext, "~> 0.24.0"},
       {:heroicons, "~> 0.5.3"},
       {:jason, "~> 1.2"},
       {:junit_formatter, "~> 3.3", only: [:test]},
