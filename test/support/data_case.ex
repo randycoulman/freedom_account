@@ -20,12 +20,12 @@ defmodule FreedomAccount.DataCase do
 
   using do
     quote do
-      alias FreedomAccount.Repo
-
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
       import FreedomAccount.DataCase
+
+      alias FreedomAccount.Repo
     end
   end
 

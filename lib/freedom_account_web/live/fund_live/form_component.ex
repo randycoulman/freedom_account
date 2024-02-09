@@ -1,4 +1,5 @@
 defmodule FreedomAccountWeb.FundLive.FormComponent do
+  @moduledoc false
   use FreedomAccountWeb, :live_component
 
   alias FreedomAccount.Funds

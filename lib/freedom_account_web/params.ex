@@ -8,8 +8,6 @@ defmodule FreedomAccountWeb.Params do
 
   @spec atomize_keys(params) :: attributes
   def atomize_keys(params) do
-    params
-    |> Enum.map(fn {k, v} -> {String.to_existing_atom(k), v} end)
-    |> Map.new()
+    Map.new(params, fn {k, v} -> {String.to_existing_atom(k), v} end)
   end
 end

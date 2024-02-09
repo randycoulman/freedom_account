@@ -4,6 +4,7 @@ defmodule FreedomAccountWeb.Telemetry do
   """
 
   use Supervisor
+
   import Telemetry.Metrics
 
   @spec start_link(arg :: Keyword.t()) :: Supervisor.on_start()
@@ -76,8 +77,7 @@ defmodule FreedomAccountWeb.Telemetry do
       ),
       summary("freedom_account.repo.query.idle_time",
         unit: {:native, :millisecond},
-        description:
-          "The time the connection spent waiting before being checked out for the query"
+        description: "The time the connection spent waiting before being checked out for the query"
       ),
 
       # VM Metrics
