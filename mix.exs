@@ -80,7 +80,7 @@ defmodule FreedomAccount.MixProject do
       {:heroicons, "~> 0.5"},
       {:jason, "~> 1.2"},
       {:junit_formatter, "~> 3.3", only: [:test]},
-      {:mix_test_interactive, "~> 1.2", only: :dev, runtime: false},
+      {:mix_test_interactive, "~> 2.0", only: :dev, runtime: false},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_dashboard, "~> 0.7.2"},
