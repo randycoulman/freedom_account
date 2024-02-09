@@ -82,7 +82,7 @@ defmodule FreedomAccount.MixProject do
       {:junit_formatter, "~> 3.3", only: [:test]},
       {:mix_test_interactive, "~> 2.0", only: :dev, runtime: false},
       {:phoenix_ecto, "~> 4.4"},
-      {:phoenix_html, "~> 3.0"},
+      {:phoenix_html, "~> 4.0"},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.20.5"},
