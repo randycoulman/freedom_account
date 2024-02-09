@@ -1,4 +1,5 @@
 defmodule FreedomAccountWeb.FundLive.Index do
+  @moduledoc false
   use FreedomAccountWeb, :live_component
 
   alias FreedomAccount.Funds
@@ -29,8 +30,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
   # end
 
   defp apply_action(socket, :new_fund, _params) do
-    socket
-    |> assign(:fund, %Fund{})
+    assign(socket, :fund, %Fund{})
   end
 
   defp apply_action(socket, _action, _params) do

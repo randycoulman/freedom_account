@@ -1,4 +1,5 @@
 defmodule FreedomAccountWeb.FundLive.Show do
+  @moduledoc false
   # use FreedomAccountWeb, :live_view
 
   # alias FreedomAccount.Funds

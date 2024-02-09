@@ -98,11 +98,7 @@ defmodule FreedomAccount.Factory do
 
   @spec account_attrs(Account.attrs()) :: Account.attrs()
   def account_attrs(overrides \\ %{}) do
-    overrides
-    |> Enum.into(%{
-      deposits_per_year: deposit_count(),
-      name: account_name()
-    })
+    Enum.into(overrides, %{deposits_per_year: deposit_count(), name: account_name()})
   end
 
   @spec fund(Account.t(), Fund.attrs()) :: Fund.t()
@@ -115,10 +111,6 @@ defmodule FreedomAccount.Factory do
 
   @spec fund_attrs(Fund.attrs()) :: Fund.attrs()
   def fund_attrs(overrides \\ %{}) do
-    overrides
-    |> Enum.into(%{
-      icon: fund_icon(),
-      name: fund_name()
-    })
+    Enum.into(overrides, %{icon: fund_icon(), name: fund_name()})
   end
 end

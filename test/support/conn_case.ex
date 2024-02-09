@@ -20,14 +20,14 @@ defmodule FreedomAccountWeb.ConnCase do
   using do
     quote do
       # The default endpoint for testing
-      @endpoint FreedomAccountWeb.Endpoint
-
       use FreedomAccountWeb, :verified_routes
 
       # Import conveniences for testing with connections
-      import Plug.Conn
-      import Phoenix.ConnTest
       import FreedomAccountWeb.ConnCase
+      import Phoenix.ConnTest
+      import Plug.Conn
+
+      @endpoint FreedomAccountWeb.Endpoint
     end
   end
 
