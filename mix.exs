@@ -89,7 +89,7 @@ defmodule FreedomAccount.MixProject do
       {:phoenix, "~> 1.7"},
       {:plug_cowboy, "~> 2.5"},
       {:postgrex, ">= 0.0.0"},
-      {:tailwind, "~> 0.1.8", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.2.2", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 0.6.2"},
       {:telemetry_poller, "~> 1.0"},
       {:typed_ecto_schema, "~> 0.4.1"}
