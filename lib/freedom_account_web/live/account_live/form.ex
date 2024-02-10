@@ -1,4 +1,4 @@
-defmodule FreedomAccountWeb.AccountLive.FormComponent do
+defmodule FreedomAccountWeb.AccountLive.Form do
   @moduledoc """
   For for editing account settings.
   """
@@ -28,7 +28,7 @@ defmodule FreedomAccountWeb.AccountLive.FormComponent do
         <.input field={@form[:deposits_per_year]} label="Deposits / year" type="number" />
         <.input field={@form[:name]} label="Name" type="text" />
         <:actions>
-          <.button phx-disable-with="Saving...">Save Account</.button>
+          <.button phx-disable-with="Saving..." type="submit">Save Account</.button>
         </:actions>
       </.simple_form>
     </div>
@@ -68,7 +68,7 @@ defmodule FreedomAccountWeb.AccountLive.FormComponent do
          |> push_navigate(to: socket.assigns.navigate)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, :changeset, changeset)}
+        {:noreply, assign(socket, :form, to_form(changeset))}
     end
   end
 end

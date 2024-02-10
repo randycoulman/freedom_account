@@ -1,4 +1,4 @@
-defmodule FreedomAccountWeb.FundLive.FormComponent do
+defmodule FreedomAccountWeb.FundLive.Form do
   @moduledoc false
   use FreedomAccountWeb, :live_component
 
@@ -25,7 +25,7 @@ defmodule FreedomAccountWeb.FundLive.FormComponent do
         <.input field={@form[:icon]} label="Icon" type="text" />
         <.input field={@form[:name]} label="Name" type="text" />
         <:actions>
-          <.button phx-disable-with="Saving...">Save Fund</.button>
+          <.button phx-disable-with="Saving..." type="submit">Save Fund</.button>
         </:actions>
       </.simple_form>
     </div>
@@ -80,7 +80,7 @@ defmodule FreedomAccountWeb.FundLive.FormComponent do
          |> push_navigate(to: navigate)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, changeset: changeset)}
+        {:noreply, assign(socket, form: to_form(changeset))}
     end
   end
 end
