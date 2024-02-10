@@ -17,13 +17,15 @@ defmodule FreedomAccount.DataCase do
   use ExUnit.CaseTemplate
 
   alias Ecto.Adapters.SQL.Sandbox
+  alias Ecto.Changeset
+  alias FreedomAccount.Repo
 
   using do
     quote do
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import FreedomAccount.DataCase
+      import unquote(__MODULE__)
 
       alias FreedomAccount.Repo
     end
@@ -39,7 +41,7 @@ defmodule FreedomAccount.DataCase do
   """
   @spec setup_sandbox(map) :: :ok
   def setup_sandbox(tags) do
-    pid = Sandbox.start_owner!(FreedomAccount.Repo, shared: not tags[:async])
+    pid = Sandbox.start_owner!(Repo, shared: not tags[:async])
     on_exit(fn -> Sandbox.stop_owner(pid) end)
   end
 
@@ -51,9 +53,9 @@ defmodule FreedomAccount.DataCase do
   assert %{password: ["password is too short"]} = errors_on(changeset)
 
   """
-  @spec errors_on(Ecto.Changeset.t()) :: %{optional(atom) => list}
+  @spec errors_on(Changeset.t()) :: %{optional(atom) => list}
   def errors_on(changeset) do
-    Ecto.Changeset.traverse_errors(changeset, fn {message, opts} ->
+    Changeset.traverse_errors(changeset, fn {message, opts} ->
       Regex.replace(~r"%{(\w+)}", message, fn _match, key ->
         opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
       end)

@@ -89,6 +89,7 @@ defmodule FreedomAccount.MixProject do
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.20.5"},
+      {:phoenix_test, "~> 0.2.3", only: :test, runtime: false},
       {:phoenix, "~> 1.7"},
       {:postgrex, ">= 0.0.0"},
       {:styler, "~> 0.11.9", only: [:dev, :test], runtime: false},

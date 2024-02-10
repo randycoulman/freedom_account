@@ -1,51 +1,39 @@
 defmodule FreedomAccountWeb.AccountLiveTest do
   @moduledoc false
 
-  use FreedomAccountWeb.ConnCase, async: true
-
-  import Phoenix.LiveViewTest
+  use FreedomAccountWeb.FeatureCase, async: true
 
   alias FreedomAccount.Factory
 
   @invalid_attrs %{deposits_per_year: nil, name: nil}
 
   defp create_account(_context) do
-    account = Factory.account()
-    %{account: account}
+    %{account: Factory.account()}
   end
 
   describe "Show" do
     setup [:create_account]
 
     test "displays account", %{conn: conn, account: account} do
-      {:ok, _show_live, html} = live(conn, ~p"/")
-
-      assert html =~ "Freedom Account"
-      assert html =~ escaped(account.name)
+      conn
+      |> visit(~p"/")
+      |> assert_has("h1", "Freedom Account")
+      |> assert_has("h2", escaped(account.name))
     end
 
     test "updates account within modal", %{conn: conn} do
       update_attrs = Factory.account_attrs()
 
-      {:ok, show_live, _html} = live(conn, ~p"/")
-
-      assert show_live |> element("a", "Edit") |> render_click() =~
-               "Account Settings"
-
-      assert_patch(show_live, ~p"/edit")
-
-      assert show_live
-             |> form("#account-form", account: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
-
-      {:ok, _live, html} =
-        show_live
-        |> form("#account-form", account: update_attrs)
-        |> render_submit()
-        |> follow_redirect(conn, ~p"/")
-
-      assert html =~ "Account updated successfully"
-      assert html =~ escaped(update_attrs[:name])
+      conn
+      |> visit(~p"/")
+      |> click_link("Edit")
+      |> assert_has("h2", "Settings")
+      |> fill_form("#account-form", account: @invalid_attrs)
+      |> assert_has("p", "can't be blank")
+      |> fill_form("#account-form", account: update_attrs)
+      |> click_button("Save Account")
+      |> assert_has("p", "Account updated successfully")
+      |> assert_has("h2", escaped(update_attrs[:name]))
     end
   end
 end

@@ -17,27 +17,31 @@ defmodule FreedomAccountWeb.ConnCase do
 
   use ExUnit.CaseTemplate
 
+  alias FreedomAccount.DataCase
+  alias Phoenix.ConnTest
+  alias Phoenix.HTML
+
   using do
     quote do
       # The default endpoint for testing
       use FreedomAccountWeb, :verified_routes
 
       # Import conveniences for testing with connections
-      import FreedomAccountWeb.ConnCase
       import Phoenix.ConnTest
       import Plug.Conn
+      import unquote(__MODULE__)
 
       @endpoint FreedomAccountWeb.Endpoint
     end
   end
 
   setup tags do
-    FreedomAccount.DataCase.setup_sandbox(tags)
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+    DataCase.setup_sandbox(tags)
+    {:ok, conn: ConnTest.build_conn()}
   end
 
   @spec escaped(String.t()) :: String.t()
   def escaped(string) do
-    string |> Phoenix.HTML.html_escape() |> Phoenix.HTML.safe_to_string()
+    string |> HTML.html_escape() |> HTML.safe_to_string()
   end
 end
