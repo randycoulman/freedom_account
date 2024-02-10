@@ -1,9 +1,8 @@
 defmodule FreedomAccountWeb.FundLiveTest do
   @moduledoc false
 
-  use FreedomAccountWeb.ConnCase, async: true
+  use FreedomAccountWeb.FeatureCase, async: true
 
-  import Phoenix.LiveViewTest
   # import FreedomAccount.FundsFixtures
 
   alias FreedomAccount.Factory
@@ -11,9 +10,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
   @invalid_attrs %{icon: nil, name: nil}
 
   defp create_account(_context) do
-    account = Factory.account()
-
-    %{account: account}
+    %{account: Factory.account()}
   end
 
   describe "Index" do
@@ -21,42 +18,35 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
     test "lists all funds", %{account: account, conn: conn} do
       fund = Factory.fund(account)
-      {:ok, _index_live, html} = live(conn, ~p"/")
 
-      assert html =~ "Funds"
-      assert html =~ fund.icon
-      assert html =~ escaped(fund.name)
+      conn
+      |> visit(~p"/")
+      |> assert_has("h2", "Funds")
+      |> assert_has("span", fund.icon)
+      |> assert_has("span", escaped(fund.name))
     end
 
     test "shows prompt when list is empty", %{conn: conn} do
-      {:ok, _index_live, html} = live(conn, ~p"/")
-
-      assert html =~ "Funds"
-      assert html =~ "no funds"
+      conn
+      |> visit(~p"/")
+      |> assert_has("h2", "Funds")
+      |> assert_has("#no-funds", "This account has no funds yet. Use the Add Fund button to add one.")
     end
 
     test "saves new fund", %{conn: conn} do
       attrs = Factory.fund_attrs()
-      {:ok, index_live, _html} = live(conn, ~p"/")
 
-      assert index_live |> element("a", "Add Fund") |> render_click() =~
-               "Add Fund"
-
-      assert_patch(index_live, ~p"/funds/new")
-
-      assert index_live
-             |> form("#fund-form", fund: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
-
-      {:ok, _view, html} =
-        index_live
-        |> form("#fund-form", fund: attrs)
-        |> render_submit()
-        |> follow_redirect(conn, ~p"/")
-
-      assert html =~ "Fund created successfully"
-      assert html =~ attrs[:icon]
-      assert html =~ escaped(attrs[:name])
+      conn
+      |> visit(~p"/")
+      |> click_link("Add Fund")
+      |> assert_has("h2", "Add Fund")
+      |> fill_form("#fund-form", fund: @invalid_attrs)
+      |> assert_has("p", "can't be blank")
+      |> fill_form("#fund-form", fund: attrs)
+      |> click_button("Save Fund")
+      |> assert_has("p", "Fund created successfully")
+      |> assert_has("span", attrs[:icon])
+      |> assert_has("span", escaped(attrs[:name]))
     end
 
     #   test "updates fund in listing", %{conn: conn, fund: fund} do
