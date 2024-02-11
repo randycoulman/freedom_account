@@ -4,6 +4,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
 
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccountWeb.FundLive.Form
   alias Phoenix.LiveComponent
 
   @impl LiveComponent
@@ -23,6 +24,59 @@ defmodule FreedomAccountWeb.FundLive.Index do
   # def handle_params(params, _url, socket) do
   #   {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   # end
+
+  @impl LiveComponent
+  def render(assigns) do
+    ~H"""
+    <article>
+      <.header>
+        Funds
+        <:actions>
+          <.link patch={~p"/funds/new"}>
+            <.button>Add Fund</.button>
+          </.link>
+        </:actions>
+      </.header>
+
+      <%!-- <.table id="funds" rows={@funds} row_click={&JS.navigate(~p"/funds/#{&1}")}> --%>
+      <.table :if={@funds != []} id="funds" rows={@funds}>
+        <:col :let={fund} label="Icon"><%= fund.icon %></:col>
+        <:col :let={fund} label="Name"><%= fund.name %></:col>
+        <%!-- <:action :let={fund}>
+        <div class="sr-only">
+          <.link navigate={~p"/funds/#{fund}"}>Show</.link>
+        </div>
+        <.link patch={~p"/funds/#{fund}/edit"}>Edit</.link>
+      </:action>
+      <:action :let={fund}>
+        <.link phx-click={JS.push("delete", value: %{id: fund.id})} data-confirm="Are you sure?">
+          Delete
+        </.link>
+      </:action> --%>
+      </.table>
+      <div :if={@funds == []} id="no-funds">
+        This account has no funds yet. Use the Add Fund button to add one.
+      </div>
+
+      <.modal
+        :if={@live_action in [:new_fund, :edit_fund]}
+        id="fund-modal"
+        show
+        on_cancel={JS.patch(~p"/")}
+      >
+        <.live_component
+          account={@account}
+          action={@live_action}
+          fund={@fund}
+          id={@fund.id || :new}
+          module={Form}
+          navigate={~p"/"}
+          title={@page_title}
+        />
+      </.modal>
+    </article>
+    """
+  end
 
   # defp apply_action(socket, :edit_fund, %{"id" => id}) do
   #   socket
