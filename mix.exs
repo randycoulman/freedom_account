@@ -17,7 +17,8 @@ defmodule FreedomAccount.MixProject do
       dialyzer: [
         ignore_warnings: "config/dialyzer_ignore.exs",
         list_unused_filters: true,
-        plt_add_apps: [:ex_unit]
+        plt_add_apps: [:ex_unit],
+        plt_local_path: "priv/plts"
       ],
       elixir: "~> 1.14",
       elixirc_options: elixirc_options(Mix.env()),
