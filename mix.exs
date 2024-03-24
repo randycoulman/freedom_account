@@ -77,7 +77,7 @@ defmodule FreedomAccount.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:ecto_sql, "~> 3.11"},
       {:esbuild, "~> 0.8.1", runtime: Mix.env() == :dev},
-      {:faker, "~> 0.17", only: :test},
+      {:faker, "~> 0.18.0", only: :test},
       {:floki, ">= 0.35.3", only: :test},
       {:gettext, "~> 0.24.0"},
       {:heroicons,
