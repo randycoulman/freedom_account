@@ -8,14 +8,14 @@ defmodule FreedomAccountWeb.FundLive.Index do
   alias Phoenix.LiveComponent
 
   @impl LiveComponent
-  def update(%{account: account, action: action, title: title} = params, socket) do
+  def update(%{account: account, action: action, title: title} = assigns, socket) do
     socket =
       socket
       |> assign(:account, account)
       |> assign(:funds, list_funds(account))
       |> assign(:live_action, action)
       |> assign(:page_title, title)
-      |> apply_action(action, params)
+      |> apply_action(action, assigns)
 
     {:ok, socket}
   end
@@ -83,11 +83,11 @@ defmodule FreedomAccountWeb.FundLive.Index do
   #   |> assign(:fund, Funds.get_fund!(id))
   # end
 
-  defp apply_action(socket, :new_fund, _params) do
+  defp apply_action(socket, :new_fund, _assigns) do
     assign(socket, :fund, %Fund{})
   end
 
-  defp apply_action(socket, _action, _params) do
+  defp apply_action(socket, _action, _assigns) do
     assign(socket, :fund, nil)
   end
 
