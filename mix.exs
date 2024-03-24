@@ -87,7 +87,7 @@ defmodule FreedomAccount.MixProject do
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 4.0"},
       {:phoenix_live_dashboard, "~> 0.8.3"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:phoenix_live_reload, "~> 1.5", only: :dev},
       {:phoenix_live_view, "~> 0.20.5"},
       {:phoenix_test, "~> 0.2.9", only: :test, runtime: false},
       {:phoenix, "~> 1.7"},
