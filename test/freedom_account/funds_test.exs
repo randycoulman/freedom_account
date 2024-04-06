@@ -14,9 +14,9 @@ defmodule FreedomAccount.FundsTest do
     %{account: account}
   end
 
-  describe "creating a fund" do
-    setup [:create_account]
+  setup [:create_account]
 
+  describe "creating a fund" do
     test "creates a fund with valid data", %{account: account} do
       valid_attrs = Factory.fund_attrs()
 
@@ -38,11 +38,16 @@ defmodule FreedomAccount.FundsTest do
   end
 
   describe "listing funds" do
-    setup [:create_account]
-
     test "returns all funds", %{account: account} do
       funds = for _i <- 1..3, do: Factory.fund(account)
       assert Funds.list_funds(account) == funds
+    end
+  end
+
+  describe "creating a changeset for a fund" do
+    test "returns the changeset", %{account: account} do
+      fund = Factory.fund(account)
+      assert %Ecto.Changeset{} = Funds.change_fund(fund)
     end
   end
 
@@ -74,11 +79,6 @@ defmodule FreedomAccount.FundsTest do
   #     fund = fund_fixture()
   #     assert {:ok, %Fund{}} = Funds.delete_fund(fund)
   #     assert_raise Ecto.NoResultsError, fn -> Funds.get_fund!(fund.id) end
-  #   end
-
-  #   test "change_fund/1 returns a fund changeset" do
-  #     fund = fund_fixture()
-  #     assert %Ecto.Changeset{} = Funds.change_fund(fund)
   #   end
   # end
 end
