@@ -3,8 +3,6 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
   use FreedomAccountWeb.FeatureCase, async: true
 
-  # import FreedomAccount.FundsFixtures
-
   alias FreedomAccount.Factory
 
   @invalid_attrs %{icon: nil, name: nil}
@@ -61,12 +59,13 @@ defmodule FreedomAccountWeb.FundLiveTest do
     #            |> form("#fund-form", fund: @invalid_attrs)
     #            |> render_change() =~ "can&#39;t be blank"
 
-    #     {:ok, _, html} =
-    #       index_live
-    #       |> form("#fund-form", fund: @update_attrs)
-    #       |> render_submit()
-    #       |> follow_redirect(conn, ~p"/funds")
+    #     assert index_live
+    #           |> form("#fund-form", fund: @update_attrs)
+    #           |> render_submit()
 
+    #     assert_patch(index_live, ~p"/funds")
+
+    #     html = render(index_live)
     #     assert html =~ "Fund updated successfully"
     #     assert html =~ "some updated icon"
     #   end
@@ -101,12 +100,13 @@ defmodule FreedomAccountWeb.FundLiveTest do
   #            |> form("#fund-form", fund: @invalid_attrs)
   #            |> render_change() =~ "can&#39;t be blank"
 
-  #     {:ok, _, html} =
-  #       show_live
-  #       |> form("#fund-form", fund: @update_attrs)
-  #       |> render_submit()
-  #       |> follow_redirect(conn, ~p"/funds/#{fund}")
+  #     assert show_live
+  #           |> form("#fund-form", fund: @update_attrs)
+  #           |> render_submit()
 
+  #     assert_patch(show_live, ~p"/funds")
+
+  #     html = render(show_live)
   #     assert html =~ "Fund updated successfully"
   #     assert html =~ "some updated icon"
   #   end
