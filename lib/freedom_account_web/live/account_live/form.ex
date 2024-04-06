@@ -36,13 +36,14 @@ defmodule FreedomAccountWeb.AccountLive.Form do
   end
 
   @impl LiveComponent
-  def update(%{account: account} = assigns, socket) do
+  def update(assigns, socket) do
+    %{account: account} = assigns
     changeset = Accounts.change_account(account)
 
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:form, to_form(changeset))}
+     |> assign_form(changeset)}
   end
 
   @impl LiveComponent
@@ -52,7 +53,7 @@ defmodule FreedomAccountWeb.AccountLive.Form do
       |> Accounts.change_account(account_params)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign(socket, :form, to_form(changeset))}
+    {:noreply, assign_form(socket, changeset)}
   end
 
   def handle_event("save", %{"account" => account_params}, socket) do
@@ -70,5 +71,9 @@ defmodule FreedomAccountWeb.AccountLive.Form do
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, :form, to_form(changeset))}
     end
+  end
+
+  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    assign(socket, :form, to_form(changeset))
   end
 end

@@ -33,13 +33,14 @@ defmodule FreedomAccountWeb.FundLive.Form do
   end
 
   @impl LiveComponent
-  def update(%{fund: fund} = assigns, socket) do
+  def update(assigns, socket) do
+    %{fund: fund} = assigns
     changeset = Funds.change_fund(fund)
 
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:form, to_form(changeset))}
+     |> assign_form(changeset)}
   end
 
   @impl LiveComponent
@@ -49,7 +50,7 @@ defmodule FreedomAccountWeb.FundLive.Form do
       |> Funds.change_fund(fund_params)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign(socket, :form, to_form(changeset))}
+    {:noreply, assign_form(socket, changeset)}
   end
 
   def handle_event("save", %{"fund" => fund_params}, socket) do
@@ -65,7 +66,7 @@ defmodule FreedomAccountWeb.FundLive.Form do
   #        |> push_navigate(to: socket.assigns.navigate)}
 
   #     {:error, %Ecto.Changeset{} = changeset} ->
-  #       {:noreply, assign(socket, :changeset, changeset)}
+  #       {:noreply, assign_form(socket, changeset)}
   #   end
   # end
 
@@ -80,7 +81,11 @@ defmodule FreedomAccountWeb.FundLive.Form do
          |> push_navigate(to: navigate)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, form: to_form(changeset))}
+        {:noreply, assign_form(socket, changeset)}
     end
+  end
+
+  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    assign(socket, :form, to_form(changeset))
   end
 end
