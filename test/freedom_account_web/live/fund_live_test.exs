@@ -19,15 +19,15 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
       conn
       |> visit(~p"/")
-      |> assert_has("h2", text: "Funds")
-      |> assert_has("span", text: fund.icon)
-      |> assert_has("span", text: escaped(fund.name))
+      |> assert_has(heading(), text: "Funds")
+      |> assert_has(table_cell(), text: fund.icon)
+      |> assert_has(table_cell(), text: escaped(fund.name))
     end
 
     test "shows prompt when list is empty", %{conn: conn} do
       conn
       |> visit(~p"/")
-      |> assert_has("h2", text: "Funds")
+      |> assert_has(heading(), text: "Funds")
       |> assert_has("#no-funds", text: "This account has no funds yet. Use the Add Fund button to add one.")
     end
 
@@ -37,14 +37,15 @@ defmodule FreedomAccountWeb.FundLiveTest do
       conn
       |> visit(~p"/")
       |> click_link("Add Fund")
-      |> assert_has("h2", text: "Add Fund")
+      |> assert_has(heading(), text: "Add Fund")
       |> fill_form("#fund-form", fund: @invalid_attrs)
-      |> assert_has("p", text: "can't be blank")
+      |> assert_has(field_error("#fund_icon"), text: "can't be blank")
+      |> assert_has(field_error("#fund_name"), text: "can't be blank")
       |> fill_form("#fund-form", fund: attrs)
       |> click_button("Save Fund")
-      |> assert_has("p", text: "Fund created successfully")
-      |> assert_has("span", text: attrs[:icon])
-      |> assert_has("span", text: escaped(attrs[:name]))
+      |> assert_has(flash(:info), text: "Fund created successfully")
+      |> assert_has(table_cell(), text: attrs[:icon])
+      |> assert_has(table_cell(), text: escaped(attrs[:name]))
     end
 
     #   test "updates fund in listing", %{conn: conn, fund: fund} do

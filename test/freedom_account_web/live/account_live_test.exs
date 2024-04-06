@@ -17,8 +17,8 @@ defmodule FreedomAccountWeb.AccountLiveTest do
     test "displays account", %{conn: conn, account: account} do
       conn
       |> visit(~p"/")
-      |> assert_has("h1", text: "Freedom Account")
-      |> assert_has("h2", text: escaped(account.name))
+      |> assert_has(title(), text: "Freedom Account")
+      |> assert_has(heading(), text: account.name)
     end
 
     test "updates account within modal", %{conn: conn} do
@@ -27,13 +27,14 @@ defmodule FreedomAccountWeb.AccountLiveTest do
       conn
       |> visit(~p"/")
       |> click_link("Edit")
-      |> assert_has("h2", text: "Settings")
+      |> assert_has(heading(), text: "Settings")
       |> fill_form("#account-form", account: @invalid_attrs)
-      |> assert_has("p", text: "can't be blank")
+      |> assert_has(field_error("#account_name"), text: "can't be blank")
+      |> assert_has(field_error("#account_deposits_per_year"), text: "can't be blank")
       |> fill_form("#account-form", account: update_attrs)
       |> click_button("Save Account")
-      |> assert_has("p", text: "Account updated successfully")
-      |> assert_has("h2", text: escaped(update_attrs[:name]))
+      |> assert_has(flash(:info), text: "Account updated successfully")
+      |> assert_has(heading(), text: escaped(update_attrs[:name]))
     end
   end
 end

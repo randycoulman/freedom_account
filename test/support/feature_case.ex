@@ -23,6 +23,7 @@ defmodule FreedomAccountWeb.FeatureCase do
     quote do
       use FreedomAccountWeb, :verified_routes
 
+      import FreedomAccountWeb.ElementSelectors
       import PhoenixTest
       import unquote(__MODULE__)
     end
