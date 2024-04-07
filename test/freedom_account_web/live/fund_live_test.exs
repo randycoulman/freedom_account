@@ -71,7 +71,6 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
       conn
       |> visit(~p"/")
-      # TODO: add element selector for action buttons
       |> click_link(action_link("#funds-#{fund.id}"), "Delete")
       |> refute_has("#funds-#{fund.id}")
     end
