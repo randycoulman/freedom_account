@@ -7,7 +7,9 @@ defmodule FreedomAccountWeb.AccountLive.Show do
   alias Phoenix.LiveComponent
 
   @impl LiveComponent
-  def update(%{account: account, action: action, title: title}, socket) do
+  def update(assigns, socket) do
+    %{account: account, action: action, title: title} = assigns
+
     socket =
       socket
       |> assign(:account, account)

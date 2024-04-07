@@ -59,18 +59,18 @@ defmodule FreedomAccountWeb.FundLive.Form do
     save_fund(socket, socket.assigns.action, Params.atomize_keys(fund_params))
   end
 
-  # defp save_fund(socket, :edit_fund, fund_params) do
-  #   case Funds.update_fund(socket.assigns.fund, fund_params) do
-  #     {:ok, _fund} ->
-  #       {:noreply,
-  #        socket
-  #        |> put_flash(:info, "Fund updated successfully")
-  #        |> push_navigate(to: socket.assigns.navigate)}
+  defp save_fund(socket, :edit_fund, fund_params) do
+    case Funds.update_fund(socket.assigns.fund, fund_params) do
+      {:ok, _fund} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "Fund updated successfully")
+         |> push_navigate(to: socket.assigns.navigate)}
 
-  #     {:error, %Ecto.Changeset{} = changeset} ->
-  #       {:noreply, assign_form(socket, changeset)}
-  #   end
-  # end
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign_form(socket, changeset)}
+    end
+  end
 
   defp save_fund(socket, :new_fund, fund_params) do
     %{account: account, navigate: navigate} = socket.assigns

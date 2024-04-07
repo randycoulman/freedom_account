@@ -9,6 +9,39 @@ defmodule FreedomAccount.Funds do
   alias FreedomAccount.Repo
 
   @doc """
+  Returns an `%Ecto.Changeset{}` for tracking fund changes.
+  """
+  @spec change_fund(Fund.t(), Fund.attrs()) :: Changeset.t()
+  def change_fund(%Fund{} = fund, attrs \\ %{}) do
+    Fund.changeset(fund, attrs)
+  end
+
+  @doc """
+  Creates a fund.
+  """
+  @spec create_fund(Account.t(), Fund.attrs()) :: {:ok, Fund.t()} | {:error, Changeset.t()}
+  def create_fund(account, attrs \\ %{}) do
+    %Fund{account_id: account.id}
+    |> Fund.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Looks up a single fund by id.
+
+  ## Examples
+
+      iex> fetch_fund(123)
+      {:ok, %Fund{}}
+
+      iex> fetch_fund(456)
+      {:error, :not_found}
+
+  """
+  @spec fetch_fund(Fund.id()) :: {:ok, Fund.t()} | {:error, :not_found}
+  def fetch_fund(id), do: Repo.fetch(Fund, id)
+
+  @doc """
   Returns the list of funds for an account.
   """
   @spec list_funds(Account.t()) :: [Fund.t()]
@@ -18,51 +51,24 @@ defmodule FreedomAccount.Funds do
     |> Repo.all()
   end
 
-  # @doc """
-  # Gets a single fund.
-
-  # Raises `Ecto.NoResultsError` if the Fund does not exist.
-
-  # ## Examples
-
-  #     iex> get_fund!(123)
-  #     %Fund{}
-
-  #     iex> get_fund!(456)
-  #     ** (Ecto.NoResultsError)
-
-  # """
-  # def get_fund!(id), do: Repo.get!(Fund, id)
-
   @doc """
-  Creates a fund.
+  Updates a fund.
+
+  ## Examples
+
+      iex> update_fund(fund, %{field: new_value})
+      {:ok, %Fund{}}
+
+      iex> update_fund(fund, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
   """
-  @spec create_fund(Account.t(), Fund.attrs()) :: {:ok, Fund.t()} | {:error, Changeset.t()}
-  def create_fund(account, attrs \\ %{}) do
-    attrs = Map.put(attrs, :account_id, account.id)
-
-    %Fund{}
+  @spec update_fund(Fund.t(), Fund.attrs()) :: {:ok, Fund.t()} | {:error, Changeset.t()}
+  def update_fund(%Fund{} = fund, attrs) do
+    fund
     |> Fund.changeset(attrs)
-    |> Repo.insert()
+    |> Repo.update()
   end
-
-  # @doc """
-  # Updates a fund.
-
-  # ## Examples
-
-  #     iex> update_fund(fund, %{field: new_value})
-  #     {:ok, %Fund{}}
-
-  #     iex> update_fund(fund, %{field: bad_value})
-  #     {:error, %Ecto.Changeset{}}
-
-  # """
-  # def update_fund(%Fund{} = fund, attrs) do
-  #   fund
-  #   |> Fund.changeset(attrs)
-  #   |> Repo.update()
-  # end
 
   # @doc """
   # Deletes a fund.
@@ -79,12 +85,4 @@ defmodule FreedomAccount.Funds do
   # def delete_fund(%Fund{} = fund) do
   #   Repo.delete(fund)
   # end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking fund changes.
-  """
-  @spec change_fund(Fund.t(), Fund.attrs()) :: Changeset.t()
-  def change_fund(%Fund{} = fund, attrs \\ %{}) do
-    Fund.changeset(fund, attrs)
-  end
 end

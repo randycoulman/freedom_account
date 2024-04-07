@@ -19,6 +19,7 @@ defmodule FreedomAccount.Funds.Fund do
           optional(:name) => name
         }
   @type icon :: String.t()
+  @type id :: non_neg_integer()
   @type name :: String.t()
 
   typed_schema "funds" do
@@ -34,8 +35,8 @@ defmodule FreedomAccount.Funds.Fund do
   @spec changeset(Changeset.t() | Schema.t(), attrs) :: Changeset.t()
   def changeset(fund, attrs) do
     fund
-    |> cast(attrs, [:account_id, :icon, :name])
-    |> validate_required([:account_id, :icon, :name])
+    |> cast(attrs, [:icon, :name])
+    |> validate_required([:icon, :name])
     |> validate_length(:icon, max: 10)
     |> validate_length(:name, max: 50)
   end

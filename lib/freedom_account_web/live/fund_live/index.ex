@@ -22,11 +22,6 @@ defmodule FreedomAccountWeb.FundLive.Index do
     {:ok, socket}
   end
 
-  # @impl LiveComponent
-  # def handle_params(params, _url, socket) do
-  #   {:noreply, apply_action(socket, socket.assigns.live_action, params)}
-  # end
-
   @impl LiveComponent
   def render(assigns) do
     ~H"""
@@ -43,16 +38,18 @@ defmodule FreedomAccountWeb.FundLive.Index do
       </.header>
 
       <%!-- <.table id="funds" rows={@funds} row_click={&JS.navigate(~p"/funds/#{&1}")}> --%>
-      <.table :if={@funds != []} id="funds" rows={@funds}>
+      <.table :if={@funds != []} id="funds" row_id={&"funds-#{&1.id}"} rows={@funds}>
         <:col :let={fund} label="Icon"><%= fund.icon %></:col>
         <:col :let={fund} label="Name"><%= fund.name %></:col>
-        <%!-- <:action :let={fund}>
-        <div class="sr-only">
+        <:action :let={fund}>
+          <%!-- <div class="sr-only">
           <.link navigate={~p"/funds/#{fund}"}>Show</.link>
-        </div>
-        <.link patch={~p"/funds/#{fund}/edit"}>Edit</.link>
-      </:action>
-      <:action :let={fund}>
+        </div> --%>
+          <.link patch={~p"/funds/#{fund}/edit"}>
+            <.icon name="hero-pencil-square-mini" /> Edit
+          </.link>
+        </:action>
+        <%!-- <:action :let={fund}>
         <.link phx-click={JS.push("delete", value: %{id: fund.id})} data-confirm="Are you sure?">
           Delete
         </.link>
@@ -82,10 +79,17 @@ defmodule FreedomAccountWeb.FundLive.Index do
     """
   end
 
-  # defp apply_action(socket, :edit_fund, %{"id" => id}) do
-  #   socket
-  #   |> assign(:fund, Funds.get_fund!(id))
-  # end
+  defp apply_action(socket, :edit_fund, assigns) do
+    %{fund_id: id} = assigns
+
+    case Funds.fetch_fund(id) do
+      {:ok, %Fund{} = fund} ->
+        assign(socket, :fund, fund)
+
+      {:error, :not_found} ->
+        put_flash(socket, :error, "Fund is no longer present")
+    end
+  end
 
   defp apply_action(socket, :new_fund, _assigns) do
     assign(socket, :fund, %Fund{})

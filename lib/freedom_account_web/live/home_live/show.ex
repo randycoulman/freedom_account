@@ -12,8 +12,8 @@ defmodule FreedomAccountWeb.HomeLive.Show do
   end
 
   @impl LiveView
-  def handle_params(_params, _uri, socket) do
-    {:noreply, assign(socket, :page_title, page_title(socket.assigns.live_action))}
+  def handle_params(params, _uri, socket) do
+    {:noreply, assign(socket, fund_id: params["fund_id"], page_title: page_title(socket.assigns.live_action))}
   end
 
   @impl LiveView
@@ -29,6 +29,7 @@ defmodule FreedomAccountWeb.HomeLive.Show do
     <.live_component
       account={@account}
       action={@live_action}
+      fund_id={@fund_id}
       id={@account.id}
       module={FreedomAccountWeb.FundLive.Index}
       title={@page_title}
@@ -39,4 +40,5 @@ defmodule FreedomAccountWeb.HomeLive.Show do
   defp page_title(:show), do: "Freedom Account"
   defp page_title(:edit), do: "Edit Account Settings"
   defp page_title(:new_fund), do: "Add Fund"
+  defp page_title(:edit_fund), do: "Edit Fund"
 end

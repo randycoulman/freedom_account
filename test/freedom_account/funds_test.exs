@@ -16,6 +16,13 @@ defmodule FreedomAccount.FundsTest do
 
   setup [:create_account]
 
+  describe "creating a changeset for a fund" do
+    test "returns the changeset", %{account: account} do
+      fund = Factory.fund(account)
+      assert %Ecto.Changeset{} = Funds.change_fund(fund)
+    end
+  end
+
   describe "creating a fund" do
     test "creates a fund with valid data", %{account: account} do
       valid_attrs = Factory.fund_attrs()
@@ -37,6 +44,17 @@ defmodule FreedomAccount.FundsTest do
     end
   end
 
+  describe "fetching a fund" do
+    test "when fund exists, finds the fund by ID", %{account: account} do
+      fund = Factory.fund(account)
+      assert {:ok, fund} == Funds.fetch_fund(fund.id)
+    end
+
+    test "when fund does not exist, returns an error" do
+      assert {:error, :not_found} = Funds.fetch_fund(Factory.id())
+    end
+  end
+
   describe "listing funds" do
     test "returns all funds", %{account: account} do
       funds = for _i <- 1..3, do: Factory.fund(account)
@@ -44,36 +62,36 @@ defmodule FreedomAccount.FundsTest do
     end
   end
 
-  describe "creating a changeset for a fund" do
-    test "returns the changeset", %{account: account} do
-      fund = Factory.fund(account)
-      assert %Ecto.Changeset{} = Funds.change_fund(fund)
+  describe "updating a fund" do
+    setup %{account: account} do
+      [fund: Factory.fund(account)]
+    end
+
+    test "with valid data updates the fund", %{fund: fund} do
+      valid_attrs = Factory.fund_attrs()
+
+      assert {:ok, %Fund{} = fund} = Funds.update_fund(fund, valid_attrs)
+      assert fund.icon == valid_attrs[:icon]
+      assert fund.name == valid_attrs[:name]
+    end
+
+    test "with invalid data returns an error changeset", %{fund: fund} do
+      assert {:error, %Ecto.Changeset{}} = Funds.update_fund(fund, @invalid_attrs)
+      assert {:ok, fund} == Funds.fetch_fund(fund.id)
+    end
+
+    test "does not allow associating with a different account", %{account: original_account, fund: fund} do
+      other_account = Factory.account()
+      valid_attrs = Factory.fund_attrs(account_id: other_account.id)
+
+      assert {:ok, %Fund{} = fund} = Funds.update_fund(fund, valid_attrs)
+      assert fund.account_id == original_account.id
     end
   end
 
   # describe "funds" do
 
   #   import FreedomAccount.FundsFixtures
-
-  #   test "get_fund!/1 returns the fund with given id" do
-  #     fund = fund_fixture()
-  #     assert Funds.get_fund!(fund.id) == fund
-  #   end
-
-  #   test "update_fund/2 with valid data updates the fund" do
-  #     fund = fund_fixture()
-  #     update_attrs = %{icon: "some updated icon", name: "some updated name"}
-
-  #     assert {:ok, %Fund{} = fund} = Funds.update_fund(fund, update_attrs)
-  #     assert fund.icon == "some updated icon"
-  #     assert fund.name == "some updated name"
-  #   end
-
-  #   test "update_fund/2 with invalid data returns error changeset" do
-  #     fund = fund_fixture()
-  #     assert {:error, %Ecto.Changeset{}} = Funds.update_fund(fund, @invalid_attrs)
-  #     assert fund == Funds.get_fund!(fund.id)
-  #   end
 
   #   test "delete_fund/1 deletes the fund" do
   #     fund = fund_fixture()

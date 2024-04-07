@@ -86,6 +86,9 @@ defmodule FreedomAccount.Factory do
   @spec fund_name :: Fund.name()
   def fund_name, do: Faker.Commerce.product_name()
 
+  @spec id :: non_neg_integer()
+  def id, do: Faker.random_between(1000, 1_000_000)
+
   @spec account(Account.attrs()) :: Account.t()
   def account(attrs \\ %{}) do
     {:ok, account} =

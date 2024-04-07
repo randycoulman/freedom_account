@@ -48,6 +48,24 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(table_cell(), text: escaped(attrs[:name]))
     end
 
+    test "edits fund in listing", %{account: account, conn: conn} do
+      fund = Factory.fund(account)
+      new_attrs = Factory.fund_attrs()
+
+      conn
+      |> visit(~p"/")
+      |> click_link("#funds-#{fund.id} a", "Edit")
+      |> assert_has(heading(), text: "Edit Fund")
+      |> fill_form("#fund-form", fund: @invalid_attrs)
+      |> assert_has(field_error("#fund_icon"), text: "can't be blank")
+      |> assert_has(field_error("#fund_name"), text: "can't be blank")
+      |> fill_form("#fund-form", fund: new_attrs)
+      |> click_button("Save Fund")
+      |> assert_has(flash(:info), text: "Fund updated successfully")
+      |> assert_has(table_cell(), text: new_attrs[:icon])
+      |> assert_has(table_cell(), text: escaped(new_attrs[:name]))
+    end
+
     #   test "updates fund in listing", %{conn: conn, fund: fund} do
     #     {:ok, index_live, _html} = live(conn, ~p"/funds")
 
