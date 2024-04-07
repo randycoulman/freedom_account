@@ -54,7 +54,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
       conn
       |> visit(~p"/")
-      |> click_link("#funds-#{fund.id} a", "Edit")
+      |> click_link(action_link("#funds-#{fund.id}"), "Edit")
       |> assert_has(heading(), text: "Edit Fund")
       |> fill_form("#fund-form", fund: @invalid_attrs)
       |> assert_has(field_error("#fund_icon"), text: "can't be blank")
@@ -66,35 +66,15 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(table_cell(), text: escaped(new_attrs[:name]))
     end
 
-    #   test "updates fund in listing", %{conn: conn, fund: fund} do
-    #     {:ok, index_live, _html} = live(conn, ~p"/funds")
+    test "deletes fund in listing", %{account: account, conn: conn} do
+      fund = Factory.fund(account)
 
-    #     assert index_live |> element("#funds-#{fund.id} a", "Edit") |> render_click() =~
-    #              "Edit Fund"
-
-    #     assert_patch(index_live, ~p"/funds/#{fund}/edit")
-
-    #     assert index_live
-    #            |> form("#fund-form", fund: @invalid_attrs)
-    #            |> render_change() =~ "can&#39;t be blank"
-
-    #     assert index_live
-    #           |> form("#fund-form", fund: @update_attrs)
-    #           |> render_submit()
-
-    #     assert_patch(index_live, ~p"/funds")
-
-    #     html = render(index_live)
-    #     assert html =~ "Fund updated successfully"
-    #     assert html =~ "some updated icon"
-    #   end
-
-    #   test "deletes fund in listing", %{conn: conn, fund: fund} do
-    #     {:ok, index_live, _html} = live(conn, ~p"/funds")
-
-    #     assert index_live |> element("#funds-#{fund.id} a", "Delete") |> render_click()
-    #     refute has_element?(index_live, "#fund-#{fund.id}")
-    #   end
+      conn
+      |> visit(~p"/")
+      # TODO: add element selector for action buttons
+      |> click_link(action_link("#funds-#{fund.id}"), "Delete")
+      |> refute_has("#funds-#{fund.id}")
+    end
   end
 
   # describe "Show" do

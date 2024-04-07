@@ -44,6 +44,14 @@ defmodule FreedomAccount.FundsTest do
     end
   end
 
+  describe "deleting a fund" do
+    test "deletes the fund", %{account: account} do
+      fund = Factory.fund(account)
+      assert :ok = Funds.delete_fund(fund)
+      assert {:error, :not_found} == Funds.fetch_fund(fund.id)
+    end
+  end
+
   describe "fetching a fund" do
     test "when fund exists, finds the fund by ID", %{account: account} do
       fund = Factory.fund(account)
@@ -88,15 +96,4 @@ defmodule FreedomAccount.FundsTest do
       assert fund.account_id == original_account.id
     end
   end
-
-  # describe "funds" do
-
-  #   import FreedomAccount.FundsFixtures
-
-  #   test "delete_fund/1 deletes the fund" do
-  #     fund = fund_fixture()
-  #     assert {:ok, %Fund{}} = Funds.delete_fund(fund)
-  #     assert_raise Ecto.NoResultsError, fn -> Funds.get_fund!(fund.id) end
-  #   end
-  # end
 end

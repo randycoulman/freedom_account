@@ -27,6 +27,26 @@ defmodule FreedomAccount.Funds do
   end
 
   @doc """
+  Deletes a fund.
+
+  ## Examples
+
+      iex> delete_fund(fund)
+      {:ok, %Fund{}}
+
+      iex> delete_fund(fund)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  @spec delete_fund(Fund.t()) :: :ok | {:error, :failed_to_delete}
+  def delete_fund(%Fund{} = fund) do
+    case Repo.delete(fund) do
+      {:ok, _fund} -> :ok
+      {:error, _changeset} -> {:error, :failed_to_delete}
+    end
+  end
+
+  @doc """
   Looks up a single fund by id.
 
   ## Examples
@@ -69,20 +89,4 @@ defmodule FreedomAccount.Funds do
     |> Fund.changeset(attrs)
     |> Repo.update()
   end
-
-  # @doc """
-  # Deletes a fund.
-
-  # ## Examples
-
-  #     iex> delete_fund(fund)
-  #     {:ok, %Fund{}}
-
-  #     iex> delete_fund(fund)
-  #     {:error, %Ecto.Changeset{}}
-
-  # """
-  # def delete_fund(%Fund{} = fund) do
-  #   Repo.delete(fund)
-  # end
 end

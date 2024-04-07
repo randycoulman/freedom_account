@@ -49,11 +49,15 @@ defmodule FreedomAccountWeb.FundLive.Index do
             <.icon name="hero-pencil-square-mini" /> Edit
           </.link>
         </:action>
-        <%!-- <:action :let={fund}>
-        <.link phx-click={JS.push("delete", value: %{id: fund.id})} data-confirm="Are you sure?">
-          Delete
-        </.link>
-      </:action> --%>
+        <:action :let={fund}>
+          <.link
+            phx-click={JS.push("delete", value: %{fund_id: fund.id})}
+            data-confirm="Are you sure?"
+            phx-target={@myself}
+          >
+            <.icon name="hero-trash-mini" /> Delete
+          </.link>
+        </:action>
       </.table>
       <div :if={@funds == []} id="no-funds">
         This account has no funds yet. Use the Add Fund button to add one.
@@ -99,13 +103,16 @@ defmodule FreedomAccountWeb.FundLive.Index do
     assign(socket, :fund, nil)
   end
 
-  # @impl LiveComponent
-  # def handle_event("delete", %{"id" => id}, socket) do
-  #   fund = Funds.get_fund!(id)
-  #   {:ok, _} = Funds.delete_fund(fund)
-
-  #   {:noreply, assign(socket, :funds, list_funds())}
-  # end
+  @impl LiveComponent
+  def handle_event("delete", %{"fund_id" => id}, socket) do
+    with {:ok, fund} <- Funds.fetch_fund(id),
+         :ok <- Funds.delete_fund(fund) do
+      {:noreply, assign(socket, :funds, list_funds(socket.assigns.account))}
+    else
+      {:error, error} ->
+        {:noreply, put_flash(socket, :error, "Unable to delete fund: #{error}")}
+    end
+  end
 
   defp list_funds(account) do
     account
