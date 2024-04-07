@@ -25,7 +25,9 @@ defmodule FreedomAccountWeb.FundLive.Form do
         <.input field={@form[:icon]} label="Icon" type="text" />
         <.input field={@form[:name]} label="Name" type="text" />
         <:actions>
-          <.button phx-disable-with="Saving..." type="submit">Save Fund</.button>
+          <.button phx-disable-with="Saving..." type="submit">
+            <.icon name="hero-check-circle-mini" /> Save Fund
+          </.button>
         </:actions>
       </.simple_form>
     </div>

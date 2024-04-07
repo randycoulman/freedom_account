@@ -28,7 +28,9 @@ defmodule FreedomAccountWeb.AccountLive.Form do
         <.input field={@form[:deposits_per_year]} label="Deposits / year" type="number" />
         <.input field={@form[:name]} label="Name" type="text" />
         <:actions>
-          <.button phx-disable-with="Saving..." type="submit">Save Account</.button>
+          <.button phx-disable-with="Saving..." type="submit">
+            <.icon name="hero-check-circle-mini" /> Save Account
+          </.button>
         </:actions>
       </.simple_form>
     </div>

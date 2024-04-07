@@ -25,7 +25,9 @@ defmodule FreedomAccountWeb.AccountLive.Show do
         <%= @account.name %>
         <:actions>
           <.link patch={~p"/edit"} phx-click={JS.push_focus()}>
-            <.button>Edit</.button>
+            <.button>
+              <.icon name="hero-pencil-square-mini" /> Edit
+            </.button>
           </.link>
         </:actions>
       </.header>

@@ -35,7 +35,9 @@ defmodule FreedomAccountWeb.FundLive.Index do
         Funds
         <:actions>
           <.link patch={~p"/funds/new"}>
-            <.button>Add Fund</.button>
+            <.button>
+              <.icon name="hero-plus-circle-mini" /> Add Fund
+            </.button>
           </.link>
         </:actions>
       </.header>
