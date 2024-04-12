@@ -1,6 +1,8 @@
 defmodule FreedomAccountWeb.Router do
   use FreedomAccountWeb, :router
 
+  alias FreedomAccountWeb.Hooks
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -17,14 +19,17 @@ defmodule FreedomAccountWeb.Router do
   scope "/", FreedomAccountWeb do
     pipe_through :browser
 
-    live "/", HomeLive.Show, :show
-    live "/edit", HomeLive.Show, :edit
+    get "/", HomeController, :redirect_to_fund_list
 
-    live "/funds/new", HomeLive.Show, :new_fund
-    live "/funds/:fund_id/edit", HomeLive.Show, :edit_fund
+    live_session :default, on_mount: Hooks.Account do
+      live "/funds", FundLive.Index, :index
+      live "/funds/new", FundLive.Index, :new
+      live "/funds/account/edit", FundLive.Index, :edit_account
+      live "/funds/:id/edit", FundLive.Index, :edit
 
-    # live "/funds/:id", FundLive.Show, :show
-    # live "/funds/:id/show/edit", FundLive.Show, :edit
+      # live "/funds/:id", FundLive.Show, :show
+      # live "/funds/:id/show/edit", FundLive.Show, :edit
+    end
   end
 
   # Other scopes may use custom stacks.

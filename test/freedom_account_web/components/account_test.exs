@@ -1,4 +1,4 @@
-defmodule FreedomAccountWeb.AccountLiveTest do
+defmodule FreedomAccountWeb.AccountTest do
   @moduledoc false
 
   use FreedomAccountWeb.FeatureCase, async: true

@@ -1,4 +1,4 @@
-defmodule FreedomAccountWeb.AccountLive.Form do
+defmodule FreedomAccountWeb.Account.Form do
   @moduledoc """
   For for editing account settings.
   """
@@ -62,7 +62,7 @@ defmodule FreedomAccountWeb.AccountLive.Form do
     save_account(socket, socket.assigns.action, Params.atomize_keys(account_params))
   end
 
-  defp save_account(socket, :edit, account_params) do
+  defp save_account(socket, :edit_account, account_params) do
     case Accounts.update_account(socket.assigns.account, account_params) do
       {:ok, _account} ->
         {:noreply,

@@ -1,9 +1,9 @@
-defmodule FreedomAccountWeb.AccountLive.Show do
+defmodule FreedomAccountWeb.Account.Show do
   @moduledoc false
 
   use FreedomAccountWeb, :live_component
 
-  alias FreedomAccountWeb.AccountLive.Form
+  alias FreedomAccountWeb.Account.Form
   alias Phoenix.LiveComponent
 
   @impl LiveComponent
@@ -14,7 +14,7 @@ defmodule FreedomAccountWeb.AccountLive.Show do
       socket
       |> assign(:account, account)
       |> assign(:live_action, action)
-      |> assign(:page_title, title)
+      |> assign(:title, title)
 
     {:ok, socket}
   end
@@ -26,7 +26,7 @@ defmodule FreedomAccountWeb.AccountLive.Show do
       <.header>
         <%= @account.name %>
         <:actions>
-          <.link patch={~p"/edit"} phx-click={JS.push_focus()}>
+          <.link patch={~p"/funds/account/edit"} phx-click={JS.push_focus()}>
             <.button>
               <.icon name="hero-pencil-square-mini" /> Edit
             </.button>
@@ -34,14 +34,14 @@ defmodule FreedomAccountWeb.AccountLive.Show do
         </:actions>
       </.header>
 
-      <.modal :if={@live_action == :edit} id="account-modal" show on_cancel={JS.patch(~p"/")}>
+      <.modal :if={@live_action == :edit_account} id="account-modal" show on_cancel={JS.patch(~p"/")}>
         <.live_component
           account={@account}
           action={@live_action}
           id={@account.id}
           module={Form}
-          navigate={~p"/"}
-          title={@page_title}
+          navigate={~p"/funds"}
+          title={@title}
         />
       </.modal>
     </div>

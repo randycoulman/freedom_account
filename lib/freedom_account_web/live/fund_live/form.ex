@@ -7,6 +7,17 @@ defmodule FreedomAccountWeb.FundLive.Form do
   alias Phoenix.LiveComponent
 
   @impl LiveComponent
+  def update(assigns, socket) do
+    %{fund: fund} = assigns
+    changeset = Funds.change_fund(fund)
+
+    {:ok,
+     socket
+     |> assign(assigns)
+     |> assign_form(changeset)}
+  end
+
+  @impl LiveComponent
   def render(assigns) do
     ~H"""
     <div>
@@ -35,18 +46,9 @@ defmodule FreedomAccountWeb.FundLive.Form do
   end
 
   @impl LiveComponent
-  def update(assigns, socket) do
-    %{fund: fund} = assigns
-    changeset = Funds.change_fund(fund)
+  def handle_event("validate", params, socket) do
+    %{"fund" => fund_params} = params
 
-    {:ok,
-     socket
-     |> assign(assigns)
-     |> assign_form(changeset)}
-  end
-
-  @impl LiveComponent
-  def handle_event("validate", %{"fund" => fund_params}, socket) do
     changeset =
       socket.assigns.fund
       |> Funds.change_fund(fund_params)
@@ -55,32 +57,35 @@ defmodule FreedomAccountWeb.FundLive.Form do
     {:noreply, assign_form(socket, changeset)}
   end
 
-  def handle_event("save", %{"fund" => fund_params}, socket) do
+  def handle_event("save", params, socket) do
+    %{"fund" => fund_params} = params
     save_fund(socket, socket.assigns.action, Params.atomize_keys(fund_params))
   end
 
-  defp save_fund(socket, :edit_fund, fund_params) do
+  defp save_fund(socket, :edit, fund_params) do
     case Funds.update_fund(socket.assigns.fund, fund_params) do
-      {:ok, _fund} ->
+      {:ok, fund} ->
+        notify_parent({:saved, fund})
+
         {:noreply,
          socket
          |> put_flash(:info, "Fund updated successfully")
-         |> push_navigate(to: socket.assigns.navigate)}
+         |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
     end
   end
 
-  defp save_fund(socket, :new_fund, fund_params) do
-    %{account: account, navigate: navigate} = socket.assigns
+  defp save_fund(socket, :new, fund_params) do
+    case Funds.create_fund(socket.assigns.account, fund_params) do
+      {:ok, fund} ->
+        notify_parent({:saved, fund})
 
-    case Funds.create_fund(account, fund_params) do
-      {:ok, _fund} ->
         {:noreply,
          socket
          |> put_flash(:info, "Fund created successfully")
-         |> push_navigate(to: navigate)}
+         |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
@@ -89,5 +94,9 @@ defmodule FreedomAccountWeb.FundLive.Form do
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
     assign(socket, :form, to_form(changeset))
+  end
+
+  defp notify_parent(message) do
+    send(self(), {__MODULE__, message})
   end
 end

@@ -1,117 +1,128 @@
 defmodule FreedomAccountWeb.FundLive.Index do
   @moduledoc false
-  use FreedomAccountWeb, :live_component
+  use FreedomAccountWeb, :live_view
 
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
   alias FreedomAccountWeb.FundLive.Form
-  alias Phoenix.LiveComponent
+  alias Phoenix.LiveView
 
-  @impl LiveComponent
-  def update(assigns, socket) do
-    %{account: account, action: action, title: title} = assigns
-
-    socket =
-      socket
-      |> assign(:account, account)
-      |> assign(:funds, list_funds(account))
-      |> assign(:live_action, action)
-      |> assign(:page_title, title)
-      |> apply_action(action, assigns)
-
-    {:ok, socket}
+  @impl LiveView
+  def mount(_params, _session, socket) do
+    {:ok, stream(socket, :funds, list_funds(socket.assigns.account))}
   end
 
-  @impl LiveComponent
-  def render(assigns) do
-    ~H"""
-    <article>
-      <.header>
-        Funds
-        <:actions>
-          <.link patch={~p"/funds/new"}>
-            <.button>
-              <.icon name="hero-plus-circle-mini" /> Add Fund
-            </.button>
-          </.link>
-        </:actions>
-      </.header>
-
-      <%!-- <.table id="funds" rows={@funds} row_click={&JS.navigate(~p"/funds/#{&1}")}> --%>
-      <.table :if={@funds != []} id="funds" row_id={&"funds-#{&1.id}"} rows={@funds}>
-        <:col :let={fund} label="Icon"><%= fund.icon %></:col>
-        <:col :let={fund} label="Name"><%= fund.name %></:col>
-        <:action :let={fund}>
-          <%!-- <div class="sr-only">
-          <.link navigate={~p"/funds/#{fund}"}>Show</.link>
-        </div> --%>
-          <.link patch={~p"/funds/#{fund}/edit"}>
-            <.icon name="hero-pencil-square-mini" /> Edit
-          </.link>
-        </:action>
-        <:action :let={fund}>
-          <.link
-            phx-click={JS.push("delete", value: %{fund_id: fund.id})}
-            data-confirm="Are you sure?"
-            phx-target={@myself}
-          >
-            <.icon name="hero-trash-mini" /> Delete
-          </.link>
-        </:action>
-      </.table>
-      <div :if={@funds == []} id="no-funds">
-        This account has no funds yet. Use the Add Fund button to add one.
-      </div>
-
-      <.modal
-        :if={@live_action in [:new_fund, :edit_fund]}
-        id="fund-modal"
-        show
-        on_cancel={JS.patch(~p"/")}
-      >
-        <.live_component
-          account={@account}
-          action={@live_action}
-          fund={@fund}
-          id={@fund.id || :new}
-          module={Form}
-          navigate={~p"/"}
-          title={@page_title}
-        />
-      </.modal>
-    </article>
-    """
+  @impl LiveView
+  def handle_params(params, _url, socket) do
+    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
-  defp apply_action(socket, :edit_fund, assigns) do
-    %{fund_id: id} = assigns
+  defp apply_action(socket, :new, _params) do
+    socket
+    |> assign(page_title: "Add Fund")
+    |> assign(:fund, %Fund{})
+  end
 
+  defp apply_action(socket, :edit, %{"id" => id} = _params) do
     case Funds.fetch_fund(id) do
       {:ok, %Fund{} = fund} ->
-        assign(socket, :fund, fund)
+        socket
+        |> assign(page_title: "Edit Fund")
+        |> assign(:fund, fund)
 
       {:error, :not_found} ->
         put_flash(socket, :error, "Fund is no longer present")
     end
   end
 
-  defp apply_action(socket, :new_fund, _assigns) do
-    assign(socket, :fund, %Fund{})
+  defp apply_action(socket, :edit_account, _params) do
+    socket
+    |> assign(page_title: "Edit Account Settings")
+    |> assign(fund: nil)
   end
 
   defp apply_action(socket, _action, _assigns) do
-    assign(socket, :fund, nil)
+    socket
+    |> assign(page_title: "Funds")
+    |> assign(:fund, nil)
   end
 
-  @impl LiveComponent
-  def handle_event("delete", %{"fund_id" => id}, socket) do
+  @impl LiveView
+  def render(assigns) do
+    ~H"""
+    <.live_component
+      account={@account}
+      action={@live_action}
+      id={@account.id}
+      module={FreedomAccountWeb.Account.Show}
+      title={@page_title}
+    />
+    <.header>
+      Funds
+      <:actions>
+        <.link patch={~p"/funds/new"}>
+          <.button>
+            <.icon name="hero-plus-circle-mini" /> Add Fund
+          </.button>
+        </.link>
+      </:actions>
+    </.header>
+
+    <%!-- <.table id="funds" rows={@funds} row_click={fn {_id, fund} -> JS.navigate(~p"/funds/#{fund}") end}> --%>
+    <.table id="funds" row_id={fn {_id, fund} -> "funds-#{fund.id}" end} rows={@streams.funds}>
+      <:col :let={{_id, fund}} label="Icon"><%= fund.icon %></:col>
+      <:col :let={{_id, fund}} label="Name"><%= fund.name %></:col>
+      <:action :let={{_id, fund}}>
+        <%!-- <div class="sr-only">
+          <.link navigate={~p"/funds/#{fund}"}>Show</.link>
+        </div> --%>
+        <.link patch={~p"/funds/#{fund}/edit"}>
+          <.icon name="hero-pencil-square-mini" /> Edit
+        </.link>
+      </:action>
+      <:action :let={{id, fund}}>
+        <.link
+          phx-click={JS.push("delete", value: %{id: fund.id}) |> hide("##{id}")}
+          data-confirm="Are you sure?"
+        >
+          <.icon name="hero-trash-mini" /> Delete
+        </.link>
+      </:action>
+      <:empty_state>
+        <div id="no-funds">
+          This account has no funds yet. Use the Add Fund button to add one.
+        </div>
+      </:empty_state>
+    </.table>
+
+    <.modal :if={@live_action in [:new, :edit]} id="fund-modal" show on_cancel={JS.patch(~p"/funds")}>
+      <.live_component
+        account={@account}
+        action={@live_action}
+        fund={@fund}
+        id={@fund.id || :new}
+        module={Form}
+        patch={~p"/funds"}
+        title={@page_title}
+      />
+    </.modal>
+    """
+  end
+
+  @impl LiveView
+  def handle_event("delete", %{"id" => id}, socket) do
     with {:ok, fund} <- Funds.fetch_fund(id),
          :ok <- Funds.delete_fund(fund) do
-      {:noreply, assign(socket, :funds, list_funds(socket.assigns.account))}
+      {:noreply, stream_delete(socket, :funds, fund)}
     else
       {:error, error} ->
         {:noreply, put_flash(socket, :error, "Unable to delete fund: #{error}")}
     end
+  end
+
+  @impl LiveView
+  def handle_info({Form, {:saved, fund}}, socket) do
+    {:noreply, stream_insert(socket, :funds, fund)}
   end
 
   defp list_funds(account) do

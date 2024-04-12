@@ -473,6 +473,8 @@ defmodule FreedomAccountWeb.CoreComponents do
 
   slot :action, doc: "the slot for showing user actions in the last table column"
 
+  slot :empty_state, doc: "what to render if there is no data"
+
   def table(assigns) do
     assigns =
       with %{rows: %Phoenix.LiveView.LiveStream{}} <- assigns do
@@ -495,6 +497,12 @@ defmodule FreedomAccountWeb.CoreComponents do
           phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
           class="relative divide-y divide-zinc-100 border-t border-zinc-200 text-sm leading-6 text-zinc-700"
         >
+          <tr :if={@empty_state} class="hidden only:table-row" id="empty-state">
+            <td colspan={length(@col)}>
+              <%= render_slot(@empty_state) %>
+            </td>
+          </tr>
+
           <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="group hover:bg-zinc-50">
             <td
               :for={{col, i} <- Enum.with_index(@col)}
