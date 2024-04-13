@@ -1,5 +1,5 @@
 defmodule FreedomAccountWeb.HomeControllerTest do
-  use FreedomAccountWeb.FeatureCase, async: true
+  use FreedomAccountWeb.ConnCase, async: true
 
   test "redirects to fund list page", %{conn: conn} do
     conn

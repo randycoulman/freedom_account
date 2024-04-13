@@ -1,7 +1,7 @@
 defmodule FreedomAccountWeb.FundLiveTest do
   @moduledoc false
 
-  use FreedomAccountWeb.FeatureCase, async: true
+  use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
 

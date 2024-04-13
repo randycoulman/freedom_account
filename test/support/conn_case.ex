@@ -22,11 +22,11 @@ defmodule FreedomAccountWeb.ConnCase do
 
   using do
     quote do
-      # The default endpoint for testing
       use FreedomAccountWeb, :verified_routes
 
-      # Import conveniences for testing with connections
+      import FreedomAccountWeb.ElementSelectors
       import Phoenix.ConnTest
+      import PhoenixTest
       import Plug.Conn
       import unquote(__MODULE__)
 
