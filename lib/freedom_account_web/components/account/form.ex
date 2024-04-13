@@ -10,11 +10,22 @@ defmodule FreedomAccountWeb.Account.Form do
   alias Phoenix.LiveComponent
 
   @impl LiveComponent
+  def update(assigns, socket) do
+    %{account: account} = assigns
+    changeset = Accounts.change_account(account)
+
+    {:ok,
+     socket
+     |> assign(assigns)
+     |> assign_form(changeset)}
+  end
+
+  @impl LiveComponent
   def render(assigns) do
     ~H"""
     <div>
       <.header>
-        <%= @title %>
+        Edit Account Settings
       </.header>
 
       <.simple_form
@@ -37,17 +48,6 @@ defmodule FreedomAccountWeb.Account.Form do
   end
 
   @impl LiveComponent
-  def update(assigns, socket) do
-    %{account: account} = assigns
-    changeset = Accounts.change_account(account)
-
-    {:ok,
-     socket
-     |> assign(assigns)
-     |> assign_form(changeset)}
-  end
-
-  @impl LiveComponent
   def handle_event("validate", %{"account" => account_params}, socket) do
     changeset =
       socket.assigns.account
@@ -58,10 +58,10 @@ defmodule FreedomAccountWeb.Account.Form do
   end
 
   def handle_event("save", %{"account" => account_params}, socket) do
-    save_account(socket, socket.assigns.action, Params.atomize_keys(account_params))
+    save_account(socket, Params.atomize_keys(account_params))
   end
 
-  defp save_account(socket, :edit_account, account_params) do
+  defp save_account(socket, account_params) do
     case Accounts.update_account(socket.assigns.account, account_params) do
       {:ok, _account} ->
         {:noreply,

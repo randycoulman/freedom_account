@@ -24,8 +24,8 @@ defmodule FreedomAccountWeb.Router do
     live_session :default, on_mount: Hooks.Account do
       live "/funds", FundLive.Index, :index
       live "/funds/new", FundLive.Index, :new
-      live "/funds/account/edit", FundLive.Index, :edit_account
       live "/funds/:id/edit", FundLive.Index, :edit
+      live "/funds/account", FundLive.Index, :edit_account
 
       live "/funds/:id", FundLive.Show, :show
       live "/funds/:id/show/edit", FundLive.Show, :edit

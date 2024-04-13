@@ -8,15 +8,7 @@ defmodule FreedomAccountWeb.Account.Show do
 
   @impl LiveComponent
   def update(assigns, socket) do
-    %{account: account, action: action, title: title} = assigns
-
-    socket =
-      socket
-      |> assign(:account, account)
-      |> assign(:live_action, action)
-      |> assign(:title, title)
-
-    {:ok, socket}
+    {:ok, assign(socket, assigns)}
   end
 
   @impl LiveComponent
@@ -26,7 +18,7 @@ defmodule FreedomAccountWeb.Account.Show do
       <.header>
         <%= @account.name %>
         <:actions>
-          <.link patch={~p"/funds/account/edit"} phx-click={JS.push_focus()}>
+          <.link patch={@edit_path} phx-click={JS.push_focus()}>
             <.button>
               <.icon name="hero-cog-8-tooth-mini" /> Settings
             </.button>
@@ -34,14 +26,18 @@ defmodule FreedomAccountWeb.Account.Show do
         </:actions>
       </.header>
 
-      <.modal :if={@live_action == :edit_account} id="account-modal" show on_cancel={JS.patch(~p"/")}>
+      <.modal
+        :if={@action == :edit_account}
+        id="account-modal"
+        show
+        on_cancel={JS.patch(@return_path)}
+      >
         <.live_component
           account={@account}
-          action={@live_action}
+          action={@action}
           id={@account.id}
           module={Form}
-          navigate={~p"/funds"}
-          title={@title}
+          navigate={@return_path}
         />
       </.modal>
     </div>

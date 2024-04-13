@@ -53,9 +53,10 @@ defmodule FreedomAccountWeb.FundLive.Index do
     <.live_component
       account={@account}
       action={@live_action}
+      edit_path={~p"/funds/account"}
       id={@account.id}
       module={FreedomAccountWeb.Account.Show}
-      title={@page_title}
+      return_path={~p"/funds"}
     />
     <.header>
       Funds
