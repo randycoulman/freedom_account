@@ -23,7 +23,6 @@ defmodule FreedomAccountWeb.FundLive.Form do
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to add a new fund.</:subtitle>
       </.header>
 
       <.simple_form

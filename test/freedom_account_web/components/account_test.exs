@@ -26,8 +26,8 @@ defmodule FreedomAccountWeb.AccountTest do
 
       conn
       |> visit(~p"/")
-      |> click_link("Edit")
-      |> assert_has(heading(), text: "Settings")
+      |> click_link("Settings")
+      |> assert_has(heading(), text: "Edit Account Settings")
       |> fill_form("#account-form", account: @invalid_attrs)
       |> assert_has(field_error("#account_name"), text: "can't be blank")
       |> assert_has(field_error("#account_deposits_per_year"), text: "can't be blank")

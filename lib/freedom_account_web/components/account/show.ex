@@ -28,7 +28,7 @@ defmodule FreedomAccountWeb.Account.Show do
         <:actions>
           <.link patch={~p"/funds/account/edit"} phx-click={JS.push_focus()}>
             <.button>
-              <.icon name="hero-pencil-square-mini" /> Edit
+              <.icon name="hero-cog-8-tooth-mini" /> Settings
             </.button>
           </.link>
         </:actions>

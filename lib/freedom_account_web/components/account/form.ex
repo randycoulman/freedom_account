@@ -15,7 +15,6 @@ defmodule FreedomAccountWeb.Account.Form do
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to modify account settings.</:subtitle>
       </.header>
 
       <.simple_form
