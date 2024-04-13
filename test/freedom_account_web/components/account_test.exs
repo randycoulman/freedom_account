@@ -21,7 +21,7 @@ defmodule FreedomAccountWeb.AccountTest do
       |> assert_has(heading(), text: account.name)
     end
 
-    test "updates account within modal", %{conn: conn} do
+    test "updates account within modal on fund list view", %{conn: conn} do
       update_attrs = Factory.account_attrs()
 
       conn
@@ -35,6 +35,25 @@ defmodule FreedomAccountWeb.AccountTest do
       |> click_button("Save Account")
       |> assert_has(flash(:info), text: "Account updated successfully")
       |> assert_has(heading(), text: escaped(update_attrs[:name]))
+      |> assert_has(heading(), text: "Funds")
+    end
+
+    test "updates account within modal on fund detail view", %{account: account, conn: conn} do
+      fund = Factory.fund(account)
+      update_attrs = Factory.account_attrs()
+
+      conn
+      |> visit(~p"/funds/#{fund}")
+      |> click_link("Settings")
+      |> assert_has(heading(), text: "Edit Account Settings")
+      |> fill_form("#account-form", account: @invalid_attrs)
+      |> assert_has(field_error("#account_name"), text: "can't be blank")
+      |> assert_has(field_error("#account_deposits_per_year"), text: "can't be blank")
+      |> fill_form("#account-form", account: update_attrs)
+      |> click_button("Save Account")
+      |> assert_has(flash(:info), text: "Account updated successfully")
+      |> assert_has(heading(), text: escaped(update_attrs[:name]))
+      |> assert_has(heading(), text: fund.name)
     end
   end
 end

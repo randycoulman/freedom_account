@@ -27,6 +27,10 @@ defmodule FreedomAccountWeb.FundLive.Show do
     assign(socket, :page_title, "Edit Fund")
   end
 
+  defp apply_action(socket, :edit_account, _params) do
+    assign(socket, :page_title, "Edit Account Settings")
+  end
+
   defp apply_action(socket, _action, _params) do
     fund = socket.assigns.fund
 
@@ -36,6 +40,14 @@ defmodule FreedomAccountWeb.FundLive.Show do
   @impl LiveView
   def render(assigns) do
     ~H"""
+    <.live_component
+      account={@account}
+      action={@live_action}
+      edit_path={~p"/funds/#{@fund}/account"}
+      id={@account.id}
+      module={FreedomAccountWeb.Account.Show}
+      return_path={~p"/funds/#{@fund}"}
+    />
     <.header>
       <%= @fund.icon %> <%= @fund.name %>
       <:actions>
