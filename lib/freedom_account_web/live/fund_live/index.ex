@@ -41,7 +41,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
     |> assign(fund: nil)
   end
 
-  defp apply_action(socket, _action, _assigns) do
+  defp apply_action(socket, _action, _params) do
     socket
     |> assign(page_title: "Funds")
     |> assign(:fund, nil)
@@ -68,14 +68,18 @@ defmodule FreedomAccountWeb.FundLive.Index do
       </:actions>
     </.header>
 
-    <%!-- <.table id="funds" rows={@funds} row_click={fn {_id, fund} -> JS.navigate(~p"/funds/#{fund}") end}> --%>
-    <.table id="funds" row_id={fn {_id, fund} -> "funds-#{fund.id}" end} rows={@streams.funds}>
+    <.table
+      id="funds"
+      row_click={fn {_id, fund} -> JS.navigate(~p"/funds/#{fund}") end}
+      row_id={fn {_id, fund} -> "funds-#{fund.id}" end}
+      rows={@streams.funds}
+    >
       <:col :let={{_id, fund}} label="Icon"><%= fund.icon %></:col>
       <:col :let={{_id, fund}} label="Name"><%= fund.name %></:col>
       <:action :let={{_id, fund}}>
-        <%!-- <div class="sr-only">
+        <div class="sr-only">
           <.link navigate={~p"/funds/#{fund}"}>Show</.link>
-        </div> --%>
+        </div>
         <.link patch={~p"/funds/#{fund}/edit"}>
           <.icon name="hero-pencil-square-mini" /> Edit
         </.link>

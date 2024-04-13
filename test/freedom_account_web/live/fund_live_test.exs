@@ -7,10 +7,6 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
   @invalid_attrs %{icon: nil, name: nil}
 
-  defp create_account(_context) do
-    %{account: Factory.account()}
-  end
-
   describe "Index" do
     setup [:create_account]
 
@@ -78,37 +74,54 @@ defmodule FreedomAccountWeb.FundLiveTest do
     end
   end
 
-  # describe "Show" do
-  #   setup [:create_fund]
+  describe "Show" do
+    setup [:create_account, :create_fund]
 
-  #   test "displays fund", %{conn: conn, fund: fund} do
-  #     {:ok, _show_live, html} = live(conn, ~p"/funds/#{fund}")
+    test "drill down to individual fund and back", %{conn: conn, fund: fund} do
+      conn
+      |> visit(~p"/funds")
+      |> click_link("td", fund.name)
+      # |> assert_path(~p"/funds/#{fund}")
+      |> assert_has(heading(), text: "#{fund.icon} #{fund.name}")
+      |> click_link("Back to Funds")
+      |> assert_has(heading(), text: "Funds")
+    end
 
-  #     assert html =~ "Show Fund"
-  #     assert html =~ fund.icon
-  #   end
+    test "displays fund", %{conn: conn, fund: fund} do
+      conn
+      |> visit(~p"/funds/#{fund}")
+      |> assert_has(heading(), text: "#{fund.icon} #{fund.name}")
+    end
 
-  #   test "updates fund within modal", %{conn: conn, fund: fund} do
-  #     {:ok, show_live, _html} = live(conn, ~p"/funds/#{fund}")
+    #   test "updates fund within modal", %{conn: conn, fund: fund} do
+    #     {:ok, show_live, _html} = live(conn, ~p"/funds/#{fund}")
 
-  #     assert show_live |> element("a", "Edit") |> render_click() =~
-  #              "Edit Fund"
+    #     assert show_live |> element("a", "Edit") |> render_click() =~
+    #              "Edit Fund"
 
-  #     assert_patch(show_live, ~p"/funds/#{fund}/show/edit")
+    #     assert_patch(show_live, ~p"/funds/#{fund}/show/edit")
 
-  #     assert show_live
-  #            |> form("#fund-form", fund: @invalid_attrs)
-  #            |> render_change() =~ "can&#39;t be blank"
+    #     assert show_live
+    #            |> form("#fund-form", fund: @invalid_attrs)
+    #            |> render_change() =~ "can&#39;t be blank"
 
-  #     assert show_live
-  #           |> form("#fund-form", fund: @update_attrs)
-  #           |> render_submit()
+    #     assert show_live
+    #           |> form("#fund-form", fund: @update_attrs)
+    #           |> render_submit()
 
-  #     assert_patch(show_live, ~p"/funds")
+    #     assert_patch(show_live, ~p"/funds")
 
-  #     html = render(show_live)
-  #     assert html =~ "Fund updated successfully"
-  #     assert html =~ "some updated icon"
-  #   end
-  # end
+    #     html = render(show_live)
+    #     assert html =~ "Fund updated successfully"
+    #     assert html =~ "some updated icon"
+    #   end
+  end
+
+  defp create_account(_context) do
+    %{account: Factory.account()}
+  end
+
+  defp create_fund(%{account: account}) do
+    %{fund: Factory.fund(account)}
+  end
 end

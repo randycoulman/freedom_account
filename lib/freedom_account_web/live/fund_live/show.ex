@@ -1,54 +1,59 @@
 defmodule FreedomAccountWeb.FundLive.Show do
   @moduledoc false
-  # use FreedomAccountWeb, :live_view
+  use FreedomAccountWeb, :live_view
 
-  # alias FreedomAccount.Funds
+  alias FreedomAccount.Funds
+  alias Phoenix.LiveView
 
-  # @impl LiveView
-  # def mount(_params, _session, socket) do
-  #   {:ok, socket}
-  # end
+  @impl LiveView
+  def handle_params(%{"id" => id} = params, _url, socket) do
+    case Funds.fetch_fund(id) do
+      {:ok, fund} ->
+        {:noreply,
+         socket
+         |> assign(:fund, fund)
+         |> apply_action(socket.assigns.live_action, params)}
 
-  # @impl LiveView
-  # def handle_params(%{"id" => id}, _, socket) do
-  #   {:noreply,
-  #    socket
-  #    |> assign(:page_title, page_title(socket.assigns.live_action))
-  #    |> assign(:fund, Funds.get_fund!(id))}
-  # end
+      {:error, :not_found} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Fund not found")
+         |> push_navigate(to: ~p"/funds")}
+    end
+  end
 
-  # @impl LiveView
-  # def render(assigns) do
-  #   ~H"""
-  #   <.header>
-  #     Fund <%= @fund.id %>
-  #     <:subtitle>This is a fund record from your database.</:subtitle>
-  #     <:actions>
-  #       <.link patch={~p"/funds/#{@fund}/show/edit"} phx-click={JS.push_focus()}>
-  #         <.button>Edit fund</.button>
-  #       </.link>
-  #     </:actions>
-  #   </.header>
+  defp apply_action(socket, _action, _params) do
+    fund = socket.assigns.fund
 
-  #   <.list>
-  #     <:item title="Icon"><%= @fund.icon %></:item>
-  #     <:item title="Name"><%= @fund.name %></:item>
-  #   </.list>
+    assign(socket, :page_title, "#{fund.icon} #{fund.name}")
+  end
 
-  #   <.back navigate={~p"/funds"}>Back to funds</.back>
+  @impl LiveView
+  def render(assigns) do
+    ~H"""
+    <.header>
+      <%= @fund.icon %> <%= @fund.name %>
+      <%!-- <:actions>
+        <.link patch={~p"/funds/#{@fund}/show/edit"} phx-click={JS.push_focus()}>
+          <.button>Edit fund</.button>
+        </.link>
+      </:actions> --%>
+    </.header>
 
-  #   <.modal :if={@live_action == :edit} id="fund-modal" show on_cancel={JS.patch(~p"/funds/#{@fund}")}>
-  #     <.live_component
-  #       module={FreedomAccountWeb.FundLive.FormComponent}
-  #       id={@fund.id}
-  #       title={@page_title}
-  #       action={@live_action}
-  #       fund={@fund}
-  #       navigate={~p"/funds/#{@fund}"}
-  #     />
-  #   </.modal>
-  #   """
-  # end
+    <.back navigate={~p"/funds"}>Back to Funds</.back>
+
+    <%!-- <.modal :if={@live_action == :edit} id="fund-modal" show on_cancel={JS.patch(~p"/funds/#{@fund}")}>
+      <.live_component
+        module={FreedomAccountWeb.FundLive.FormComponent}
+        id={@fund.id}
+        title={@page_title}
+        action={@live_action}
+        fund={@fund}
+        navigate={~p"/funds/#{@fund}"}
+      />
+    </.modal> --%>
+    """
+  end
 
   # defp page_title(:show), do: "Show Fund"
   # defp page_title(:edit), do: "Edit Fund"
