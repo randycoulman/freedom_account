@@ -15,6 +15,9 @@ defmodule FreedomAccountWeb.ElementSelectors do
   @spec heading :: selector()
   def heading, do: "h2"
 
+  @spec page_title :: selector()
+  def page_title, do: "title"
+
   @spec table_cell :: selector()
   def table_cell, do: "td"
 

@@ -27,6 +27,7 @@ defmodule FreedomAccountWeb.AccountTest do
       conn
       |> visit(~p"/")
       |> click_link("Settings")
+      |> assert_has(page_title(), text: "Edit Account Settings")
       |> assert_has(heading(), text: "Edit Account Settings")
       |> fill_form("#account-form", account: @invalid_attrs)
       |> assert_has(field_error("#account_name"), text: "can't be blank")
@@ -34,6 +35,7 @@ defmodule FreedomAccountWeb.AccountTest do
       |> fill_form("#account-form", account: update_attrs)
       |> click_button("Save Account")
       |> assert_has(flash(:info), text: "Account updated successfully")
+      # |> assert_has(page_title(), text: "Funds")
       |> assert_has(heading(), text: update_attrs[:name])
       |> assert_has(heading(), text: "Funds")
     end
@@ -45,6 +47,7 @@ defmodule FreedomAccountWeb.AccountTest do
       conn
       |> visit(~p"/funds/#{fund}")
       |> click_link("Settings")
+      |> assert_has(page_title(), text: "Edit Account Settings")
       |> assert_has(heading(), text: "Edit Account Settings")
       |> fill_form("#account-form", account: @invalid_attrs)
       |> assert_has(field_error("#account_name"), text: "can't be blank")
@@ -52,6 +55,7 @@ defmodule FreedomAccountWeb.AccountTest do
       |> fill_form("#account-form", account: update_attrs)
       |> click_button("Save Account")
       |> assert_has(flash(:info), text: "Account updated successfully")
+      # |> assert_has(page_title(), text: fund.name)
       |> assert_has(heading(), text: update_attrs[:name])
       |> assert_has(heading(), text: fund.name)
     end

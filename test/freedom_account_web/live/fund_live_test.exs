@@ -15,6 +15,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
       conn
       |> visit(~p"/funds")
+      # |> assert_has(page_title(), text: "Funds")
       |> assert_has(heading(), text: "Funds")
       |> assert_has(table_cell(), text: fund.icon)
       |> assert_has(table_cell(), text: fund.name)
@@ -33,6 +34,8 @@ defmodule FreedomAccountWeb.FundLiveTest do
       conn
       |> visit(~p"/funds")
       |> click_link("Add Fund")
+      # |> assert_path(~p"/funds/new")
+      |> assert_has(page_title(), text: "Add Fund")
       |> assert_has(heading(), text: "Add Fund")
       |> fill_form("#fund-form", fund: @invalid_attrs)
       |> assert_has(field_error("#fund_icon"), text: "can't be blank")
@@ -52,6 +55,8 @@ defmodule FreedomAccountWeb.FundLiveTest do
       conn
       |> visit(~p"/funds")
       |> click_link(action_link("#funds-#{fund.id}"), "Edit")
+      # |> assert_path(~p"/funds/#{fund}/edit")
+      |> assert_has(page_title(), text: "Edit Fund")
       |> assert_has(heading(), text: "Edit Fund")
       |> fill_form("#fund-form", fund: @invalid_attrs)
       |> assert_has(field_error("#fund_icon"), text: "can't be blank")
@@ -82,8 +87,11 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> visit(~p"/funds")
       |> click_link("td", fund.name)
       # |> assert_path(~p"/funds/#{fund}")
+      # |> assert_has(page_title(), text: "#{fund.icon} #{fund.name}")
       |> assert_has(heading(), text: "#{fund.icon} #{fund.name}")
       |> click_link("Back to Funds")
+      |> assert_path(~p"/funds")
+      # |> assert_has(page_title(), text: "Funds")
       |> assert_has(heading(), text: "Funds")
     end
 
@@ -99,6 +107,8 @@ defmodule FreedomAccountWeb.FundLiveTest do
       conn
       |> visit(~p"/funds/#{fund}")
       |> click_link("Edit Details")
+      # |> assert_path(~p"/funds/#{fund}/show/edit")
+      |> assert_has(page_title(), text: "Edit Fund")
       |> assert_has(heading(), text: "Edit Fund")
       |> fill_form("#fund-form", fund: @invalid_attrs)
       |> assert_has(field_error("#fund_icon"), text: "can't be blank")
@@ -107,6 +117,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> click_button("Save Fund")
       |> assert_path(~p"/funds/#{fund}")
       |> assert_has(flash(:info), text: "Fund updated successfully")
+      |> assert_has(page_title(), text: "#{updated_attrs[:icon]} #{updated_attrs[:name]}")
       |> assert_has(heading(), text: "#{updated_attrs[:icon]} #{updated_attrs[:name]}")
     end
   end
