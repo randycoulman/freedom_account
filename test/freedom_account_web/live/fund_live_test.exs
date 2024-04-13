@@ -93,28 +93,22 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(heading(), text: "#{fund.icon} #{fund.name}")
     end
 
-    #   test "updates fund within modal", %{conn: conn, fund: fund} do
-    #     {:ok, show_live, _html} = live(conn, ~p"/funds/#{fund}")
+    test "updates fund within modal", %{conn: conn, fund: fund} do
+      updated_attrs = Factory.fund_attrs()
 
-    #     assert show_live |> element("a", "Edit") |> render_click() =~
-    #              "Edit Fund"
-
-    #     assert_patch(show_live, ~p"/funds/#{fund}/show/edit")
-
-    #     assert show_live
-    #            |> form("#fund-form", fund: @invalid_attrs)
-    #            |> render_change() =~ "can&#39;t be blank"
-
-    #     assert show_live
-    #           |> form("#fund-form", fund: @update_attrs)
-    #           |> render_submit()
-
-    #     assert_patch(show_live, ~p"/funds")
-
-    #     html = render(show_live)
-    #     assert html =~ "Fund updated successfully"
-    #     assert html =~ "some updated icon"
-    #   end
+      conn
+      |> visit(~p"/funds/#{fund}")
+      |> click_link("Edit Details")
+      |> assert_has(heading(), text: "Edit Fund")
+      |> fill_form("#fund-form", fund: @invalid_attrs)
+      |> assert_has(field_error("#fund_icon"), text: "can't be blank")
+      |> assert_has(field_error("#fund_name"), text: "can't be blank")
+      |> fill_form("#fund-form", fund: updated_attrs)
+      |> click_button("Save Fund")
+      |> assert_path(~p"/funds/#{fund}")
+      |> assert_has(flash(:info), text: "Fund updated successfully")
+      |> assert_has(heading(), text: "#{updated_attrs[:icon]} #{updated_attrs[:name]}")
+    end
   end
 
   defp create_account(_context) do
