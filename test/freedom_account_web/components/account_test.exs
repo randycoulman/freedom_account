@@ -34,7 +34,7 @@ defmodule FreedomAccountWeb.AccountTest do
       |> fill_form("#account-form", account: update_attrs)
       |> click_button("Save Account")
       |> assert_has(flash(:info), text: "Account updated successfully")
-      |> assert_has(heading(), text: escaped(update_attrs[:name]))
+      |> assert_has(heading(), text: update_attrs[:name])
       |> assert_has(heading(), text: "Funds")
     end
 
@@ -52,7 +52,7 @@ defmodule FreedomAccountWeb.AccountTest do
       |> fill_form("#account-form", account: update_attrs)
       |> click_button("Save Account")
       |> assert_has(flash(:info), text: "Account updated successfully")
-      |> assert_has(heading(), text: escaped(update_attrs[:name]))
+      |> assert_has(heading(), text: update_attrs[:name])
       |> assert_has(heading(), text: fund.name)
     end
   end

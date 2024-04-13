@@ -17,7 +17,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> visit(~p"/funds")
       |> assert_has(heading(), text: "Funds")
       |> assert_has(table_cell(), text: fund.icon)
-      |> assert_has(table_cell(), text: escaped(fund.name))
+      |> assert_has(table_cell(), text: fund.name)
     end
 
     test "shows prompt when list is empty", %{conn: conn} do
@@ -42,7 +42,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_path(~p"/funds")
       |> assert_has(flash(:info), text: "Fund created successfully")
       |> assert_has(table_cell(), text: attrs[:icon])
-      |> assert_has(table_cell(), text: escaped(attrs[:name]))
+      |> assert_has(table_cell(), text: attrs[:name])
     end
 
     test "edits fund in listing", %{account: account, conn: conn} do
@@ -61,7 +61,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_path(~p"/funds")
       |> assert_has(flash(:info), text: "Fund updated successfully")
       |> assert_has(table_cell(), text: new_attrs[:icon])
-      |> assert_has(table_cell(), text: escaped(new_attrs[:name]))
+      |> assert_has(table_cell(), text: new_attrs[:name])
     end
 
     test "deletes fund in listing", %{account: account, conn: conn} do

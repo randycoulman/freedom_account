@@ -19,7 +19,6 @@ defmodule FreedomAccountWeb.ConnCase do
 
   alias FreedomAccount.DataCase
   alias Phoenix.ConnTest
-  alias Phoenix.HTML
 
   using do
     quote do
@@ -38,10 +37,5 @@ defmodule FreedomAccountWeb.ConnCase do
   setup tags do
     DataCase.setup_sandbox(tags)
     {:ok, conn: ConnTest.build_conn()}
-  end
-
-  @spec escaped(String.t()) :: String.t()
-  def escaped(string) do
-    string |> HTML.html_escape() |> HTML.safe_to_string()
   end
 end
