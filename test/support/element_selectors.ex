@@ -15,6 +15,9 @@ defmodule FreedomAccountWeb.ElementSelectors do
   @spec heading :: selector()
   def heading, do: "h2"
 
+  @spec link :: selector()
+  def link, do: "a"
+
   @spec page_title :: selector()
   def page_title, do: "title"
 
