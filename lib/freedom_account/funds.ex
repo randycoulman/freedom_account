@@ -51,15 +51,19 @@ defmodule FreedomAccount.Funds do
 
   ## Examples
 
-      iex> fetch_fund(123)
+      iex> fetch_fund(account, 123)
       {:ok, %Fund{}}
 
-      iex> fetch_fund(456)
+      iex> fetch_fund(account, 456)
       {:error, :not_found}
 
   """
-  @spec fetch_fund(Fund.id()) :: {:ok, Fund.t()} | {:error, :not_found}
-  def fetch_fund(id), do: Repo.fetch(Fund, id)
+  @spec fetch_fund(Account.t(), Fund.id()) :: {:ok, Fund.t()} | {:error, :not_found}
+  def fetch_fund(%Account{} = account, id) do
+    Fund
+    |> Fund.by_account(account)
+    |> Repo.fetch(id)
+  end
 
   @doc """
   Returns the list of funds for an account.

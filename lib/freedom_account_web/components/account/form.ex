@@ -49,8 +49,10 @@ defmodule FreedomAccountWeb.Account.Form do
 
   @impl LiveComponent
   def handle_event("validate", %{"account" => account_params}, socket) do
+    %{account: account} = socket.assigns
+
     changeset =
-      socket.assigns.account
+      account
       |> Accounts.change_account(account_params)
       |> Map.put(:action, :validate)
 
@@ -62,12 +64,14 @@ defmodule FreedomAccountWeb.Account.Form do
   end
 
   defp save_account(socket, account_params) do
-    case Accounts.update_account(socket.assigns.account, account_params) do
+    %{account: account, navigate: navigate} = socket.assigns
+
+    case Accounts.update_account(account, account_params) do
       {:ok, _account} ->
         {:noreply,
          socket
          |> put_flash(:info, "Account updated successfully")
-         |> push_navigate(to: socket.assigns.navigate)}
+         |> push_navigate(to: navigate)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, :form, to_form(changeset))}

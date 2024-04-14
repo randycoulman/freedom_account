@@ -9,12 +9,14 @@ defmodule FreedomAccountWeb.FundLive.Index do
 
   @impl LiveView
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :funds, list_funds(socket.assigns.account))}
+    %{account: account} = socket.assigns
+    {:ok, stream(socket, :funds, list_funds(account))}
   end
 
   @impl LiveView
   def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+    %{live_action: action} = socket.assigns
+    {:noreply, apply_action(socket, action, params)}
   end
 
   defp apply_action(socket, :new, _params) do
@@ -24,7 +26,9 @@ defmodule FreedomAccountWeb.FundLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id} = _params) do
-    case Funds.fetch_fund(id) do
+    %{account: account} = socket.assigns
+
+    case Funds.fetch_fund(account, id) do
       {:ok, %Fund{} = fund} ->
         socket
         |> assign(page_title: "Edit Fund")
@@ -116,7 +120,9 @@ defmodule FreedomAccountWeb.FundLive.Index do
 
   @impl LiveView
   def handle_event("delete", %{"id" => id}, socket) do
-    with {:ok, fund} <- Funds.fetch_fund(id),
+    %{account: account} = socket.assigns
+
+    with {:ok, fund} <- Funds.fetch_fund(account, id),
          :ok <- Funds.delete_fund(fund) do
       {:noreply, stream_delete(socket, :funds, fund)}
     else

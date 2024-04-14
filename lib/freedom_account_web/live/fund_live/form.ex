@@ -47,9 +47,10 @@ defmodule FreedomAccountWeb.FundLive.Form do
   @impl LiveComponent
   def handle_event("validate", params, socket) do
     %{"fund" => fund_params} = params
+    %{fund: fund} = socket.assigns
 
     changeset =
-      socket.assigns.fund
+      fund
       |> Funds.change_fund(fund_params)
       |> Map.put(:action, :validate)
 
@@ -58,18 +59,22 @@ defmodule FreedomAccountWeb.FundLive.Form do
 
   def handle_event("save", params, socket) do
     %{"fund" => fund_params} = params
-    save_fund(socket, socket.assigns.action, Params.atomize_keys(fund_params))
+    %{action: action} = socket.assigns
+
+    save_fund(socket, action, Params.atomize_keys(fund_params))
   end
 
   defp save_fund(socket, :edit, fund_params) do
-    case Funds.update_fund(socket.assigns.fund, fund_params) do
+    %{fund: fund, patch: patch} = socket.assigns
+
+    case Funds.update_fund(fund, fund_params) do
       {:ok, fund} ->
         notify_parent({:saved, fund})
 
         {:noreply,
          socket
          |> put_flash(:info, "Fund updated successfully")
-         |> push_patch(to: socket.assigns.patch)}
+         |> push_patch(to: patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
@@ -77,14 +82,16 @@ defmodule FreedomAccountWeb.FundLive.Form do
   end
 
   defp save_fund(socket, :new, fund_params) do
-    case Funds.create_fund(socket.assigns.account, fund_params) do
+    %{account: account, patch: patch} = socket.assigns
+
+    case Funds.create_fund(account, fund_params) do
       {:ok, fund} ->
         notify_parent({:saved, fund})
 
         {:noreply,
          socket
          |> put_flash(:info, "Fund created successfully")
-         |> push_patch(to: socket.assigns.patch)}
+         |> push_patch(to: patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}

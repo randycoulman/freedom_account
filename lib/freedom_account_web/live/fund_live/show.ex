@@ -8,12 +8,14 @@ defmodule FreedomAccountWeb.FundLive.Show do
 
   @impl LiveView
   def handle_params(%{"id" => id} = params, _url, socket) do
-    case Funds.fetch_fund(id) do
+    %{account: account, live_action: action} = socket.assigns
+
+    case Funds.fetch_fund(account, id) do
       {:ok, fund} ->
         {:noreply,
          socket
          |> assign(:fund, fund)
-         |> apply_action(socket.assigns.live_action, params)}
+         |> apply_action(action, params)}
 
       {:error, :not_found} ->
         {:noreply,
@@ -32,7 +34,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
   end
 
   defp apply_action(socket, _action, _params) do
-    fund = socket.assigns.fund
+    %{fund: fund} = socket.assigns
 
     assign(socket, :page_title, "#{fund.icon} #{fund.name}")
   end

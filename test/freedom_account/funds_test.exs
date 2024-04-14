@@ -48,18 +48,25 @@ defmodule FreedomAccount.FundsTest do
     test "deletes the fund", %{account: account} do
       fund = Factory.fund(account)
       assert :ok = Funds.delete_fund(fund)
-      assert {:error, :not_found} == Funds.fetch_fund(fund.id)
+      assert {:error, :not_found} == Funds.fetch_fund(account, fund.id)
     end
   end
 
   describe "fetching a fund" do
-    test "when fund exists, finds the fund by ID", %{account: account} do
+    test "when fund exists for the provided account, finds the fund by ID", %{account: account} do
       fund = Factory.fund(account)
-      assert {:ok, fund} == Funds.fetch_fund(fund.id)
+      assert {:ok, fund} == Funds.fetch_fund(account, fund.id)
     end
 
-    test "when fund does not exist, returns an error" do
-      assert {:error, :not_found} = Funds.fetch_fund(Factory.id())
+    test "when fund exists, but for a different account, returns an error", %{account: account} do
+      other_account = Factory.account()
+      fund = Factory.fund(other_account)
+
+      assert {:error, :not_found} = Funds.fetch_fund(account, fund.id)
+    end
+
+    test "when fund does not exist, returns an error", %{account: account} do
+      assert {:error, :not_found} = Funds.fetch_fund(account, Factory.id())
     end
   end
 
@@ -83,9 +90,9 @@ defmodule FreedomAccount.FundsTest do
       assert fund.name == valid_attrs[:name]
     end
 
-    test "with invalid data returns an error changeset", %{fund: fund} do
+    test "with invalid data returns an error changeset", %{account: account, fund: fund} do
       assert {:error, %Ecto.Changeset{}} = Funds.update_fund(fund, @invalid_attrs)
-      assert {:ok, fund} == Funds.fetch_fund(fund.id)
+      assert {:ok, fund} == Funds.fetch_fund(account, fund.id)
     end
 
     test "does not allow associating with a different account", %{account: original_account, fund: fund} do
