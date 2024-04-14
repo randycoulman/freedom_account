@@ -73,7 +73,8 @@ defmodule FreedomAccount.FundsTest do
   describe "listing funds" do
     test "returns all funds", %{account: account} do
       funds = for _i <- 1..3, do: Factory.fund(account)
-      assert Funds.list_funds(account) == funds
+      sorted_funds = Enum.sort_by(funds, & &1.name)
+      assert Funds.list_funds(account) == sorted_funds
     end
   end
 

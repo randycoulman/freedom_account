@@ -19,12 +19,6 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
     {:cont,
      socket
      |> assign(account: account)
-     |> LiveView.stream(:funds, list_funds(account))}
-  end
-
-  defp list_funds(account) do
-    account
-    |> Funds.list_funds()
-    |> Enum.sort_by(& &1.name)
+     |> LiveView.stream(:funds, Funds.list_funds(account))}
   end
 end

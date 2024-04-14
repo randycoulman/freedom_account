@@ -48,5 +48,12 @@ defmodule FreedomAccount.Funds.Fund do
       where: [account_id: ^account.id]
   end
 
+  @spec order_by_name :: Queryable.t()
+  @spec order_by_name(Queryable.t()) :: Queryable.t()
+  def order_by_name(query \\ base_query()) do
+    from f in query,
+      order_by: f.name
+  end
+
   defp base_query, do: __MODULE__
 end

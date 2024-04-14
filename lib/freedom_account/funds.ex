@@ -72,6 +72,7 @@ defmodule FreedomAccount.Funds do
   def list_funds(account) do
     Fund
     |> Fund.by_account(account)
+    |> Fund.order_by_name()
     |> Repo.all()
   end
 
