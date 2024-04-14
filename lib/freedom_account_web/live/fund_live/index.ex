@@ -8,12 +8,6 @@ defmodule FreedomAccountWeb.FundLive.Index do
   alias Phoenix.LiveView
 
   @impl LiveView
-  def mount(_params, _session, socket) do
-    %{account: account} = socket.assigns
-    {:ok, stream(socket, :funds, list_funds(account))}
-  end
-
-  @impl LiveView
   def handle_params(params, _url, socket) do
     %{live_action: action} = socket.assigns
     {:noreply, apply_action(socket, action, params)}
@@ -134,11 +128,5 @@ defmodule FreedomAccountWeb.FundLive.Index do
   @impl LiveView
   def handle_info({Form, {:saved, fund}}, socket) do
     {:noreply, stream_insert(socket, :funds, fund)}
-  end
-
-  defp list_funds(account) do
-    account
-    |> Funds.list_funds()
-    |> Enum.sort_by(& &1.name)
   end
 end

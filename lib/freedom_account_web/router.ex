@@ -21,7 +21,7 @@ defmodule FreedomAccountWeb.Router do
 
     get "/", HomeController, :redirect_to_fund_list
 
-    live_session :default, on_mount: Hooks.Account do
+    live_session :default, on_mount: Hooks.LoadInitialData do
       live "/funds", FundLive.Index, :index
       live "/funds/new", FundLive.Index, :new
       live "/funds/:id/edit", FundLive.Index, :edit
