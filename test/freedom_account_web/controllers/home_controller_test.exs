@@ -5,7 +5,6 @@ defmodule FreedomAccountWeb.HomeControllerTest do
     conn
     |> visit(~p"/")
     |> assert_path(~p"/funds")
-
-    # |> assert_has(page_title(), "Funds")
+    |> assert_has(page_title(), text: "Funds")
   end
 end

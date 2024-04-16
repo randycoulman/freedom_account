@@ -15,7 +15,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
       conn
       |> visit(~p"/funds")
-      # |> assert_has(page_title(), text: "Funds")
+      |> assert_has(page_title(), text: "Funds")
       |> assert_has(heading(), text: "Funds")
       |> assert_has(table_cell(), text: fund.icon)
       |> assert_has(table_cell(), text: fund.name)
@@ -87,11 +87,11 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> visit(~p"/funds")
       |> click_link("td", fund.name)
       # |> assert_path(~p"/funds/#{fund}")
-      # |> assert_has(page_title(), text: "#{fund.icon} #{fund.name}")
+      |> assert_has(page_title(), text: "#{fund.icon} #{fund.name}")
       |> assert_has(heading(), text: "#{fund.icon} #{fund.name}")
       |> click_link("Back to Funds")
       |> assert_path(~p"/funds")
-      # |> assert_has(page_title(), text: "Funds")
+      |> assert_has(page_title(), text: "Funds")
       |> assert_has(heading(), text: "Funds")
     end
 
