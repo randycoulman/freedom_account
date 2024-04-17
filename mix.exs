@@ -90,7 +90,7 @@ defmodule FreedomAccount.MixProject do
       {:phoenix_live_reload, "~> 1.5", only: :dev},
       {:phoenix_live_view, "~> 0.20.5"},
       {:phoenix_test,
-       github: "germsvel/phoenix_test", ref: "7b2f243c98c032d1c802c9ca98b658167ebeb034", only: :test, runtime: false},
+       github: "germsvel/phoenix_test", ref: "a8fc877aec9348c1afa4a4c2f8640487bb820487", only: :test, runtime: false},
       # {:phoenix_test, "~> 0.2.11", only: :test, runtime: false},
       {:phoenix, "~> 1.7"},
       {:postgrex, ">= 0.0.0"},

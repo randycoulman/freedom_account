@@ -86,7 +86,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
       conn
       |> visit(~p"/funds")
       |> click_link("td", fund.name)
-      # |> assert_path(~p"/funds/#{fund}")
+      |> assert_path(~p"/funds/#{fund}")
       |> assert_has(page_title(), text: "#{fund.icon} #{fund.name}")
       |> assert_has(heading(), text: "#{fund.icon} #{fund.name}")
       |> click_link("Back to Funds")

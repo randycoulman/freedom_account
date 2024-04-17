@@ -36,7 +36,7 @@ defmodule FreedomAccountWeb.FundListTest do
       conn
       |> visit(~p"/funds/#{fund1}")
       |> click_link(fund2.name)
-      # |> assert_path(~p"/funds/#{fund2}")
+      |> assert_path(~p"/funds/#{fund2}")
       |> assert_has(heading(), text: "#{fund2.icon} #{fund2.name}")
     end
   end
