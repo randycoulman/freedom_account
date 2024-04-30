@@ -5,8 +5,6 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
   alias FreedomAccount.Factory
 
-  @invalid_attrs %{icon: nil, name: nil}
-
   describe "Index" do
     setup [:create_account]
 
@@ -29,7 +27,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
     end
 
     test "saves new fund", %{conn: conn} do
-      attrs = Factory.fund_attrs()
+      %{icon: icon, name: name} = Factory.fund_attrs()
 
       conn
       |> visit(~p"/funds")
@@ -37,20 +35,22 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_path(~p"/funds/new")
       |> assert_has(page_title(), text: "Add Fund")
       |> assert_has(heading(), text: "Add Fund")
-      |> fill_form("#fund-form", fund: @invalid_attrs)
+      |> fill_in("Icon", with: "")
+      |> fill_in("Name", with: "")
       |> assert_has(field_error("#fund_icon"), text: "can't be blank")
       |> assert_has(field_error("#fund_name"), text: "can't be blank")
-      |> fill_form("#fund-form", fund: attrs)
+      |> fill_in("Icon", with: icon)
+      |> fill_in("Name", with: name)
       |> click_button("Save Fund")
       |> assert_path(~p"/funds")
       |> assert_has(flash(:info), text: "Fund created successfully")
-      |> assert_has(table_cell(), text: attrs[:icon])
-      |> assert_has(table_cell(), text: attrs[:name])
+      |> assert_has(table_cell(), text: icon)
+      |> assert_has(table_cell(), text: name)
     end
 
     test "edits fund in listing", %{account: account, conn: conn} do
       fund = Factory.fund(account)
-      new_attrs = Factory.fund_attrs()
+      %{icon: icon, name: name} = Factory.fund_attrs()
 
       conn
       |> visit(~p"/funds")
@@ -58,15 +58,17 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_path(~p"/funds/#{fund}/edit")
       |> assert_has(page_title(), text: "Edit Fund")
       |> assert_has(heading(), text: "Edit Fund")
-      |> fill_form("#fund-form", fund: @invalid_attrs)
+      |> fill_in("Icon", with: "")
+      |> fill_in("Name", with: "")
       |> assert_has(field_error("#fund_icon"), text: "can't be blank")
       |> assert_has(field_error("#fund_name"), text: "can't be blank")
-      |> fill_form("#fund-form", fund: new_attrs)
+      |> fill_in("Icon", with: icon)
+      |> fill_in("Name", with: name)
       |> click_button("Save Fund")
       |> assert_path(~p"/funds")
       |> assert_has(flash(:info), text: "Fund updated successfully")
-      |> assert_has(table_cell(), text: new_attrs[:icon])
-      |> assert_has(table_cell(), text: new_attrs[:name])
+      |> assert_has(table_cell(), text: icon)
+      |> assert_has(table_cell(), text: name)
     end
 
     test "deletes fund in listing", %{account: account, conn: conn} do
@@ -102,7 +104,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
     end
 
     test "updates fund within modal", %{conn: conn, fund: fund} do
-      updated_attrs = Factory.fund_attrs()
+      %{icon: icon, name: name} = Factory.fund_attrs()
 
       conn
       |> visit(~p"/funds/#{fund}")
@@ -110,15 +112,17 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_path(~p"/funds/#{fund}/show/edit")
       |> assert_has(page_title(), text: "Edit Fund")
       |> assert_has(heading(), text: "Edit Fund")
-      |> fill_form("#fund-form", fund: @invalid_attrs)
+      |> fill_in("Icon", with: "")
+      |> fill_in("Name", with: "")
       |> assert_has(field_error("#fund_icon"), text: "can't be blank")
       |> assert_has(field_error("#fund_name"), text: "can't be blank")
-      |> fill_form("#fund-form", fund: updated_attrs)
+      |> fill_in("Icon", with: icon)
+      |> fill_in("Name", with: name)
       |> click_button("Save Fund")
       # |> assert_path(~p"/funds/#{fund}")
       |> assert_has(flash(:info), text: "Fund updated successfully")
-      |> assert_has(page_title(), text: "#{updated_attrs[:icon]} #{updated_attrs[:name]}")
-      |> assert_has(heading(), text: "#{updated_attrs[:icon]} #{updated_attrs[:name]}")
+      |> assert_has(page_title(), text: "#{icon} #{name}")
+      |> assert_has(heading(), text: "#{icon} #{name}")
     end
   end
 

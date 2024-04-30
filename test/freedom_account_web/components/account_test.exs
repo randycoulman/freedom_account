@@ -5,8 +5,6 @@ defmodule FreedomAccountWeb.AccountTest do
 
   alias FreedomAccount.Factory
 
-  @invalid_attrs %{deposits_per_year: nil, name: nil}
-
   defp create_account(_context) do
     %{account: Factory.account()}
   end
@@ -22,41 +20,45 @@ defmodule FreedomAccountWeb.AccountTest do
     end
 
     test "updates account within modal on fund list view", %{conn: conn} do
-      update_attrs = Factory.account_attrs()
+      %{deposits_per_year: deposits, name: name} = Factory.account_attrs()
 
       conn
       |> visit(~p"/")
       |> click_link("Settings")
       |> assert_has(page_title(), text: "Edit Account Settings")
       |> assert_has(heading(), text: "Edit Account Settings")
-      |> fill_form("#account-form", account: @invalid_attrs)
+      |> fill_in("Name", with: "")
+      |> fill_in("Deposits / year", with: "")
       |> assert_has(field_error("#account_name"), text: "can't be blank")
       |> assert_has(field_error("#account_deposits_per_year"), text: "can't be blank")
-      |> fill_form("#account-form", account: update_attrs)
+      |> fill_in("Name", with: name)
+      |> fill_in("Deposits / year", with: deposits)
       |> click_button("Save Account")
       |> assert_has(flash(:info), text: "Account updated successfully")
       |> assert_has(page_title(), text: "Funds")
-      |> assert_has(heading(), text: update_attrs[:name])
+      |> assert_has(heading(), text: name)
       |> assert_has(heading(), text: "Funds")
     end
 
     test "updates account within modal on fund detail view", %{account: account, conn: conn} do
       fund = Factory.fund(account)
-      update_attrs = Factory.account_attrs()
+      %{deposits_per_year: deposits, name: name} = Factory.account_attrs()
 
       conn
       |> visit(~p"/funds/#{fund}")
       |> click_link("Settings")
       |> assert_has(page_title(), text: "Edit Account Settings")
       |> assert_has(heading(), text: "Edit Account Settings")
-      |> fill_form("#account-form", account: @invalid_attrs)
+      |> fill_in("Name", with: "")
+      |> fill_in("Deposits / year", with: "")
       |> assert_has(field_error("#account_name"), text: "can't be blank")
       |> assert_has(field_error("#account_deposits_per_year"), text: "can't be blank")
-      |> fill_form("#account-form", account: update_attrs)
+      |> fill_in("Name", with: name)
+      |> fill_in("Deposits / year", with: deposits)
       |> click_button("Save Account")
       |> assert_has(flash(:info), text: "Account updated successfully")
       |> assert_has(page_title(), text: fund.name)
-      |> assert_has(heading(), text: update_attrs[:name])
+      |> assert_has(heading(), text: name)
       |> assert_has(heading(), text: fund.name)
     end
   end
