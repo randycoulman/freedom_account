@@ -89,13 +89,13 @@ defmodule FreedomAccount.MixProject do
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
       {:phoenix_live_view, "~> 0.20.5"},
-      {:phoenix_test, "~> 0.2.13", only: :test, runtime: false},
+      {:phoenix_test, "~> 0.3.0", only: :test, runtime: false},
       {:phoenix, "~> 1.7"},
       {:postgrex, ">= 0.0.0"},
       {:styler, "~> 0.11.9", only: [:dev, :test], runtime: false},
       {:tailwind, "~> 0.2.2", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 1.0"},
-      {:telemetry_poller, "~> 1.0"},
+      {:telemetry_poller, "~> 1.1"},
       {:typed_ecto_schema, "~> 0.4.1"}
     ]
   end
