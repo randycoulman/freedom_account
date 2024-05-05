@@ -16,7 +16,7 @@ defmodule FreedomAccountWeb.FundList do
       <.header>Funds</.header>
       <nav class="flex flex-col" id="fund-list" phx-update="stream">
         <.link :for={{id, fund} <- @funds} id={id} navigate={~p"/funds/#{fund}"}>
-          <%= fund.icon %> <%= fund.name %>
+          <%= fund %>
         </.link>
       </nav>
     </div>

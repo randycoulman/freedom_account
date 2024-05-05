@@ -4,6 +4,7 @@ defmodule FreedomAccountWeb.AccountTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
+  alias Phoenix.HTML.Safe
 
   defp create_account(_context) do
     %{account: Factory.account()}
@@ -57,9 +58,9 @@ defmodule FreedomAccountWeb.AccountTest do
       |> fill_in("Deposits / year", with: deposits)
       |> click_button("Save Account")
       |> assert_has(flash(:info), text: "Account updated successfully")
-      |> assert_has(page_title(), text: fund.name)
+      |> assert_has(page_title(), text: Safe.to_iodata(fund.name))
       |> assert_has(heading(), text: name)
-      |> assert_has(heading(), text: fund.name)
+      |> assert_has(heading(), text: Safe.to_iodata(fund.name))
     end
 
     test "selects default fund", %{account: account, conn: conn} do
@@ -73,7 +74,7 @@ defmodule FreedomAccountWeb.AccountTest do
       |> assert_has(flash(:info), text: "Account updated successfully")
       |> click_link("Settings")
       |> assert_has(heading(), text: "Edit Account Settings")
-      |> assert_has(selected_option("#default-fund"), text: "#{default_fund.icon} #{default_fund.name}")
+      |> assert_has(selected_option("#default-fund"), text: Safe.to_iodata(default_fund))
     end
   end
 end

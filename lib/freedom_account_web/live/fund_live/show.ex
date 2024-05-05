@@ -6,6 +6,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
 
   alias FreedomAccount.Funds
   alias FreedomAccountWeb.FundLive.Form
+  alias Phoenix.HTML.Safe
   alias Phoenix.LiveView
 
   @impl LiveView
@@ -38,7 +39,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
   defp apply_action(socket, _action, _params) do
     %{fund: fund} = socket.assigns
 
-    assign(socket, :page_title, "#{fund.icon} #{fund.name}")
+    assign(socket, :page_title, Safe.to_iodata(fund))
   end
 
   @impl LiveView
@@ -58,7 +59,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
       </aside>
       <main class="flex flex-col flex-1 overflow-y-auto pl-2">
         <.header>
-          <%= @fund.icon %> <%= @fund.name %>
+          <%= @fund %>
           <:actions>
             <.link patch={~p"/funds/#{@fund}/show/edit"} phx-click={JS.push_focus()}>
               <.button>

@@ -27,7 +27,7 @@ defmodule FreedomAccountWeb.Account.Form do
   def render(assigns) do
     options =
       for fund <- assigns.funds do
-        {"#{fund.icon} #{fund.name}", fund.id}
+        {fund, fund.id}
       end
 
     assigns = assign(assigns, :options, [{"", nil} | options])

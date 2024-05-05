@@ -4,6 +4,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
+  alias Phoenix.HTML.Safe
 
   describe "Index" do
     setup [:create_account]
@@ -89,8 +90,8 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> visit(~p"/funds")
       |> click_link("td", fund.name)
       |> assert_path(~p"/funds/#{fund}")
-      |> assert_has(page_title(), text: "#{fund.icon} #{fund.name}")
-      |> assert_has(heading(), text: "#{fund.icon} #{fund.name}")
+      |> assert_has(page_title(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: Safe.to_iodata(fund))
       |> click_link("Back to Funds")
       |> assert_path(~p"/funds")
       |> assert_has(page_title(), text: "Funds")
@@ -100,7 +101,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
     test "displays fund", %{conn: conn, fund: fund} do
       conn
       |> visit(~p"/funds/#{fund}")
-      |> assert_has(heading(), text: "#{fund.icon} #{fund.name}")
+      |> assert_has(heading(), text: Safe.to_iodata(fund))
     end
 
     test "updates fund within modal", %{conn: conn, fund: fund} do
