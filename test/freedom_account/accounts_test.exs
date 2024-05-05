@@ -48,6 +48,15 @@ defmodule FreedomAccount.AccountsTest do
       assert account.name == update_attrs[:name]
     end
 
+    test "update_account/2 updates default fund" do
+      account = Factory.account()
+      fund = Factory.fund(account)
+      update_attrs = %{default_fund_id: fund.id}
+
+      assert {:ok, %Account{} = account} = Accounts.update_account(account, update_attrs)
+      assert account.default_fund_id == fund.id
+    end
+
     test "update_account/2 with invalid data returns error changeset" do
       account = Factory.account()
       assert {:error, %Ecto.Changeset{}} = Accounts.update_account(account, @invalid_attrs)

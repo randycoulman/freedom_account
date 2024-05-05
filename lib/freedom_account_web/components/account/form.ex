@@ -6,6 +6,7 @@ defmodule FreedomAccountWeb.Account.Form do
   use FreedomAccountWeb, :live_component
 
   alias FreedomAccount.Accounts
+  alias FreedomAccount.Funds
   alias FreedomAccountWeb.Params
   alias Phoenix.LiveComponent
 
@@ -13,15 +14,24 @@ defmodule FreedomAccountWeb.Account.Form do
   def update(assigns, socket) do
     %{account: account} = assigns
     changeset = Accounts.change_account(account)
+    funds = Funds.list_funds(account)
 
     {:ok,
      socket
      |> assign(assigns)
+     |> assign(:funds, funds)
      |> assign_form(changeset)}
   end
 
   @impl LiveComponent
   def render(assigns) do
+    options =
+      for fund <- assigns.funds do
+        {"#{fund.icon} #{fund.name}", fund.id}
+      end
+
+    assigns = assign(assigns, :options, [{"", nil} | options])
+
     ~H"""
     <div>
       <.header>
@@ -37,6 +47,13 @@ defmodule FreedomAccountWeb.Account.Form do
       >
         <.input field={@form[:deposits_per_year]} label="Deposits / year" type="number" />
         <.input field={@form[:name]} label="Name" type="text" />
+        <.input
+          field={@form[:default_fund_id]}
+          id="default-fund"
+          label="Default fund"
+          options={@options}
+          type="select"
+        />
         <:actions>
           <.button phx-disable-with="Saving..." type="submit">
             <.icon name="hero-check-circle-mini" /> Save Account

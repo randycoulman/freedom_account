@@ -11,6 +11,7 @@ defmodule FreedomAccount.Accounts.Account do
   alias Ecto.Schema
 
   @type attrs :: %{
+          optional(:default_fund_id) => id,
           optional(:deposits_per_year) => deposit_count,
           optional(:name) => name
         }
@@ -19,6 +20,7 @@ defmodule FreedomAccount.Accounts.Account do
   @type name :: String.t()
 
   typed_schema "accounts" do
+    field :default_fund_id, :integer
     field :deposits_per_year, :integer, null: false
     field :name, :string, null: false
 
@@ -29,7 +31,7 @@ defmodule FreedomAccount.Accounts.Account do
   @spec changeset(Changeset.t() | Schema.t(), attrs) :: Changeset.t()
   def changeset(account, attrs) do
     account
-    |> cast(attrs, [:deposits_per_year, :name])
+    |> cast(attrs, [:default_fund_id, :deposits_per_year, :name])
     |> validate_required([:deposits_per_year, :name])
     |> validate_number(:deposits_per_year, greater_than: 0)
     |> validate_length(:name, max: 50)

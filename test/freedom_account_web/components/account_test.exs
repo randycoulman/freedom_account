@@ -61,5 +61,19 @@ defmodule FreedomAccountWeb.AccountTest do
       |> assert_has(heading(), text: name)
       |> assert_has(heading(), text: fund.name)
     end
+
+    test "selects default fund", %{account: account, conn: conn} do
+      funds = for _i <- 1..5, do: Factory.fund(account)
+      default_fund = Enum.random(funds)
+
+      conn
+      |> visit(~p"/funds/account")
+      |> select(default_fund.name, from: "Default fund")
+      |> click_button("Save Account")
+      |> assert_has(flash(:info), text: "Account updated successfully")
+      |> click_link("Settings")
+      |> assert_has(heading(), text: "Edit Account Settings")
+      |> assert_has(selected_option("#default-fund"), text: "#{default_fund.icon} #{default_fund.name}")
+    end
   end
 end
