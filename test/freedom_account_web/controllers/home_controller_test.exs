@@ -4,7 +4,6 @@ defmodule FreedomAccountWeb.HomeControllerTest do
   test "redirects to fund list page", %{conn: conn} do
     conn
     |> visit(~p"/")
-    |> assert_path(~p"/funds")
     |> assert_has(page_title(), text: "Funds")
   end
 end

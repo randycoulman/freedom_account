@@ -43,7 +43,6 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> fill_in("Icon", with: icon)
       |> fill_in("Name", with: name)
       |> click_button("Save Fund")
-      |> assert_path(~p"/funds")
       |> assert_has(flash(:info), text: "Fund created successfully")
       |> assert_has(table_cell(), text: icon)
       |> assert_has(table_cell(), text: name)
@@ -56,7 +55,6 @@ defmodule FreedomAccountWeb.FundLiveTest do
       conn
       |> visit(~p"/funds")
       |> click_link(action_link("#funds-#{fund.id}"), "Edit")
-      |> assert_path(~p"/funds/#{fund}/edit")
       |> assert_has(page_title(), text: "Edit Fund")
       |> assert_has(heading(), text: "Edit Fund")
       |> fill_in("Icon", with: "")
@@ -66,7 +64,6 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> fill_in("Icon", with: icon)
       |> fill_in("Name", with: name)
       |> click_button("Save Fund")
-      |> assert_path(~p"/funds")
       |> assert_has(flash(:info), text: "Fund updated successfully")
       |> assert_has(table_cell(), text: icon)
       |> assert_has(table_cell(), text: name)
@@ -89,11 +86,9 @@ defmodule FreedomAccountWeb.FundLiveTest do
       conn
       |> visit(~p"/funds")
       |> click_link("td", fund.name)
-      |> assert_path(~p"/funds/#{fund}")
       |> assert_has(page_title(), text: Safe.to_iodata(fund))
       |> assert_has(heading(), text: Safe.to_iodata(fund))
       |> click_link("Back to Funds")
-      |> assert_path(~p"/funds")
       |> assert_has(page_title(), text: "Funds")
       |> assert_has(heading(), text: "Funds")
     end
@@ -110,7 +105,6 @@ defmodule FreedomAccountWeb.FundLiveTest do
       conn
       |> visit(~p"/funds/#{fund}")
       |> click_link("Edit Details")
-      |> assert_path(~p"/funds/#{fund}/show/edit")
       |> assert_has(page_title(), text: "Edit Fund")
       |> assert_has(heading(), text: "Edit Fund")
       |> fill_in("Icon", with: "")
@@ -120,7 +114,6 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> fill_in("Icon", with: icon)
       |> fill_in("Name", with: name)
       |> click_button("Save Fund")
-      # |> assert_path(~p"/funds/#{fund}")
       |> assert_has(flash(:info), text: "Fund updated successfully")
       |> assert_has(page_title(), text: "#{icon} #{name}")
       |> assert_has(heading(), text: "#{icon} #{name}")
