@@ -28,6 +28,8 @@ defmodule FreedomAccount.Funds.Fund do
     field :icon, :string, null: false
     field :name, :string, null: false
 
+    field(:current_balance, Money.Ecto.Composite.Type, virtual: true) :: Money.t() | nil
+
     timestamps()
   end
 
@@ -53,6 +55,12 @@ defmodule FreedomAccount.Funds.Fund do
   def order_by_name(query \\ base_query()) do
     from f in query,
       order_by: f.name
+  end
+
+  @spec with_random_balance(t()) :: t()
+  def with_random_balance(%__MODULE__{} = fund) do
+    balance = Money.new("#{Enum.random(1..1000)}.#{Enum.random(0..99)}", :usd)
+    %{fund | current_balance: balance}
   end
 
   defp base_query, do: __MODULE__

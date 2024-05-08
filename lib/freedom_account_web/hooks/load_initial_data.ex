@@ -19,6 +19,6 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
     {:cont,
      socket
      |> assign(account: account)
-     |> LiveView.stream(:funds, Funds.list_funds(account))}
+     |> LiveView.stream(:funds, Funds.list_funds_with_balances(account))}
   end
 end

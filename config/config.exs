@@ -7,6 +7,9 @@
 # General application configuration
 import Config
 
+config :ex_money,
+  default_cldr_backend: FreedomAccount.Cldr
+
 config :freedom_account,
   ecto_repos: [FreedomAccount.Repo],
   generators: [timestamp_type: :utc_datetime]

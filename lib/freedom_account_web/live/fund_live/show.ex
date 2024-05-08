@@ -13,7 +13,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
   def handle_params(%{"id" => id} = params, _url, socket) do
     %{account: account, live_action: action} = socket.assigns
 
-    case Funds.fetch_fund(account, id) do
+    case Funds.fetch_fund_with_balance(account, id) do
       {:ok, fund} ->
         {:noreply,
          socket
@@ -59,7 +59,10 @@ defmodule FreedomAccountWeb.FundLive.Show do
       </aside>
       <main class="flex flex-col flex-1 overflow-y-auto pl-2">
         <.header>
-          <%= @fund %>
+          <div class="flex flex-row">
+            <span><%= @fund %></span>
+            <span><%= @fund.current_balance %></span>
+          </div>
           <:actions>
             <.link patch={~p"/funds/#{@fund}/show/edit"} phx-click={JS.push_focus()}>
               <.button>

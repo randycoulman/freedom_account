@@ -15,9 +15,14 @@ defmodule FreedomAccountWeb.FundList do
     <div class="p-2">
       <.header>Funds</.header>
       <nav class="flex flex-col" id="fund-list" phx-update="stream">
-        <.link :for={{id, fund} <- @funds} id={id} navigate={~p"/funds/#{fund}"}>
-          <%= fund %>
-        </.link>
+        <div :for={{id, fund} <- @funds} class="flex flex-row justify-between" id={id}>
+          <.link navigate={~p"/funds/#{fund}"}>
+            <%= fund %>
+          </.link>
+          <span class="text-right">
+            <%= fund.current_balance %>
+          </span>
+        </div>
       </nav>
     </div>
     """

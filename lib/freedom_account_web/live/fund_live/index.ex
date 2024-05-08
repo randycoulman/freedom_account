@@ -75,6 +75,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
     >
       <:col :let={{_id, fund}} label="Icon"><%= fund.icon %></:col>
       <:col :let={{_id, fund}} label="Name"><%= fund.name %></:col>
+      <:col :let={{_id, fund}} label="Current Balance"><%= fund.current_balance %></:col>
       <:action :let={{_id, fund}}>
         <div class="sr-only">
           <.link navigate={~p"/funds/#{fund}"}>Show</.link>

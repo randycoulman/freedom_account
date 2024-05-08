@@ -58,6 +58,14 @@ defmodule FreedomAccount.FundsTest do
       assert {:ok, fund} == Funds.fetch_fund(account, fund.id)
     end
 
+    test "when fund exists for the provided account, include current balance (random, for now) when requested", %{
+      account: account
+    } do
+      fund = Factory.fund(account)
+      {:ok, fund} = Funds.fetch_fund_with_balance(account, fund.id)
+      refute fund.current_balance == nil
+    end
+
     test "when fund exists, but for a different account, returns an error", %{account: account} do
       other_account = Factory.account()
       fund = Factory.fund(other_account)
@@ -71,10 +79,21 @@ defmodule FreedomAccount.FundsTest do
   end
 
   describe "listing funds" do
-    test "returns all funds", %{account: account} do
+    setup %{account: account} do
       funds = for _i <- 1..3, do: Factory.fund(account)
+
+      %{funds: funds}
+    end
+
+    test "returns all funds", %{account: account, funds: funds} do
       sorted_funds = Enum.sort_by(funds, & &1.name)
       assert Funds.list_funds(account) == sorted_funds
+    end
+
+    test "includes current balance (random, for now) of each fund when requested", %{account: account} do
+      for fund <- Funds.list_funds_with_balances(account) do
+        refute fund.current_balance == nil
+      end
     end
   end
 

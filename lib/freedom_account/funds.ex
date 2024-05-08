@@ -66,6 +66,25 @@ defmodule FreedomAccount.Funds do
   end
 
   @doc """
+  Looks up a single fund by id, including its current balance.
+
+  ## Examples
+
+      iex> fetch_fund_with_balance(account, 123)
+      {:ok, %Fund{}}
+
+      iex> fetch_fund_with_balance(account, 456)
+      {:error, :not_found}
+
+  """
+  @spec fetch_fund_with_balance(Account.t(), Fund.id()) :: {:ok, Fund.t()} | {:error, :not_found}
+  def fetch_fund_with_balance(%Account{} = account, id) do
+    with {:ok, fund} <- fetch_fund(account, id) do
+      {:ok, Fund.with_random_balance(fund)}
+    end
+  end
+
+  @doc """
   Returns the list of funds for an account.
   """
   @spec list_funds(Account.t()) :: [Fund.t()]
@@ -74,6 +93,17 @@ defmodule FreedomAccount.Funds do
     |> Fund.by_account(account)
     |> Fund.order_by_name()
     |> Repo.all()
+  end
+
+  @doc """
+  Returns the list of funds for an account, including each fund's current
+  balance.
+  """
+  @spec list_funds_with_balances(Account.t()) :: [Fund.t()]
+  def list_funds_with_balances(account) do
+    account
+    |> list_funds()
+    |> Enum.map(&Fund.with_random_balance/1)
   end
 
   @doc """
