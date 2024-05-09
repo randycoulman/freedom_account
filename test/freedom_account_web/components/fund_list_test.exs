@@ -3,10 +3,6 @@ defmodule FreedomAccountWeb.FundListTest do
 
   alias FreedomAccount.Factory
 
-  defp create_account(_context) do
-    %{account: Factory.account()}
-  end
-
   defp create_funds(%{account: account}) do
     funds =
       for _i <- 1..3 do

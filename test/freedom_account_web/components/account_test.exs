@@ -6,10 +6,6 @@ defmodule FreedomAccountWeb.AccountTest do
   alias FreedomAccount.Factory
   alias Phoenix.HTML.Safe
 
-  defp create_account(_context) do
-    %{account: Factory.account()}
-  end
-
   describe "Show" do
     setup [:create_account]
 

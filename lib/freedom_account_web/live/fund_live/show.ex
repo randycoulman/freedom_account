@@ -5,6 +5,8 @@ defmodule FreedomAccountWeb.FundLive.Show do
   import FreedomAccountWeb.FundList, only: [fund_list: 1]
 
   alias FreedomAccount.Funds
+  alias FreedomAccount.Transactions
+  alias FreedomAccountWeb.DepositForm
   alias FreedomAccountWeb.FundLive.Form
   alias Phoenix.HTML.Safe
   alias Phoenix.LiveView
@@ -34,6 +36,12 @@ defmodule FreedomAccountWeb.FundLive.Show do
 
   defp apply_action(socket, :edit_account, _params) do
     assign(socket, :page_title, "Edit Account Settings")
+  end
+
+  defp apply_action(socket, :new_deposit, _params) do
+    socket
+    |> assign(:page_title, "Deposit")
+    |> assign(:deposit, Transactions.new_deposit(socket.assigns.fund))
   end
 
   defp apply_action(socket, _action, _params) do
@@ -69,6 +77,11 @@ defmodule FreedomAccountWeb.FundLive.Show do
                 <.icon name="hero-pencil-square-mini" /> Edit Details
               </.button>
             </.link>
+            <.link patch={~p"/funds/#{@fund}/deposits/new"} phx-click={JS.push_focus()}>
+              <.button>
+                <.icon name="hero-plus-circle-mini" /> Deposit
+              </.button>
+            </.link>
           </:actions>
         </.header>
 
@@ -87,6 +100,38 @@ defmodule FreedomAccountWeb.FundLive.Show do
         title={@page_title}
       />
     </.modal>
+
+    <.modal
+      :if={@live_action == :new_deposit}
+      id="deposit-modal"
+      show
+      on_cancel={JS.patch(~p"/funds/#{@fund}")}
+    >
+      <.live_component
+        action={@live_action}
+        deposit={@deposit}
+        fund={@fund}
+        id={@deposit.id || :new}
+        module={DepositForm}
+        patch={~p"/funds/#{@fund}"}
+        title={@page_title}
+      />
+    </.modal>
     """
+  end
+
+  @impl LiveView
+  def handle_info({Form, {:saved, fund}}, socket) do
+    {:noreply, stream_insert(socket, :funds, fund)}
+  end
+
+  def handle_info({DepositForm, {:balance_updated, fund}}, socket) do
+    case Funds.with_updated_balance(fund) do
+      {:ok, fund} ->
+        {:noreply, stream_insert(socket, :funds, fund)}
+
+      {:error, _error} ->
+        {:noreply, put_flash(socket, :error, "Unable to retrieve updated balance for #{fund}")}
+    end
   end
 end

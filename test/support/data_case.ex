@@ -18,6 +18,7 @@ defmodule FreedomAccount.DataCase do
 
   alias Ecto.Adapters.SQL.Sandbox
   alias Ecto.Changeset
+  alias FreedomAccount.Factory
   alias FreedomAccount.Repo
 
   using do
@@ -43,6 +44,16 @@ defmodule FreedomAccount.DataCase do
   def setup_sandbox(tags) do
     pid = Sandbox.start_owner!(Repo, shared: not tags[:async])
     on_exit(fn -> Sandbox.stop_owner(pid) end)
+  end
+
+  @spec create_account(map()) :: map()
+  def create_account(_context) do
+    %{account: Factory.account()}
+  end
+
+  @spec create_fund(map()) :: map()
+  def create_fund(%{account: account} = _context) do
+    %{fund: Factory.fund(account)}
   end
 
   @doc """

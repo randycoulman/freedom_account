@@ -1,6 +1,6 @@
 defmodule FreedomAccountWeb.Account.Form do
   @moduledoc """
-  For for editing account settings.
+  For editing account settings.
   """
 
   use FreedomAccountWeb, :live_component

@@ -79,9 +79,10 @@ defmodule FreedomAccount.Funds do
   """
   @spec fetch_fund_with_balance(Account.t(), Fund.id()) :: {:ok, Fund.t()} | {:error, :not_found}
   def fetch_fund_with_balance(%Account{} = account, id) do
-    with {:ok, fund} <- fetch_fund(account, id) do
-      {:ok, Fund.with_random_balance(fund)}
-    end
+    Fund
+    |> Fund.by_account(account)
+    |> Fund.with_balance()
+    |> Repo.fetch(id)
   end
 
   @doc """
@@ -101,9 +102,11 @@ defmodule FreedomAccount.Funds do
   """
   @spec list_funds_with_balances(Account.t()) :: [Fund.t()]
   def list_funds_with_balances(account) do
-    account
-    |> list_funds()
-    |> Enum.map(&Fund.with_random_balance/1)
+    Fund
+    |> Fund.by_account(account)
+    |> Fund.order_by_name()
+    |> Fund.with_balance()
+    |> Repo.all()
   end
 
   @doc """
@@ -123,5 +126,15 @@ defmodule FreedomAccount.Funds do
     fund
     |> Fund.changeset(attrs)
     |> Repo.update()
+  end
+
+  @doc """
+  Reloads a fund's current balance.
+  """
+  @spec with_updated_balance(Fund.t()) :: {:ok, Fund.t()} | {:error, :not_found}
+  def with_updated_balance(%Fund{} = fund) do
+    Fund
+    |> Fund.with_balance()
+    |> Repo.fetch(fund.id)
   end
 end

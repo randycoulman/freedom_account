@@ -3,16 +3,13 @@ defmodule FreedomAccount.FundsTest do
 
   use FreedomAccount.DataCase, async: true
 
+  import Money.Sigil
+
   alias FreedomAccount.Factory
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
 
   @invalid_attrs %{icon: nil, name: nil}
-
-  defp create_account(_context) do
-    account = Factory.account()
-    %{account: account}
-  end
 
   setup [:create_account]
 
@@ -58,12 +55,29 @@ defmodule FreedomAccount.FundsTest do
       assert {:ok, fund} == Funds.fetch_fund(account, fund.id)
     end
 
-    test "when fund exists for the provided account, include current balance (random, for now) when requested", %{
+    test "when fund exists for the provided account, include current balance when requested", %{
       account: account
     } do
       fund = Factory.fund(account)
+
+      Enum.each(
+        [
+          Factory.line_item_attrs(fund, amount: ~M[9.95]usd),
+          Factory.line_item_attrs(fund, amount: ~M[5.05]usd),
+          Factory.line_item_attrs(fund, amount: ~M[27.00]usd)
+        ],
+        &Factory.deposit(fund, line_items: [&1])
+      )
+
       {:ok, fund} = Funds.fetch_fund_with_balance(account, fund.id)
-      refute fund.current_balance == nil
+      assert fund.current_balance == ~M[42.00]usd
+    end
+
+    test "returns zero balance when fund has no line items", %{account: account} do
+      fund = Factory.fund(account)
+
+      {:ok, fund} = Funds.fetch_fund_with_balance(account, fund.id)
+      assert fund.current_balance == ~M[0]usd
     end
 
     test "when fund exists, but for a different account, returns an error", %{account: account} do
@@ -90,17 +104,23 @@ defmodule FreedomAccount.FundsTest do
       assert Funds.list_funds(account) == sorted_funds
     end
 
-    test "includes current balance (random, for now) of each fund when requested", %{account: account} do
-      for fund <- Funds.list_funds_with_balances(account) do
-        refute fund.current_balance == nil
-      end
+    test "includes current balance of each fund when requested", %{account: account, funds: funds} do
+      calculate_amount = &Money.mult!(~M[10.00]usd, &1.id)
+
+      Enum.each(funds, fn fund ->
+        Factory.deposit(fund, line_items: [Factory.line_item_attrs(fund, amount: calculate_amount.(fund))])
+      end)
+
+      account
+      |> Funds.list_funds_with_balances()
+      |> Enum.each(fn fund ->
+        assert fund.current_balance == calculate_amount.(fund)
+      end)
     end
   end
 
   describe "updating a fund" do
-    setup %{account: account} do
-      [fund: Factory.fund(account)]
-    end
+    setup :create_fund
 
     test "with valid data updates the fund", %{fund: fund} do
       valid_attrs = Factory.fund_attrs()
@@ -121,6 +141,17 @@ defmodule FreedomAccount.FundsTest do
 
       assert {:ok, %Fund{} = fund} = Funds.update_fund(fund, valid_attrs)
       assert fund.account_id == original_account.id
+    end
+  end
+
+  describe "updating a fund's balance" do
+    setup :create_fund
+
+    test "returns the fund with it's latest current balance", %{fund: fund} do
+      amount = Factory.money()
+      Factory.deposit(fund, line_items: [Factory.line_item_attrs(fund, amount: amount)])
+
+      assert {:ok, %Fund{current_balance: ^amount}} = Funds.with_updated_balance(fund)
     end
   end
 end

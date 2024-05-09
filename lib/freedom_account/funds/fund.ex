@@ -7,11 +7,13 @@ defmodule FreedomAccount.Funds.Fund do
 
   import Ecto.Changeset
   import Ecto.Query
+  import Money.Sigil
 
   alias Ecto.Changeset
   alias Ecto.Queryable
   alias Ecto.Schema
   alias FreedomAccount.Accounts.Account
+  alias FreedomAccount.Transactions.LineItem
 
   @type attrs :: %{
           optional(:account_id) => non_neg_integer,
@@ -27,6 +29,8 @@ defmodule FreedomAccount.Funds.Fund do
 
     field :icon, :string, null: false
     field :name, :string, null: false
+
+    has_many :line_items, LineItem
 
     field(:current_balance, Money.Ecto.Composite.Type, virtual: true) :: Money.t() | nil
 
@@ -57,10 +61,15 @@ defmodule FreedomAccount.Funds.Fund do
       order_by: f.name
   end
 
-  @spec with_random_balance(t()) :: t()
-  def with_random_balance(%__MODULE__{} = fund) do
-    balance = Money.new("#{Enum.random(1..1000)}.#{Enum.random(0..99)}", :usd)
-    %{fund | current_balance: balance}
+  @spec with_balance :: Queryable.t()
+  @spec with_balance(Queryable.t()) :: Queryable.t()
+  def with_balance(query \\ base_query()) do
+    zero = ~M[0]usd
+
+    from f in query,
+      left_join: l in assoc(f, :line_items),
+      group_by: f.id,
+      select_merge: %{current_balance: type(coalesce(sum(l.amount), ^zero), l.amount)}
   end
 
   defp base_query, do: __MODULE__

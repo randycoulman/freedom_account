@@ -88,6 +88,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> click_link("td", fund.name)
       |> assert_has(page_title(), text: Safe.to_iodata(fund))
       |> assert_has(heading(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: "$0.00")
       |> click_link("Back to Funds")
       |> assert_has(page_title(), text: "Funds")
       |> assert_has(heading(), text: "Funds")
@@ -117,14 +118,27 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(flash(:info), text: "Fund updated successfully")
       |> assert_has(page_title(), text: "#{icon} #{name}")
       |> assert_has(heading(), text: "#{icon} #{name}")
+      |> assert_has(sidebar_fund_name(), text: "#{icon} #{name}")
     end
-  end
 
-  defp create_account(_context) do
-    %{account: Factory.account()}
-  end
+    test "deposits money to a fund", %{conn: conn, fund: fund} do
+      today = Timex.today(:local)
+      amount = Factory.money()
 
-  defp create_fund(%{account: account}) do
-    %{fund: Factory.fund(account)}
+      conn
+      |> visit(~p"/funds/#{fund}")
+      |> click_link("Deposit")
+      |> assert_has(page_title(), text: "Deposit")
+      |> assert_has(heading(), text: "Deposit")
+      |> assert_has(field_value("#transaction_date", today))
+      |> fill_in("Date", with: Factory.date())
+      |> fill_in("Description", with: Factory.description())
+      |> fill_in("Amount", with: amount)
+      |> click_button("Make Deposit")
+      |> assert_has(flash(:info), text: "Deposit created successfully")
+      |> assert_has(heading(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: "#{amount}")
+      |> assert_has(sidebar_fund_balance(), text: "#{amount}")
+    end
   end
 end

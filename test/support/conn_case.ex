@@ -24,6 +24,7 @@ defmodule FreedomAccountWeb.ConnCase do
     quote do
       use FreedomAccountWeb, :verified_routes
 
+      import FreedomAccount.DataCase
       import FreedomAccountWeb.ElementSelectors
       import Phoenix.ConnTest
       import PhoenixTest
