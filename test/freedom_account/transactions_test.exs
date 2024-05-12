@@ -24,7 +24,7 @@ defmodule FreedomAccount.TransactionsTest do
 
       assert {:ok, %Transaction{} = transaction} = Transactions.deposit(valid_attrs)
       assert transaction.date == valid_attrs[:date]
-      assert transaction.description == valid_attrs[:description]
+      assert transaction.memo == valid_attrs[:memo]
       assert [%LineItem{} = line_item] = transaction.line_items
       assert line_item.amount == line_item_attrs[:amount]
     end
@@ -54,7 +54,7 @@ defmodule FreedomAccount.TransactionsTest do
     end
 
     test "returns error changeset for invalid transaction data" do
-      invalid_attrs = Factory.transaction_attrs(date: nil, description: nil)
+      invalid_attrs = Factory.transaction_attrs(date: nil, memo: nil)
 
       assert {:error, %Changeset{valid?: false}} = Transactions.deposit(invalid_attrs)
     end
@@ -97,7 +97,7 @@ defmodule FreedomAccount.TransactionsTest do
 
       assert {:ok, %Transaction{} = transaction} = Transactions.withdraw(valid_attrs)
       assert transaction.date == valid_attrs[:date]
-      assert transaction.description == valid_attrs[:description]
+      assert transaction.memo == valid_attrs[:memo]
       assert [%LineItem{} = line_item] = transaction.line_items
       assert line_item.amount == Money.mult!(line_item_attrs[:amount], -1)
     end
@@ -127,7 +127,7 @@ defmodule FreedomAccount.TransactionsTest do
     end
 
     test "returns error changeset for invalid transaction data" do
-      invalid_attrs = Factory.transaction_attrs(date: nil, description: nil)
+      invalid_attrs = Factory.transaction_attrs(date: nil, memo: nil)
 
       assert {:error, %Changeset{valid?: false}} = Transactions.withdraw(invalid_attrs)
     end

@@ -49,7 +49,7 @@ defmodule FreedomAccountWeb.SingleFundTransactionForm do
         phx-submit="save"
       >
         <.input field={@form[:date]} label="Date" phx-debounce="blur" type="date" />
-        <.input field={@form[:description]} label="Description" phx-debounce="blur" type="text" />
+        <.input field={@form[:memo]} label="Memo" phx-debounce="blur" type="text" />
         <.inputs_for :let={li} field={@form[:line_items]}>
           <.input field={li[:amount]} label="Amount" phx-debounce="blur" type="text" />
           <.input field={li[:fund_id]} type="hidden" />

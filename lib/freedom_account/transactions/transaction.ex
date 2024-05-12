@@ -12,14 +12,14 @@ defmodule FreedomAccount.Transactions.Transaction do
 
   @type attrs :: %{
           optional(:date) => Date.t(),
-          optional(:description) => String.t(),
+          optional(:memo) => String.t(),
           optional(:line_items) => [LineItem.attrs()]
         }
   @type partial :: %__MODULE__{}
 
   typed_schema "transactions" do
     field :date, :date
-    field :description, :string
+    field :memo, :string
 
     has_many :line_items, LineItem
 
@@ -46,8 +46,8 @@ defmodule FreedomAccount.Transactions.Transaction do
 
   defp base_changeset(transaction, attrs, opts \\ []) do
     transaction
-    |> cast(attrs, [:date, :description])
-    |> validate_required([:date, :description])
+    |> cast(attrs, [:date, :memo])
+    |> validate_required([:date, :memo])
     |> cast_assoc(:line_items, [required: true] ++ opts)
   end
 end

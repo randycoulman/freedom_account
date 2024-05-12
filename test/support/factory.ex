@@ -86,9 +86,6 @@ defmodule FreedomAccount.Factory do
   @spec deposit_count :: Account.deposit_count()
   def deposit_count, do: Faker.random_between(12, 26)
 
-  @spec description :: String.t()
-  def description, do: Faker.Lorem.sentence()
-
   @spec fund_icon :: Fund.icon()
   def fund_icon, do: Enum.random(@emoji)
 
@@ -97,6 +94,9 @@ defmodule FreedomAccount.Factory do
 
   @spec id :: non_neg_integer()
   def id, do: Faker.random_between(1000, 1_000_000)
+
+  @spec memo :: String.t()
+  def memo, do: Faker.Lorem.sentence()
 
   @spec money :: Money.t()
   def money, do: Money.new("#{Enum.random(0..499)}.#{Enum.random(0..99)}", :usd)
@@ -156,7 +156,7 @@ defmodule FreedomAccount.Factory do
   def transaction_attrs(overrides \\ %{}) do
     Enum.into(overrides, %{
       date: date(),
-      description: description()
+      memo: memo()
     })
   end
 end
