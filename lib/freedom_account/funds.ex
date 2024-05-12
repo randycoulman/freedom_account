@@ -38,11 +38,14 @@ defmodule FreedomAccount.Funds do
       {:error, %Ecto.Changeset{}}
 
   """
-  @spec delete_fund(Fund.t()) :: :ok | {:error, :failed_to_delete}
+  @spec delete_fund(Fund.t()) :: :ok | {:error, :fund_has_transactions}
   def delete_fund(%Fund{} = fund) do
-    case Repo.delete(fund) do
+    fund
+    |> Fund.deletion_changeset()
+    |> Repo.delete()
+    |> case do
       {:ok, _fund} -> :ok
-      {:error, _changeset} -> {:error, :failed_to_delete}
+      {:error, _changeset} -> {:error, :fund_has_transactions}
     end
   end
 

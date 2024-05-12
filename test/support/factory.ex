@@ -121,7 +121,7 @@ defmodule FreedomAccount.Factory do
     attrs =
       attrs
       |> Map.new()
-      |> Map.put_new_lazy(:line_items, fn -> line_item_attrs(fund) end)
+      |> Map.put_new_lazy(:line_items, fn -> [line_item_attrs(fund)] end)
       |> transaction_attrs()
 
     {:ok, transaction} = Transactions.deposit(attrs)

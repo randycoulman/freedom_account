@@ -42,10 +42,16 @@ defmodule FreedomAccount.FundsTest do
   end
 
   describe "deleting a fund" do
-    test "deletes the fund", %{account: account} do
-      fund = Factory.fund(account)
+    setup :create_fund
+
+    test "deletes the fund", %{account: account, fund: fund} do
       assert :ok = Funds.delete_fund(fund)
       assert {:error, :not_found} == Funds.fetch_fund(account, fund.id)
+    end
+
+    test "disallows delete a fund with line items", %{fund: fund} do
+      Factory.deposit(fund)
+      assert {:error, :fund_has_transactions} = Funds.delete_fund(fund)
     end
   end
 

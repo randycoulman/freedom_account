@@ -47,6 +47,14 @@ defmodule FreedomAccount.Funds.Fund do
     |> validate_length(:name, max: 50)
   end
 
+  @doc false
+  @spec deletion_changeset(Changeset.t() | Schema.t()) :: Changeset.t()
+  def deletion_changeset(fund) do
+    fund
+    |> cast(%{}, [])
+    |> foreign_key_constraint(:line_items, name: :line_items_fund_id_fkey)
+  end
+
   @spec by_account(Account.t()) :: Queryable.t()
   @spec by_account(Queryable.t(), Account.t()) :: Queryable.t()
   def by_account(query \\ base_query(), account) do
