@@ -139,7 +139,10 @@ defmodule FreedomAccount.Factory do
     attrs = fund_attrs(attrs)
     {:ok, fund} = Funds.create_fund(account, attrs)
 
-    fund
+    case attrs[:current_balance] do
+      %Money{} = balance -> %{fund | current_balance: balance}
+      nil -> fund
+    end
   end
 
   @spec fund_attrs(Fund.attrs()) :: Fund.attrs()

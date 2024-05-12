@@ -2,6 +2,7 @@ defmodule FreedomAccountWeb.FundListTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
+  alias Phoenix.HTML.Safe
 
   defp create_funds(%{account: account}) do
     funds =
@@ -21,9 +22,9 @@ defmodule FreedomAccountWeb.FundListTest do
       conn
       |> visit(~p"/funds/#{fund1}")
       |> assert_has(heading(), text: "Funds")
-      |> assert_has(link(), text: "#{fund1.icon} #{fund1.name}")
-      |> assert_has(link(), text: "#{fund2.icon} #{fund2.name}")
-      |> assert_has(link(), text: "#{fund3.icon} #{fund3.name}")
+      |> assert_has(link(), text: Safe.to_iodata(fund1))
+      |> assert_has(link(), text: Safe.to_iodata(fund2))
+      |> assert_has(link(), text: Safe.to_iodata(fund3))
     end
 
     test "navigates to other funds", %{conn: conn, funds: funds} do
@@ -32,7 +33,7 @@ defmodule FreedomAccountWeb.FundListTest do
       conn
       |> visit(~p"/funds/#{fund1}")
       |> click_link(fund2.name)
-      |> assert_has(heading(), text: "#{fund2.icon} #{fund2.name}")
+      |> assert_has(heading(), text: Safe.to_iodata(fund2))
     end
   end
 end

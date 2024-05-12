@@ -20,6 +20,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(heading(), text: "Funds")
       |> assert_has(table_cell(), text: fund.icon)
       |> assert_has(table_cell(), text: fund.name)
+      |> assert_has(table_cell(), text: "$0.00")
     end
 
     test "shows prompt when list is empty", %{conn: conn} do
@@ -84,7 +85,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
   describe "Show" do
     setup [:create_account, :create_fund]
 
-    test "drill down to individual fund and back", %{conn: conn, fund: fund} do
+    test "drills down to individual fund and back", %{conn: conn, fund: fund} do
       conn
       |> visit(~p"/funds")
       |> click_link("td", fund.name)
