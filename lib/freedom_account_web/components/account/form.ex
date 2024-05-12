@@ -45,8 +45,8 @@ defmodule FreedomAccountWeb.Account.Form do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:deposits_per_year]} label="Deposits / year" type="number" />
         <.input field={@form[:name]} label="Name" type="text" />
+        <.input field={@form[:deposits_per_year]} label="Deposits / year" type="number" />
         <.input
           field={@form[:default_fund_id]}
           id="default-fund"
