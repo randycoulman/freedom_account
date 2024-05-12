@@ -29,18 +29,25 @@ defmodule FreedomAccount.Transactions.Transaction do
   @doc false
   @spec changeset(Changeset.t() | Schema.t(), attrs()) :: Changeset.t()
   def changeset(transaction, attrs) do
-    transaction
-    |> cast(attrs, [:date, :description])
-    |> default_to_today()
-    |> cast_assoc(:line_items, required: true)
-    |> validate_required([:date, :description])
+    base_changeset(transaction, attrs)
   end
 
-  defp default_to_today(%Changeset{} = changeset) do
-    if Changeset.get_field(changeset, :date) do
-      changeset
-    else
-      Changeset.put_change(changeset, :date, Timex.today(:local))
-    end
+  @doc false
+  @spec deposit_changeset(Changeset.t() | Schema.t(), attrs()) :: Changeset.t()
+  def deposit_changeset(transaction, attrs) do
+    base_changeset(transaction, attrs, with: &LineItem.deposit_changeset/2)
+  end
+
+  @doc false
+  @spec withdrawal_changeset(Changeset.t() | Schema.t(), attrs()) :: Changeset.t()
+  def withdrawal_changeset(transaction, attrs) do
+    base_changeset(transaction, attrs, with: &LineItem.withdrawal_changeset/2)
+  end
+
+  defp base_changeset(transaction, attrs, opts \\ []) do
+    transaction
+    |> cast(attrs, [:date, :description])
+    |> validate_required([:date, :description])
+    |> cast_assoc(:line_items, [required: true] ++ opts)
   end
 end

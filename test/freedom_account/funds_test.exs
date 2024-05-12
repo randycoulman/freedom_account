@@ -67,12 +67,8 @@ defmodule FreedomAccount.FundsTest do
       fund = Factory.fund(account)
 
       Enum.each(
-        [
-          Factory.line_item_attrs(fund, amount: ~M[9.95]usd),
-          Factory.line_item_attrs(fund, amount: ~M[5.05]usd),
-          Factory.line_item_attrs(fund, amount: ~M[27.00]usd)
-        ],
-        &Factory.deposit(fund, line_items: [&1])
+        [~M[9.95]usd, ~M[5.05]usd, ~M[27.00]usd],
+        &Factory.deposit(fund, amount: &1)
       )
 
       {:ok, fund} = Funds.fetch_fund_with_balance(account, fund.id)
@@ -83,7 +79,7 @@ defmodule FreedomAccount.FundsTest do
       fund = Factory.fund(account)
 
       {:ok, fund} = Funds.fetch_fund_with_balance(account, fund.id)
-      assert fund.current_balance == ~M[0]usd
+      assert fund.current_balance == Money.zero(:usd)
     end
 
     test "when fund exists, but for a different account, returns an error", %{account: account} do
@@ -114,7 +110,7 @@ defmodule FreedomAccount.FundsTest do
       calculate_amount = &Money.mult!(~M[10.00]usd, &1.id)
 
       Enum.each(funds, fn fund ->
-        Factory.deposit(fund, line_items: [Factory.line_item_attrs(fund, amount: calculate_amount.(fund))])
+        Factory.deposit(fund, amount: calculate_amount.(fund))
       end)
 
       account
@@ -155,7 +151,7 @@ defmodule FreedomAccount.FundsTest do
 
     test "returns the fund with it's latest current balance", %{fund: fund} do
       amount = Factory.money()
-      Factory.deposit(fund, line_items: [Factory.line_item_attrs(fund, amount: amount)])
+      Factory.deposit(fund, amount: amount)
 
       assert {:ok, %Fund{current_balance: ^amount}} = Funds.with_updated_balance(fund)
     end

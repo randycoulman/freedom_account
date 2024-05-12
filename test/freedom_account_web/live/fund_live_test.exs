@@ -3,6 +3,8 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
   use FreedomAccountWeb.ConnCase, async: true
 
+  import Money.Sigil
+
   alias FreedomAccount.Factory
   alias Phoenix.HTML.Safe
 
@@ -135,10 +137,34 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> fill_in("Description", with: Factory.description())
       |> fill_in("Amount", with: amount)
       |> click_button("Make Deposit")
-      |> assert_has(flash(:info), text: "Deposit created successfully")
+      |> assert_has(flash(:info), text: "Deposit successful")
       |> assert_has(heading(), text: Safe.to_iodata(fund))
       |> assert_has(heading(), text: "#{amount}")
       |> assert_has(sidebar_fund_balance(), text: "#{amount}")
+    end
+
+    test "withdraws money from a fund", %{conn: conn, fund: fund} do
+      today = Timex.today(:local)
+      deposit_amount = ~M[5000]usd
+      amount = Factory.money()
+      balance = Money.sub!(deposit_amount, amount)
+
+      Factory.deposit(fund, amount: deposit_amount)
+
+      conn
+      |> visit(~p"/funds/#{fund}")
+      |> click_link("Withdraw")
+      |> assert_has(page_title(), text: "Withdraw")
+      |> assert_has(heading(), text: "Withdraw")
+      |> assert_has(field_value("#transaction_date", today))
+      |> fill_in("Date", with: Factory.date())
+      |> fill_in("Description", with: Factory.description())
+      |> fill_in("Amount", with: amount)
+      |> click_button("Make Withdrawal")
+      |> assert_has(flash(:info), text: "Withdrawal successful")
+      |> assert_has(heading(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: "#{balance}")
+      |> assert_has(sidebar_fund_balance(), text: "#{balance}")
     end
   end
 end

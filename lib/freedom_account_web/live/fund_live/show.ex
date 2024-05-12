@@ -6,8 +6,8 @@ defmodule FreedomAccountWeb.FundLive.Show do
 
   alias FreedomAccount.Funds
   alias FreedomAccount.Transactions
-  alias FreedomAccountWeb.DepositForm
   alias FreedomAccountWeb.FundLive.Form
+  alias FreedomAccountWeb.SingleFundTransactionForm
   alias Phoenix.HTML.Safe
   alias Phoenix.LiveView
 
@@ -41,7 +41,13 @@ defmodule FreedomAccountWeb.FundLive.Show do
   defp apply_action(socket, :new_deposit, _params) do
     socket
     |> assign(:page_title, "Deposit")
-    |> assign(:deposit, Transactions.new_deposit(socket.assigns.fund))
+    |> assign(:transaction, Transactions.new_single_fund_transaction(socket.assigns.fund))
+  end
+
+  defp apply_action(socket, :new_withdrawal, _params) do
+    socket
+    |> assign(:page_title, "Withdraw")
+    |> assign(:transaction, Transactions.new_single_fund_transaction(socket.assigns.fund))
   end
 
   defp apply_action(socket, _action, _params) do
@@ -82,6 +88,11 @@ defmodule FreedomAccountWeb.FundLive.Show do
                 <.icon name="hero-plus-circle-mini" /> Deposit
               </.button>
             </.link>
+            <.link patch={~p"/funds/#{@fund}/withdrawals/new"} phx-click={JS.push_focus()}>
+              <.button>
+                <.icon name="hero-minus-circle-mini" /> Withdraw
+              </.button>
+            </.link>
           </:actions>
         </.header>
 
@@ -102,19 +113,19 @@ defmodule FreedomAccountWeb.FundLive.Show do
     </.modal>
 
     <.modal
-      :if={@live_action == :new_deposit}
-      id="deposit-modal"
+      :if={@live_action in [:new_deposit, :new_withdrawal]}
+      id="transaction-modal"
       show
       on_cancel={JS.patch(~p"/funds/#{@fund}")}
     >
       <.live_component
         action={@live_action}
-        deposit={@deposit}
         fund={@fund}
-        id={@deposit.id || :new}
-        module={DepositForm}
+        id={@transaction.id || :new}
+        module={SingleFundTransactionForm}
         patch={~p"/funds/#{@fund}"}
         title={@page_title}
+        transaction={@transaction}
       />
     </.modal>
     """
@@ -125,7 +136,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
     {:noreply, stream_insert(socket, :funds, fund)}
   end
 
-  def handle_info({DepositForm, {:balance_updated, fund}}, socket) do
+  def handle_info({SingleFundTransactionForm, {:balance_updated, fund}}, socket) do
     case Funds.with_updated_balance(fund) do
       {:ok, fund} ->
         {:noreply, stream_insert(socket, :funds, fund)}

@@ -16,14 +16,32 @@ defmodule FreedomAccount.Transactions do
   @spec deposit(Transaction.attrs()) :: {:ok, Transaction.t()} | {:error, Changeset.t()}
   def deposit(attrs \\ %{}) do
     %Transaction{}
-    |> Transaction.changeset(attrs)
+    |> Transaction.deposit_changeset(attrs)
     |> Repo.insert()
   end
 
-  @spec new_deposit(Fund.t()) :: Transaction.partial()
-  def new_deposit(fund) do
+  @spec new_single_fund_transaction(Fund.t()) :: Transaction.partial()
+  def new_single_fund_transaction(fund) do
     %Transaction{
+      date: Timex.today(:local),
       line_items: [%LineItem{fund_id: fund.id}]
     }
+  end
+
+  @spec withdraw(Transaction.attrs()) :: {:ok, Transaction.t()} | {:error, Changeset.t()}
+  def withdraw(attrs \\ %{}) do
+    %Transaction{}
+    |> Transaction.withdrawal_changeset(attrs)
+    |> Repo.insert()
+    |> case do
+      {:ok, transaction} ->
+        {:ok, transaction}
+
+      {:error, changeset} ->
+        {:error,
+         %Transaction{}
+         |> Transaction.changeset(attrs)
+         |> Map.put(:action, changeset.action)}
+    end
   end
 end

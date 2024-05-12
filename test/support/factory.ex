@@ -116,12 +116,17 @@ defmodule FreedomAccount.Factory do
     Enum.into(overrides, %{deposits_per_year: deposit_count(), name: account_name()})
   end
 
-  @spec deposit(Fund.t(), Transaction.attrs()) :: Transaction.t()
+  @spec deposit(Fund.t(), Transaction.attrs() | %{amount: Money.t()}) :: Transaction.t()
   def deposit(fund, attrs \\ %{}) do
+    attrs = Map.new(attrs)
+    {amount, attrs} = Map.pop(attrs, :amount)
+    line_item = if amount, do: %{amount: amount}, else: %{}
+
     attrs =
       attrs
-      |> Map.new()
-      |> Map.put_new_lazy(:line_items, fn -> [line_item_attrs(fund)] end)
+      |> Map.put_new_lazy(:line_items, fn ->
+        [line_item_attrs(fund, line_item)]
+      end)
       |> transaction_attrs()
 
     {:ok, transaction} = Transactions.deposit(attrs)

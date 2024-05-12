@@ -7,7 +7,6 @@ defmodule FreedomAccount.Funds.Fund do
 
   import Ecto.Changeset
   import Ecto.Query
-  import Money.Sigil
 
   alias Ecto.Changeset
   alias Ecto.Queryable
@@ -72,7 +71,7 @@ defmodule FreedomAccount.Funds.Fund do
   @spec with_balance :: Queryable.t()
   @spec with_balance(Queryable.t()) :: Queryable.t()
   def with_balance(query \\ base_query()) do
-    zero = ~M[0]usd
+    zero = Money.zero(:usd)
 
     from f in query,
       left_join: l in assoc(f, :line_items),

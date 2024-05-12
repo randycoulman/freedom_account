@@ -31,6 +31,7 @@ defmodule FreedomAccountWeb.Router do
       live "/funds/:id/show/edit", FundLive.Show, :edit
       live "/funds/:id/account", FundLive.Show, :edit_account
       live "/funds/:id/deposits/new", FundLive.Show, :new_deposit
+      live "/funds/:id/withdrawals/new", FundLive.Show, :new_withdrawal
     end
   end
 
