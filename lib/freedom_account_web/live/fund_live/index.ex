@@ -75,6 +75,8 @@ defmodule FreedomAccountWeb.FundLive.Index do
     >
       <:col :let={{_id, fund}} label="Icon"><%= fund.icon %></:col>
       <:col :let={{_id, fund}} label="Name"><%= fund.name %></:col>
+      <:col :let={{_id, fund}} label="Budget"><%= fund.budget %></:col>
+      <:col :let={{_id, fund}} label="Times/Year"><%= fund.times_per_year %></:col>
       <:col :let={{_id, fund}} label="Current Balance"><%= fund.current_balance %></:col>
       <:action :let={{_id, fund}}>
         <div class="sr-only">

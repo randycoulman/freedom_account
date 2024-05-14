@@ -15,6 +15,9 @@ defmodule FreedomAccountWeb.ElementSelectors do
   @spec flash(atom()) :: selector()
   def flash(level), do: "#flash-#{level}"
 
+  @spec fund_subtitle :: selector()
+  def fund_subtitle, do: "#fund-subtitle"
+
   @spec heading :: selector()
   def heading, do: "h2"
 

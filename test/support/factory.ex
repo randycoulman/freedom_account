@@ -101,6 +101,9 @@ defmodule FreedomAccount.Factory do
   @spec money :: Money.t()
   def money, do: Money.new("#{Enum.random(0..499)}.#{Enum.random(0..99)}", :usd)
 
+  @spec one_of(list()) :: term()
+  def one_of(items), do: Enum.random(items)
+
   @spec account(Account.attrs()) :: Account.t()
   def account(attrs \\ %{}) do
     {:ok, account} =
@@ -147,7 +150,12 @@ defmodule FreedomAccount.Factory do
 
   @spec fund_attrs(Fund.attrs()) :: Fund.attrs()
   def fund_attrs(overrides \\ %{}) do
-    Enum.into(overrides, %{icon: fund_icon(), name: fund_name()})
+    Enum.into(overrides, %{
+      budget: money(),
+      icon: fund_icon(),
+      name: fund_name(),
+      times_per_year: one_of([0.5, 1.0, 2.0, 4.0])
+    })
   end
 
   @spec line_item_attrs(Fund.t(), LineItem.attrs()) :: LineItem.attrs()

@@ -20,6 +20,8 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(heading(), text: "Funds")
       |> assert_has(table_cell(), text: fund.icon)
       |> assert_has(table_cell(), text: fund.name)
+      |> assert_has(table_cell(), text: "#{fund.budget}")
+      |> assert_has(table_cell(), text: "#{fund.times_per_year}")
       |> assert_has(table_cell(), text: "$0.00")
     end
 
@@ -31,7 +33,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
     end
 
     test "saves new fund", %{conn: conn} do
-      %{icon: icon, name: name} = Factory.fund_attrs()
+      %{budget: budget, icon: icon, name: name, times_per_year: times_per_year} = Factory.fund_attrs()
 
       conn
       |> visit(~p"/funds")
@@ -45,15 +47,19 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(field_error("#fund_name"), text: "can't be blank")
       |> fill_in("Icon", with: icon)
       |> fill_in("Name", with: name)
+      |> fill_in("Budget", with: budget)
+      |> fill_in("Times/Year", with: times_per_year)
       |> click_button("Save Fund")
       |> assert_has(flash(:info), text: "Fund created successfully")
       |> assert_has(table_cell(), text: icon)
       |> assert_has(table_cell(), text: name)
+      |> assert_has(table_cell(), text: "#{budget}")
+      |> assert_has(table_cell(), text: "#{times_per_year}")
     end
 
     test "edits fund in listing", %{account: account, conn: conn} do
       fund = Factory.fund(account)
-      %{icon: icon, name: name} = Factory.fund_attrs()
+      %{budget: budget, icon: icon, name: name, times_per_year: times_per_year} = Factory.fund_attrs()
 
       conn
       |> visit(~p"/funds")
@@ -66,10 +72,14 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(field_error("#fund_name"), text: "can't be blank")
       |> fill_in("Icon", with: icon)
       |> fill_in("Name", with: name)
+      |> fill_in("Budget", with: budget)
+      |> fill_in("Times/Year", with: times_per_year)
       |> click_button("Save Fund")
       |> assert_has(flash(:info), text: "Fund updated successfully")
       |> assert_has(table_cell(), text: icon)
       |> assert_has(table_cell(), text: name)
+      |> assert_has(table_cell(), text: "#{budget}")
+      |> assert_has(table_cell(), text: "#{times_per_year}")
     end
 
     test "deletes fund in listing", %{account: account, conn: conn} do
@@ -92,6 +102,8 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(page_title(), text: Safe.to_iodata(fund))
       |> assert_has(heading(), text: Safe.to_iodata(fund))
       |> assert_has(heading(), text: "$0.00")
+      |> assert_has(fund_subtitle(), text: "#{fund.budget}")
+      |> assert_has(fund_subtitle(), text: "#{fund.times_per_year}")
       |> click_link("Back to Funds")
       |> assert_has(page_title(), text: "Funds")
       |> assert_has(heading(), text: "Funds")

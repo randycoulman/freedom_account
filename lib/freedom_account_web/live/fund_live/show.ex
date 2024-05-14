@@ -77,6 +77,12 @@ defmodule FreedomAccountWeb.FundLive.Show do
             <span><%= @fund %></span>
             <span><%= @fund.current_balance %></span>
           </div>
+          <:subtitle>
+            <div class="flex flex-row" id="fund-subtitle">
+              <span>Budget: <%= @fund.budget %></span>
+              <span>(<%= @fund.times_per_year %> times/year)</span>
+            </div>
+          </:subtitle>
           <:actions>
             <.link patch={~p"/funds/#{@fund}/show/edit"} phx-click={JS.push_focus()}>
               <.button>

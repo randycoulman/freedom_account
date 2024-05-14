@@ -35,6 +35,8 @@ defmodule FreedomAccountWeb.FundLive.Form do
       >
         <.input field={@form[:icon]} label="Icon" type="text" />
         <.input field={@form[:name]} label="Name" type="text" />
+        <.input field={@form[:budget]} label="Budget" type="text" />
+        <.input field={@form[:times_per_year]} label="Times/Year" type="text" />
         <:actions>
           <.button phx-disable-with="Saving..." type="submit">
             <.icon name="hero-check-circle-mini" /> Save Fund

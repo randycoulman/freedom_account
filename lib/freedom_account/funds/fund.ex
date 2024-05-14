@@ -16,8 +16,10 @@ defmodule FreedomAccount.Funds.Fund do
 
   @type attrs :: %{
           optional(:account_id) => non_neg_integer,
-          optional(:icon) => icon,
-          optional(:name) => name
+          optional(:budget) => Money.t(),
+          optional(:icon) => icon(),
+          optional(:name) => name(),
+          optional(:times_per_year) => float()
         }
   @type icon :: String.t()
   @type id :: non_neg_integer()
@@ -26,8 +28,10 @@ defmodule FreedomAccount.Funds.Fund do
   typed_schema "funds" do
     belongs_to :account, Account
 
+    field(:budget, Money.Ecto.Composite.Type) :: Money.t()
     field :icon, :string, null: false
     field :name, :string, null: false
+    field :times_per_year, :float
 
     has_many :line_items, LineItem
 
@@ -40,8 +44,8 @@ defmodule FreedomAccount.Funds.Fund do
   @spec changeset(Changeset.t() | Schema.t(), attrs) :: Changeset.t()
   def changeset(fund, attrs) do
     fund
-    |> cast(attrs, [:icon, :name])
-    |> validate_required([:icon, :name])
+    |> cast(attrs, [:budget, :icon, :name, :times_per_year])
+    |> validate_required([:budget, :icon, :name, :times_per_year])
     |> validate_length(:icon, max: 10)
     |> validate_length(:name, max: 50)
   end
