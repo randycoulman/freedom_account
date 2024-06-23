@@ -35,7 +35,13 @@ defmodule FreedomAccountWeb.FundLive.Index do
 
   defp apply_action(socket, :edit_account, _params) do
     socket
-    |> assign(page_title: "Edit Account Settings")
+    |> assign(:page_title, "Edit Account Settings")
+    |> assign(:fund, nil)
+  end
+
+  defp apply_action(socket, :edit_budget, _params) do
+    socket
+    |> assign(page_title: "Update Budget")
     |> assign(fund: nil)
   end
 
@@ -51,6 +57,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
     <.live_component
       account={@account}
       action={@live_action}
+      budget_path={~p"/funds/budget"}
       edit_path={~p"/funds/account"}
       id={@account.id}
       module={FreedomAccountWeb.Account.Show}

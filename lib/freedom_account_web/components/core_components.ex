@@ -278,6 +278,7 @@ defmodule FreedomAccountWeb.CoreComponents do
   attr :id, :any, default: nil
   attr :name, :any
   attr :label, :string, default: nil
+  attr :label_class, :string, default: nil
   attr :value, :any
 
   attr :type, :string,
@@ -315,7 +316,7 @@ defmodule FreedomAccountWeb.CoreComponents do
 
     ~H"""
     <div phx-feedback-for={@name}>
-      <label class="flex items-center gap-4 text-sm leading-6 text-zinc-600">
+      <label class={["flex items-center gap-4 text-sm leading-6 text-zinc-600", @label_class]}>
         <input type="hidden" name={@name} value="false" />
         <input
           type="checkbox"
@@ -336,7 +337,7 @@ defmodule FreedomAccountWeb.CoreComponents do
   def input(%{type: "select"} = assigns) do
     ~H"""
     <div phx-feedback-for={@name}>
-      <.label for={@id}><%= @label %></.label>
+      <.label class={@label_class} for={@id}><%= @label %></.label>
       <select
         id={@id}
         name={@name}
@@ -355,7 +356,7 @@ defmodule FreedomAccountWeb.CoreComponents do
   def input(%{type: "textarea"} = assigns) do
     ~H"""
     <div phx-feedback-for={@name}>
-      <.label for={@id}><%= @label %></.label>
+      <.label class={@label_class} for={@id}><%= @label %></.label>
       <textarea
         id={@id}
         name={@name}
@@ -376,7 +377,7 @@ defmodule FreedomAccountWeb.CoreComponents do
   def input(assigns) do
     ~H"""
     <div phx-feedback-for={@name}>
-      <.label for={@id}><%= @label %></.label>
+      <.label class={@label_class} for={@id}><%= @label %></.label>
       <input
         type={@type}
         name={@name}
@@ -398,12 +399,13 @@ defmodule FreedomAccountWeb.CoreComponents do
   @doc """
   Renders a label.
   """
+  attr :class, :string, default: nil
   attr :for, :string, default: nil
   slot :inner_block, required: true
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class={["block text-sm font-semibold leading-6 text-zinc-800", @class]}>
       <%= render_slot(@inner_block) %>
     </label>
     """

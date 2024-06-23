@@ -5,6 +5,7 @@ defmodule FreedomAccountWeb.Account.Form do
 
   use FreedomAccountWeb, :live_component
 
+  alias Ecto.Changeset
   alias FreedomAccount.Accounts
   alias FreedomAccount.Funds
   alias FreedomAccountWeb.Params
@@ -90,12 +91,12 @@ defmodule FreedomAccountWeb.Account.Form do
          |> put_flash(:info, "Account updated successfully")
          |> push_navigate(to: navigate)}
 
-      {:error, %Ecto.Changeset{} = changeset} ->
+      {:error, %Changeset{} = changeset} ->
         {:noreply, assign(socket, :form, to_form(changeset))}
     end
   end
 
-  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+  defp assign_form(socket, %Changeset{} = changeset) do
     assign(socket, :form, to_form(changeset))
   end
 end

@@ -4,9 +4,16 @@ defmodule FreedomAccount.Funds do
   """
 
   alias Ecto.Changeset
+  alias Ecto.Multi
   alias FreedomAccount.Accounts.Account
+  alias FreedomAccount.Funds.Budget
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Repo
+
+  @spec change_budget([Fund.t()], Budget.attrs()) :: Changeset.t()
+  def change_budget(funds, attrs \\ %{}) do
+    Budget.changeset(%Budget{funds: funds}, attrs)
+  end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking fund changes.
@@ -110,6 +117,26 @@ defmodule FreedomAccount.Funds do
     |> Fund.order_by_name()
     |> Fund.with_balance()
     |> Repo.all()
+  end
+
+  @spec update_budget([Fund.t()], Budget.attrs()) :: {:ok, [Fund.t()]} | {:error, Changeset.t()}
+  def update_budget(funds, attrs) do
+    budget_changeset = change_budget(funds, attrs)
+
+    budget_changeset
+    |> Changeset.get_embed(:funds)
+    |> Enum.with_index()
+    |> Enum.reduce(Multi.new(), fn {changeset, index}, multi ->
+      Multi.update(multi, {:fund, index}, changeset)
+    end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, changes} ->
+        {:ok, Map.values(changes)}
+
+      {:error, {:fund, index}, changeset, _changes_so_far} ->
+        {:error, Map.put(budget_changeset, index, changeset)}
+    end
   end
 
   @doc """

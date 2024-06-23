@@ -4,6 +4,7 @@ defmodule FreedomAccountWeb.Account.Show do
   use FreedomAccountWeb, :live_component
 
   alias FreedomAccountWeb.Account.Form
+  alias FreedomAccountWeb.BudgetForm
   alias Phoenix.LiveComponent
 
   @impl LiveComponent
@@ -18,6 +19,11 @@ defmodule FreedomAccountWeb.Account.Show do
       <.header>
         <%= @account.name %>
         <:actions>
+          <.link patch={@budget_path} phx-click={JS.push_focus()}>
+            <.button>
+              <.icon name="hero-chart-pie-mini" /> Budget
+            </.button>
+          </.link>
           <.link patch={@edit_path} phx-click={JS.push_focus()}>
             <.button>
               <.icon name="hero-cog-8-tooth-mini" /> Settings
@@ -37,6 +43,16 @@ defmodule FreedomAccountWeb.Account.Show do
           action={@action}
           id={@account.id}
           module={Form}
+          navigate={@return_path}
+        />
+      </.modal>
+
+      <.modal :if={@action == :edit_budget} id="budget-modal" show on_cancel={JS.patch(@return_path)}>
+        <.live_component
+          account={@account}
+          action={@action}
+          id={@account.id}
+          module={BudgetForm}
           navigate={@return_path}
         />
       </.modal>

@@ -21,6 +21,11 @@ defmodule FreedomAccount.Funds.Fund do
           optional(:name) => name(),
           optional(:times_per_year) => float()
         }
+  @type budget_attrs :: %{
+          optional(:budget) => Money.t(),
+          optional(:id) => id(),
+          optional(:times_per_year) => float()
+        }
   @type icon :: String.t()
   @type id :: non_neg_integer()
   @type name :: String.t()
@@ -40,7 +45,13 @@ defmodule FreedomAccount.Funds.Fund do
     timestamps()
   end
 
-  @doc false
+  @spec budget_changeset(Changeset.t() | Schema.t(), budget_attrs()) :: Changeset.t()
+  def budget_changeset(fund, attrs) do
+    fund
+    |> cast(attrs, [:budget, :times_per_year])
+    |> validate_required([:budget, :times_per_year])
+  end
+
   @spec changeset(Changeset.t() | Schema.t(), attrs) :: Changeset.t()
   def changeset(fund, attrs) do
     fund
@@ -50,7 +61,6 @@ defmodule FreedomAccount.Funds.Fund do
     |> validate_length(:name, max: 50)
   end
 
-  @doc false
   @spec deletion_changeset(Changeset.t() | Schema.t()) :: Changeset.t()
   def deletion_changeset(fund) do
     fund

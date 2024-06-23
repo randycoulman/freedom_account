@@ -3,8 +3,10 @@ defmodule FreedomAccount.FundsTest do
 
   use FreedomAccount.DataCase, async: true
 
+  import Assertions
   import Money.Sigil
 
+  alias Ecto.Changeset
   alias FreedomAccount.Factory
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
@@ -13,10 +15,19 @@ defmodule FreedomAccount.FundsTest do
 
   setup [:create_account]
 
+  describe "creating a changeset for the budget" do
+    test "returns the changeset", %{account: account} do
+      funds = for _i <- 1..3, do: Factory.fund(account)
+
+      assert %Changeset{} = changeset = Funds.change_budget(funds)
+      assert changeset |> get_embed(:funds) |> length() == 3
+    end
+  end
+
   describe "creating a changeset for a fund" do
     test "returns the changeset", %{account: account} do
       fund = Factory.fund(account)
-      assert %Ecto.Changeset{} = Funds.change_fund(fund)
+      assert %Changeset{} = Funds.change_fund(fund)
     end
   end
 
@@ -37,7 +48,7 @@ defmodule FreedomAccount.FundsTest do
     end
 
     test "returns error changeset for invalid data", %{account: account} do
-      assert {:error, %Ecto.Changeset{}} = Funds.create_fund(account, @invalid_attrs)
+      assert {:error, %Changeset{valid?: false}} = Funds.create_fund(account, @invalid_attrs)
     end
   end
 
@@ -121,6 +132,35 @@ defmodule FreedomAccount.FundsTest do
     end
   end
 
+  describe "updating the budget" do
+    test "saves budget values for all funds", %{account: account} do
+      funds = for _n <- 1..3, do: Factory.fund(account)
+      valid_attrs = Factory.budget_attrs(funds)
+
+      assert {:ok, updated_funds} = Funds.update_budget(funds, valid_attrs)
+
+      valid_attrs.funds
+      |> Enum.zip(updated_funds)
+      |> Enum.each(fn {{_index, attrs}, fund} ->
+        assert fund.budget == attrs[:budget]
+        assert fund.times_per_year == attrs[:times_per_year]
+      end)
+    end
+
+    test "with invalid data returns an error changeset", %{account: account} do
+      funds = [Factory.fund(account), Factory.fund(account)]
+
+      invalid_attrs =
+        funds
+        |> Factory.budget_attrs()
+        |> update_in([:funds, "1"], &Map.put(&1, :budget, nil))
+
+      assert {:error, %Changeset{valid?: false} = changeset} = Funds.update_budget(funds, invalid_attrs)
+      assert [%Changeset{valid?: true}, %Changeset{valid?: false}] = Changeset.get_embed(changeset, :funds)
+      assert_lists_equal(funds, Funds.list_funds(account))
+    end
+  end
+
   describe "updating a fund" do
     setup :create_fund
 
@@ -133,7 +173,7 @@ defmodule FreedomAccount.FundsTest do
     end
 
     test "with invalid data returns an error changeset", %{account: account, fund: fund} do
-      assert {:error, %Ecto.Changeset{}} = Funds.update_fund(fund, @invalid_attrs)
+      assert {:error, %Changeset{valid?: false}} = Funds.update_fund(fund, @invalid_attrs)
       assert {:ok, fund} == Funds.fetch_fund(account, fund.id)
     end
 
