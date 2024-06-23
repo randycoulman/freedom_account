@@ -115,7 +115,7 @@ defmodule FreedomAccount.MixProject do
       "assets.build": ["tailwind freedom_account", "esbuild freedom_account"],
       "assets.deploy": [
         "tailwind freedom_account --minify",
-        "esbuild freedome_account --minify",
+        "esbuild freedom_account --minify",
         "phx.digest"
       ],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
