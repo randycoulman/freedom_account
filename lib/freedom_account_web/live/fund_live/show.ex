@@ -5,6 +5,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
   import FreedomAccountWeb.FundList, only: [fund_list: 1]
 
   alias FreedomAccount.Funds
+  alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Transactions
   alias FreedomAccountWeb.FundLive.Form
   alias FreedomAccountWeb.SingleFundTransactionForm
@@ -144,10 +145,14 @@ defmodule FreedomAccountWeb.FundLive.Show do
 
   @impl LiveView
   def handle_info({Form, {:saved, fund}}, socket) do
-    {:noreply, stream_insert(socket, :funds, fund)}
+    update_fund(socket, fund)
   end
 
   def handle_info({SingleFundTransactionForm, {:balance_updated, fund}}, socket) do
+    update_fund(socket, fund)
+  end
+
+  defp update_fund(socket, %Fund{} = fund) do
     case Funds.with_updated_balance(fund) do
       {:ok, fund} ->
         {:noreply, stream_insert(socket, :funds, fund)}

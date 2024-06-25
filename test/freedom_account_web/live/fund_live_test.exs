@@ -6,6 +6,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
   import Money.Sigil
 
   alias FreedomAccount.Factory
+  alias FreedomAccount.Funds
   alias Phoenix.HTML.Safe
 
   describe "Index" do
@@ -13,6 +14,8 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
     test "lists all funds", %{account: account, conn: conn} do
       fund = Factory.fund(account)
+      Factory.deposit(fund)
+      {:ok, fund} = Funds.with_updated_balance(fund)
 
       conn
       |> visit(~p"/funds")
@@ -22,7 +25,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(table_cell(), text: fund.name)
       |> assert_has(table_cell(), text: "#{fund.budget}")
       |> assert_has(table_cell(), text: "#{fund.times_per_year}")
-      |> assert_has(table_cell(), text: "$0.00")
+      |> assert_has(table_cell(), text: to_string(fund.current_balance))
     end
 
     test "shows prompt when list is empty", %{conn: conn} do
@@ -55,10 +58,13 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(table_cell(), text: name)
       |> assert_has(table_cell(), text: "#{budget}")
       |> assert_has(table_cell(), text: "#{times_per_year}")
+      |> assert_has(table_cell(), text: "$0.00")
     end
 
     test "edits fund in listing", %{account: account, conn: conn} do
       fund = Factory.fund(account)
+      Factory.deposit(fund)
+      {:ok, fund} = Funds.with_updated_balance(fund)
       %{budget: budget, icon: icon, name: name, times_per_year: times_per_year} = Factory.fund_attrs()
 
       conn
@@ -80,6 +86,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(table_cell(), text: name)
       |> assert_has(table_cell(), text: "#{budget}")
       |> assert_has(table_cell(), text: "#{times_per_year}")
+      |> assert_has(table_cell(), text: "#{fund.current_balance}")
     end
 
     test "deletes fund in listing", %{account: account, conn: conn} do
@@ -117,6 +124,8 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
     test "updates fund within modal", %{conn: conn, fund: fund} do
       %{icon: icon, name: name} = Factory.fund_attrs()
+      Factory.deposit(fund)
+      {:ok, fund} = Funds.with_updated_balance(fund)
 
       conn
       |> visit(~p"/funds/#{fund}")
@@ -133,7 +142,9 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(flash(:info), text: "Fund updated successfully")
       |> assert_has(page_title(), text: "#{icon} #{name}")
       |> assert_has(heading(), text: "#{icon} #{name}")
+      |> assert_has(heading(), text: "#{fund.current_balance}")
       |> assert_has(sidebar_fund_name(), text: "#{icon} #{name}")
+      |> assert_has(sidebar_fund_balance(), text: "#{fund.current_balance}")
     end
 
     test "deposits money to a fund", %{conn: conn, fund: fund} do
