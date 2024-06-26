@@ -5,7 +5,13 @@ defmodule FreedomAccount.Accounts do
 
   alias Ecto.Changeset
   alias FreedomAccount.Accounts.Account
+  alias FreedomAccount.PubSub
   alias FreedomAccount.Repo
+
+  @topic "account"
+
+  @spec pubsub_topic :: PubSub.topic()
+  def pubsub_topic, do: @topic
 
   @spec only_account :: Account.t()
   def only_account do
@@ -38,6 +44,7 @@ defmodule FreedomAccount.Accounts do
     account
     |> Account.changeset(attrs)
     |> Repo.update()
+    |> PubSub.broadcast(@topic, :account_updated)
   end
 
   @doc """

@@ -82,14 +82,14 @@ defmodule FreedomAccountWeb.Account.Form do
   end
 
   defp save_account(socket, account_params) do
-    %{account: account, navigate: navigate} = socket.assigns
+    %{account: account, return_path: return_path} = socket.assigns
 
     case Accounts.update_account(account, account_params) do
       {:ok, _account} ->
         {:noreply,
          socket
          |> put_flash(:info, "Account updated successfully")
-         |> push_navigate(to: navigate)}
+         |> push_patch(to: return_path)}
 
       {:error, %Changeset{} = changeset} ->
         {:noreply, assign(socket, :form, to_form(changeset))}

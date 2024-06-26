@@ -1,7 +1,8 @@
 defmodule FreedomAccountWeb.AccountTest do
   @moduledoc false
 
-  use FreedomAccountWeb.ConnCase, async: true
+  # Temporary: Need to find a way to decouple PubSub for different async tests.
+  use FreedomAccountWeb.ConnCase, async: false
 
   alias FreedomAccount.Factory
   alias Phoenix.HTML.Safe

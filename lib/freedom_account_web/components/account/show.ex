@@ -43,7 +43,7 @@ defmodule FreedomAccountWeb.Account.Show do
           action={@action}
           id={@account.id}
           module={Form}
-          navigate={@return_path}
+          return_path={@return_path}
         />
       </.modal>
 
@@ -53,7 +53,7 @@ defmodule FreedomAccountWeb.Account.Show do
           action={@action}
           id={@account.id}
           module={BudgetForm}
-          navigate={@return_path}
+          return_path={@return_path}
         />
       </.modal>
     </div>

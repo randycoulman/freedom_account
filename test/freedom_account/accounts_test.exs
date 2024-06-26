@@ -6,6 +6,7 @@ defmodule FreedomAccount.AccountsTest do
   alias FreedomAccount.Accounts
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Factory
+  alias FreedomAccount.PubSub
 
   @invalid_attrs %{deposits_per_year: nil, name: nil}
 
@@ -39,7 +40,7 @@ defmodule FreedomAccount.AccountsTest do
   end
 
   describe "updating an account's settings" do
-    test "update_account/2 with valid data updates the account" do
+    test "with valid data updates the account" do
       account = Factory.account()
       update_attrs = Factory.account_attrs()
 
@@ -48,7 +49,7 @@ defmodule FreedomAccount.AccountsTest do
       assert account.name == update_attrs[:name]
     end
 
-    test "update_account/2 updates default fund" do
+    test "updates default fund" do
       account = Factory.account()
       fund = Factory.fund(account)
       update_attrs = %{default_fund_id: fund.id}
@@ -57,7 +58,17 @@ defmodule FreedomAccount.AccountsTest do
       assert account.default_fund_id == fund.id
     end
 
-    test "update_account/2 with invalid data returns error changeset" do
+    test "publishes an account updated event" do
+      account = Factory.account()
+      update_attrs = Factory.account_attrs()
+
+      PubSub.subscribe(Accounts.pubsub_topic())
+      {:ok, %Account{} = updated_account} = Accounts.update_account(account, update_attrs)
+
+      assert_received({:account_updated, ^updated_account})
+    end
+
+    test "with invalid data returns error changeset" do
       account = Factory.account()
       assert {:error, %Ecto.Changeset{}} = Accounts.update_account(account, @invalid_attrs)
       assert account == Accounts.only_account()

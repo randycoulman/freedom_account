@@ -78,14 +78,14 @@ defmodule FreedomAccountWeb.BudgetForm do
 
   def handle_event("save", params, socket) do
     %{"budget" => budget_params} = params
-    %{funds: funds, navigate: navigate} = socket.assigns
+    %{funds: funds, return_path: return_path} = socket.assigns
 
     case Funds.update_budget(funds, budget_params) do
       {:ok, _updated_funds} ->
         {:noreply,
          socket
          |> put_flash(:info, "Budget updated successfully")
-         |> push_navigate(to: navigate)}
+         |> push_navigate(to: return_path)}
 
       {:error, %Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
