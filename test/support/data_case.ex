@@ -21,29 +21,20 @@ defmodule FreedomAccount.DataCase do
   alias FreedomAccount.Factory
   alias FreedomAccount.Repo
 
-  using do
+  using opts do
     quote do
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
+      use FreedomAccount.Case, unquote(opts)
+
       import unquote(__MODULE__)
 
       alias FreedomAccount.Repo
     end
   end
 
-  setup tags do
-    FreedomAccount.DataCase.setup_sandbox(tags)
-    :ok
-  end
-
-  @doc """
-  Sets up the sandbox based on the test tags.
-  """
-  @spec setup_sandbox(map) :: :ok
-  def setup_sandbox(tags) do
-    pid = Sandbox.start_owner!(Repo, shared: not tags[:async])
+  setup context do
+    pid = Sandbox.start_owner!(Repo, shared: not context[:async])
     on_exit(fn -> Sandbox.stop_owner(pid) end)
+    :ok
   end
 
   @spec create_account(map()) :: map()

@@ -1,5 +1,5 @@
 defmodule FreedomAccountWeb.ParamsTest do
-  use ExUnit.Case, async: true
+  use FreedomAccount.Case, async: true
 
   alias FreedomAccountWeb.Params
 

@@ -20,7 +20,7 @@ defmodule FreedomAccount.FundsTest do
       funds = for _i <- 1..3, do: Factory.fund(account)
 
       assert %Changeset{} = changeset = Funds.change_budget(funds)
-      assert changeset |> get_embed(:funds) |> length() == 3
+      assert changeset |> Changeset.get_embed(:funds) |> length() == 3
     end
   end
 

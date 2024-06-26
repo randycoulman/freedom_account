@@ -95,6 +95,7 @@ defmodule FreedomAccount.MixProject do
       {:phoenix_test, "~> 0.3.0", only: :test, runtime: false},
       {:phoenix, "~> 1.7"},
       {:postgrex, ">= 0.0.0"},
+      {:process_tree, "~> 0.1.3"},
       {:styler, "~> 0.11.9", only: [:dev, :test], runtime: false},
       {:tailwind, "~> 0.2.3", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 1.0"},

@@ -17,14 +17,13 @@ defmodule FreedomAccountWeb.ConnCase do
 
   use ExUnit.CaseTemplate
 
-  alias FreedomAccount.DataCase
   alias Phoenix.ConnTest
 
-  using do
+  using opts do
     quote do
+      use FreedomAccount.DataCase, unquote(opts)
       use FreedomAccountWeb, :verified_routes
 
-      import FreedomAccount.DataCase
       import FreedomAccountWeb.ElementSelectors
       import Phoenix.ConnTest
       import PhoenixTest
@@ -35,8 +34,7 @@ defmodule FreedomAccountWeb.ConnCase do
     end
   end
 
-  setup tags do
-    DataCase.setup_sandbox(tags)
+  setup _context do
     {:ok, conn: ConnTest.build_conn()}
   end
 end
