@@ -7,7 +7,8 @@ defmodule FreedomAccount.PubSub do
   @type event :: atom()
   @type topic :: PubSub.topic()
 
-  @spec broadcast({:ok, struct()} | {:error, term()}, topic(), event()) :: {:ok, struct()} | {:error, term()}
+  @spec broadcast({:ok, result} | {:error, error}, topic(), event()) :: {:ok, result} | {:error, error}
+        when result: term(), error: term()
   def broadcast({:ok, record} = result, topic, event) do
     PubSub.broadcast(__MODULE__, topic, {event, record})
     result

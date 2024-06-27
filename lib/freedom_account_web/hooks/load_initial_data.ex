@@ -32,6 +32,10 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
     {:halt, Component.assign(socket, :account, account)}
   end
 
+  defp handle_info({:budget_updated, funds}, socket) do
+    {:halt, LiveView.stream(socket, :funds, funds)}
+  end
+
   defp handle_info({:fund_created, fund}, socket) do
     {:halt, LiveView.stream_insert(socket, :funds, %{fund | current_balance: Money.zero(:usd)})}
   end

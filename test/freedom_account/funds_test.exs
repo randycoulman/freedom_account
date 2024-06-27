@@ -167,6 +167,17 @@ defmodule FreedomAccount.FundsTest do
       end)
     end
 
+    test "publishes a budget updated event", %{account: account} do
+      funds = for _n <- 1..3, do: Factory.fund(account)
+      valid_attrs = Factory.budget_attrs(funds)
+
+      PubSub.subscribe(Funds.pubsub_topic())
+
+      {:ok, updated_funds} = Funds.update_budget(funds, valid_attrs)
+
+      assert_received({:budget_updated, ^updated_funds})
+    end
+
     test "with invalid data returns an error changeset", %{account: account} do
       funds = [Factory.fund(account), Factory.fund(account)]
 

@@ -85,7 +85,7 @@ defmodule FreedomAccountWeb.BudgetForm do
         {:noreply,
          socket
          |> put_flash(:info, "Budget updated successfully")
-         |> push_navigate(to: return_path)}
+         |> push_patch(to: return_path)}
 
       {:error, %Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
