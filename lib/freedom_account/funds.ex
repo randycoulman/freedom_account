@@ -8,6 +8,7 @@ defmodule FreedomAccount.Funds do
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Funds.Budget
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.PubSub
   alias FreedomAccount.Repo
 
   @spec change_budget([Fund.t()], Budget.attrs()) :: Changeset.t()
@@ -31,6 +32,7 @@ defmodule FreedomAccount.Funds do
     %Fund{account_id: account.id}
     |> Fund.changeset(attrs)
     |> Repo.insert()
+    |> PubSub.broadcast(pubsub_topic(), :fund_created)
   end
 
   @doc """
@@ -50,6 +52,7 @@ defmodule FreedomAccount.Funds do
     fund
     |> Fund.deletion_changeset()
     |> Repo.delete()
+    |> PubSub.broadcast(pubsub_topic(), :fund_deleted)
     |> case do
       {:ok, _fund} -> :ok
       {:error, _changeset} -> {:error, :fund_has_transactions}
@@ -119,6 +122,9 @@ defmodule FreedomAccount.Funds do
     |> Repo.all()
   end
 
+  @spec pubsub_topic :: PubSub.topic()
+  def pubsub_topic, do: ProcessTree.get(:funds_topic, default: "funds")
+
   @spec update_budget([Fund.t()], Budget.attrs()) :: {:ok, [Fund.t()]} | {:error, Changeset.t()}
   def update_budget(funds, attrs) do
     budget_changeset = change_budget(funds, attrs)
@@ -156,6 +162,7 @@ defmodule FreedomAccount.Funds do
     fund
     |> Fund.changeset(attrs)
     |> Repo.update()
+    |> PubSub.broadcast(pubsub_topic(), :fund_updated)
   end
 
   @doc """

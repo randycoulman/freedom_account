@@ -71,9 +71,7 @@ defmodule FreedomAccountWeb.FundLive.Form do
     %{fund: fund, patch: patch} = socket.assigns
 
     case Funds.update_fund(fund, fund_params) do
-      {:ok, fund} ->
-        notify_parent({:saved, fund})
-
+      {:ok, _fund} ->
         {:noreply,
          socket
          |> put_flash(:info, "Fund updated successfully")
@@ -88,9 +86,7 @@ defmodule FreedomAccountWeb.FundLive.Form do
     %{account: account, patch: patch} = socket.assigns
 
     case Funds.create_fund(account, fund_params) do
-      {:ok, fund} ->
-        notify_parent({:saved, fund})
-
+      {:ok, _fund} ->
         {:noreply,
          socket
          |> put_flash(:info, "Fund created successfully")
@@ -103,9 +99,5 @@ defmodule FreedomAccountWeb.FundLive.Form do
 
   defp assign_form(socket, %Changeset{} = changeset) do
     assign(socket, :form, to_form(changeset))
-  end
-
-  defp notify_parent(message) do
-    send(self(), {__MODULE__, message})
   end
 end

@@ -16,6 +16,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
   def on_mount(:default, _params, _session, socket) do
     if LiveView.connected?(socket) do
       PubSub.subscribe(Accounts.pubsub_topic())
+      PubSub.subscribe(Funds.pubsub_topic())
     end
 
     account = Accounts.only_account()
@@ -29,6 +30,24 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
 
   defp handle_info({:account_updated, account}, socket) do
     {:halt, Component.assign(socket, :account, account)}
+  end
+
+  defp handle_info({:fund_created, fund}, socket) do
+    {:halt, LiveView.stream_insert(socket, :funds, %{fund | current_balance: Money.zero(:usd)})}
+  end
+
+  defp handle_info({:fund_deleted, fund}, socket) do
+    {:halt, LiveView.stream_delete(socket, :funds, fund)}
+  end
+
+  defp handle_info({:fund_updated, fund}, socket) do
+    case Funds.with_updated_balance(fund) do
+      {:ok, fund} ->
+        {:halt, LiveView.stream_insert(socket, :funds, fund)}
+
+      {:error, _error} ->
+        {:halt, LiveView.put_flash(socket, :error, "Unable to retrieve updated balance for #{fund.id}")}
+    end
   end
 
   defp handle_info(_message, socket), do: {:cont, socket}

@@ -10,6 +10,7 @@ defmodule FreedomAccount.FundsTest do
   alias FreedomAccount.Factory
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.PubSub
 
   @invalid_attrs %{icon: nil, name: nil}
 
@@ -47,6 +48,16 @@ defmodule FreedomAccount.FundsTest do
       assert fund.account_id == account.id
     end
 
+    test "publishes a fund created event", %{account: account} do
+      valid_attrs = Factory.fund_attrs()
+
+      PubSub.subscribe(Funds.pubsub_topic())
+
+      {:ok, fund} = Funds.create_fund(account, valid_attrs)
+
+      assert_received({:fund_created, ^fund})
+    end
+
     test "returns error changeset for invalid data", %{account: account} do
       assert {:error, %Changeset{valid?: false}} = Funds.create_fund(account, @invalid_attrs)
     end
@@ -58,6 +69,15 @@ defmodule FreedomAccount.FundsTest do
     test "deletes the fund", %{account: account, fund: fund} do
       assert :ok = Funds.delete_fund(fund)
       assert {:error, :not_found} == Funds.fetch_fund(account, fund.id)
+    end
+
+    test "publishes a fund deleted event", %{fund: fund} do
+      fund_id = fund.id
+      PubSub.subscribe(Funds.pubsub_topic())
+
+      :ok = Funds.delete_fund(fund)
+
+      assert_received({:fund_deleted, %Fund{id: ^fund_id}})
     end
 
     test "disallows delete a fund with line items", %{fund: fund} do
@@ -170,6 +190,16 @@ defmodule FreedomAccount.FundsTest do
       assert {:ok, %Fund{} = fund} = Funds.update_fund(fund, valid_attrs)
       assert fund.icon == valid_attrs[:icon]
       assert fund.name == valid_attrs[:name]
+    end
+
+    test "publishes a fund updated event", %{fund: fund} do
+      valid_attrs = Factory.fund_attrs()
+
+      PubSub.subscribe(Funds.pubsub_topic())
+
+      {:ok, updated_fund} = Funds.update_fund(fund, valid_attrs)
+
+      assert_received({:fund_updated, ^updated_fund})
     end
 
     test "with invalid data returns an error changeset", %{account: account, fund: fund} do

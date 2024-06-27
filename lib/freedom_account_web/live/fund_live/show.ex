@@ -143,11 +143,6 @@ defmodule FreedomAccountWeb.FundLive.Show do
     """
   end
 
-  @impl LiveView
-  def handle_info({Form, {:saved, fund}}, socket) do
-    update_fund(socket, fund)
-  end
-
   def handle_info({SingleFundTransactionForm, {:balance_updated, fund}}, socket) do
     update_fund(socket, fund)
   end

@@ -134,15 +134,4 @@ defmodule FreedomAccountWeb.FundLive.Index do
         {:noreply, put_flash(socket, :error, "Unable to delete fund: #{error}")}
     end
   end
-
-  @impl LiveView
-  def handle_info({Form, {:saved, fund}}, socket) do
-    case Funds.with_updated_balance(fund) do
-      {:ok, fund} ->
-        {:noreply, stream_insert(socket, :funds, fund)}
-
-      {:error, _error} ->
-        {:noreply, put_flash(socket, :error, "Unable to retrieve updated balance for #{fund}")}
-    end
-  end
 end

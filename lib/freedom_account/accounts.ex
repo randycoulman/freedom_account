@@ -8,9 +8,6 @@ defmodule FreedomAccount.Accounts do
   alias FreedomAccount.PubSub
   alias FreedomAccount.Repo
 
-  @spec pubsub_topic :: PubSub.topic()
-  def pubsub_topic, do: ProcessTree.get(:account_topic, default: "account")
-
   @spec only_account :: Account.t()
   def only_account do
     case Repo.fetch_one(Account) do
@@ -32,6 +29,9 @@ defmodule FreedomAccount.Accounts do
     |> Account.changeset(attrs)
     |> Repo.insert()
   end
+
+  @spec pubsub_topic :: PubSub.topic()
+  def pubsub_topic, do: ProcessTree.get(:account_topic, default: "account")
 
   @doc """
   Updates a account.
