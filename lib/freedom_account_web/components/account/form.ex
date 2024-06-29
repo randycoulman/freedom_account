@@ -7,7 +7,6 @@ defmodule FreedomAccountWeb.Account.Form do
 
   alias Ecto.Changeset
   alias FreedomAccount.Accounts
-  alias FreedomAccount.Funds
   alias FreedomAccountWeb.Params
   alias Phoenix.LiveComponent
 
@@ -15,12 +14,10 @@ defmodule FreedomAccountWeb.Account.Form do
   def update(assigns, socket) do
     %{account: account} = assigns
     changeset = Accounts.change_account(account)
-    funds = Funds.list_funds(account)
 
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:funds, funds)
      |> assign_form(changeset)}
   end
 

@@ -10,14 +10,12 @@ defmodule FreedomAccountWeb.BudgetForm do
 
   @impl LiveComponent
   def update(assigns, socket) do
-    %{account: account} = assigns
-    funds = Funds.list_funds(account)
+    %{funds: funds} = assigns
     changeset = Funds.change_budget(funds)
 
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:funds, funds)
      |> assign_form(changeset)}
   end
 

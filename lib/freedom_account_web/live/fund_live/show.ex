@@ -5,7 +5,6 @@ defmodule FreedomAccountWeb.FundLive.Show do
   import FreedomAccountWeb.FundList, only: [fund_list: 1]
 
   alias FreedomAccount.Funds
-  alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Transactions
   alias FreedomAccountWeb.FundLive.Form
   alias FreedomAccountWeb.SingleFundTransactionForm
@@ -69,13 +68,14 @@ defmodule FreedomAccountWeb.FundLive.Show do
       action={@live_action}
       budget_path={~p"/funds/#{@fund}/budget"}
       edit_path={~p"/funds/#{@fund}/account"}
+      funds={@funds}
       id={@account.id}
       module={FreedomAccountWeb.Account.Show}
       return_path={~p"/funds/#{@fund}"}
     />
     <div class="flex h-screen">
       <aside class="hidden md:flex flex-col w-56 bg-slate-100">
-        <.fund_list funds={@streams.funds} />
+        <.fund_list funds={@funds} />
       </aside>
       <main class="flex flex-col flex-1 overflow-y-auto pl-2">
         <.header>
@@ -141,20 +141,5 @@ defmodule FreedomAccountWeb.FundLive.Show do
       />
     </.modal>
     """
-  end
-
-  @impl LiveView
-  def handle_info({SingleFundTransactionForm, {:balance_updated, fund}}, socket) do
-    update_fund(socket, fund)
-  end
-
-  defp update_fund(socket, %Fund{} = fund) do
-    case Funds.with_updated_balance(fund) do
-      {:ok, fund} ->
-        {:noreply, stream_insert(socket, :funds, fund)}
-
-      {:error, _error} ->
-        {:noreply, put_flash(socket, :error, "Unable to retrieve updated balance for #{fund}")}
-    end
   end
 end

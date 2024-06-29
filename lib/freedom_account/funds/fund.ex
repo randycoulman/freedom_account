@@ -82,6 +82,17 @@ defmodule FreedomAccount.Funds.Fund do
       order_by: f.name
   end
 
+  @spec where_ids([id()] | nil) :: Queryable.t()
+  @spec where_ids(Queryable.t(), [id()] | nil) :: Queryable.t()
+  def where_ids(query \\ base_query(), ids \\ nil)
+
+  def where_ids(query, nil), do: query
+
+  def where_ids(query, ids) do
+    from f in query,
+      where: f.id in ^ids
+  end
+
   @spec with_balance :: Queryable.t()
   @spec with_balance(Queryable.t()) :: Queryable.t()
   def with_balance(query \\ base_query()) do

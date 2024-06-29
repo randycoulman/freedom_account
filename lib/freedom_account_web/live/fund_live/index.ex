@@ -59,6 +59,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
       action={@live_action}
       budget_path={~p"/funds/budget"}
       edit_path={~p"/funds/account"}
+      funds={@funds}
       id={@account.id}
       module={FreedomAccountWeb.Account.Show}
       return_path={~p"/funds"}
@@ -76,16 +77,16 @@ defmodule FreedomAccountWeb.FundLive.Index do
 
     <.table
       id="funds"
-      row_click={fn {_id, fund} -> JS.navigate(~p"/funds/#{fund}") end}
-      row_id={fn {_id, fund} -> "funds-#{fund.id}" end}
-      rows={@streams.funds}
+      row_click={fn fund -> JS.navigate(~p"/funds/#{fund}") end}
+      row_id={fn fund -> "funds-#{fund.id}" end}
+      rows={@funds}
     >
-      <:col :let={{_id, fund}} label="Icon"><%= fund.icon %></:col>
-      <:col :let={{_id, fund}} label="Name"><%= fund.name %></:col>
-      <:col :let={{_id, fund}} label="Budget"><%= fund.budget %></:col>
-      <:col :let={{_id, fund}} label="Times/Year"><%= fund.times_per_year %></:col>
-      <:col :let={{_id, fund}} label="Current Balance"><%= fund.current_balance %></:col>
-      <:action :let={{_id, fund}}>
+      <:col :let={fund} label="Icon"><%= fund.icon %></:col>
+      <:col :let={fund} label="Name"><%= fund.name %></:col>
+      <:col :let={fund} label="Budget"><%= fund.budget %></:col>
+      <:col :let={fund} label="Times/Year"><%= fund.times_per_year %></:col>
+      <:col :let={fund} label="Current Balance"><%= fund.current_balance %></:col>
+      <:action :let={fund}>
         <div class="sr-only">
           <.link navigate={~p"/funds/#{fund}"}>Show</.link>
         </div>
@@ -93,9 +94,9 @@ defmodule FreedomAccountWeb.FundLive.Index do
           <.icon name="hero-pencil-square-mini" /> Edit
         </.link>
       </:action>
-      <:action :let={{id, fund}}>
+      <:action :let={fund}>
         <.link
-          phx-click={JS.push("delete", value: %{id: fund.id}) |> hide("##{id}")}
+          phx-click={JS.push("delete", value: %{id: fund.id}) |> hide("##{fund.id}")}
           data-confirm="Are you sure?"
         >
           <.icon name="hero-trash-mini" /> Delete
@@ -128,7 +129,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
 
     with {:ok, fund} <- Funds.fetch_fund(account, id),
          :ok <- Funds.delete_fund(fund) do
-      {:noreply, stream_delete(socket, :funds, fund)}
+      {:noreply, socket}
     else
       {:error, error} ->
         {:noreply, put_flash(socket, :error, "Unable to delete fund: #{error}")}

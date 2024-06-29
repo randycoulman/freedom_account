@@ -85,12 +85,10 @@ defmodule FreedomAccountWeb.SingleFundTransactionForm do
   end
 
   defp save_transaction(socket, :new_deposit, params) do
-    %{fund: fund, patch: patch} = socket.assigns
+    %{patch: patch} = socket.assigns
 
     case Transactions.deposit(params) do
       {:ok, _transaction} ->
-        notify_parent({:balance_updated, fund})
-
         {:noreply,
          socket
          |> put_flash(:info, "Deposit successful")
@@ -102,12 +100,10 @@ defmodule FreedomAccountWeb.SingleFundTransactionForm do
   end
 
   defp save_transaction(socket, :new_withdrawal, params) do
-    %{fund: fund, patch: patch} = socket.assigns
+    %{patch: patch} = socket.assigns
 
     case Transactions.withdraw(params) do
       {:ok, _transaction} ->
-        notify_parent({:balance_updated, fund})
-
         {:noreply,
          socket
          |> put_flash(:info, "Withdrawal successful")
@@ -120,9 +116,5 @@ defmodule FreedomAccountWeb.SingleFundTransactionForm do
 
   defp assign_form(socket, %Changeset{} = changeset) do
     assign(socket, :form, to_form(changeset))
-  end
-
-  defp notify_parent(message) do
-    send(self(), {__MODULE__, message})
   end
 end

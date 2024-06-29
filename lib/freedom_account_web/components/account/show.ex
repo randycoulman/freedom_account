@@ -41,6 +41,7 @@ defmodule FreedomAccountWeb.Account.Show do
         <.live_component
           account={@account}
           action={@action}
+          funds={@funds}
           id={@account.id}
           module={Form}
           return_path={@return_path}
@@ -51,6 +52,7 @@ defmodule FreedomAccountWeb.Account.Show do
         <.live_component
           account={@account}
           action={@action}
+          funds={@funds}
           id={@account.id}
           module={BudgetForm}
           return_path={@return_path}

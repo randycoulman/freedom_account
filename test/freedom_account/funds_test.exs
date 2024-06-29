@@ -150,6 +150,15 @@ defmodule FreedomAccount.FundsTest do
         assert fund.current_balance == calculate_amount.(fund)
       end)
     end
+
+    test "filters by a list of ids when provided", %{account: account, funds: funds} do
+      [fund1, _fund2, fund3] = funds
+
+      result = Funds.list_funds_with_balances(account, [fund1.id, fund3.id])
+
+      fields = Map.keys(fund1) -- [:current_balance]
+      assert_lists_equal(result, [fund1, fund3], &assert_maps_equal(&1, &2, fields))
+    end
   end
 
   describe "updating the budget" do

@@ -112,11 +112,15 @@ defmodule FreedomAccount.Funds do
   @doc """
   Returns the list of funds for an account, including each fund's current
   balance.
+
+  If a list of ids is given, then only funds with those ids will be returned.
   """
   @spec list_funds_with_balances(Account.t()) :: [Fund.t()]
-  def list_funds_with_balances(account) do
+  @spec list_funds_with_balances(Account.t(), [Fund.id()] | nil) :: [Fund.t()]
+  def list_funds_with_balances(account, ids \\ nil) do
     Fund
     |> Fund.by_account(account)
+    |> Fund.where_ids(ids)
     |> Fund.order_by_name()
     |> Fund.with_balance()
     |> Repo.all()

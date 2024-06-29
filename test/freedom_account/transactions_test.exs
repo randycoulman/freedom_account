@@ -5,6 +5,7 @@ defmodule FreedomAccount.TransactionsTest do
 
   alias Ecto.Changeset
   alias FreedomAccount.Factory
+  alias FreedomAccount.PubSub
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.LineItem
   alias FreedomAccount.Transactions.Transaction
@@ -35,6 +36,16 @@ defmodule FreedomAccount.TransactionsTest do
       {:ok, transaction} = Transactions.deposit(valid_attrs)
       [line_item] = transaction.line_items
       assert line_item.fund_id == fund.id
+    end
+
+    test "publishes a transaction created event", %{fund: fund} do
+      valid_attrs = Factory.transaction_attrs(line_items: [Factory.line_item_attrs(fund)])
+
+      PubSub.subscribe(Transactions.pubsub_topic())
+
+      {:ok, transaction} = Transactions.deposit(valid_attrs)
+
+      assert_received({:transaction_created, ^transaction})
     end
 
     test "requires at least one line item" do
@@ -108,6 +119,16 @@ defmodule FreedomAccount.TransactionsTest do
       {:ok, transaction} = Transactions.withdraw(valid_attrs)
       [line_item] = transaction.line_items
       assert line_item.fund_id == fund.id
+    end
+
+    test "publishes a transaction created event", %{fund: fund} do
+      valid_attrs = Factory.transaction_attrs(line_items: [Factory.line_item_attrs(fund)])
+
+      PubSub.subscribe(Transactions.pubsub_topic())
+
+      {:ok, transaction} = Transactions.withdraw(valid_attrs)
+
+      assert_received({:transaction_created, ^transaction})
     end
 
     test "requires at least one line item" do

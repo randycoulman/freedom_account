@@ -4,6 +4,7 @@ defmodule FreedomAccount.Transactions do
   """
   alias Ecto.Changeset
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.PubSub
   alias FreedomAccount.Repo
   alias FreedomAccount.Transactions.LineItem
   alias FreedomAccount.Transactions.Transaction
@@ -18,6 +19,7 @@ defmodule FreedomAccount.Transactions do
     %Transaction{}
     |> Transaction.deposit_changeset(attrs)
     |> Repo.insert()
+    |> PubSub.broadcast(pubsub_topic(), :transaction_created)
   end
 
   @spec new_single_fund_transaction(Fund.t()) :: Transaction.partial()
@@ -28,11 +30,15 @@ defmodule FreedomAccount.Transactions do
     }
   end
 
+  @spec pubsub_topic :: PubSub.topic()
+  def pubsub_topic, do: ProcessTree.get(:transactions_topic, default: "transactions")
+
   @spec withdraw(Transaction.attrs()) :: {:ok, Transaction.t()} | {:error, Changeset.t()}
   def withdraw(attrs \\ %{}) do
     %Transaction{}
     |> Transaction.withdrawal_changeset(attrs)
     |> Repo.insert()
+    |> PubSub.broadcast(pubsub_topic(), :transaction_created)
     |> case do
       {:ok, transaction} ->
         {:ok, transaction}
