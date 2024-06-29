@@ -79,45 +79,14 @@ defmodule FreedomAccount.Funds do
   end
 
   @doc """
-  Looks up a single fund by id, including its current balance.
-
-  ## Examples
-
-      iex> fetch_fund_with_balance(account, 123)
-      {:ok, %Fund{}}
-
-      iex> fetch_fund_with_balance(account, 456)
-      {:error, :not_found}
-
-  """
-  @spec fetch_fund_with_balance(Account.t(), Fund.id()) :: {:ok, Fund.t()} | {:error, :not_found}
-  def fetch_fund_with_balance(%Account{} = account, id) do
-    Fund
-    |> Fund.by_account(account)
-    |> Fund.with_balance()
-    |> Repo.fetch(id)
-  end
-
-  @doc """
-  Returns the list of funds for an account.
-  """
-  @spec list_funds(Account.t()) :: [Fund.t()]
-  def list_funds(account) do
-    Fund
-    |> Fund.by_account(account)
-    |> Fund.order_by_name()
-    |> Repo.all()
-  end
-
-  @doc """
   Returns the list of funds for an account, including each fund's current
   balance.
 
   If a list of ids is given, then only funds with those ids will be returned.
   """
-  @spec list_funds_with_balances(Account.t()) :: [Fund.t()]
-  @spec list_funds_with_balances(Account.t(), [Fund.id()] | nil) :: [Fund.t()]
-  def list_funds_with_balances(account, ids \\ nil) do
+  @spec list_funds(Account.t()) :: [Fund.t()]
+  @spec list_funds(Account.t(), [Fund.id()] | nil) :: [Fund.t()]
+  def list_funds(account, ids \\ nil) do
     Fund
     |> Fund.by_account(account)
     |> Fund.where_ids(ids)

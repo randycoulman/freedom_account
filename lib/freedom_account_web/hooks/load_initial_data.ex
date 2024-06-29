@@ -26,7 +26,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
     end
 
     account = Accounts.only_account()
-    funds = Funds.list_funds_with_balances(account)
+    funds = Funds.list_funds(account)
 
     {:cont,
      socket
@@ -36,34 +36,40 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
   end
 
   defp handle_info({:account_updated, %Account{} = account}, socket) do
-    {:halt, assign(socket, :account, account)}
+    {:cont, assign(socket, :account, account)}
   end
 
   defp handle_info({:budget_updated, funds}, socket) do
-    {:halt, update(socket, :funds, &FundCache.update_all(&1, funds))}
+    {:cont, update_funds(socket, &FundCache.update_all(&1, funds))}
   end
 
   defp handle_info({:fund_created, %Fund{} = fund}, socket) do
     fund = %{fund | current_balance: Money.zero(:usd)}
 
-    {:halt, update(socket, :funds, &FundCache.add_fund(&1, fund))}
+    {:cont, update_funds(socket, &FundCache.add_fund(&1, fund))}
   end
 
   defp handle_info({:fund_deleted, %Fund{} = fund}, socket) do
-    {:halt, update(socket, :funds, &FundCache.delete_fund(&1, fund))}
+    {:cont, update_funds(socket, &FundCache.delete_fund(&1, fund))}
   end
 
   defp handle_info({:fund_updated, %Fund{} = fund}, socket) do
-    {:halt, update(socket, :funds, &FundCache.update_fund(&1, fund))}
+    {:cont, update_funds(socket, &FundCache.update_fund(&1, fund))}
   end
 
   defp handle_info({:transaction_created, %Transaction{} = transaction}, socket) do
     %{account: account} = socket.assigns
     ids = Enum.map(transaction.line_items, & &1.fund_id)
-    updated_funds = Funds.list_funds_with_balances(account, ids)
+    updated_funds = Funds.list_funds(account, ids)
 
-    {:halt, update(socket, :funds, &FundCache.update_all(&1, updated_funds))}
+    {:cont, update_funds(socket, &FundCache.update_all(&1, updated_funds))}
   end
 
   defp handle_info(_message, socket), do: {:cont, socket}
+
+  defp update_funds(socket, fun) do
+    socket = update(socket, :funds, fun)
+    send(self(), {:funds_updated, socket.assigns.funds})
+    socket
+  end
 end

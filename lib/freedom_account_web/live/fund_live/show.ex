@@ -4,7 +4,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
 
   import FreedomAccountWeb.FundList, only: [fund_list: 1]
 
-  alias FreedomAccount.Funds
+  alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Transactions
   alias FreedomAccountWeb.FundLive.Form
   alias FreedomAccountWeb.SingleFundTransactionForm
@@ -12,15 +12,16 @@ defmodule FreedomAccountWeb.FundLive.Show do
   alias Phoenix.LiveView
 
   @impl LiveView
-  def handle_params(%{"id" => id} = params, _url, socket) do
-    %{account: account, live_action: action} = socket.assigns
+  def handle_params(params, _url, socket) do
+    id = String.to_integer(params["id"])
+    %{live_action: action} = socket.assigns
 
-    case Funds.fetch_fund_with_balance(account, id) do
-      {:ok, fund} ->
+    case fetch_fund(socket, id) do
+      {:ok, %Fund{} = fund} ->
         {:noreply,
          socket
          |> assign(:fund, fund)
-         |> apply_action(action, params)}
+         |> apply_action(action)}
 
       {:error, :not_found} ->
         {:noreply,
@@ -30,31 +31,35 @@ defmodule FreedomAccountWeb.FundLive.Show do
     end
   end
 
-  defp apply_action(socket, :edit, _params) do
+  defp apply_action(socket, :edit) do
     assign(socket, :page_title, "Edit Fund")
   end
 
-  defp apply_action(socket, :edit_account, _params) do
+  defp apply_action(socket, :edit_account) do
     assign(socket, :page_title, "Edit Account Settings")
   end
 
-  defp apply_action(socket, :edit_budget, _params) do
+  defp apply_action(socket, :edit_budget) do
     assign(socket, :page_title, "Update Budget")
   end
 
-  defp apply_action(socket, :new_deposit, _params) do
+  defp apply_action(socket, :new_deposit) do
+    %{fund: fund} = socket.assigns
+
     socket
     |> assign(:page_title, "Deposit")
-    |> assign(:transaction, Transactions.new_single_fund_transaction(socket.assigns.fund))
+    |> assign(:transaction, Transactions.new_single_fund_transaction(fund))
   end
 
-  defp apply_action(socket, :new_withdrawal, _params) do
+  defp apply_action(socket, :new_withdrawal) do
+    %{fund: fund} = socket.assigns
+
     socket
     |> assign(:page_title, "Withdraw")
-    |> assign(:transaction, Transactions.new_single_fund_transaction(socket.assigns.fund))
+    |> assign(:transaction, Transactions.new_single_fund_transaction(fund))
   end
 
-  defp apply_action(socket, _action, _params) do
+  defp apply_action(socket, _action) do
     %{fund: fund} = socket.assigns
 
     assign(socket, :page_title, Safe.to_iodata(fund))
@@ -141,5 +146,31 @@ defmodule FreedomAccountWeb.FundLive.Show do
       />
     </.modal>
     """
+  end
+
+  @impl LiveView
+  def handle_info({:funds_updated, _funds}, socket) do
+    %{fund: fund, live_action: action} = socket.assigns
+
+    case fetch_fund(socket, fund.id) do
+      {:ok, %Fund{} = fund} ->
+        {:noreply,
+         socket
+         |> assign(:fund, fund)
+         |> apply_action(action)}
+
+      {:error, :not_found} ->
+        {:noreply, socket}
+    end
+  end
+
+  def handle_info(_message, socket), do: {:noreply, socket}
+
+  defp fetch_fund(socket, id) do
+    %{funds: funds} = socket.assigns
+
+    with %Fund{} = fund <- Enum.find(funds, {:error, :not_found}, &(&1.id == id)) do
+      {:ok, fund}
+    end
   end
 end

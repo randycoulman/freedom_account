@@ -19,10 +19,10 @@ defmodule FreedomAccountWeb.FundLive.Index do
     |> assign(:fund, %Fund{})
   end
 
-  defp apply_action(socket, :edit, %{"id" => id} = _params) do
-    %{account: account} = socket.assigns
+  defp apply_action(socket, :edit, params) do
+    id = String.to_integer(params["id"])
 
-    case Funds.fetch_fund(account, id) do
+    case fetch_fund(socket, id) do
       {:ok, %Fund{} = fund} ->
         socket
         |> assign(page_title: "Edit Fund")
@@ -125,14 +125,20 @@ defmodule FreedomAccountWeb.FundLive.Index do
 
   @impl LiveView
   def handle_event("delete", %{"id" => id}, socket) do
-    %{account: account} = socket.assigns
-
-    with {:ok, fund} <- Funds.fetch_fund(account, id),
+    with {:ok, fund} <- fetch_fund(socket, id),
          :ok <- Funds.delete_fund(fund) do
       {:noreply, socket}
     else
       {:error, error} ->
         {:noreply, put_flash(socket, :error, "Unable to delete fund: #{error}")}
+    end
+  end
+
+  defp fetch_fund(socket, id) do
+    %{funds: funds} = socket.assigns
+
+    with %Fund{} = fund <- Enum.find(funds, {:error, :not_found}, &(&1.id == id)) do
+      {:ok, fund}
     end
   end
 end

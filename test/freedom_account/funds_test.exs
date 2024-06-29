@@ -92,27 +92,6 @@ defmodule FreedomAccount.FundsTest do
       assert {:ok, fund} == Funds.fetch_fund(account, fund.id)
     end
 
-    test "when fund exists for the provided account, include current balance when requested", %{
-      account: account
-    } do
-      fund = Factory.fund(account)
-
-      Enum.each(
-        [~M[9.95]usd, ~M[5.05]usd, ~M[27.00]usd],
-        &Factory.deposit(fund, amount: &1)
-      )
-
-      {:ok, fund} = Funds.fetch_fund_with_balance(account, fund.id)
-      assert fund.current_balance == ~M[42.00]usd
-    end
-
-    test "returns zero balance when fund has no line items", %{account: account} do
-      fund = Factory.fund(account)
-
-      {:ok, fund} = Funds.fetch_fund_with_balance(account, fund.id)
-      assert fund.current_balance == Money.zero(:usd)
-    end
-
     test "when fund exists, but for a different account, returns an error", %{account: account} do
       other_account = Factory.account()
       fund = Factory.fund(other_account)
@@ -127,17 +106,17 @@ defmodule FreedomAccount.FundsTest do
 
   describe "listing funds" do
     setup %{account: account} do
-      funds = for _i <- 1..3, do: Factory.fund(account)
+      funds = for _i <- 1..3, do: Factory.fund(account, current_balance: Money.zero(:usd))
 
       %{funds: funds}
     end
 
-    test "returns all funds", %{account: account, funds: funds} do
+    test "returns all funds sorted by name", %{account: account, funds: funds} do
       sorted_funds = Enum.sort_by(funds, & &1.name)
       assert Funds.list_funds(account) == sorted_funds
     end
 
-    test "includes current balance of each fund when requested", %{account: account, funds: funds} do
+    test "includes current balance of each fund", %{account: account, funds: funds} do
       calculate_amount = &Money.mult!(~M[10.00]usd, &1.id)
 
       Enum.each(funds, fn fund ->
@@ -145,7 +124,7 @@ defmodule FreedomAccount.FundsTest do
       end)
 
       account
-      |> Funds.list_funds_with_balances()
+      |> Funds.list_funds()
       |> Enum.each(fn fund ->
         assert fund.current_balance == calculate_amount.(fund)
       end)
@@ -154,7 +133,7 @@ defmodule FreedomAccount.FundsTest do
     test "filters by a list of ids when provided", %{account: account, funds: funds} do
       [fund1, _fund2, fund3] = funds
 
-      result = Funds.list_funds_with_balances(account, [fund1.id, fund3.id])
+      result = Funds.list_funds(account, [fund1.id, fund3.id])
 
       fields = Map.keys(fund1) -- [:current_balance]
       assert_lists_equal(result, [fund1, fund3], &assert_maps_equal(&1, &2, fields))
@@ -188,7 +167,10 @@ defmodule FreedomAccount.FundsTest do
     end
 
     test "with invalid data returns an error changeset", %{account: account} do
-      funds = [Factory.fund(account), Factory.fund(account)]
+      funds = [
+        Factory.fund(account, current_balance: Money.zero(:usd)),
+        Factory.fund(account, current_balance: Money.zero(:usd))
+      ]
 
       invalid_attrs =
         funds
