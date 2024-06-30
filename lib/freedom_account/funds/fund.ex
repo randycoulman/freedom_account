@@ -82,6 +82,14 @@ defmodule FreedomAccount.Funds.Fund do
       order_by: f.name
   end
 
+  @spec regular_deposit_amount(t(), Account.deposit_count()) :: Money.t()
+  def regular_deposit_amount(%__MODULE__{} = fund, deposits_per_year) do
+    fund.budget
+    |> Money.mult!(fund.times_per_year)
+    |> Money.div!(deposits_per_year)
+    |> Money.round()
+  end
+
   @spec where_ids([id()] | nil) :: Queryable.t()
   @spec where_ids(Queryable.t(), [id()] | nil) :: Queryable.t()
   def where_ids(query \\ base_query(), ids \\ nil)

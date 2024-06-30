@@ -59,6 +59,10 @@ defmodule FreedomAccountWeb.FundLive.Show do
     |> assign(:transaction, Transactions.new_single_fund_transaction(fund))
   end
 
+  defp apply_action(socket, :regular_deposit) do
+    assign(socket, :page_title, "Regular Deposit")
+  end
+
   defp apply_action(socket, _action) do
     %{fund: fund} = socket.assigns
 
@@ -76,6 +80,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
       funds={@funds}
       id={@account.id}
       module={FreedomAccountWeb.Account.Show}
+      regular_deposit_path={~p"/funds/#{@fund}/regular_deposit"}
       return_path={~p"/funds/#{@fund}"}
     />
     <div class="flex h-screen">
@@ -100,7 +105,11 @@ defmodule FreedomAccountWeb.FundLive.Show do
                 <.icon name="hero-pencil-square-mini" /> Edit Details
               </.button>
             </.link>
-            <.link patch={~p"/funds/#{@fund}/deposits/new"} phx-click={JS.push_focus()}>
+            <.link
+              id="single-fund-deposit"
+              patch={~p"/funds/#{@fund}/deposits/new"}
+              phx-click={JS.push_focus()}
+            >
               <.button>
                 <.icon name="hero-plus-circle-mini" /> Deposit
               </.button>
@@ -124,7 +133,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
         fund={@fund}
         id={@fund.id}
         module={Form}
-        patch={~p"/funds/#{@fund}"}
+        return_path={~p"/funds/#{@fund}"}
         title={@page_title}
       />
     </.modal>
@@ -140,7 +149,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
         fund={@fund}
         id={@transaction.id || :new}
         module={SingleFundTransactionForm}
-        patch={~p"/funds/#{@fund}"}
+        return_path={~p"/funds/#{@fund}"}
         title={@page_title}
         transaction={@transaction}
       />

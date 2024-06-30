@@ -140,6 +140,28 @@ defmodule FreedomAccount.FundsTest do
     end
   end
 
+  describe "regular deposit amount" do
+    for {budget, times, periods, expected} <- [
+          {~M[1200]usd, 1.0, 24, ~M[50]usd},
+          {~M[1200]usd, 2.0, 24, ~M[100]usd},
+          {~M[5200]usd, 0.5, 26, ~M[100]usd},
+          {~M[5200]usd, 1.0, 24, ~M[216.67]usd},
+          {~M[1200]usd, 1.0, 26, ~M[46.15]usd}
+        ] do
+      test "calculates amount for #{budget} #{times}/year given #{periods} pay periods", %{account: account} do
+        budget = unquote(Macro.escape(budget))
+        times = unquote(times)
+        periods = unquote(periods)
+        expected = unquote(Macro.escape(expected))
+        fund = Factory.fund(account, budget: budget, times_per_year: times)
+
+        actual = Funds.regular_deposit_amount(fund, periods)
+
+        assert Money.equal?(expected, actual)
+      end
+    end
+  end
+
   describe "updating the budget" do
     test "saves budget values for all funds", %{account: account} do
       funds = for _n <- 1..3, do: Factory.fund(account)

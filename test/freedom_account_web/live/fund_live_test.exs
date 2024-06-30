@@ -153,7 +153,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
       conn
       |> visit(~p"/funds/#{fund}")
-      |> click_link("Deposit")
+      |> click_link("#single-fund-deposit", "Deposit")
       |> assert_has(page_title(), text: "Deposit")
       |> assert_has(heading(), text: "Deposit")
       |> assert_has(field_value("#transaction_date", today))

@@ -3,6 +3,8 @@ defmodule FreedomAccount.Transactions do
   Context for working with transactions in a Freedom Account.
   """
   alias Ecto.Changeset
+  alias FreedomAccount.Accounts.Account
+  alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.PubSub
   alias FreedomAccount.Repo
@@ -28,6 +30,28 @@ defmodule FreedomAccount.Transactions do
       date: Timex.today(:local),
       line_items: [%LineItem{fund_id: fund.id}]
     }
+  end
+
+  @spec regular_deposit(Date.t(), [Fund.t()], Account.deposit_count()) ::
+          {:ok, Transaction.t()} | {:error, :deposit_failed}
+  def regular_deposit(%Date{} = date, funds, deposits_per_year) do
+    line_items =
+      funds
+      |> Enum.map(
+        &%LineItem{
+          amount: Funds.regular_deposit_amount(&1, deposits_per_year),
+          fund_id: &1.id
+        }
+      )
+      |> Enum.reject(&Money.zero?(&1.amount))
+
+    %Transaction{date: date, line_items: line_items, memo: "Regular deposit"}
+    |> Repo.insert()
+    |> PubSub.broadcast(pubsub_topic(), :transaction_created)
+    |> case do
+      {:ok, %Transaction{} = transaction} -> {:ok, transaction}
+      {:error, _changeset} -> {:error, :deposit_failed}
+    end
   end
 
   @spec pubsub_topic :: PubSub.topic()

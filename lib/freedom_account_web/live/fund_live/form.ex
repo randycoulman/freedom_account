@@ -68,14 +68,14 @@ defmodule FreedomAccountWeb.FundLive.Form do
   end
 
   defp save_fund(socket, :edit, fund_params) do
-    %{fund: fund, patch: patch} = socket.assigns
+    %{fund: fund, return_path: return_path} = socket.assigns
 
     case Funds.update_fund(fund, fund_params) do
       {:ok, _fund} ->
         {:noreply,
          socket
          |> put_flash(:info, "Fund updated successfully")
-         |> push_patch(to: patch)}
+         |> push_patch(to: return_path)}
 
       {:error, %Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
@@ -83,14 +83,14 @@ defmodule FreedomAccountWeb.FundLive.Form do
   end
 
   defp save_fund(socket, :new, fund_params) do
-    %{account: account, patch: patch} = socket.assigns
+    %{account: account, return_path: return_path} = socket.assigns
 
     case Funds.create_fund(account, fund_params) do
       {:ok, _fund} ->
         {:noreply,
          socket
          |> put_flash(:info, "Fund created successfully")
-         |> push_patch(to: patch)}
+         |> push_patch(to: return_path)}
 
       {:error, %Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}

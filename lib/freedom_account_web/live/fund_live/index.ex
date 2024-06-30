@@ -15,7 +15,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(page_title: "Add Fund")
+    |> assign(:page_title, "Add Fund")
     |> assign(:fund, %Fund{})
   end
 
@@ -25,7 +25,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
     case fetch_fund(socket, id) do
       {:ok, %Fund{} = fund} ->
         socket
-        |> assign(page_title: "Edit Fund")
+        |> assign(:page_title, "Edit Fund")
         |> assign(:fund, fund)
 
       {:error, :not_found} ->
@@ -41,13 +41,19 @@ defmodule FreedomAccountWeb.FundLive.Index do
 
   defp apply_action(socket, :edit_budget, _params) do
     socket
-    |> assign(page_title: "Update Budget")
+    |> assign(:page_title, "Update Budget")
     |> assign(fund: nil)
+  end
+
+  defp apply_action(socket, :regular_deposit, _params) do
+    socket
+    |> assign(:page_title, "Regular Deposit")
+    |> assign(:fund, nil)
   end
 
   defp apply_action(socket, _action, _params) do
     socket
-    |> assign(page_title: "Funds")
+    |> assign(:page_title, "Funds")
     |> assign(:fund, nil)
   end
 
@@ -62,6 +68,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
       funds={@funds}
       id={@account.id}
       module={FreedomAccountWeb.Account.Show}
+      regular_deposit_path={~p"/funds/regular_deposit"}
       return_path={~p"/funds"}
     />
     <.header>
@@ -116,7 +123,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
         fund={@fund}
         id={@fund.id || :new}
         module={Form}
-        patch={~p"/funds"}
+        return_path={~p"/funds"}
         title={@page_title}
       />
     </.modal>
@@ -133,6 +140,9 @@ defmodule FreedomAccountWeb.FundLive.Index do
         {:noreply, put_flash(socket, :error, "Unable to delete fund: #{error}")}
     end
   end
+
+  @impl LiveView
+  def handle_info(_message, socket), do: {:noreply, socket}
 
   defp fetch_fund(socket, id) do
     %{funds: funds} = socket.assigns

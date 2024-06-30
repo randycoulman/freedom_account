@@ -85,14 +85,14 @@ defmodule FreedomAccountWeb.SingleFundTransactionForm do
   end
 
   defp save_transaction(socket, :new_deposit, params) do
-    %{patch: patch} = socket.assigns
+    %{return_path: return_path} = socket.assigns
 
     case Transactions.deposit(params) do
       {:ok, _transaction} ->
         {:noreply,
          socket
          |> put_flash(:info, "Deposit successful")
-         |> push_patch(to: patch)}
+         |> push_patch(to: return_path)}
 
       {:error, %Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
@@ -100,14 +100,14 @@ defmodule FreedomAccountWeb.SingleFundTransactionForm do
   end
 
   defp save_transaction(socket, :new_withdrawal, params) do
-    %{patch: patch} = socket.assigns
+    %{return_path: return_path} = socket.assigns
 
     case Transactions.withdraw(params) do
       {:ok, _transaction} ->
         {:noreply,
          socket
          |> put_flash(:info, "Withdrawal successful")
-         |> push_patch(to: patch)}
+         |> push_patch(to: return_path)}
 
       {:error, %Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
