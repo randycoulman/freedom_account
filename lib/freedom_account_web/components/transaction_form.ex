@@ -22,7 +22,11 @@ defmodule FreedomAccountWeb.TransactionForm do
   end
 
   defp apply_action(socket, :deposit) do
+    %{funds: [fund]} = socket.assigns
+    changeset = Transactions.new_deposit(fund)
+
     socket
+    |> assign_form(changeset)
     |> assign(:heading, "Deposit")
     |> assign(:save, "Make Deposit")
   end

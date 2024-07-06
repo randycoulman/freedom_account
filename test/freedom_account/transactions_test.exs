@@ -79,6 +79,25 @@ defmodule FreedomAccount.TransactionsTest do
     end
   end
 
+  describe "creating a new deposit changeset" do
+    test "defaults the date to today", %{fund: fund} do
+      today = Timex.today(:local)
+
+      %Changeset{} = changeset = Transactions.new_deposit(fund)
+
+      assert Changeset.get_field(changeset, :date) == today
+    end
+
+    test "includes a single line item for the given fund", %{fund: fund} do
+      fund_id = fund.id
+
+      %Changeset{} = changeset = Transactions.new_deposit(fund)
+      line_items = Changeset.get_assoc(changeset, :line_items, :struct)
+
+      assert [%LineItem{fund_id: ^fund_id}] = line_items
+    end
+  end
+
   describe "creating a regular withdrawal changeset" do
     setup :create_funds
 
@@ -95,12 +114,10 @@ defmodule FreedomAccount.TransactionsTest do
       %Changeset{} = changeset = Transactions.new_regular_withdrawal(funds)
       line_items = Changeset.get_assoc(changeset, :line_items, :struct)
 
-      zero = Money.zero(:usd)
-
       assert [
-               %LineItem{amount: ^zero, fund_id: ^fund_id1},
-               %LineItem{amount: ^zero, fund_id: ^fund_id2},
-               %LineItem{amount: ^zero, fund_id: ^fund_id3}
+               %LineItem{fund_id: ^fund_id1},
+               %LineItem{fund_id: ^fund_id2},
+               %LineItem{fund_id: ^fund_id3}
              ] = line_items
     end
   end

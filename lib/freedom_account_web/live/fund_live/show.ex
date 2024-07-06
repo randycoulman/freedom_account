@@ -6,6 +6,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
 
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Transactions
+  alias FreedomAccount.Transactions.Transaction
   alias FreedomAccountWeb.FundLive.Form
   alias FreedomAccountWeb.TransactionForm
   alias Phoenix.HTML.Safe
@@ -44,11 +45,9 @@ defmodule FreedomAccountWeb.FundLive.Show do
   end
 
   defp apply_action(socket, :deposit) do
-    %{fund: fund} = socket.assigns
-
     socket
     |> assign(:page_title, "Deposit")
-    |> assign(:transaction, Transactions.new_single_fund_transaction(fund))
+    |> assign(:transaction, %Transaction{})
   end
 
   defp apply_action(socket, :regular_deposit) do

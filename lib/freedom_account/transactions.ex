@@ -24,9 +24,18 @@ defmodule FreedomAccount.Transactions do
     |> PubSub.broadcast(pubsub_topic(), :transaction_created)
   end
 
+  @spec new_deposit(Fund.t()) :: Changeset.t()
+  def new_deposit(fund) do
+    line_items = [%LineItem{fund_id: fund.id}]
+
+    %Transaction{}
+    |> change_transaction(%{date: Timex.today(:local)})
+    |> Changeset.put_assoc(:line_items, line_items)
+  end
+
   @spec new_regular_withdrawal([Fund.t()]) :: Changeset.t()
   def new_regular_withdrawal(funds) do
-    line_items = Enum.map(funds, &%LineItem{amount: Money.zero(:usd), fund_id: &1.id})
+    line_items = Enum.map(funds, &%LineItem{fund_id: &1.id})
 
     %Transaction{}
     |> change_transaction(%{date: Timex.today(:local)})
