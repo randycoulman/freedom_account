@@ -43,19 +43,11 @@ defmodule FreedomAccountWeb.FundLive.Show do
     assign(socket, :page_title, "Update Budget")
   end
 
-  defp apply_action(socket, :new_deposit) do
+  defp apply_action(socket, :deposit) do
     %{fund: fund} = socket.assigns
 
     socket
     |> assign(:page_title, "Deposit")
-    |> assign(:transaction, Transactions.new_single_fund_transaction(fund))
-  end
-
-  defp apply_action(socket, :new_withdrawal) do
-    %{fund: fund} = socket.assigns
-
-    socket
-    |> assign(:page_title, "Withdraw")
     |> assign(:transaction, Transactions.new_single_fund_transaction(fund))
   end
 
@@ -65,6 +57,14 @@ defmodule FreedomAccountWeb.FundLive.Show do
 
   defp apply_action(socket, :regular_withdrawal) do
     assign(socket, :page_title, "Regular Withdrawal")
+  end
+
+  defp apply_action(socket, :withdrawal) do
+    %{fund: fund} = socket.assigns
+
+    socket
+    |> assign(:page_title, "Withdraw")
+    |> assign(:transaction, Transactions.new_single_fund_transaction(fund))
   end
 
   defp apply_action(socket, _action) do
@@ -148,7 +148,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
     </.modal>
 
     <.modal
-      :if={@live_action in [:new_deposit, :new_withdrawal]}
+      :if={@live_action in [:deposit, :withdrawal]}
       id="transaction-modal"
       show
       on_cancel={JS.patch(~p"/funds/#{@fund}")}

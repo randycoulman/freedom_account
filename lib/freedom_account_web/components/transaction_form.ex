@@ -21,16 +21,10 @@ defmodule FreedomAccountWeb.TransactionForm do
      |> apply_action(assigns.action)}
   end
 
-  defp apply_action(socket, :new_deposit) do
+  defp apply_action(socket, :deposit) do
     socket
     |> assign(:heading, "Deposit")
     |> assign(:save, "Make Deposit")
-  end
-
-  defp apply_action(socket, :new_withdrawal) do
-    socket
-    |> assign(:heading, "Withdraw")
-    |> assign(:save, "Make Withdrawal")
   end
 
   defp apply_action(socket, :regular_withdrawal) do
@@ -40,6 +34,12 @@ defmodule FreedomAccountWeb.TransactionForm do
     socket
     |> assign_form(changeset)
     |> assign(:heading, "Regular Withdrawal")
+    |> assign(:save, "Make Withdrawal")
+  end
+
+  defp apply_action(socket, :withdrawal) do
+    socket
+    |> assign(:heading, "Withdraw")
     |> assign(:save, "Make Withdrawal")
   end
 
@@ -99,7 +99,7 @@ defmodule FreedomAccountWeb.TransactionForm do
     save_transaction(socket, action, Params.atomize_keys(transaction_params))
   end
 
-  defp save_transaction(socket, :new_deposit, params) do
+  defp save_transaction(socket, :deposit, params) do
     %{return_path: return_path} = socket.assigns
 
     case Transactions.deposit(params) do
@@ -114,7 +114,7 @@ defmodule FreedomAccountWeb.TransactionForm do
     end
   end
 
-  defp save_transaction(socket, action, params) when action in [:new_withdrawal, :regular_withdrawal] do
+  defp save_transaction(socket, action, params) when action in [:regular_withdrawal, :withdrawal] do
     %{return_path: return_path} = socket.assigns
 
     case Transactions.withdraw(params) do
