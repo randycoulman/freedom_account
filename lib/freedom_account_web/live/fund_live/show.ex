@@ -7,7 +7,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Transactions
   alias FreedomAccountWeb.FundLive.Form
-  alias FreedomAccountWeb.SingleFundTransactionForm
+  alias FreedomAccountWeb.TransactionForm
   alias Phoenix.HTML.Safe
   alias Phoenix.LiveView
 
@@ -157,7 +157,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
         action={@live_action}
         funds={[@fund]}
         id={@transaction.id || :new}
-        module={SingleFundTransactionForm}
+        module={TransactionForm}
         return_path={~p"/funds/#{@fund}"}
         title={@page_title}
         transaction={@transaction}

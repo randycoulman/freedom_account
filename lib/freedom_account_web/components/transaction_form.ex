@@ -1,4 +1,4 @@
-defmodule FreedomAccountWeb.SingleFundTransactionForm do
+defmodule FreedomAccountWeb.TransactionForm do
   @moduledoc """
   For making a transaction for a single fund.
   """

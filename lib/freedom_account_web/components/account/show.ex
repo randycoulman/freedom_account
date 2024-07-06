@@ -7,7 +7,7 @@ defmodule FreedomAccountWeb.Account.Show do
   alias FreedomAccountWeb.Account.Form
   alias FreedomAccountWeb.BudgetForm
   alias FreedomAccountWeb.RegularDepositForm
-  alias FreedomAccountWeb.SingleFundTransactionForm
+  alias FreedomAccountWeb.TransactionForm
   alias Phoenix.LiveComponent
 
   @impl LiveComponent
@@ -107,7 +107,7 @@ defmodule FreedomAccountWeb.Account.Show do
           action={@action}
           funds={@funds}
           id={@transaction.id || :new}
-          module={SingleFundTransactionForm}
+          module={TransactionForm}
           return_path={@return_path}
           transaction={@transaction}
         />
