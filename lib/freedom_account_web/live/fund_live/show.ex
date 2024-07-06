@@ -63,6 +63,10 @@ defmodule FreedomAccountWeb.FundLive.Show do
     assign(socket, :page_title, "Regular Deposit")
   end
 
+  defp apply_action(socket, :regular_withdrawal) do
+    assign(socket, :page_title, "Regular Withdrawal")
+  end
+
   defp apply_action(socket, _action) do
     %{fund: fund} = socket.assigns
 
@@ -81,6 +85,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
       id={@account.id}
       module={FreedomAccountWeb.Account.Show}
       regular_deposit_path={~p"/funds/#{@fund}/regular_deposit"}
+      regular_withdrawal_path={~p"/funds/#{@fund}/regular_withdrawal"}
       return_path={~p"/funds/#{@fund}"}
     />
     <div class="flex h-screen">
@@ -114,7 +119,11 @@ defmodule FreedomAccountWeb.FundLive.Show do
                 <.icon name="hero-plus-circle-mini" /> Deposit
               </.button>
             </.link>
-            <.link patch={~p"/funds/#{@fund}/withdrawals/new"} phx-click={JS.push_focus()}>
+            <.link
+              id="single-fund-withdrawal"
+              patch={~p"/funds/#{@fund}/withdrawals/new"}
+              phx-click={JS.push_focus()}
+            >
               <.button>
                 <.icon name="hero-minus-circle-mini" /> Withdraw
               </.button>
@@ -146,7 +155,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
     >
       <.live_component
         action={@live_action}
-        fund={@fund}
+        funds={[@fund]}
         id={@transaction.id || :new}
         module={SingleFundTransactionForm}
         return_path={~p"/funds/#{@fund}"}

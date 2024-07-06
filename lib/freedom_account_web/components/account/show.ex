@@ -3,15 +3,26 @@ defmodule FreedomAccountWeb.Account.Show do
 
   use FreedomAccountWeb, :live_component
 
+  alias FreedomAccount.Transactions.Transaction
   alias FreedomAccountWeb.Account.Form
   alias FreedomAccountWeb.BudgetForm
   alias FreedomAccountWeb.RegularDepositForm
+  alias FreedomAccountWeb.SingleFundTransactionForm
   alias Phoenix.LiveComponent
 
   @impl LiveComponent
   def update(assigns, socket) do
-    {:ok, assign(socket, assigns)}
+    {:ok,
+     socket
+     |> assign(assigns)
+     |> apply_action(assigns.action)}
   end
+
+  defp apply_action(socket, :regular_withdrawal) do
+    assign(socket, :transaction, %Transaction{})
+  end
+
+  defp apply_action(socket, _action), do: socket
 
   @impl LiveComponent
   def render(assigns) do
@@ -23,6 +34,11 @@ defmodule FreedomAccountWeb.Account.Show do
           <.link patch={@regular_deposit_path} phx-click={JS.push_focus()}>
             <.button>
               <.icon name="hero-folder-plus-mini" /> Regular Deposit
+            </.button>
+          </.link>
+          <.link patch={@regular_withdrawal_path} phx-click={JS.push_focus()}>
+            <.button>
+              <.icon name="hero-folder-minus-mini" /> Regular Withdrawal
             </.button>
           </.link>
           <.link patch={@budget_path} phx-click={JS.push_focus()}>
@@ -78,6 +94,22 @@ defmodule FreedomAccountWeb.Account.Show do
           id={@account.id}
           module={RegularDepositForm}
           return_path={@return_path}
+        />
+      </.modal>
+
+      <.modal
+        :if={@action == :regular_withdrawal}
+        id="regular-withdrawal-modal"
+        show
+        on_cancel={JS.patch(@return_path)}
+      >
+        <.live_component
+          action={@action}
+          funds={@funds}
+          id={@transaction.id || :new}
+          module={SingleFundTransactionForm}
+          return_path={@return_path}
+          transaction={@transaction}
         />
       </.modal>
     </div>

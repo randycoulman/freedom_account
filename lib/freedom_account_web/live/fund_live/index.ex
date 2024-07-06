@@ -10,7 +10,11 @@ defmodule FreedomAccountWeb.FundLive.Index do
   @impl LiveView
   def handle_params(params, _url, socket) do
     %{live_action: action} = socket.assigns
-    {:noreply, apply_action(socket, action, params)}
+
+    {:noreply,
+     socket
+     |> assign(:fund, nil)
+     |> apply_action(action, params)}
   end
 
   defp apply_action(socket, :new, _params) do
@@ -34,21 +38,19 @@ defmodule FreedomAccountWeb.FundLive.Index do
   end
 
   defp apply_action(socket, :edit_account, _params) do
-    socket
-    |> assign(:page_title, "Edit Account Settings")
-    |> assign(:fund, nil)
+    assign(socket, :page_title, "Edit Account Settings")
   end
 
   defp apply_action(socket, :edit_budget, _params) do
-    socket
-    |> assign(:page_title, "Update Budget")
-    |> assign(fund: nil)
+    assign(socket, :page_title, "Update Budget")
   end
 
   defp apply_action(socket, :regular_deposit, _params) do
-    socket
-    |> assign(:page_title, "Regular Deposit")
-    |> assign(:fund, nil)
+    assign(socket, :page_title, "Regular Deposit")
+  end
+
+  defp apply_action(socket, :regular_withdrawal, _params) do
+    assign(socket, :page_title, "Regular Withdrawal")
   end
 
   defp apply_action(socket, _action, _params) do
@@ -69,6 +71,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
       id={@account.id}
       module={FreedomAccountWeb.Account.Show}
       regular_deposit_path={~p"/funds/regular_deposit"}
+      regular_withdrawal_path={~p"/funds/regular_withdrawal"}
       return_path={~p"/funds"}
     />
     <.header>

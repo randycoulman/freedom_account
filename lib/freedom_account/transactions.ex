@@ -16,6 +16,15 @@ defmodule FreedomAccount.Transactions do
     Transaction.changeset(transaction, attrs)
   end
 
+  @spec change_regular_withdrawal_transaction(Transaction.t(), [Fund.t()]) :: Changeset.t()
+  def change_regular_withdrawal_transaction(%Transaction{} = transaction, funds) do
+    line_items = Enum.map(funds, &%LineItem{amount: Money.zero(:usd), fund_id: &1.id})
+
+    transaction
+    |> change_transaction(%{date: Timex.today(:local)})
+    |> Changeset.put_assoc(:line_items, line_items)
+  end
+
   @spec deposit(Transaction.attrs()) :: {:ok, Transaction.t()} | {:error, Changeset.t()}
   def deposit(attrs \\ %{}) do
     %Transaction{}

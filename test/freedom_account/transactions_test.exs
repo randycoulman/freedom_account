@@ -79,6 +79,32 @@ defmodule FreedomAccount.TransactionsTest do
     end
   end
 
+  describe "creating a regular withdrawal changeset" do
+    setup :create_funds
+
+    test "defaults the date to today", %{funds: funds} do
+      today = Timex.today(:local)
+      %Changeset{} = changeset = Transactions.change_regular_withdrawal_transaction(%Transaction{}, funds)
+
+      assert Changeset.get_field(changeset, :date) == today
+    end
+
+    test "includes a line item for each fund", %{funds: funds} do
+      [fund_id1, fund_id2, fund_id3] = Enum.map(funds, & &1.id)
+
+      %Changeset{} = changeset = Transactions.change_regular_withdrawal_transaction(%Transaction{}, funds)
+      line_items = Changeset.get_assoc(changeset, :line_items, :struct)
+
+      zero = Money.zero(:usd)
+
+      assert [
+               %LineItem{amount: ^zero, fund_id: ^fund_id1},
+               %LineItem{amount: ^zero, fund_id: ^fund_id2},
+               %LineItem{amount: ^zero, fund_id: ^fund_id3}
+             ] = line_items
+    end
+  end
+
   describe "creating a new single-fund transaction" do
     test "defaults the date to today", %{fund: fund} do
       today = Timex.today(:local)
@@ -98,11 +124,7 @@ defmodule FreedomAccount.TransactionsTest do
   end
 
   describe "making a regular deposit" do
-    setup %{account: account, fund: fund} do
-      fund2 = Factory.fund(account, current_balance: Factory.money())
-      fund3 = Factory.fund(account, current_balance: Factory.money())
-      %{funds: [fund, fund2, fund3]}
-    end
+    setup :create_funds
 
     test "creates a transaction and its line items with valid data", %{funds: funds} do
       deposits_per_year = Factory.deposit_count()
@@ -212,5 +234,11 @@ defmodule FreedomAccount.TransactionsTest do
       [line_item] = Changeset.get_change(changeset, :line_items)
       assert Changeset.get_change(line_item, :amount) == line_item_attrs[:amount]
     end
+  end
+
+  defp create_funds(%{account: account, fund: fund}) do
+    fund2 = Factory.fund(account)
+    fund3 = Factory.fund(account)
+    %{funds: [fund, fund2, fund3]}
   end
 end

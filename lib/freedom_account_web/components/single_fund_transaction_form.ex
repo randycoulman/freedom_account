@@ -17,8 +17,8 @@ defmodule FreedomAccountWeb.SingleFundTransactionForm do
     {:ok,
      socket
      |> assign(assigns)
-     |> apply_action(assigns.action)
-     |> assign_form(changeset)}
+     |> assign_form(changeset)
+     |> apply_action(assigns.action)}
   end
 
   defp apply_action(socket, :new_deposit) do
@@ -30,6 +30,16 @@ defmodule FreedomAccountWeb.SingleFundTransactionForm do
   defp apply_action(socket, :new_withdrawal) do
     socket
     |> assign(:heading, "Withdraw")
+    |> assign(:save, "Make Withdrawal")
+  end
+
+  defp apply_action(socket, :regular_withdrawal) do
+    %{funds: funds, transaction: transaction} = socket.assigns
+    changeset = Transactions.change_regular_withdrawal_transaction(transaction, funds)
+
+    socket
+    |> assign_form(changeset)
+    |> assign(:heading, "Regular Withdrawal")
     |> assign(:save, "Make Withdrawal")
   end
 
@@ -51,7 +61,12 @@ defmodule FreedomAccountWeb.SingleFundTransactionForm do
         <.input field={@form[:date]} label="Date" phx-debounce="blur" type="date" />
         <.input field={@form[:memo]} label="Memo" phx-debounce="blur" type="text" />
         <.inputs_for :let={li} field={@form[:line_items]}>
-          <.input field={li[:amount]} label="Amount" phx-debounce="blur" type="text" />
+          <.input
+            field={li[:amount]}
+            label={Enum.at(@funds, li.index).name}
+            phx-debounce="blur"
+            type="text"
+          />
           <.input field={li[:fund_id]} type="hidden" />
         </.inputs_for>
         <:actions>
@@ -99,7 +114,7 @@ defmodule FreedomAccountWeb.SingleFundTransactionForm do
     end
   end
 
-  defp save_transaction(socket, :new_withdrawal, params) do
+  defp save_transaction(socket, action, params) when action in [:new_withdrawal, :regular_withdrawal] do
     %{return_path: return_path} = socket.assigns
 
     case Transactions.withdraw(params) do
