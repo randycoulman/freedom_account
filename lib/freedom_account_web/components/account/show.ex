@@ -3,7 +3,6 @@ defmodule FreedomAccountWeb.Account.Show do
 
   use FreedomAccountWeb, :live_component
 
-  alias FreedomAccount.Transactions.Transaction
   alias FreedomAccountWeb.Account.Form
   alias FreedomAccountWeb.BudgetForm
   alias FreedomAccountWeb.RegularDepositForm
@@ -12,17 +11,8 @@ defmodule FreedomAccountWeb.Account.Show do
 
   @impl LiveComponent
   def update(assigns, socket) do
-    {:ok,
-     socket
-     |> assign(assigns)
-     |> apply_action(assigns.action)}
+    {:ok, assign(socket, assigns)}
   end
-
-  defp apply_action(socket, :regular_withdrawal) do
-    assign(socket, :transaction, %Transaction{})
-  end
-
-  defp apply_action(socket, _action), do: socket
 
   @impl LiveComponent
   def render(assigns) do
@@ -106,10 +96,9 @@ defmodule FreedomAccountWeb.Account.Show do
         <.live_component
           action={@action}
           funds={@funds}
-          id={@transaction.id || :new}
+          id={:new}
           module={TransactionForm}
           return_path={@return_path}
-          transaction={@transaction}
         />
       </.modal>
     </div>

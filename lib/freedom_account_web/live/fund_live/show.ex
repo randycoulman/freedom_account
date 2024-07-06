@@ -5,7 +5,6 @@ defmodule FreedomAccountWeb.FundLive.Show do
   import FreedomAccountWeb.FundList, only: [fund_list: 1]
 
   alias FreedomAccount.Funds.Fund
-  alias FreedomAccount.Transactions.Transaction
   alias FreedomAccountWeb.FundLive.Form
   alias FreedomAccountWeb.TransactionForm
   alias Phoenix.HTML.Safe
@@ -44,9 +43,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
   end
 
   defp apply_action(socket, :deposit) do
-    socket
-    |> assign(:page_title, "Deposit")
-    |> assign(:transaction, %Transaction{})
+    assign(socket, :page_title, "Deposit")
   end
 
   defp apply_action(socket, :regular_deposit) do
@@ -58,9 +55,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
   end
 
   defp apply_action(socket, :withdrawal) do
-    socket
-    |> assign(:page_title, "Withdraw")
-    |> assign(:transaction, %Transaction{})
+    assign(socket, :page_title, "Withdraw")
   end
 
   defp apply_action(socket, _action) do
@@ -152,11 +147,10 @@ defmodule FreedomAccountWeb.FundLive.Show do
       <.live_component
         action={@live_action}
         funds={[@fund]}
-        id={@transaction.id || :new}
+        id={:new}
         module={TransactionForm}
         return_path={~p"/funds/#{@fund}"}
         title={@page_title}
-        transaction={@transaction}
       />
     </.modal>
     """

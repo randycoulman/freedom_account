@@ -6,6 +6,7 @@ defmodule FreedomAccountWeb.TransactionForm do
 
   alias Ecto.Changeset
   alias FreedomAccount.Transactions
+  alias FreedomAccount.Transactions.Transaction
   alias FreedomAccountWeb.Params
   alias Phoenix.LiveComponent
 
@@ -86,10 +87,9 @@ defmodule FreedomAccountWeb.TransactionForm do
   @impl LiveComponent
   def handle_event("validate", params, socket) do
     %{"transaction" => transaction_params} = params
-    %{transaction: transaction} = socket.assigns
 
     changeset =
-      transaction
+      %Transaction{}
       |> Transactions.change_transaction(transaction_params)
       |> Map.put(:action, :validate)
 
