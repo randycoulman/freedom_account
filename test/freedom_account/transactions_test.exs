@@ -84,7 +84,7 @@ defmodule FreedomAccount.TransactionsTest do
 
     test "defaults the date to today", %{funds: funds} do
       today = Timex.today(:local)
-      %Changeset{} = changeset = Transactions.change_regular_withdrawal_transaction(funds)
+      %Changeset{} = changeset = Transactions.new_regular_withdrawal(funds)
 
       assert Changeset.get_field(changeset, :date) == today
     end
@@ -92,7 +92,7 @@ defmodule FreedomAccount.TransactionsTest do
     test "includes a line item for each fund", %{funds: funds} do
       [fund_id1, fund_id2, fund_id3] = Enum.map(funds, & &1.id)
 
-      %Changeset{} = changeset = Transactions.change_regular_withdrawal_transaction(funds)
+      %Changeset{} = changeset = Transactions.new_regular_withdrawal(funds)
       line_items = Changeset.get_assoc(changeset, :line_items, :struct)
 
       zero = Money.zero(:usd)
