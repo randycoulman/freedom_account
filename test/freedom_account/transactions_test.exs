@@ -122,21 +122,22 @@ defmodule FreedomAccount.TransactionsTest do
     end
   end
 
-  describe "creating a new single-fund transaction" do
+  describe "creating a new withdrawal changeset" do
     test "defaults the date to today", %{fund: fund} do
       today = Timex.today(:local)
 
-      assert %Transaction{
-               date: ^today
-             } = Transactions.new_single_fund_transaction(fund)
+      %Changeset{} = changeset = Transactions.new_withdrawal(fund)
+
+      assert Changeset.get_field(changeset, :date) == today
     end
 
     test "includes a single line item for the given fund", %{fund: fund} do
       fund_id = fund.id
 
-      assert %Transaction{
-               line_items: [%LineItem{fund_id: ^fund_id}]
-             } = Transactions.new_single_fund_transaction(fund)
+      %Changeset{} = changeset = Transactions.new_withdrawal(fund)
+      line_items = Changeset.get_assoc(changeset, :line_items, :struct)
+
+      assert [%LineItem{fund_id: ^fund_id}] = line_items
     end
   end
 

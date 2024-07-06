@@ -11,13 +11,9 @@ defmodule FreedomAccountWeb.TransactionForm do
 
   @impl LiveComponent
   def update(assigns, socket) do
-    %{transaction: transaction} = assigns
-    changeset = Transactions.change_transaction(transaction)
-
     {:ok,
      socket
      |> assign(assigns)
-     |> assign_form(changeset)
      |> apply_action(assigns.action)}
   end
 
@@ -42,7 +38,11 @@ defmodule FreedomAccountWeb.TransactionForm do
   end
 
   defp apply_action(socket, :withdrawal) do
+    %{funds: [fund]} = socket.assigns
+    changeset = Transactions.new_withdrawal(fund)
+
     socket
+    |> assign_form(changeset)
     |> assign(:heading, "Withdraw")
     |> assign(:save, "Make Withdrawal")
   end

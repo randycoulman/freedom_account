@@ -42,12 +42,13 @@ defmodule FreedomAccount.Transactions do
     |> Changeset.put_assoc(:line_items, line_items)
   end
 
-  @spec new_single_fund_transaction(Fund.t()) :: Transaction.partial()
-  def new_single_fund_transaction(fund) do
-    %Transaction{
-      date: Timex.today(:local),
-      line_items: [%LineItem{fund_id: fund.id}]
-    }
+  @spec new_withdrawal(Fund.t()) :: Changeset.t()
+  def new_withdrawal(fund) do
+    line_items = [%LineItem{fund_id: fund.id}]
+
+    %Transaction{}
+    |> change_transaction(%{date: Timex.today(:local)})
+    |> Changeset.put_assoc(:line_items, line_items)
   end
 
   @spec regular_deposit(Date.t(), [Fund.t()], Account.deposit_count()) ::

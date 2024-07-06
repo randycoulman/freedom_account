@@ -5,7 +5,6 @@ defmodule FreedomAccountWeb.FundLive.Show do
   import FreedomAccountWeb.FundList, only: [fund_list: 1]
 
   alias FreedomAccount.Funds.Fund
-  alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.Transaction
   alias FreedomAccountWeb.FundLive.Form
   alias FreedomAccountWeb.TransactionForm
@@ -59,11 +58,9 @@ defmodule FreedomAccountWeb.FundLive.Show do
   end
 
   defp apply_action(socket, :withdrawal) do
-    %{fund: fund} = socket.assigns
-
     socket
     |> assign(:page_title, "Withdraw")
-    |> assign(:transaction, Transactions.new_single_fund_transaction(fund))
+    |> assign(:transaction, %Transaction{})
   end
 
   defp apply_action(socket, _action) do
