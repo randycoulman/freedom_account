@@ -28,8 +28,8 @@ defmodule FreedomAccountWeb.TransactionForm do
   end
 
   defp apply_action(socket, :regular_withdrawal) do
-    %{funds: funds, transaction: transaction} = socket.assigns
-    changeset = Transactions.change_regular_withdrawal_transaction(transaction, funds)
+    %{funds: funds} = socket.assigns
+    changeset = Transactions.change_regular_withdrawal_transaction(funds)
 
     socket
     |> assign_form(changeset)
