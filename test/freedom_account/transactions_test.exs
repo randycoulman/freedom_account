@@ -79,31 +79,12 @@ defmodule FreedomAccount.TransactionsTest do
     end
   end
 
-  describe "creating a new deposit changeset" do
-    test "defaults the date to today", %{fund: fund} do
-      today = Timex.today(:local)
-
-      %Changeset{} = changeset = Transactions.new_deposit(fund)
-
-      assert Changeset.get_field(changeset, :date) == today
-    end
-
-    test "includes a single line item for the given fund", %{fund: fund} do
-      fund_id = fund.id
-
-      %Changeset{} = changeset = Transactions.new_deposit(fund)
-      line_items = Changeset.get_assoc(changeset, :line_items, :struct)
-
-      assert [%LineItem{fund_id: ^fund_id}] = line_items
-    end
-  end
-
-  describe "creating a regular withdrawal changeset" do
+  describe "creating a changeset for a new transaction" do
     setup :create_funds
 
     test "defaults the date to today", %{funds: funds} do
       today = Timex.today(:local)
-      %Changeset{} = changeset = Transactions.new_regular_withdrawal(funds)
+      %Changeset{} = changeset = Transactions.new_transaction(funds)
 
       assert Changeset.get_field(changeset, :date) == today
     end
@@ -111,7 +92,7 @@ defmodule FreedomAccount.TransactionsTest do
     test "includes a line item for each fund", %{funds: funds} do
       [fund_id1, fund_id2, fund_id3] = Enum.map(funds, & &1.id)
 
-      %Changeset{} = changeset = Transactions.new_regular_withdrawal(funds)
+      %Changeset{} = changeset = Transactions.new_transaction(funds)
       line_items = Changeset.get_assoc(changeset, :line_items, :struct)
 
       assert [
@@ -119,25 +100,6 @@ defmodule FreedomAccount.TransactionsTest do
                %LineItem{fund_id: ^fund_id2},
                %LineItem{fund_id: ^fund_id3}
              ] = line_items
-    end
-  end
-
-  describe "creating a new withdrawal changeset" do
-    test "defaults the date to today", %{fund: fund} do
-      today = Timex.today(:local)
-
-      %Changeset{} = changeset = Transactions.new_withdrawal(fund)
-
-      assert Changeset.get_field(changeset, :date) == today
-    end
-
-    test "includes a single line item for the given fund", %{fund: fund} do
-      fund_id = fund.id
-
-      %Changeset{} = changeset = Transactions.new_withdrawal(fund)
-      line_items = Changeset.get_assoc(changeset, :line_items, :struct)
-
-      assert [%LineItem{fund_id: ^fund_id}] = line_items
     end
   end
 

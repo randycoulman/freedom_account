@@ -12,38 +12,30 @@ defmodule FreedomAccountWeb.TransactionForm do
 
   @impl LiveComponent
   def update(assigns, socket) do
+    %{action: action, funds: funds} = assigns
+    changeset = Transactions.new_transaction(funds)
+
     {:ok,
      socket
      |> assign(assigns)
-     |> apply_action(assigns.action)}
+     |> apply_action(action)
+     |> assign_form(changeset)}
   end
 
   defp apply_action(socket, :deposit) do
-    %{funds: [fund]} = socket.assigns
-    changeset = Transactions.new_deposit(fund)
-
     socket
-    |> assign_form(changeset)
     |> assign(:heading, "Deposit")
     |> assign(:save, "Make Deposit")
   end
 
   defp apply_action(socket, :regular_withdrawal) do
-    %{funds: funds} = socket.assigns
-    changeset = Transactions.new_regular_withdrawal(funds)
-
     socket
-    |> assign_form(changeset)
     |> assign(:heading, "Regular Withdrawal")
     |> assign(:save, "Make Withdrawal")
   end
 
   defp apply_action(socket, :withdrawal) do
-    %{funds: [fund]} = socket.assigns
-    changeset = Transactions.new_withdrawal(fund)
-
     socket
-    |> assign_form(changeset)
     |> assign(:heading, "Withdraw")
     |> assign(:save, "Make Withdrawal")
   end
