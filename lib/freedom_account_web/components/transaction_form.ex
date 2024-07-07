@@ -68,15 +68,22 @@ defmodule FreedomAccountWeb.TransactionForm do
         <div :if={@line_items_error && length(@form[:line_items].value) > 1} id="line-items-error">
           <.error><%= @line_items_error %></.error>
         </div>
-        <.inputs_for :let={li} field={@form[:line_items]}>
-          <.input
-            field={li[:amount]}
-            label={Enum.at(@funds, li.index).name}
-            phx-debounce="blur"
-            type="text"
-          />
-          <.input field={li[:fund_id]} type="hidden" />
-        </.inputs_for>
+        <div class="grid grid-cols-3 gap-x-4 items-center mx-auto">
+          <span />
+          <.label>Amount</.label>
+          <span />
+          <.inputs_for :let={li} field={@form[:line_items]}>
+            <.label><%= Enum.at(@funds, li.index).name %></.label>
+            <.input
+              field={li[:amount]}
+              label={"Amount #{li.index}"}
+              label_class="sr-only"
+              phx-debounce="blur"
+              type="text"
+            />
+            <.input field={li[:fund_id]} type="hidden" />
+          </.inputs_for>
+        </div>
         <:actions>
           <.button phx-disable-with="Saving..." type="submit">
             <.icon name="hero-check-circle-mini" /> <%= @save %>

@@ -8,8 +8,6 @@ defmodule FreedomAccountWeb.RegularWithdrawalTest do
     setup [:create_account, :create_funds]
 
     test "makes regular withdrawal within modal on fund list view", %{conn: conn, funds: funds} do
-      [fund1, fund2, fund3] = funds
-
       [{amount1, balance1}, {amount2, balance2}, {amount3, balance3}] =
         for fund <- funds do
           amount = Money.mult!(fund.current_balance, :rand.uniform())
@@ -29,9 +27,9 @@ defmodule FreedomAccountWeb.RegularWithdrawalTest do
       |> fill_in("Memo", with: "Cover expenses")
       |> click_button("Make Withdrawal")
       |> assert_has("#line-items-error", text: "Requires at least one line item with a non-zero amount")
-      |> fill_in("#{fund1.name}", with: "#{amount1}")
-      |> fill_in("#{fund2.name}", with: "#{amount2}")
-      |> fill_in("#{fund3.name}", with: "#{amount3}")
+      |> fill_in("Amount 0", with: "#{amount1}")
+      |> fill_in("Amount 1", with: "#{amount2}")
+      |> fill_in("Amount 2", with: "#{amount3}")
       |> click_button("Make Withdrawal")
       |> assert_has(flash(:info), text: "Withdrawal successful")
       |> assert_has(page_title(), text: "Funds")
@@ -42,8 +40,6 @@ defmodule FreedomAccountWeb.RegularWithdrawalTest do
     end
 
     test "makes regular withdrawal within modal on fund show view", %{conn: conn, funds: funds} do
-      [fund1, fund2, fund3] = funds
-
       [{amount1, balance1}, {amount2, balance2}, {amount3, balance3}] =
         for fund <- funds do
           amount = Money.mult!(fund.current_balance, :rand.uniform())
@@ -59,9 +55,9 @@ defmodule FreedomAccountWeb.RegularWithdrawalTest do
       |> assert_has(page_title(), text: "Regular Withdrawal")
       |> assert_has(heading(), text: "Regular Withdrawal")
       |> fill_in("Memo", with: "Cover expenses")
-      |> fill_in("#{fund1.name}", with: "#{amount1}")
-      |> fill_in("#{fund2.name}", with: "#{amount2}")
-      |> fill_in("#{fund3.name}", with: "#{amount3}")
+      |> fill_in("Amount 0", with: "#{amount1}")
+      |> fill_in("Amount 1", with: "#{amount2}")
+      |> fill_in("Amount 2", with: "#{amount3}")
       |> click_button("Make Withdrawal")
       |> assert_has(flash(:info), text: "Withdrawal successful")
       |> assert_has(page_title(), text: Safe.to_iodata(fund.name))
