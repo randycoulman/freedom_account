@@ -5,9 +5,8 @@ defmodule FreedomAccountWeb.FundLive.Show do
   import FreedomAccountWeb.FundList, only: [fund_list: 1]
 
   alias FreedomAccount.Funds.Fund
-  alias FreedomAccount.Transactions
   alias FreedomAccountWeb.FundLive.Form
-  alias FreedomAccountWeb.SingleFundTransactionForm
+  alias FreedomAccountWeb.TransactionForm
   alias Phoenix.HTML.Safe
   alias Phoenix.LiveView
 
@@ -43,24 +42,20 @@ defmodule FreedomAccountWeb.FundLive.Show do
     assign(socket, :page_title, "Update Budget")
   end
 
-  defp apply_action(socket, :new_deposit) do
-    %{fund: fund} = socket.assigns
-
-    socket
-    |> assign(:page_title, "Deposit")
-    |> assign(:transaction, Transactions.new_single_fund_transaction(fund))
-  end
-
-  defp apply_action(socket, :new_withdrawal) do
-    %{fund: fund} = socket.assigns
-
-    socket
-    |> assign(:page_title, "Withdraw")
-    |> assign(:transaction, Transactions.new_single_fund_transaction(fund))
+  defp apply_action(socket, :deposit) do
+    assign(socket, :page_title, "Deposit")
   end
 
   defp apply_action(socket, :regular_deposit) do
     assign(socket, :page_title, "Regular Deposit")
+  end
+
+  defp apply_action(socket, :regular_withdrawal) do
+    assign(socket, :page_title, "Regular Withdrawal")
+  end
+
+  defp apply_action(socket, :withdrawal) do
+    assign(socket, :page_title, "Withdraw")
   end
 
   defp apply_action(socket, _action) do
@@ -81,6 +76,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
       id={@account.id}
       module={FreedomAccountWeb.Account.Show}
       regular_deposit_path={~p"/funds/#{@fund}/regular_deposit"}
+      regular_withdrawal_path={~p"/funds/#{@fund}/regular_withdrawal"}
       return_path={~p"/funds/#{@fund}"}
     />
     <div class="flex h-screen">
@@ -114,7 +110,11 @@ defmodule FreedomAccountWeb.FundLive.Show do
                 <.icon name="hero-plus-circle-mini" /> Deposit
               </.button>
             </.link>
-            <.link patch={~p"/funds/#{@fund}/withdrawals/new"} phx-click={JS.push_focus()}>
+            <.link
+              id="single-fund-withdrawal"
+              patch={~p"/funds/#{@fund}/withdrawals/new"}
+              phx-click={JS.push_focus()}
+            >
               <.button>
                 <.icon name="hero-minus-circle-mini" /> Withdraw
               </.button>
@@ -139,19 +139,18 @@ defmodule FreedomAccountWeb.FundLive.Show do
     </.modal>
 
     <.modal
-      :if={@live_action in [:new_deposit, :new_withdrawal]}
+      :if={@live_action in [:deposit, :withdrawal]}
       id="transaction-modal"
       show
       on_cancel={JS.patch(~p"/funds/#{@fund}")}
     >
       <.live_component
         action={@live_action}
-        fund={@fund}
-        id={@transaction.id || :new}
-        module={SingleFundTransactionForm}
+        funds={[@fund]}
+        id={:new}
+        module={TransactionForm}
         return_path={~p"/funds/#{@fund}"}
         title={@page_title}
-        transaction={@transaction}
       />
     </.modal>
     """

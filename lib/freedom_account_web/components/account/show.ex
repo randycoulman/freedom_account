@@ -6,6 +6,7 @@ defmodule FreedomAccountWeb.Account.Show do
   alias FreedomAccountWeb.Account.Form
   alias FreedomAccountWeb.BudgetForm
   alias FreedomAccountWeb.RegularDepositForm
+  alias FreedomAccountWeb.TransactionForm
   alias Phoenix.LiveComponent
 
   @impl LiveComponent
@@ -23,6 +24,11 @@ defmodule FreedomAccountWeb.Account.Show do
           <.link patch={@regular_deposit_path} phx-click={JS.push_focus()}>
             <.button>
               <.icon name="hero-folder-plus-mini" /> Regular Deposit
+            </.button>
+          </.link>
+          <.link patch={@regular_withdrawal_path} phx-click={JS.push_focus()}>
+            <.button>
+              <.icon name="hero-folder-minus-mini" /> Regular Withdrawal
             </.button>
           </.link>
           <.link patch={@budget_path} phx-click={JS.push_focus()}>
@@ -77,6 +83,21 @@ defmodule FreedomAccountWeb.Account.Show do
           funds={@funds}
           id={@account.id}
           module={RegularDepositForm}
+          return_path={@return_path}
+        />
+      </.modal>
+
+      <.modal
+        :if={@action == :regular_withdrawal}
+        id="regular-withdrawal-modal"
+        show
+        on_cancel={JS.patch(@return_path)}
+      >
+        <.live_component
+          action={@action}
+          funds={@funds}
+          id={:new}
+          module={TransactionForm}
           return_path={@return_path}
         />
       </.modal>

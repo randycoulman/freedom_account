@@ -24,12 +24,13 @@ defmodule FreedomAccount.Transactions do
     |> PubSub.broadcast(pubsub_topic(), :transaction_created)
   end
 
-  @spec new_single_fund_transaction(Fund.t()) :: Transaction.partial()
-  def new_single_fund_transaction(fund) do
-    %Transaction{
-      date: Timex.today(:local),
-      line_items: [%LineItem{fund_id: fund.id}]
-    }
+  @spec new_transaction([Fund.t()]) :: Changeset.t()
+  def new_transaction(funds) do
+    line_items = Enum.map(funds, &%LineItem{fund_id: &1.id})
+
+    %Transaction{}
+    |> change_transaction(%{date: Timex.today(:local)})
+    |> Changeset.put_assoc(:line_items, line_items)
   end
 
   @spec regular_deposit(Date.t(), [Fund.t()], Account.deposit_count()) ::
@@ -71,7 +72,8 @@ defmodule FreedomAccount.Transactions do
         {:error,
          %Transaction{}
          |> Transaction.changeset(attrs)
-         |> Map.put(:action, changeset.action)}
+         |> Map.put(:action, changeset.action)
+         |> Map.put(:errors, changeset.errors)}
     end
   end
 end
