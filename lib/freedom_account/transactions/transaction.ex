@@ -45,9 +45,11 @@ defmodule FreedomAccount.Transactions.Transaction do
   end
 
   defp base_changeset(transaction, attrs, opts \\ []) do
+    default_opts = [required: true, required_message: "Requires at least one line item with a non-zero amount"]
+
     transaction
     |> cast(attrs, [:date, :memo])
     |> validate_required([:date, :memo])
-    |> cast_assoc(:line_items, [required: true] ++ opts)
+    |> cast_assoc(:line_items, default_opts ++ opts)
   end
 end

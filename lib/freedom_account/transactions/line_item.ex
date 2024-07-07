@@ -39,6 +39,17 @@ defmodule FreedomAccount.Transactions.LineItem do
     line_item
     |> base_changeset(attrs)
     |> update_change(:amount, &negate/1)
+    |> ignore_if_amount_missing()
+  end
+
+  defp ignore_if_amount_missing(%Changeset{} = changeset) do
+    amount = Changeset.get_field(changeset, :amount)
+
+    if is_nil(amount) or Money.zero?(amount) do
+      %{changeset | action: :ignore}
+    else
+      changeset
+    end
   end
 
   defp base_changeset(line_item, attrs) do

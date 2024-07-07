@@ -72,7 +72,8 @@ defmodule FreedomAccount.Transactions do
         {:error,
          %Transaction{}
          |> Transaction.changeset(attrs)
-         |> Map.put(:action, changeset.action)}
+         |> Map.put(:action, changeset.action)
+         |> Map.put(:errors, changeset.errors)}
     end
   end
 end

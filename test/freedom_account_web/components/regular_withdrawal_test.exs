@@ -27,6 +27,8 @@ defmodule FreedomAccountWeb.RegularWithdrawalTest do
       |> assert_has(field_error("#transaction_date"), text: "can't be blank")
       |> fill_in("Date", with: Factory.date())
       |> fill_in("Memo", with: "Cover expenses")
+      |> click_button("Make Withdrawal")
+      |> assert_has("#line-items-error", text: "Requires at least one line item with a non-zero amount")
       |> fill_in("#{fund1.name}", with: "#{amount1}")
       |> fill_in("#{fund2.name}", with: "#{amount2}")
       |> fill_in("#{fund3.name}", with: "#{amount3}")
