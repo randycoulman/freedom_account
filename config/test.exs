@@ -20,8 +20,10 @@ config :freedom_account, FreedomAccountWeb.Endpoint,
   secret_key_base: "v4XpHMCN4hfmplJ9bwjcc/ZdP2eCLM++HLMEU4sq1hEbyOC3qlzpFqua1fQtt1Ll",
   server: false
 
-# Print only warnings and errors during test
-config :logger, level: :warning
+# Capture all logs in test (for capture_log/1)...
+config :logger, level: :info
+# ...but only show warnings in the console:
+config :logger, :console, level: :warning
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime

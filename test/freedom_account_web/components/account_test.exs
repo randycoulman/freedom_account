@@ -6,6 +6,8 @@ defmodule FreedomAccountWeb.AccountTest do
   alias FreedomAccount.Factory
   alias Phoenix.HTML.Safe
 
+  @moduletag capture_log: true
+
   describe "Show" do
     setup [:create_account]
 

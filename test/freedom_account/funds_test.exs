@@ -14,6 +14,8 @@ defmodule FreedomAccount.FundsTest do
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.PubSub
 
+  @moduletag capture_log: true
+
   @invalid_attrs %{icon: nil, name: nil}
 
   setup [:create_account]
@@ -82,6 +84,7 @@ defmodule FreedomAccount.FundsTest do
       assert_received({:fund_deleted, %Fund{id: ^fund_id}})
     end
 
+    @tag capture_log: true
     test "disallows delete a fund with line items", %{fund: fund} do
       Factory.deposit(fund)
       assert {:error, %NotAllowedError{}} = Funds.delete_fund(fund)

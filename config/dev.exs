@@ -66,8 +66,10 @@ config :freedom_account, FreedomAccountWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :freedom_account, dev_routes: true
 
-# Do not include metadata nor timestamps in development logs
-config :logger, :console, format: "[$level] $message\n"
+config :logger, :console,
+  format: {FreedomAccount.DevLogFormatter, :format},
+  metadata: :all,
+  level: :info
 
 config :mix_test_interactive,
   clear: true

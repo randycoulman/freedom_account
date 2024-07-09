@@ -14,6 +14,8 @@ defmodule FreedomAccount.Funds do
   alias FreedomAccount.PubSub
   alias FreedomAccount.Repo
 
+  require FreedomAccount.ErrorReporter, as: ErrorReporter
+
   @spec change_budget([Fund.t()], Budget.attrs()) :: Changeset.t()
   def change_budget(funds, attrs \\ %{}) do
     Budget.changeset(%Budget{funds: funds}, attrs)
@@ -39,8 +41,12 @@ defmodule FreedomAccount.Funds do
     |> Repo.delete()
     |> PubSub.broadcast(pubsub_topic(), :fund_deleted)
     |> case do
-      {:ok, _fund} -> :ok
-      {:error, _changeset} -> {:error, Error.not_allowed(message: "A fund with transactions cannot be deleted")}
+      {:ok, _fund} ->
+        :ok
+
+      {:error, _changeset} ->
+        ErrorReporter.call("Attempt to delete a fund with transactions", metadata: %{fund_id: fund.id})
+        {:error, Error.not_allowed(message: "A fund with transactions cannot be deleted")}
     end
   end
 

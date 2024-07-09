@@ -13,6 +13,8 @@ defmodule FreedomAccount.Transactions do
   alias FreedomAccount.Transactions.LineItem
   alias FreedomAccount.Transactions.Transaction
 
+  require FreedomAccount.ErrorReporter, as: ErrorReporter
+
   @spec change_transaction(Transaction.t(), Transaction.attrs()) :: Changeset.t()
   def change_transaction(%Transaction{} = transaction, attrs \\ %{}) do
     Transaction.changeset(transaction, attrs)
@@ -52,8 +54,12 @@ defmodule FreedomAccount.Transactions do
     |> Repo.insert()
     |> PubSub.broadcast(pubsub_topic(), :transaction_created)
     |> case do
-      {:ok, %Transaction{} = transaction} -> {:ok, transaction}
-      {:error, _changeset} -> {:error, Error.invariant(message: "Unable to make regular deposit")}
+      {:ok, %Transaction{} = transaction} ->
+        {:ok, transaction}
+
+      {:error, changeset} ->
+        ErrorReporter.call("Regular deposit failed", error: changeset)
+        {:error, Error.invariant(message: "Unable to make regular deposit")}
     end
   end
 
