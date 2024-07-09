@@ -5,6 +5,7 @@ defmodule FreedomAccountWeb.RegularDepositForm do
   use FreedomAccountWeb, :live_component
 
   alias Ecto.Changeset
+  alias FreedomAccount.Error.InvariantError
   alias FreedomAccount.Transactions
   alias Phoenix.LiveComponent
 
@@ -94,8 +95,8 @@ defmodule FreedomAccountWeb.RegularDepositForm do
       {:error, %Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
 
-      {:error, :deposit_failed} ->
-        {:noreply, put_flash(socket, :error, "Regular deposit failed")}
+      {:error, %InvariantError{} = error} ->
+        {:noreply, put_flash(socket, :error, Exception.message(error))}
     end
   end
 

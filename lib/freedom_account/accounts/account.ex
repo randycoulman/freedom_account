@@ -27,7 +27,6 @@ defmodule FreedomAccount.Accounts.Account do
     timestamps()
   end
 
-  @doc false
   @spec changeset(Changeset.t() | Schema.t(), attrs) :: Changeset.t()
   def changeset(account, attrs) do
     account

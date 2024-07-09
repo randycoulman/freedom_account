@@ -3,36 +3,59 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
   Ensures that the account is available to all LiveViews using this hook.
   """
   import Phoenix.Component, only: [assign: 3, update: 3]
+  import Phoenix.LiveView, only: [attach_hook: 4, connected?: 1, put_flash: 3]
 
   alias FreedomAccount.Accounts
   alias FreedomAccount.Accounts.Account
+  alias FreedomAccount.Error.ServiceError
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.PubSub
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.Transaction
   alias FreedomAccountWeb.Hooks.LoadInitialData.FundCache
-  alias Phoenix.LiveView
   alias Phoenix.LiveView.Socket
 
   @spec on_mount(atom(), map(), map(), Socket.t()) :: {:cont, Socket.t()}
   # on_mount signature is defined by LiveView and requires 4 args
   # credo:disable-for-next-line Credo.Check.Refactor.FunctionArity
   def on_mount(:default, _params, _session, socket) do
-    if LiveView.connected?(socket) do
-      PubSub.subscribe(Accounts.pubsub_topic())
-      PubSub.subscribe(Funds.pubsub_topic())
-      PubSub.subscribe(Transactions.pubsub_topic())
-    end
+    socket =
+      if connected?(socket) do
+        subscribe_to_topics(socket)
+      else
+        socket
+      end
 
     account = Accounts.only_account()
     funds = Funds.list_funds(account)
 
     {:cont,
      socket
-     |> LiveView.attach_hook(:pubsub_events, :handle_info, &handle_info/2)
+     |> attach_hook(:pubsub_events, :handle_info, &handle_info/2)
      |> assign(:account, account)
      |> assign(:funds, funds)}
+  end
+
+  defp subscribe_to_topics(socket) do
+    with :ok <- PubSub.subscribe(Accounts.pubsub_topic()),
+         :ok <- PubSub.subscribe(Funds.pubsub_topic()),
+         :ok <- PubSub.subscribe(Transactions.pubsub_topic()) do
+      socket
+    else
+      {:error, %ServiceError{} = error} ->
+        message = """
+        #{Exception.message(error)}
+
+        Refresh your browser tab to try again.
+
+        If you continue to see this error, the application is still usable.
+        However, some screens may not update correctly when making changes.
+        Please refresh your browser tab after making changes.
+        """
+
+        put_flash(socket, :warning, message)
+    end
   end
 
   defp handle_info({:account_updated, %Account{} = account}, socket) do

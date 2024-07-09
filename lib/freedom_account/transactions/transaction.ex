@@ -26,19 +26,16 @@ defmodule FreedomAccount.Transactions.Transaction do
     timestamps()
   end
 
-  @doc false
   @spec changeset(Changeset.t() | Schema.t(), attrs()) :: Changeset.t()
   def changeset(transaction, attrs) do
     base_changeset(transaction, attrs)
   end
 
-  @doc false
   @spec deposit_changeset(Changeset.t() | Schema.t(), attrs()) :: Changeset.t()
   def deposit_changeset(transaction, attrs) do
     base_changeset(transaction, attrs, with: &LineItem.deposit_changeset/2)
   end
 
-  @doc false
   @spec withdrawal_changeset(Changeset.t() | Schema.t(), attrs()) :: Changeset.t()
   def withdrawal_changeset(transaction, attrs) do
     base_changeset(transaction, attrs, with: &LineItem.withdrawal_changeset/2)

@@ -43,7 +43,7 @@ defmodule FreedomAccount.TransactionsTest do
     test "publishes a transaction created event", %{fund: fund} do
       valid_attrs = Factory.transaction_attrs(line_items: [Factory.line_item_attrs(fund)])
 
-      PubSub.subscribe(Transactions.pubsub_topic())
+      :ok = PubSub.subscribe(Transactions.pubsub_topic())
 
       {:ok, transaction} = Transactions.deposit(valid_attrs)
 
@@ -135,7 +135,7 @@ defmodule FreedomAccount.TransactionsTest do
     end
 
     test "publishes a transaction created event", %{funds: funds} do
-      PubSub.subscribe(Transactions.pubsub_topic())
+      :ok = PubSub.subscribe(Transactions.pubsub_topic())
 
       {:ok, %Transaction{} = transaction} = Transactions.regular_deposit(Factory.date(), funds, Factory.deposit_count())
 
@@ -171,7 +171,7 @@ defmodule FreedomAccount.TransactionsTest do
     test "publishes a transaction created event", %{fund: fund} do
       valid_attrs = Factory.transaction_attrs(line_items: [Factory.line_item_attrs(fund)])
 
-      PubSub.subscribe(Transactions.pubsub_topic())
+      :ok = PubSub.subscribe(Transactions.pubsub_topic())
 
       {:ok, transaction} = Transactions.withdraw(valid_attrs)
 
@@ -266,7 +266,7 @@ defmodule FreedomAccount.TransactionsTest do
       line_item_attrs = Enum.map(funds, &Factory.line_item_attrs/1)
       valid_attrs = Factory.transaction_attrs(line_items: line_item_attrs)
 
-      PubSub.subscribe(Transactions.pubsub_topic())
+      :ok = PubSub.subscribe(Transactions.pubsub_topic())
 
       {:ok, transaction} = Transactions.withdraw(valid_attrs)
 

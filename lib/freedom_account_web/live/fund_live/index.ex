@@ -2,6 +2,8 @@ defmodule FreedomAccountWeb.FundLive.Index do
   @moduledoc false
   use FreedomAccountWeb, :live_view
 
+  alias FreedomAccount.Error
+  alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
   alias FreedomAccountWeb.FundLive.Form
@@ -32,7 +34,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
         |> assign(:page_title, "Edit Fund")
         |> assign(:fund, fund)
 
-      {:error, :not_found} ->
+      {:error, %NotFoundError{}} ->
         put_flash(socket, :error, "Fund is no longer present")
     end
   end
@@ -140,7 +142,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
       {:noreply, socket}
     else
       {:error, error} ->
-        {:noreply, put_flash(socket, :error, "Unable to delete fund: #{error}")}
+        {:noreply, put_flash(socket, :error, Exception.message(error))}
     end
   end
 
@@ -150,7 +152,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
   defp fetch_fund(socket, id) do
     %{funds: funds} = socket.assigns
 
-    with %Fund{} = fund <- Enum.find(funds, {:error, :not_found}, &(&1.id == id)) do
+    with %Fund{} = fund <- Enum.find(funds, {:error, Error.not_found(details: %{id: id}, entity: Fund)}, &(&1.id == id)) do
       {:ok, fund}
     end
   end

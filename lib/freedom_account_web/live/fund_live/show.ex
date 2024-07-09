@@ -4,6 +4,8 @@ defmodule FreedomAccountWeb.FundLive.Show do
 
   import FreedomAccountWeb.FundList, only: [fund_list: 1]
 
+  alias FreedomAccount.Error
+  alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Funds.Fund
   alias FreedomAccountWeb.FundLive.Form
   alias FreedomAccountWeb.TransactionForm
@@ -22,7 +24,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
          |> assign(:fund, fund)
          |> apply_action(action)}
 
-      {:error, :not_found} ->
+      {:error, %NotFoundError{}} ->
         {:noreply,
          socket
          |> put_flash(:error, "Fund not found")
@@ -167,7 +169,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
          |> assign(:fund, fund)
          |> apply_action(action)}
 
-      {:error, :not_found} ->
+      {:error, %NotFoundError{}} ->
         {:noreply, socket}
     end
   end
@@ -177,7 +179,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
   defp fetch_fund(socket, id) do
     %{funds: funds} = socket.assigns
 
-    with %Fund{} = fund <- Enum.find(funds, {:error, :not_found}, &(&1.id == id)) do
+    with %Fund{} = fund <- Enum.find(funds, {:error, Error.not_found(details: %{id: id}, entity: Fund)}, &(&1.id == id)) do
       {:ok, fund}
     end
   end

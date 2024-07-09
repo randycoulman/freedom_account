@@ -4,6 +4,8 @@ defmodule FreedomAccount.Transactions do
   """
   alias Ecto.Changeset
   alias FreedomAccount.Accounts.Account
+  alias FreedomAccount.Error
+  alias FreedomAccount.Error.InvariantError
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.PubSub
@@ -34,7 +36,7 @@ defmodule FreedomAccount.Transactions do
   end
 
   @spec regular_deposit(Date.t(), [Fund.t()], Account.deposit_count()) ::
-          {:ok, Transaction.t()} | {:error, :deposit_failed}
+          {:ok, Transaction.t()} | {:error, InvariantError.t()}
   def regular_deposit(%Date{} = date, funds, deposits_per_year) do
     line_items =
       funds
@@ -51,7 +53,7 @@ defmodule FreedomAccount.Transactions do
     |> PubSub.broadcast(pubsub_topic(), :transaction_created)
     |> case do
       {:ok, %Transaction{} = transaction} -> {:ok, transaction}
-      {:error, _changeset} -> {:error, :deposit_failed}
+      {:error, _changeset} -> {:error, Error.invariant(message: "Unable to make regular deposit")}
     end
   end
 

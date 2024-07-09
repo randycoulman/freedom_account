@@ -7,6 +7,8 @@ defmodule FreedomAccount.FundsTest do
   import Money.Sigil
 
   alias Ecto.Changeset
+  alias FreedomAccount.Error.NotAllowedError
+  alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Factory
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
@@ -51,7 +53,7 @@ defmodule FreedomAccount.FundsTest do
     test "publishes a fund created event", %{account: account} do
       valid_attrs = Factory.fund_attrs()
 
-      PubSub.subscribe(Funds.pubsub_topic())
+      :ok = PubSub.subscribe(Funds.pubsub_topic())
 
       {:ok, fund} = Funds.create_fund(account, valid_attrs)
 
@@ -68,12 +70,12 @@ defmodule FreedomAccount.FundsTest do
 
     test "deletes the fund", %{account: account, fund: fund} do
       assert :ok = Funds.delete_fund(fund)
-      assert {:error, :not_found} == Funds.fetch_fund(account, fund.id)
+      assert {:error, %NotFoundError{}} = Funds.fetch_fund(account, fund.id)
     end
 
     test "publishes a fund deleted event", %{fund: fund} do
       fund_id = fund.id
-      PubSub.subscribe(Funds.pubsub_topic())
+      :ok = PubSub.subscribe(Funds.pubsub_topic())
 
       :ok = Funds.delete_fund(fund)
 
@@ -82,7 +84,7 @@ defmodule FreedomAccount.FundsTest do
 
     test "disallows delete a fund with line items", %{fund: fund} do
       Factory.deposit(fund)
-      assert {:error, :fund_has_transactions} = Funds.delete_fund(fund)
+      assert {:error, %NotAllowedError{}} = Funds.delete_fund(fund)
     end
   end
 
@@ -96,11 +98,11 @@ defmodule FreedomAccount.FundsTest do
       other_account = Factory.account()
       fund = Factory.fund(other_account)
 
-      assert {:error, :not_found} = Funds.fetch_fund(account, fund.id)
+      assert {:error, %NotFoundError{}} = Funds.fetch_fund(account, fund.id)
     end
 
     test "when fund does not exist, returns an error", %{account: account} do
-      assert {:error, :not_found} = Funds.fetch_fund(account, Factory.id())
+      assert {:error, %NotFoundError{}} = Funds.fetch_fund(account, Factory.id())
     end
   end
 
@@ -181,7 +183,7 @@ defmodule FreedomAccount.FundsTest do
       funds = for _n <- 1..3, do: Factory.fund(account)
       valid_attrs = Factory.budget_attrs(funds)
 
-      PubSub.subscribe(Funds.pubsub_topic())
+      :ok = PubSub.subscribe(Funds.pubsub_topic())
 
       {:ok, updated_funds} = Funds.update_budget(funds, valid_attrs)
 
@@ -219,7 +221,7 @@ defmodule FreedomAccount.FundsTest do
     test "publishes a fund updated event", %{fund: fund} do
       valid_attrs = Factory.fund_attrs()
 
-      PubSub.subscribe(Funds.pubsub_topic())
+      :ok = PubSub.subscribe(Funds.pubsub_topic())
 
       {:ok, updated_fund} = Funds.update_fund(fund, valid_attrs)
 

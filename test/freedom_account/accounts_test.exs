@@ -62,7 +62,7 @@ defmodule FreedomAccount.AccountsTest do
       account = Factory.account()
       update_attrs = Factory.account_attrs()
 
-      PubSub.subscribe(Accounts.pubsub_topic())
+      :ok = PubSub.subscribe(Accounts.pubsub_topic())
       {:ok, %Account{} = updated_account} = Accounts.update_account(account, update_attrs)
 
       assert_received({:account_updated, ^updated_account})
