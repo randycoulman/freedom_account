@@ -36,7 +36,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData.FundCacheTest do
   describe "updating a fund" do
     test "when name doesn't change, updates fund in-place", %{funds: funds} do
       fund = Enum.random(funds)
-      updated_fund = %{fund | icon: Factory.fund_icon()}
+      updated_fund = %{fund | icon: new_icon(fund.icon)}
       result = FundCache.update_fund(funds, updated_fund)
 
       assert updated_fund in result
@@ -53,7 +53,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData.FundCacheTest do
 
     test "when updated fund doesn't have a balance, its previous balance is retained", %{funds: funds} do
       fund = Enum.random(funds)
-      updated_fund = %{fund | current_balance: nil, icon: Factory.fund_icon()}
+      updated_fund = %{fund | current_balance: nil, icon: new_icon(fund.icon)}
       result = FundCache.update_fund(funds, updated_fund)
 
       expected = %{updated_fund | current_balance: fund.current_balance}
@@ -61,6 +61,15 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData.FundCacheTest do
       assert expected in result
       refute fund in result
       refute updated_fund in result
+    end
+
+    # We were seeing spurious test failures when the new icon was the same as
+    # the previous one. This guarantees that we'll always get a new icon.
+    defp new_icon(original_icon) do
+      case Factory.fund_icon() do
+        ^original_icon -> new_icon(original_icon)
+        icon -> icon
+      end
     end
   end
 
