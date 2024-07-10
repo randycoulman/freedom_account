@@ -40,19 +40,9 @@ defmodule FreedomAccount.Transactions do
   @spec regular_deposit(Date.t(), [Fund.t()], Account.deposit_count()) ::
           {:ok, Transaction.t()} | {:error, InvariantError.t()}
   def regular_deposit(%Date{} = date, funds, deposits_per_year) do
-    line_items =
-      funds
-      |> Enum.map(
-        &%LineItem{
-          amount: Funds.regular_deposit_amount(&1, deposits_per_year),
-          fund_id: &1.id
-        }
-      )
-      |> Enum.reject(&Money.zero?(&1.amount))
-
-    %Transaction{date: date, line_items: line_items, memo: "Regular deposit"}
-    |> Repo.insert()
-    |> PubSub.broadcast(pubsub_topic(), :transaction_created)
+    date
+    |> regular_deposit_params(funds, deposits_per_year)
+    |> deposit()
     |> case do
       {:ok, %Transaction{} = transaction} ->
         {:ok, transaction}
@@ -61,6 +51,20 @@ defmodule FreedomAccount.Transactions do
         ErrorReporter.call("Regular deposit failed", error: changeset)
         {:error, Error.invariant(message: "Unable to make regular deposit")}
     end
+  end
+
+  defp regular_deposit_params(%Date{} = date, funds, deposits_per_year) do
+    line_items =
+      funds
+      |> Enum.map(
+        &%{
+          amount: Funds.regular_deposit_amount(&1, deposits_per_year),
+          fund_id: &1.id
+        }
+      )
+      |> Enum.reject(&Money.zero?(&1.amount))
+
+    %{date: date, line_items: line_items, memo: "Regular deposit"}
   end
 
   @spec pubsub_topic :: PubSub.topic()
