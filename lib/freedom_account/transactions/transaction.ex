@@ -9,6 +9,7 @@ defmodule FreedomAccount.Transactions.Transaction do
   alias Ecto.Changeset
   alias Ecto.Schema
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.MoneyUtils
   alias FreedomAccount.Transactions.LineItem
 
   @type attrs :: %{
@@ -50,7 +51,7 @@ defmodule FreedomAccount.Transactions.Transaction do
       |> Enum.map(&LineItem.avoid_overdraft(&1, funds_by_index))
       |> Enum.unzip()
 
-    overdraft_amount = Enum.reduce(overdrafts, &Money.add!/2)
+    overdraft_amount = MoneyUtils.sum(overdrafts)
 
     if Money.zero?(overdraft_amount) do
       changeset

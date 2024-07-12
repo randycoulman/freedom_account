@@ -8,6 +8,7 @@ defmodule FreedomAccount.TransactionsTest do
   alias FreedomAccount.Factory
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.MoneyUtils
   alias FreedomAccount.PubSub
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.LineItem
@@ -159,7 +160,7 @@ defmodule FreedomAccount.TransactionsTest do
       assert transaction.date == valid_attrs[:date]
       assert transaction.memo == valid_attrs[:memo]
       assert [%LineItem{} = line_item] = transaction.line_items
-      assert line_item.amount == Money.mult!(line_item_attrs[:amount], -1)
+      assert line_item.amount == MoneyUtils.negate(line_item_attrs[:amount])
     end
 
     test "associates the line_item to its fund", %{account: account, fund: fund} do
@@ -191,8 +192,8 @@ defmodule FreedomAccount.TransactionsTest do
       assert {:ok, %Transaction{} = transaction} = Transactions.withdraw(account, valid_attrs)
 
       expected = [
-        %LineItem{amount: Money.mult!(fund.current_balance, -1), fund_id: fund.id},
-        %LineItem{amount: Money.mult!(overdraft, -1), fund_id: default_fund.id}
+        %LineItem{amount: MoneyUtils.negate(fund.current_balance), fund_id: fund.id},
+        %LineItem{amount: MoneyUtils.negate(overdraft), fund_id: default_fund.id}
       ]
 
       assert_lists_equal(expected, transaction.line_items, &assert_structs_equal(&1, &2, [:amount, :fund_id]))
@@ -207,7 +208,7 @@ defmodule FreedomAccount.TransactionsTest do
       assert {:ok, %Transaction{} = transaction} = Transactions.withdraw(account, valid_attrs)
 
       assert [%LineItem{} = line_item] = transaction.line_items
-      assert line_item.amount == Money.mult!(amount, -1)
+      assert line_item.amount == MoneyUtils.negate(amount)
     end
 
     test "requires at least one line item", %{account: account} do
@@ -283,7 +284,7 @@ defmodule FreedomAccount.TransactionsTest do
       transaction.line_items
       |> Enum.zip(line_item_attrs)
       |> Enum.each(fn {%LineItem{} = line_item, attrs} ->
-        assert line_item.amount == Money.mult!(attrs[:amount], -1)
+        assert line_item.amount == MoneyUtils.negate(attrs[:amount])
       end)
     end
 
@@ -350,10 +351,10 @@ defmodule FreedomAccount.TransactionsTest do
       line_item_attrs2 = Enum.at(line_item_attrs, 1)
 
       expected = [
-        %LineItem{amount: Money.mult!(fund1.current_balance, -1), fund_id: fund1.id},
-        %LineItem{amount: Money.mult!(line_item_attrs2[:amount], -1), fund_id: fund2.id},
-        %LineItem{amount: Money.mult!(fund3.current_balance, -1), fund_id: fund3.id},
-        %LineItem{amount: Money.mult!(overdraft_amount, -1), fund_id: default_fund.id}
+        %LineItem{amount: MoneyUtils.negate(fund1.current_balance), fund_id: fund1.id},
+        %LineItem{amount: MoneyUtils.negate(line_item_attrs2[:amount]), fund_id: fund2.id},
+        %LineItem{amount: MoneyUtils.negate(fund3.current_balance), fund_id: fund3.id},
+        %LineItem{amount: MoneyUtils.negate(overdraft_amount), fund_id: default_fund.id}
       ]
 
       assert_lists_equal(expected, transaction.line_items, &assert_structs_equal(&1, &2, [:amount, :fund_id]))
