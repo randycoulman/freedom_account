@@ -1,5 +1,6 @@
 defmodule FreedomAccount.Factory do
   @moduledoc false
+  import ExMachina, only: [sequence: 1]
 
   alias FreedomAccount.Accounts
   alias FreedomAccount.Accounts.Account
@@ -79,7 +80,7 @@ defmodule FreedomAccount.Factory do
   ]
 
   @spec account_name :: Account.name()
-  def account_name, do: Faker.Company.name()
+  def account_name, do: sequence("Account ")
 
   @spec date :: Date.t()
   def date, do: Faker.Date.backward(100)
@@ -91,7 +92,7 @@ defmodule FreedomAccount.Factory do
   def fund_icon, do: Enum.random(@emoji)
 
   @spec fund_name :: Fund.name()
-  def fund_name, do: Faker.Commerce.product_name()
+  def fund_name, do: sequence("Fund ")
 
   @spec id :: non_neg_integer()
   def id, do: Faker.random_between(1000, 1_000_000)
