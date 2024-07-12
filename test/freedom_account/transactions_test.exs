@@ -146,9 +146,7 @@ defmodule FreedomAccount.TransactionsTest do
 
   describe "making a withdrawal from a single fund" do
     setup %{fund: fund} do
-      amount = ~M[5000]usd
-      Factory.deposit(fund, amount: amount)
-      %{fund: %{fund | current_balance: amount}}
+      %{fund: Factory.with_balance(fund, ~M[5000]usd)}
     end
 
     test "creates a transaction and its line item with valid data", %{account: account, fund: fund} do
@@ -182,7 +180,7 @@ defmodule FreedomAccount.TransactionsTest do
 
     test "covers overdraft from default fund", %{account: account, fund: fund} do
       default_fund = Factory.fund(account)
-      account = %{account | default_fund_id: default_fund.id}
+      account = Factory.with_default_fund(account, default_fund)
       overdraft = ~M[100]usd
       amount = Money.add!(fund.current_balance, overdraft)
       line_item_attrs = Factory.line_item_attrs(fund, amount: amount)
@@ -262,12 +260,7 @@ defmodule FreedomAccount.TransactionsTest do
     setup :create_funds
 
     setup %{funds: funds} do
-      funds =
-        for fund <- funds do
-          amount = ~M[5000]usd
-          Factory.deposit(fund, amount: amount)
-          %{fund | current_balance: amount}
-        end
+      funds = for fund <- funds, do: Factory.with_balance(fund, ~M[5000]usd)
 
       %{funds: funds}
     end
@@ -330,7 +323,7 @@ defmodule FreedomAccount.TransactionsTest do
 
     test "covers overdrafts from default fund", %{account: account, funds: funds} do
       default_fund = Factory.fund(account)
-      account = %{account | default_fund_id: default_fund.id}
+      account = Factory.with_default_fund(account, default_fund)
       overdraft1 = ~M[100]usd
       overdraft2 = ~M[50]usd
 

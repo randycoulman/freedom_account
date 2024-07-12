@@ -85,9 +85,6 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData.FundCacheTest do
     end
   end
 
-  # Update all funds - use for budget
-  # Convert transaction updates to use PubSub/FundCache
-
   defp create_funds(%{account: account}) do
     funds = for name <- ~w(AAA GGG MMM UUU ZZZ), do: Factory.fund(account, current_balance: Factory.money(), name: name)
 

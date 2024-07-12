@@ -134,7 +134,7 @@ defmodule FreedomAccount.Factory do
     %{funds: fund_attrs}
   end
 
-  @spec deposit(Fund.t(), Transaction.attrs() | %{amount: Money.t()}) :: Transaction.t()
+  @spec deposit(Fund.t(), Transaction.attrs() | %{amount: Money.t()} | keyword()) :: Transaction.t()
   def deposit(fund, attrs \\ %{}) do
     attrs = Map.new(attrs)
     {amount, attrs} = Map.pop(attrs, :amount)
@@ -193,5 +193,20 @@ defmodule FreedomAccount.Factory do
       date: date(),
       memo: memo()
     })
+  end
+
+  @spec with_default_fund(Account.t(), Fund.t()) :: Account.t()
+  def with_default_fund(%Account{} = account, %Fund{} = fund) do
+    %{account | default_fund_id: fund.id}
+  end
+
+  @spec with_balance(Fund.t()) :: Fund.t()
+  @spec with_balance(Fund.t(), Money.t()) :: Fund.t()
+  def with_balance(%Fund{} = fund, balance \\ money()) do
+    unless Money.zero?(balance) do
+      deposit(fund, amount: balance)
+    end
+
+    %{fund | current_balance: balance}
   end
 end
