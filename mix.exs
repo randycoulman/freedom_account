@@ -71,7 +71,7 @@ defmodule FreedomAccount.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:assertions, "~> 0.19.0", only: [:test]},
+      {:assertions, "~> 0.20.0", only: [:test]},
       {:bandit, "~> 1.5"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
