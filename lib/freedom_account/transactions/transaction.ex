@@ -37,6 +37,10 @@ defmodule FreedomAccount.Transactions.Transaction do
     changeset
   end
 
+  def cover_overdrafts(%Changeset{} = changeset, _funds, nil = _default_fund_id) do
+    changeset
+  end
+
   def cover_overdrafts(%Changeset{} = changeset, funds, default_fund_id) do
     funds_by_index = Map.new(funds, &{&1.id, &1})
 

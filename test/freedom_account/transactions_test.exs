@@ -180,6 +180,36 @@ defmodule FreedomAccount.TransactionsTest do
       assert_received({:transaction_created, ^transaction})
     end
 
+    test "covers overdraft from default fund", %{account: account, fund: fund} do
+      default_fund = Factory.fund(account)
+      account = %{account | default_fund_id: default_fund.id}
+      overdraft = ~M[100]usd
+      amount = Money.add!(fund.current_balance, overdraft)
+      line_item_attrs = Factory.line_item_attrs(fund, amount: amount)
+      valid_attrs = Factory.transaction_attrs(line_items: [line_item_attrs])
+
+      assert {:ok, %Transaction{} = transaction} = Transactions.withdraw(account, valid_attrs)
+
+      expected = [
+        %LineItem{amount: Money.mult!(fund.current_balance, -1), fund_id: fund.id},
+        %LineItem{amount: Money.mult!(overdraft, -1), fund_id: default_fund.id}
+      ]
+
+      assert_lists_equal(expected, transaction.line_items, &assert_structs_equal(&1, &2, [:amount, :fund_id]))
+    end
+
+    test "allows fund to go into overdraft if no default fund configured", %{account: account, fund: fund} do
+      overdraft = ~M[100]usd
+      amount = Money.add!(fund.current_balance, overdraft)
+      line_item_attrs = Factory.line_item_attrs(fund, amount: amount)
+      valid_attrs = Factory.transaction_attrs(line_items: [line_item_attrs])
+
+      assert {:ok, %Transaction{} = transaction} = Transactions.withdraw(account, valid_attrs)
+
+      assert [%LineItem{} = line_item] = transaction.line_items
+      assert line_item.amount == Money.mult!(amount, -1)
+    end
+
     test "requires at least one line item", %{account: account} do
       invalid_attrs = Factory.transaction_attrs(line_items: [])
 
@@ -203,24 +233,6 @@ defmodule FreedomAccount.TransactionsTest do
       assert {:error, %Changeset{valid?: false} = changeset} = Transactions.withdraw(account, attrs)
       [line_item_errors] = errors_on(changeset)[:line_items]
       assert hd(line_item_errors[:amount]) == "can't be blank"
-    end
-
-    test "covers overdraft from default fund", %{account: account, fund: fund} do
-      default_fund = Factory.fund(account)
-      account = %{account | default_fund_id: default_fund.id}
-      overdraft = ~M[100]usd
-      amount = Money.add!(fund.current_balance, overdraft)
-      line_item_attrs = Factory.line_item_attrs(fund, amount: amount)
-      valid_attrs = Factory.transaction_attrs(line_items: [line_item_attrs])
-
-      assert {:ok, %Transaction{} = transaction} = Transactions.withdraw(account, valid_attrs)
-
-      expected = [
-        %LineItem{amount: Money.mult!(fund.current_balance, -1), fund_id: fund.id},
-        %LineItem{amount: Money.mult!(overdraft, -1), fund_id: default_fund.id}
-      ]
-
-      assert_lists_equal(expected, transaction.line_items, &assert_structs_equal(&1, &2, [:amount, :fund_id]))
     end
 
     test "returns error changeset for invalid transaction data", %{account: account} do

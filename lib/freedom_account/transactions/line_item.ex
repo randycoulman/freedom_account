@@ -25,6 +25,11 @@ defmodule FreedomAccount.Transactions.LineItem do
     timestamps()
   end
 
+  @spec changeset(Changeset.t() | Schema.t(), attrs()) :: Changeset.t()
+  def changeset(line_item, attrs) do
+    base_changeset(line_item, attrs)
+  end
+
   @spec avoid_overdraft(Changeset.t(), %{Fund.id() => Fund.t()}) :: {Changeset.t(), Money.t()}
   def avoid_overdraft(%Changeset{} = changeset, funds_by_index) do
     fund_id = get_field(changeset, :fund_id)
@@ -38,11 +43,6 @@ defmodule FreedomAccount.Transactions.LineItem do
     else
       {changeset, Money.zero(:usd)}
     end
-  end
-
-  @spec changeset(Changeset.t() | Schema.t(), attrs()) :: Changeset.t()
-  def changeset(line_item, attrs) do
-    base_changeset(line_item, attrs)
   end
 
   @spec deposit_changeset(Changeset.t() | Schema.t(), attrs()) :: Changeset.t()
