@@ -8,6 +8,7 @@ defmodule FreedomAccount.Transactions.Transaction do
 
   alias Ecto.Changeset
   alias Ecto.Schema
+  alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Transactions.LineItem
 
   @type attrs :: %{
@@ -29,6 +30,30 @@ defmodule FreedomAccount.Transactions.Transaction do
   @spec changeset(Changeset.t() | Schema.t(), attrs()) :: Changeset.t()
   def changeset(transaction, attrs) do
     base_changeset(transaction, attrs)
+  end
+
+  @spec cover_overdrafts(Changeset.t(), [Fund.t()], Fund.id()) :: Changeset.t()
+  def cover_overdrafts(%Changeset{valid?: false} = changeset, _funds, _default_fund_id) do
+    changeset
+  end
+
+  def cover_overdrafts(%Changeset{} = changeset, funds, default_fund_id) do
+    funds_by_index = Map.new(funds, &{&1.id, &1})
+
+    {line_items, overdrafts} =
+      changeset
+      |> get_assoc(:line_items)
+      |> Enum.map(&LineItem.avoid_overdraft(&1, funds_by_index))
+      |> Enum.unzip()
+
+    overdraft_amount = Enum.reduce(overdrafts, &Money.add!/2)
+
+    if Money.zero?(overdraft_amount) do
+      changeset
+    else
+      new_line_item = LineItem.withdrawal_changeset(%LineItem{}, %{amount: overdraft_amount, fund_id: default_fund_id})
+      Changeset.put_assoc(changeset, :line_items, [new_line_item | line_items])
+    end
   end
 
   @spec deposit_changeset(Changeset.t() | Schema.t(), attrs()) :: Changeset.t()

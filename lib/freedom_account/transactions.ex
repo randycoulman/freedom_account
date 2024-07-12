@@ -70,10 +70,13 @@ defmodule FreedomAccount.Transactions do
   @spec pubsub_topic :: PubSub.topic()
   def pubsub_topic, do: ProcessTree.get(:transactions_topic, default: "transactions")
 
-  @spec withdraw(Transaction.attrs()) :: {:ok, Transaction.t()} | {:error, Changeset.t()}
-  def withdraw(attrs \\ %{}) do
+  @spec withdraw(Account.t(), Transaction.attrs()) :: {:ok, Transaction.t()} | {:error, Changeset.t()}
+  def withdraw(%Account{} = account, attrs \\ %{}) do
+    funds = Funds.list_funds(account)
+
     %Transaction{}
     |> Transaction.withdrawal_changeset(attrs)
+    |> Transaction.cover_overdrafts(funds, account.default_fund_id)
     |> Repo.insert()
     |> PubSub.broadcast(pubsub_topic(), :transaction_created)
     |> case do

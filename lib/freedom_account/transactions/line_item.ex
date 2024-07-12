@@ -10,6 +10,7 @@ defmodule FreedomAccount.Transactions.LineItem do
 
   alias Ecto.Changeset
   alias Ecto.Schema
+  alias FreedomAccount.Funds.Fund
 
   @type attrs :: %{
           optional(:amount) => Money.t(),
@@ -22,6 +23,21 @@ defmodule FreedomAccount.Transactions.LineItem do
     field :transaction_id, :integer
 
     timestamps()
+  end
+
+  @spec avoid_overdraft(Changeset.t(), %{Fund.id() => Fund.t()}) :: {Changeset.t(), Money.t()}
+  def avoid_overdraft(%Changeset{} = changeset, funds_by_index) do
+    fund_id = get_field(changeset, :fund_id)
+    amount = get_field(changeset, :amount)
+    fund = Map.fetch!(funds_by_index, fund_id)
+    difference = Money.add!(fund.current_balance, amount)
+
+    if Money.negative?(difference) do
+      updated_changeset = put_change(changeset, :amount, Money.mult!(fund.current_balance, -1))
+      {updated_changeset, Money.mult!(difference, -1)}
+    else
+      {changeset, Money.zero(:usd)}
+    end
   end
 
   @spec changeset(Changeset.t() | Schema.t(), attrs()) :: Changeset.t()

@@ -129,9 +129,9 @@ defmodule FreedomAccountWeb.TransactionForm do
   end
 
   defp save_transaction(socket, action, params) when action in [:regular_withdrawal, :withdrawal] do
-    %{return_path: return_path} = socket.assigns
+    %{account: account, return_path: return_path} = socket.assigns
 
-    case Transactions.withdraw(params) do
+    case Transactions.withdraw(account, params) do
       {:ok, _transaction} ->
         {:noreply,
          socket

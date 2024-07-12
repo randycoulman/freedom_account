@@ -94,6 +94,7 @@ defmodule FreedomAccountWeb.Account.Show do
         on_cancel={JS.patch(@return_path)}
       >
         <.live_component
+          account={@account}
           action={@action}
           funds={@funds}
           id={:new}

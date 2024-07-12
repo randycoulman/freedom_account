@@ -1,6 +1,7 @@
 defmodule FreedomAccount.TransactionsTest do
   use FreedomAccount.DataCase, async: true
 
+  import Assertions
   import Money.Sigil
 
   alias Ecto.Changeset
@@ -145,82 +146,101 @@ defmodule FreedomAccount.TransactionsTest do
 
   describe "making a withdrawal from a single fund" do
     setup %{fund: fund} do
-      Factory.deposit(fund, amount: ~M[5000]usd)
-      :ok
+      amount = ~M[5000]usd
+      Factory.deposit(fund, amount: amount)
+      %{fund: %{fund | current_balance: amount}}
     end
 
-    test "creates a transaction and its line item with valid data", %{fund: fund} do
+    test "creates a transaction and its line item with valid data", %{account: account, fund: fund} do
       line_item_attrs = Factory.line_item_attrs(fund)
       valid_attrs = Factory.transaction_attrs(line_items: [line_item_attrs])
 
-      assert {:ok, %Transaction{} = transaction} = Transactions.withdraw(valid_attrs)
+      assert {:ok, %Transaction{} = transaction} = Transactions.withdraw(account, valid_attrs)
       assert transaction.date == valid_attrs[:date]
       assert transaction.memo == valid_attrs[:memo]
       assert [%LineItem{} = line_item] = transaction.line_items
       assert line_item.amount == Money.mult!(line_item_attrs[:amount], -1)
     end
 
-    test "associates the line_item to its fund", %{fund: fund} do
+    test "associates the line_item to its fund", %{account: account, fund: fund} do
       valid_attrs = Factory.transaction_attrs(line_items: [Factory.line_item_attrs(fund)])
 
-      {:ok, transaction} = Transactions.withdraw(valid_attrs)
+      {:ok, transaction} = Transactions.withdraw(account, valid_attrs)
       [line_item] = transaction.line_items
       assert line_item.fund_id == fund.id
     end
 
-    test "publishes a transaction created event", %{fund: fund} do
+    test "publishes a transaction created event", %{account: account, fund: fund} do
       valid_attrs = Factory.transaction_attrs(line_items: [Factory.line_item_attrs(fund)])
 
       :ok = PubSub.subscribe(Transactions.pubsub_topic())
 
-      {:ok, transaction} = Transactions.withdraw(valid_attrs)
+      {:ok, transaction} = Transactions.withdraw(account, valid_attrs)
 
       assert_received({:transaction_created, ^transaction})
     end
 
-    test "requires at least one line item" do
+    test "requires at least one line item", %{account: account} do
       invalid_attrs = Factory.transaction_attrs(line_items: [])
 
-      assert {:error, %Changeset{valid?: false} = changeset} = Transactions.withdraw(invalid_attrs)
+      assert {:error, %Changeset{valid?: false} = changeset} = Transactions.withdraw(account, invalid_attrs)
       assert hd(errors_on(changeset)[:line_items]) == "Requires at least one line item with a non-zero amount"
     end
 
-    test "requires each line item to have a non-zero amount", %{fund: fund} do
+    test "requires each line item to have a non-zero amount", %{account: account, fund: fund} do
       invalid_line_item_attrs = Factory.line_item_attrs(fund, amount: Money.zero(:usd))
       attrs = Factory.transaction_attrs(line_items: [invalid_line_item_attrs])
 
-      assert {:error, %Changeset{valid?: false} = changeset} = Transactions.withdraw(attrs)
+      assert {:error, %Changeset{valid?: false} = changeset} = Transactions.withdraw(account, attrs)
       [line_item_errors] = errors_on(changeset)[:line_items]
       assert hd(line_item_errors[:amount]) == "must be not equal to $0.00"
     end
 
-    test "requires each line item to have a non-nil amount", %{fund: fund} do
+    test "requires each line item to have a non-nil amount", %{account: account, fund: fund} do
       invalid_line_item_attrs = Factory.line_item_attrs(fund, amount: nil)
       attrs = Factory.transaction_attrs(line_items: [invalid_line_item_attrs])
 
-      assert {:error, %Changeset{valid?: false} = changeset} = Transactions.withdraw(attrs)
+      assert {:error, %Changeset{valid?: false} = changeset} = Transactions.withdraw(account, attrs)
       [line_item_errors] = errors_on(changeset)[:line_items]
       assert hd(line_item_errors[:amount]) == "can't be blank"
     end
 
-    test "returns error changeset for invalid transaction data" do
-      invalid_attrs = Factory.transaction_attrs(date: nil, memo: nil)
+    test "covers overdraft from default fund", %{account: account, fund: fund} do
+      default_fund = Factory.fund(account)
+      account = %{account | default_fund_id: default_fund.id}
+      overdraft = ~M[100]usd
+      amount = Money.add!(fund.current_balance, overdraft)
+      line_item_attrs = Factory.line_item_attrs(fund, amount: amount)
+      valid_attrs = Factory.transaction_attrs(line_items: [line_item_attrs])
 
-      assert {:error, %Changeset{valid?: false}} = Transactions.withdraw(invalid_attrs)
+      assert {:ok, %Transaction{} = transaction} = Transactions.withdraw(account, valid_attrs)
+
+      expected = [
+        %LineItem{amount: Money.mult!(fund.current_balance, -1), fund_id: fund.id},
+        %LineItem{amount: Money.mult!(overdraft, -1), fund_id: default_fund.id}
+      ]
+
+      assert_lists_equal(expected, transaction.line_items, &assert_structs_equal(&1, &2, [:amount, :fund_id]))
     end
 
-    test "returns error changeset for invalid line item data", %{fund: fund} do
+    test "returns error changeset for invalid transaction data", %{account: account} do
+      invalid_attrs = Factory.transaction_attrs(date: nil, memo: nil)
+
+      assert {:error, %Changeset{valid?: false}} = Transactions.withdraw(account, invalid_attrs)
+    end
+
+    test "returns error changeset for invalid line item data", %{account: account, fund: fund} do
       invalid_line_item_attrs = Factory.line_item_attrs(fund, amount: "abc")
       attrs = Factory.transaction_attrs(line_items: [invalid_line_item_attrs])
 
-      assert {:error, %Changeset{valid?: false}} = Transactions.withdraw(attrs)
+      assert {:error, %Changeset{valid?: false}} = Transactions.withdraw(account, attrs)
     end
 
-    test "error changeset un-negates the amount", %{fund: fund} do
+    test "error changeset un-negates the amount", %{account: account, fund: fund} do
       line_item_attrs = Factory.line_item_attrs(fund)
       attrs = Factory.transaction_attrs(date: nil, line_items: [line_item_attrs])
 
-      assert {:error, %Changeset{action: :insert, valid?: false} = changeset} = Transactions.withdraw(attrs)
+      assert {:error, %Changeset{action: :insert, valid?: false} = changeset} = Transactions.withdraw(account, attrs)
       [line_item] = Changeset.get_change(changeset, :line_items)
       assert Changeset.get_change(line_item, :amount) == line_item_attrs[:amount]
     end
@@ -230,15 +250,21 @@ defmodule FreedomAccount.TransactionsTest do
     setup :create_funds
 
     setup %{funds: funds} do
-      for fund <- funds, do: Factory.deposit(fund, amount: ~M[5000]usd)
-      :ok
+      funds =
+        for fund <- funds do
+          amount = ~M[5000]usd
+          Factory.deposit(fund, amount: amount)
+          %{fund | current_balance: amount}
+        end
+
+      %{funds: funds}
     end
 
-    test "creates a transaction and its line items with valid data", %{funds: funds} do
+    test "creates a transaction and its line items with valid data", %{account: account, funds: funds} do
       line_item_attrs = Enum.map(funds, &Factory.line_item_attrs/1)
       valid_attrs = Factory.transaction_attrs(line_items: line_item_attrs)
 
-      assert {:ok, %Transaction{} = transaction} = Transactions.withdraw(valid_attrs)
+      assert {:ok, %Transaction{} = transaction} = Transactions.withdraw(account, valid_attrs)
       assert transaction.date == valid_attrs[:date]
       assert transaction.memo == valid_attrs[:memo]
 
@@ -249,11 +275,11 @@ defmodule FreedomAccount.TransactionsTest do
       end)
     end
 
-    test "associates each line_item to its fund", %{funds: funds} do
+    test "associates each line_item to its fund", %{account: account, funds: funds} do
       line_item_attrs = Enum.map(funds, &Factory.line_item_attrs/1)
       valid_attrs = Factory.transaction_attrs(line_items: line_item_attrs)
 
-      {:ok, transaction} = Transactions.withdraw(valid_attrs)
+      {:ok, transaction} = Transactions.withdraw(account, valid_attrs)
 
       transaction.line_items
       |> Enum.zip(funds)
@@ -262,18 +288,18 @@ defmodule FreedomAccount.TransactionsTest do
       end)
     end
 
-    test "publishes a transaction created event", %{funds: funds} do
+    test "publishes a transaction created event", %{account: account, funds: funds} do
       line_item_attrs = Enum.map(funds, &Factory.line_item_attrs/1)
       valid_attrs = Factory.transaction_attrs(line_items: line_item_attrs)
 
       :ok = PubSub.subscribe(Transactions.pubsub_topic())
 
-      {:ok, transaction} = Transactions.withdraw(valid_attrs)
+      {:ok, transaction} = Transactions.withdraw(account, valid_attrs)
 
       assert_received({:transaction_created, ^transaction})
     end
 
-    test "filters out null and zero amounts", %{funds: funds} do
+    test "filters out null and zero amounts", %{account: account, funds: funds} do
       [fund1, fund2, fund3] = funds
 
       line_item_attrs = [
@@ -284,27 +310,58 @@ defmodule FreedomAccount.TransactionsTest do
 
       attrs = Factory.transaction_attrs(line_items: line_item_attrs)
 
-      assert {:ok, transaction} = Transactions.withdraw(attrs)
+      assert {:ok, transaction} = Transactions.withdraw(account, attrs)
 
       assert [%LineItem{} = line_item] = transaction.line_items
       assert line_item.fund_id == fund2.id
     end
 
-    test "returns error changeset if no valid filtered line items", %{funds: funds} do
+    test "covers overdrafts from default fund", %{account: account, funds: funds} do
+      default_fund = Factory.fund(account)
+      account = %{account | default_fund_id: default_fund.id}
+      overdraft1 = ~M[100]usd
+      overdraft2 = ~M[50]usd
+
+      [fund1, fund2, fund3] = funds
+
+      line_item_attrs = [
+        Factory.line_item_attrs(fund1, amount: Money.add!(fund1.current_balance, overdraft1)),
+        Factory.line_item_attrs(fund2),
+        Factory.line_item_attrs(fund3, amount: Money.add!(fund3.current_balance, overdraft2))
+      ]
+
+      valid_attrs = Factory.transaction_attrs(line_items: line_item_attrs)
+
+      assert {:ok, %Transaction{} = transaction} = Transactions.withdraw(account, valid_attrs)
+
+      overdraft_amount = Money.add!(overdraft1, overdraft2)
+      line_item_attrs2 = Enum.at(line_item_attrs, 1)
+
+      expected = [
+        %LineItem{amount: Money.mult!(fund1.current_balance, -1), fund_id: fund1.id},
+        %LineItem{amount: Money.mult!(line_item_attrs2[:amount], -1), fund_id: fund2.id},
+        %LineItem{amount: Money.mult!(fund3.current_balance, -1), fund_id: fund3.id},
+        %LineItem{amount: Money.mult!(overdraft_amount, -1), fund_id: default_fund.id}
+      ]
+
+      assert_lists_equal(expected, transaction.line_items, &assert_structs_equal(&1, &2, [:amount, :fund_id]))
+    end
+
+    test "returns error changeset if no valid filtered line items", %{account: account, funds: funds} do
       line_item_attrs = Enum.map(funds, &Factory.line_item_attrs(&1, amount: nil))
       attrs = Factory.transaction_attrs(line_items: line_item_attrs)
 
-      assert {:error, %Changeset{valid?: false} = changeset} = Transactions.withdraw(attrs)
+      assert {:error, %Changeset{valid?: false} = changeset} = Transactions.withdraw(account, attrs)
 
       message = "Requires at least one line item with a non-zero amount"
       assert {^message, _opts} = changeset.errors[:line_items]
     end
 
-    test "error changeset un-negates the amounts", %{funds: funds} do
+    test "error changeset un-negates the amounts", %{account: account, funds: funds} do
       line_item_attrs = Enum.map(funds, &Factory.line_item_attrs/1)
       attrs = Factory.transaction_attrs(date: nil, line_items: line_item_attrs)
 
-      assert {:error, %Changeset{action: :insert, valid?: false} = changeset} = Transactions.withdraw(attrs)
+      assert {:error, %Changeset{action: :insert, valid?: false} = changeset} = Transactions.withdraw(account, attrs)
 
       changeset
       |> Changeset.get_change(:line_items)
