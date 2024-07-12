@@ -6,5 +6,5 @@ defmodule FreedomAccount.Cldr do
   Most function calls in Cldr will be calls
   to functions on this module.
   """
-  use Cldr, default_locale: "en", locales: ["en"], providers: [Money]
+  use Cldr, default_locale: "en", locales: ["en"], providers: [Cldr.Number, Money]
 end
