@@ -37,11 +37,11 @@ defmodule FreedomAccount.Transactions do
     |> Changeset.put_assoc(:line_items, line_items)
   end
 
-  @spec regular_deposit(Date.t(), [Fund.t()], Account.deposit_count()) ::
+  @spec regular_deposit(Account.t(), Date.t(), [Fund.t()]) ::
           {:ok, Transaction.t()} | {:error, InvariantError.t()}
-  def regular_deposit(%Date{} = date, funds, deposits_per_year) do
+  def regular_deposit(%Account{} = account, %Date{} = date, funds) do
     date
-    |> regular_deposit_params(funds, deposits_per_year)
+    |> regular_deposit_params(funds, account.deposits_per_year)
     |> deposit()
     |> case do
       {:ok, %Transaction{} = transaction} ->

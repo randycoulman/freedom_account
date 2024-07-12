@@ -86,7 +86,7 @@ defmodule FreedomAccountWeb.RegularDepositForm do
     changeset = Inputs.changeset(inputs, input_params)
 
     with {:ok, updated_inputs} <- Changeset.apply_action(changeset, :save),
-         {:ok, _transaction} <- Transactions.regular_deposit(updated_inputs.date, funds, account.deposits_per_year) do
+         {:ok, _transaction} <- Transactions.regular_deposit(account, updated_inputs.date, funds) do
       {:noreply,
        socket
        |> put_flash(:info, "Regular deposit successful")

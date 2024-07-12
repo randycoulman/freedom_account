@@ -109,18 +109,17 @@ defmodule FreedomAccount.TransactionsTest do
   describe "making a regular deposit" do
     setup :create_funds
 
-    test "creates a transaction and its line items with valid data", %{funds: funds} do
-      deposits_per_year = Factory.deposit_count()
+    test "creates a transaction and its line items with valid data", %{account: account, funds: funds} do
       date = Factory.date()
 
-      assert {:ok, %Transaction{} = transaction} = Transactions.regular_deposit(date, funds, deposits_per_year)
+      assert {:ok, %Transaction{} = transaction} = Transactions.regular_deposit(account, date, funds)
       assert transaction.date == date
       assert transaction.memo == "Regular deposit"
 
       transaction.line_items
       |> Enum.zip(funds)
       |> Enum.each(fn {line_item, fund} ->
-        amount = Funds.regular_deposit_amount(fund, deposits_per_year)
+        amount = Funds.regular_deposit_amount(fund, account.deposits_per_year)
         fund_id = fund.id
         assert %LineItem{amount: ^amount, fund_id: ^fund_id} = line_item
       end)
@@ -130,16 +129,16 @@ defmodule FreedomAccount.TransactionsTest do
       zero_budget_fund = Factory.fund(account, budget: Money.zero(:usd))
       funds = [zero_budget_fund | original_funds]
 
-      {:ok, %Transaction{} = transaction} = Transactions.regular_deposit(Factory.date(), funds, Factory.deposit_count())
+      {:ok, %Transaction{} = transaction} = Transactions.regular_deposit(account, Factory.date(), funds)
 
       assert length(transaction.line_items) == length(original_funds)
       refute zero_budget_fund.id in Enum.map(transaction.line_items, & &1.fund_id)
     end
 
-    test "publishes a transaction created event", %{funds: funds} do
+    test "publishes a transaction created event", %{account: account, funds: funds} do
       :ok = PubSub.subscribe(Transactions.pubsub_topic())
 
-      {:ok, %Transaction{} = transaction} = Transactions.regular_deposit(Factory.date(), funds, Factory.deposit_count())
+      {:ok, %Transaction{} = transaction} = Transactions.regular_deposit(account, Factory.date(), funds)
 
       assert_received({:transaction_created, ^transaction})
     end
