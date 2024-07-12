@@ -5,6 +5,8 @@ defmodule FreedomAccount.Error do
   All errors from outside of the application should be mapped to a
   `FreedomAccount.Error` when first encountered.
   """
+  use Boundary, exports: [InvariantError, NotAllowedError, NotFoundError, ServiceError]
+
   require Logger
 
   defmodule InvariantError do

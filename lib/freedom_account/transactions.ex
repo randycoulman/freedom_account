@@ -2,6 +2,18 @@ defmodule FreedomAccount.Transactions do
   @moduledoc """
   Context for working with transactions in a Freedom Account.
   """
+  use Boundary,
+    deps: [
+      FreedomAccount.Accounts,
+      FreedomAccount.Error,
+      FreedomAccount.ErrorReporter,
+      FreedomAccount.Funds,
+      FreedomAccount.MoneyUtils,
+      FreedomAccount.PubSub,
+      FreedomAccount.Repo
+    ],
+    exports: [Transaction]
+
   alias Ecto.Changeset
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Error

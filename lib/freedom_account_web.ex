@@ -16,6 +16,7 @@ defmodule FreedomAccountWeb do
   below. Instead, define additional modules and import
   those modules here.
   """
+  use Boundary, deps: [FreedomAccount], exports: [Endpoint]
 
   @spec static_paths :: [String.t()]
   def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)

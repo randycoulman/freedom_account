@@ -6,6 +6,7 @@ defmodule FreedomAccount.Repo do
 
   See `Ecto.Repo`.
   """
+  use Boundary, deps: [FreedomAccount.Error, FreedomAccount.ErrorReporter]
 
   use Ecto.Repo,
     otp_app: :freedom_account,

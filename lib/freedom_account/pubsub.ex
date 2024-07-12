@@ -2,6 +2,8 @@ defmodule FreedomAccount.PubSub do
   @moduledoc """
   Wrap Phoenix.PubSub with a convenience API.
   """
+  use Boundary, deps: [FreedomAccount.Error, FreedomAccount.ErrorReporter]
+
   alias Ecto.Changeset
   alias FreedomAccount.Error
   alias FreedomAccount.Error.ServiceError

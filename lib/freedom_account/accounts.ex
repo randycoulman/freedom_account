@@ -3,6 +3,8 @@ defmodule FreedomAccount.Accounts do
   Context for working with Freedom Accounts.
   """
 
+  use Boundary, deps: [FreedomAccount.Error, FreedomAccount.PubSub, FreedomAccount.Repo], exports: [Account]
+
   alias Ecto.Changeset
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Error.NotFoundError

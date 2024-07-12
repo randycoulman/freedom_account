@@ -2,6 +2,7 @@ defmodule FreedomAccount.ErrorReporter do
   @moduledoc """
   Standard error reporting.
   """
+  use Boundary
 
   @type error :: {:error, term()} | term()
   @type opt ::

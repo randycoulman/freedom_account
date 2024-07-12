@@ -1,6 +1,7 @@
 %{
   "assertions": {:hex, :assertions, "0.20.1", "e6bfcefbf199bc760d273d5a204ad9ef8a4f6c2b4725fc51d10610d73062e57b", [:mix], [], "hexpm", "848284fbde52f752232d73b8f77060ad191e1a98c177873c4b8dc56c4958defd"},
   "bandit": {:hex, :bandit, "1.5.5", "df28f1c41f745401fe9e85a6882033f5f3442ab6d30c8a2948554062a4ab56e0", [:mix], [{:hpax, "~> 0.2.0", [hex: :hpax, repo: "hexpm", optional: false]}, {:plug, "~> 1.14", [hex: :plug, repo: "hexpm", optional: false]}, {:telemetry, "~> 0.4 or ~> 1.0", [hex: :telemetry, repo: "hexpm", optional: false]}, {:thousand_island, "~> 1.0", [hex: :thousand_island, repo: "hexpm", optional: false]}, {:websock, "~> 0.5", [hex: :websock, repo: "hexpm", optional: false]}], "hexpm", "f21579a29ea4bc08440343b2b5f16f7cddf2fea5725d31b72cf973ec729079e1"},
+  "boundary": {:hex, :boundary, "0.10.3", "43c15d67a3a1ba863d0995de1c300e82aeb3cfec592d0a6a88a5aa2cf95d3c32", [:mix], [], "hexpm", "a037f12b28b2baf971f7e986e642967c94ff7bf74f25ad6a4d7c52e7e8739850"},
   "bunt": {:hex, :bunt, "1.0.0", "081c2c665f086849e6d57900292b3a161727ab40431219529f13c4ddcf3e7a44", [:mix], [], "hexpm", "dc5f86aa08a5f6fa6b8096f0735c4e76d54ae5c9fa2c143e5a1fc7c1cd9bb6b5"},
   "castore": {:hex, :castore, "1.0.7", "b651241514e5f6956028147fe6637f7ac13802537e895a724f90bf3e36ddd1dd", [:mix], [], "hexpm", "da7785a4b0d2a021cd1292a60875a784b6caef71e76bf4917bdee1f390455cf5"},
   "certifi": {:hex, :certifi, "2.12.0", "2d1cca2ec95f59643862af91f001478c9863c2ac9cb6e2f89780bfd8de987329", [:rebar3], [], "hexpm", "ee68d85df22e554040cdb4be100f33873ac6051387baf6a8f6ce82272340ff1c"},

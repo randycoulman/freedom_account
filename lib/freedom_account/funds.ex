@@ -2,6 +2,15 @@ defmodule FreedomAccount.Funds do
   @moduledoc """
   Context for working with funds in a Freedom Account.
   """
+  use Boundary,
+    deps: [
+      FreedomAccount.Accounts,
+      FreedomAccount.Error,
+      FreedomAccount.ErrorReporter,
+      FreedomAccount.PubSub,
+      FreedomAccount.Repo
+    ],
+    exports: [Fund]
 
   alias Ecto.Changeset
   alias Ecto.Multi

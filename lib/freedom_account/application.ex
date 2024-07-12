@@ -4,6 +4,7 @@ defmodule FreedomAccount.Application do
   @moduledoc false
 
   use Application
+  use Boundary, deps: [FreedomAccount, FreedomAccountWeb], top_level?: true
 
   @impl Application
   def start(_type, _args) do

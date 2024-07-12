@@ -13,6 +13,7 @@ defmodule FreedomAccount.MixProject do
     [
       aliases: aliases(),
       app: :freedom_account,
+      compilers: [:boundary] ++ Mix.compilers(),
       deps: deps(),
       dialyzer: [
         ignore_warnings: "config/dialyzer_ignore.exs",
@@ -73,6 +74,7 @@ defmodule FreedomAccount.MixProject do
     [
       {:assertions, "~> 0.20.0", only: [:test]},
       {:bandit, "~> 1.5"},
+      {:boundary, "~> 0.10.3"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:dns_cluster, "~> 0.1.1"},
