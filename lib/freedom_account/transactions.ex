@@ -84,7 +84,7 @@ defmodule FreedomAccount.Transactions do
 
   @spec withdraw(Account.t(), Transaction.attrs()) :: {:ok, Transaction.t()} | {:error, Changeset.t()}
   def withdraw(%Account{} = account, attrs \\ %{}) do
-    funds = Funds.list_funds(account)
+    funds = Funds.list_active_funds(account)
 
     %Transaction{}
     |> Transaction.withdrawal_changeset(attrs)

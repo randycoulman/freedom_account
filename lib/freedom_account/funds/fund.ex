@@ -14,6 +14,9 @@ defmodule FreedomAccount.Funds.Fund do
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Transactions.LineItem
 
+  @type activation_attrs :: %{
+          optional(:active?) => boolean()
+        }
   @type attrs :: %{
           optional(:account_id) => non_neg_integer,
           optional(:budget) => Money.t(),
@@ -44,6 +47,13 @@ defmodule FreedomAccount.Funds.Fund do
     field(:current_balance, Money.Ecto.Composite.Type, virtual: true) :: Money.t() | nil
 
     timestamps()
+  end
+
+  @spec activation_changeset(Changeset.t() | Schema.t(), activation_attrs()) :: Changeset.t()
+  def activation_changeset(fund, attrs) do
+    fund
+    |> cast(attrs, [:active?])
+    |> validate_required([:active?])
   end
 
   @spec budget_changeset(Changeset.t() | Schema.t(), budget_attrs()) :: Changeset.t()
@@ -113,5 +123,8 @@ defmodule FreedomAccount.Funds.Fund do
       select_merge: %{current_balance: type(coalesce(sum(l.amount), ^zero), l.amount)}
   end
 
-  defp base_query, do: __MODULE__
+  defp base_query do
+    from f in __MODULE__,
+      where: [active?: true]
+  end
 end

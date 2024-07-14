@@ -52,6 +52,13 @@ defmodule FreedomAccount.FundsTest do
       assert fund.account_id == account.id
     end
 
+    test "marks the fund as active", %{account: account} do
+      valid_attrs = Factory.fund_attrs()
+
+      {:ok, fund} = Funds.create_fund(account, valid_attrs)
+      assert fund.active?
+    end
+
     test "publishes a fund created event", %{account: account} do
       valid_attrs = Factory.fund_attrs()
 
@@ -67,12 +74,22 @@ defmodule FreedomAccount.FundsTest do
     end
   end
 
+  describe "deactivating a fund" do
+    test "TEMPORARY: marks the fund as inactive without validation", %{account: account} do
+      fund = Factory.fund(account)
+
+      assert %Fund{} = updated_fund = Funds.deactivate_fund!(fund)
+
+      refute updated_fund.active?
+    end
+  end
+
   describe "deleting a fund" do
     setup :create_fund
 
     test "deletes the fund", %{account: account, fund: fund} do
       assert :ok = Funds.delete_fund(fund)
-      assert {:error, %NotFoundError{}} = Funds.fetch_fund(account, fund.id)
+      assert {:error, %NotFoundError{}} = Funds.fetch_active_fund(account, fund.id)
     end
 
     test "publishes a fund deleted event", %{fund: fund} do
@@ -94,18 +111,23 @@ defmodule FreedomAccount.FundsTest do
   describe "fetching a fund" do
     test "when fund exists for the provided account, finds the fund by ID", %{account: account} do
       fund = Factory.fund(account)
-      assert {:ok, fund} == Funds.fetch_fund(account, fund.id)
+      assert {:ok, fund} == Funds.fetch_active_fund(account, fund.id)
+    end
+
+    test "when fund is inactive, returns an error", %{account: account} do
+      fund = Factory.inactive_fund(account)
+      assert {:error, %NotFoundError{}} = Funds.fetch_active_fund(account, fund.id)
     end
 
     test "when fund exists, but for a different account, returns an error", %{account: account} do
       other_account = Factory.account()
       fund = Factory.fund(other_account)
 
-      assert {:error, %NotFoundError{}} = Funds.fetch_fund(account, fund.id)
+      assert {:error, %NotFoundError{}} = Funds.fetch_active_fund(account, fund.id)
     end
 
     test "when fund does not exist, returns an error", %{account: account} do
-      assert {:error, %NotFoundError{}} = Funds.fetch_fund(account, Factory.id())
+      assert {:error, %NotFoundError{}} = Funds.fetch_active_fund(account, Factory.id())
     end
   end
 
@@ -118,7 +140,7 @@ defmodule FreedomAccount.FundsTest do
 
     test "returns all funds sorted by name", %{account: account, funds: funds} do
       sorted_funds = Enum.sort_by(funds, & &1.name)
-      assert Funds.list_funds(account) == sorted_funds
+      assert Funds.list_active_funds(account) == sorted_funds
     end
 
     test "includes current balance of each fund", %{account: account, funds: funds} do
@@ -129,7 +151,7 @@ defmodule FreedomAccount.FundsTest do
       end)
 
       account
-      |> Funds.list_funds()
+      |> Funds.list_active_funds()
       |> Enum.each(fn fund ->
         assert fund.current_balance == calculate_amount.(fund)
       end)
@@ -138,10 +160,16 @@ defmodule FreedomAccount.FundsTest do
     test "filters by a list of ids when provided", %{account: account, funds: funds} do
       [fund1, _fund2, fund3] = funds
 
-      result = Funds.list_funds(account, [fund1.id, fund3.id])
+      result = Funds.list_active_funds(account, [fund1.id, fund3.id])
 
       fields = Map.keys(fund1) -- [:current_balance]
       assert_lists_equal(result, [fund1, fund3], &assert_maps_equal(&1, &2, fields))
+    end
+
+    test "does not include inactive funds", %{account: account, funds: active_funds} do
+      _inactive_fund = Factory.inactive_fund(account)
+
+      assert_lists_equal(Funds.list_active_funds(account), active_funds)
     end
   end
 
@@ -206,7 +234,7 @@ defmodule FreedomAccount.FundsTest do
 
       assert {:error, %Changeset{valid?: false} = changeset} = Funds.update_budget(funds, invalid_attrs)
       assert [%Changeset{valid?: true}, %Changeset{valid?: false}] = Changeset.get_embed(changeset, :funds)
-      assert_lists_equal(funds, Funds.list_funds(account))
+      assert_lists_equal(funds, Funds.list_active_funds(account))
     end
   end
 
@@ -233,7 +261,7 @@ defmodule FreedomAccount.FundsTest do
 
     test "with invalid data returns an error changeset", %{account: account, fund: fund} do
       assert {:error, %Changeset{valid?: false}} = Funds.update_fund(fund, @invalid_attrs)
-      assert {:ok, fund} == Funds.fetch_fund(account, fund.id)
+      assert {:ok, fund} == Funds.fetch_active_fund(account, fund.id)
     end
 
     test "does not allow associating with a different account", %{account: original_account, fund: fund} do

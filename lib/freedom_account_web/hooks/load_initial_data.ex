@@ -28,7 +28,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
       end
 
     account = Accounts.only_account()
-    funds = Funds.list_funds(account)
+    funds = Funds.list_active_funds(account)
 
     {:cont,
      socket
@@ -83,7 +83,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
   defp handle_info({:transaction_created, %Transaction{} = transaction}, socket) do
     %{account: account} = socket.assigns
     ids = Enum.map(transaction.line_items, & &1.fund_id)
-    updated_funds = Funds.list_funds(account, ids)
+    updated_funds = Funds.list_active_funds(account, ids)
 
     {:cont, update_funds(socket, &FundCache.update_all(&1, updated_funds))}
   end

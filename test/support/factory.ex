@@ -185,6 +185,13 @@ defmodule FreedomAccount.Factory do
     })
   end
 
+  @spec inactive_fund(Account.t(), Fund.attrs()) :: Fund.t()
+  def inactive_fund(account, attrs \\ %{}) do
+    account
+    |> fund(attrs)
+    |> Funds.deactivate_fund!()
+  end
+
   @spec line_item_attrs(Fund.t(), LineItem.attrs()) :: LineItem.attrs()
   def line_item_attrs(fund, overrides \\ %{}) do
     Enum.into(overrides, %{amount: money(), fund_id: fund.id})

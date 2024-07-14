@@ -43,6 +43,13 @@ defmodule FreedomAccount.Funds do
     |> PubSub.broadcast(pubsub_topic(), :fund_created)
   end
 
+  @spec deactivate_fund!(Fund.t()) :: Fund.t()
+  def deactivate_fund!(%Fund{} = fund) do
+    fund
+    |> Fund.activation_changeset(%{active?: false})
+    |> Repo.update!()
+  end
+
   @spec delete_fund(Fund.t()) :: :ok | {:error, NotAllowedError.t()}
   def delete_fund(%Fund{} = fund) do
     fund
@@ -59,18 +66,18 @@ defmodule FreedomAccount.Funds do
     end
   end
 
-  @spec fetch_fund(Account.t(), Fund.id()) :: {:ok, Fund.t()} | {:error, NotFoundError.t()}
-  def fetch_fund(%Account{} = account, id) do
-    Fund
-    |> Fund.by_account(account)
+  @spec fetch_active_fund(Account.t(), Fund.id()) :: {:ok, Fund.t()} | {:error, NotFoundError.t()}
+  def fetch_active_fund(%Account{} = account, id) do
+    account
+    |> Fund.by_account()
     |> Repo.fetch(id)
   end
 
-  @spec list_funds(Account.t()) :: [Fund.t()]
-  @spec list_funds(Account.t(), [Fund.id()] | nil) :: [Fund.t()]
-  def list_funds(account, ids \\ nil) do
-    Fund
-    |> Fund.by_account(account)
+  @spec list_active_funds(Account.t()) :: [Fund.t()]
+  @spec list_active_funds(Account.t(), [Fund.id()] | nil) :: [Fund.t()]
+  def list_active_funds(account, ids \\ nil) do
+    account
+    |> Fund.by_account()
     |> Fund.where_ids(ids)
     |> Fund.order_by_name()
     |> Fund.with_balance()
