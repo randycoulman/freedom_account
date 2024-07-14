@@ -167,6 +167,8 @@ defmodule FreedomAccount.Factory do
   @spec fund_attrs(Fund.attrs()) :: Fund.attrs()
   def fund_attrs(overrides \\ %{}) do
     Enum.into(overrides, %{
+      # This is done automatically by the database
+      # active?: true,
       budget: money(),
       icon: fund_icon(),
       name: fund_name(),

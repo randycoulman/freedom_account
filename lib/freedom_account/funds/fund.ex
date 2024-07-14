@@ -33,6 +33,7 @@ defmodule FreedomAccount.Funds.Fund do
   typed_schema "funds" do
     belongs_to :account, Account
 
+    field :active?, :boolean, null: false, read_after_writes: true, source: :active
     field(:budget, Money.Ecto.Composite.Type) :: Money.t()
     field :icon, :string, null: false
     field :name, :string, null: false
