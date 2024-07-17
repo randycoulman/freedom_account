@@ -4,6 +4,7 @@ defmodule FreedomAccountWeb.Account.Show do
   use FreedomAccountWeb, :live_component
 
   alias FreedomAccountWeb.Account.Form
+  alias FreedomAccountWeb.ActivationForm
   alias FreedomAccountWeb.BudgetForm
   alias FreedomAccountWeb.RegularDepositForm
   alias FreedomAccountWeb.TransactionForm
@@ -36,6 +37,11 @@ defmodule FreedomAccountWeb.Account.Show do
               <.icon name="hero-chart-pie-mini" /> Budget
             </.button>
           </.link>
+          <.link patch={@activate_path} phx-click={JS.push_focus()}>
+            <.button>
+              <.icon name="hero-archive-box-mini" /> Activate/Deactivate
+            </.button>
+          </.link>
           <.link patch={@edit_path} phx-click={JS.push_focus()}>
             <.button>
               <.icon name="hero-cog-8-tooth-mini" /> Settings
@@ -44,6 +50,14 @@ defmodule FreedomAccountWeb.Account.Show do
         </:actions>
       </.header>
 
+      <.modal :if={@action == :activate} id="activate-modal" show on_cancel={JS.patch(@return_path)}>
+        <.live_component
+          account={@account}
+          id={@account.id}
+          module={ActivationForm}
+          return_path={@return_path}
+        />
+      </.modal>
       <.modal
         :if={@action == :edit_account}
         id="account-modal"

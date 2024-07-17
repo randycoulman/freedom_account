@@ -18,12 +18,23 @@ defmodule FreedomAccount.Funds do
   alias FreedomAccount.Error
   alias FreedomAccount.Error.NotAllowedError
   alias FreedomAccount.Error.NotFoundError
+  alias FreedomAccount.Funds.Activation
   alias FreedomAccount.Funds.Budget
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.PubSub
   alias FreedomAccount.Repo
 
   require FreedomAccount.ErrorReporter, as: ErrorReporter
+
+  @spec change_activation(Account.t(), Activation.attrs()) :: Changeset.t()
+  def change_activation(%Account{} = account, attrs \\ %{}) do
+    allowed_funds =
+      account
+      |> list_all_funds()
+      |> Enum.filter(&Fund.can_change_activation?/1)
+
+    Activation.changeset(%Activation{funds: allowed_funds}, attrs)
+  end
 
   @spec change_budget([Fund.t()], Budget.attrs()) :: Changeset.t()
   def change_budget(funds, attrs \\ %{}) do
@@ -43,11 +54,16 @@ defmodule FreedomAccount.Funds do
     |> PubSub.broadcast(pubsub_topic(), :fund_created)
   end
 
-  @spec deactivate_fund!(Fund.t()) :: Fund.t()
-  def deactivate_fund!(%Fund{} = fund) do
-    fund
-    |> Fund.activation_changeset(%{active?: false})
-    |> Repo.update!()
+  @spec deactivate_fund(Fund.t()) :: {:ok, Fund.t()} | {:error, NotAllowedError.t()}
+  def deactivate_fund(%Fund{} = fund) do
+    if Fund.can_change_activation?(fund) do
+      fund
+      |> Fund.activation_changeset(%{active: false})
+      |> Repo.update()
+    else
+      ErrorReporter.call("Attempt to deactivate a fund with a non-zero balance", metadata: %{fund_id: fund.id})
+      {:error, Error.not_allowed(message: "A fund with a non-zero balance cannot be deactivated")}
+    end
   end
 
   @spec delete_fund(Fund.t()) :: :ok | {:error, NotAllowedError.t()}
@@ -79,8 +95,17 @@ defmodule FreedomAccount.Funds do
     account
     |> Fund.by_account()
     |> Fund.where_ids(ids)
-    |> Fund.order_by_name()
     |> Fund.with_balance()
+    |> Fund.order_by_name()
+    |> Repo.all()
+  end
+
+  @spec list_all_funds(Account.t()) :: [Fund.t()]
+  def list_all_funds(account) do
+    Fund
+    |> Fund.by_account(account)
+    |> Fund.with_balance()
+    |> Fund.order_by_name()
     |> Repo.all()
   end
 
@@ -88,6 +113,26 @@ defmodule FreedomAccount.Funds do
   def pubsub_topic, do: ProcessTree.get(:funds_topic, default: "funds")
 
   defdelegate regular_deposit_amount(fund, deposits_per_year), to: Fund
+
+  @spec update_activation(Account.t(), Activation.attrs()) :: {:ok, [Fund.t()]} | {:error, Changeset.t()}
+  def update_activation(%Account{} = account, attrs) do
+    activation_changeset = change_activation(account, attrs)
+
+    activation_changeset
+    |> Changeset.get_embed(:funds)
+    |> Enum.with_index()
+    |> Enum.reduce(Multi.new(), fn {changeset, index}, multi ->
+      Multi.update(multi, {:fund, index}, changeset)
+    end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, changes} ->
+        PubSub.broadcast({:ok, Map.values(changes)}, pubsub_topic(), :activation_updated)
+
+      {:error, {:fund, index}, changeset, _changes_so_far} ->
+        {:error, Map.put(activation_changeset, index, changeset)}
+    end
+  end
 
   @spec update_budget([Fund.t()], Budget.attrs()) :: {:ok, [Fund.t()]} | {:error, Changeset.t()}
   def update_budget(funds, attrs) do

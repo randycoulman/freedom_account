@@ -62,6 +62,10 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
     {:cont, assign(socket, :account, account)}
   end
 
+  defp handle_info({:activation_updated, funds}, socket) do
+    {:cont, update_funds(socket, &FundCache.update_activations(&1, funds))}
+  end
+
   defp handle_info({:budget_updated, funds}, socket) do
     {:cont, update_funds(socket, &FundCache.update_all(&1, funds))}
   end

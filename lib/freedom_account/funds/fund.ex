@@ -15,7 +15,7 @@ defmodule FreedomAccount.Funds.Fund do
   alias FreedomAccount.Transactions.LineItem
 
   @type activation_attrs :: %{
-          optional(:active?) => boolean()
+          optional(:active) => boolean()
         }
   @type attrs :: %{
           optional(:account_id) => non_neg_integer,
@@ -36,7 +36,7 @@ defmodule FreedomAccount.Funds.Fund do
   typed_schema "funds" do
     belongs_to :account, Account
 
-    field :active?, :boolean, null: false, read_after_writes: true, source: :active
+    field :active, :boolean, null: false, read_after_writes: true
     field(:budget, Money.Ecto.Composite.Type) :: Money.t()
     field :icon, :string, null: false
     field :name, :string, null: false
@@ -52,8 +52,8 @@ defmodule FreedomAccount.Funds.Fund do
   @spec activation_changeset(Changeset.t() | Schema.t(), activation_attrs()) :: Changeset.t()
   def activation_changeset(fund, attrs) do
     fund
-    |> cast(attrs, [:active?])
-    |> validate_required([:active?])
+    |> cast(attrs, [:active])
+    |> validate_required([:active])
   end
 
   @spec budget_changeset(Changeset.t() | Schema.t(), budget_attrs()) :: Changeset.t()
@@ -70,6 +70,11 @@ defmodule FreedomAccount.Funds.Fund do
     |> validate_required([:budget, :icon, :name, :times_per_year])
     |> validate_length(:icon, max: 10)
     |> validate_length(:name, max: 50)
+  end
+
+  @spec can_change_activation?(t()) :: boolean()
+  def can_change_activation?(%__MODULE__{} = fund) do
+    not fund.active or Money.zero?(fund.current_balance)
   end
 
   @spec deletion_changeset(Changeset.t() | Schema.t()) :: Changeset.t()
@@ -125,6 +130,6 @@ defmodule FreedomAccount.Funds.Fund do
 
   defp base_query do
     from f in __MODULE__,
-      where: [active?: true]
+      where: [active: true]
   end
 end

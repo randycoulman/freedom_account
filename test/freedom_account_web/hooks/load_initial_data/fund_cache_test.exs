@@ -2,6 +2,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData.FundCacheTest do
   use FreedomAccount.DataCase, async: false
 
   alias FreedomAccount.Factory
+  alias FreedomAccount.Funds
   alias FreedomAccountWeb.Hooks.LoadInitialData.FundCache
 
   setup [:create_account, :create_funds]
@@ -70,6 +71,44 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData.FundCacheTest do
         ^original_icon -> new_icon(original_icon)
         icon -> icon
       end
+    end
+  end
+
+  describe "updating fund activations" do
+    test "adds newly-active funds", %{account: account, funds: funds} do
+      newly_active_fund = Factory.fund(account, current_balance: Money.zero(:usd), name: "SSS")
+
+      result = FundCache.update_activations(funds, [newly_active_fund])
+
+      assert names(result) == ~w(AAA GGG MMM SSS UUU ZZZ)
+    end
+
+    test "ignores still-active funds", %{funds: funds} do
+      still_active_fund = Enum.random(funds)
+
+      result = FundCache.update_activations(funds, [still_active_fund])
+
+      assert result == funds
+    end
+
+    test "removes newly-inactive funds", %{funds: funds} do
+      {:ok, newly_inactive_fund} =
+        funds
+        |> Enum.random()
+        |> Factory.with_balance(Money.zero(:usd))
+        |> Funds.deactivate_fund()
+
+      result = FundCache.update_activations(funds, [newly_inactive_fund])
+
+      refute newly_inactive_fund.name in names(result)
+    end
+
+    test "ignores still-inactive funds", %{account: account, funds: funds} do
+      still_inactive_fund = Factory.inactive_fund(account, current_balance: Money.zero(:usd))
+
+      result = FundCache.update_activations(funds, [still_inactive_fund])
+
+      assert result == funds
     end
   end
 

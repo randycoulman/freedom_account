@@ -20,6 +20,24 @@ defmodule FreedomAccount.FundsTest do
 
   setup [:create_account]
 
+  describe "creating a changeset for activating/deactivating funds" do
+    test "returns a changeset for all inactive funds plus active funds with a zero balance", %{account: account} do
+      _funds = [
+        Factory.fund(account, name: "Can Deactivate", current_balance: Money.zero(:usd)),
+        Factory.inactive_fund(account, name: "Inactive", current_balance: Money.zero(:usd)),
+        account |> Factory.fund(name: "Has Non-Zero Balance") |> Factory.with_balance(~M[150]usd),
+        Factory.fund(account, name: "To Deactivate", current_balance: Money.zero(:usd))
+      ]
+
+      assert %Changeset{} = changeset = Funds.change_activation(account)
+      embedded_funds = Changeset.get_embed(changeset, :funds)
+
+      names = Enum.map(embedded_funds, &Changeset.get_field(&1, :name))
+
+      assert_lists_equal(names, ["Can Deactivate", "Inactive", "To Deactivate"])
+    end
+  end
+
   describe "creating a changeset for the budget" do
     test "returns the changeset", %{account: account} do
       funds = for _i <- 1..3, do: Factory.fund(account)
@@ -56,7 +74,7 @@ defmodule FreedomAccount.FundsTest do
       valid_attrs = Factory.fund_attrs()
 
       {:ok, fund} = Funds.create_fund(account, valid_attrs)
-      assert fund.active?
+      assert fund.active
     end
 
     test "publishes a fund created event", %{account: account} do
@@ -75,12 +93,18 @@ defmodule FreedomAccount.FundsTest do
   end
 
   describe "deactivating a fund" do
-    test "TEMPORARY: marks the fund as inactive without validation", %{account: account} do
-      fund = Factory.fund(account)
+    test "marks the fund as inactive", %{account: account} do
+      fund = Factory.fund(account, current_balance: Money.zero(:usd))
 
-      assert %Fund{} = updated_fund = Funds.deactivate_fund!(fund)
+      assert {:ok, %Fund{} = updated_fund} = Funds.deactivate_fund(fund)
 
-      refute updated_fund.active?
+      refute updated_fund.active
+    end
+
+    test "returns error if fund cannot be deactivated", %{account: account} do
+      fund = account |> Factory.fund() |> Factory.with_balance()
+
+      assert {:error, %NotAllowedError{}} = Funds.deactivate_fund(fund)
     end
   end
 
@@ -131,14 +155,14 @@ defmodule FreedomAccount.FundsTest do
     end
   end
 
-  describe "listing funds" do
+  describe "listing active funds" do
     setup %{account: account} do
       funds = for _i <- 1..3, do: Factory.fund(account, current_balance: Money.zero(:usd))
 
       %{funds: funds}
     end
 
-    test "returns all funds sorted by name", %{account: account, funds: funds} do
+    test "returns all active funds sorted by name", %{account: account, funds: funds} do
       sorted_funds = Enum.sort_by(funds, & &1.name)
       assert Funds.list_active_funds(account) == sorted_funds
     end
@@ -173,6 +197,33 @@ defmodule FreedomAccount.FundsTest do
     end
   end
 
+  describe "listing all funds" do
+    setup %{account: account} do
+      funds = for _i <- 1..3, do: Factory.fund(account, current_balance: Money.zero(:usd))
+
+      %{funds: [Factory.inactive_fund(account, current_balance: Money.zero(:usd)) | funds]}
+    end
+
+    test "returns all funds (both active and inactive) sorted by name", %{account: account, funds: funds} do
+      sorted_funds = Enum.sort_by(funds, & &1.name)
+      assert Funds.list_all_funds(account) == sorted_funds
+    end
+
+    test "includes current balance of each fund", %{account: account, funds: funds} do
+      calculate_amount = &Money.mult!(~M[10.00]usd, &1.id)
+
+      Enum.each(funds, fn fund ->
+        Factory.deposit(fund, amount: calculate_amount.(fund))
+      end)
+
+      account
+      |> Funds.list_all_funds()
+      |> Enum.each(fn fund ->
+        assert fund.current_balance == calculate_amount.(fund)
+      end)
+    end
+  end
+
   describe "regular deposit amount" do
     for {budget, times, periods, expected} <- [
           {~M[1200]usd, 1.0, 24, ~M[50]usd},
@@ -192,6 +243,58 @@ defmodule FreedomAccount.FundsTest do
 
         assert Money.equal?(expected, actual)
       end
+    end
+  end
+
+  describe "updating fund activation" do
+    test "saves active flag for all funds", %{account: account} do
+      funds = [
+        Factory.fund(account),
+        Factory.inactive_fund(account),
+        Factory.fund(account)
+      ]
+
+      valid_attrs = Factory.activation_attrs(funds)
+
+      assert {:ok, updated_funds} = Funds.update_activation(account, valid_attrs)
+
+      valid_attrs.funds
+      |> Enum.zip(updated_funds)
+      |> Enum.each(fn {{_index, attrs}, fund} ->
+        assert fund.active == attrs[:active]
+      end)
+    end
+
+    test "publishes an activation updated event", %{account: account} do
+      funds = [
+        Factory.fund(account),
+        Factory.inactive_fund(account),
+        Factory.fund(account)
+      ]
+
+      valid_attrs = Factory.budget_attrs(funds)
+
+      :ok = PubSub.subscribe(Funds.pubsub_topic())
+
+      {:ok, updated_funds} = Funds.update_activation(account, valid_attrs)
+
+      assert_received({:activation_updated, ^updated_funds})
+    end
+
+    test "with invalid data returns an error changeset", %{account: account} do
+      funds = [
+        Factory.fund(account, current_balance: Money.zero(:usd)),
+        Factory.inactive_fund(account, current_balance: Money.zero(:usd))
+      ]
+
+      invalid_attrs =
+        funds
+        |> Factory.activation_attrs()
+        |> update_in([:funds, "1"], &Map.put(&1, :active, nil))
+
+      assert {:error, %Changeset{valid?: false} = changeset} = Funds.update_activation(account, invalid_attrs)
+      assert [%Changeset{valid?: true}, %Changeset{valid?: false}] = Changeset.get_embed(changeset, :funds)
+      assert_lists_equal(funds, Funds.list_all_funds(account))
     end
   end
 

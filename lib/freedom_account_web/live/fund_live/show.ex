@@ -32,6 +32,10 @@ defmodule FreedomAccountWeb.FundLive.Show do
     end
   end
 
+  defp apply_action(socket, :activate) do
+    assign(socket, :page_title, "Activate/Deactivate")
+  end
+
   defp apply_action(socket, :edit) do
     assign(socket, :page_title, "Edit Fund")
   end
@@ -72,6 +76,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
     <.live_component
       account={@account}
       action={@live_action}
+      activate_path={~p"/funds/#{@fund}/activate"}
       budget_path={~p"/funds/#{@fund}/budget"}
       edit_path={~p"/funds/#{@fund}/account"}
       funds={@funds}

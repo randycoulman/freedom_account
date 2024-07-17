@@ -5,6 +5,7 @@ defmodule FreedomAccount.Factory do
   alias FreedomAccount.Accounts
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Funds
+  alias FreedomAccount.Funds.Activation
   alias FreedomAccount.Funds.Budget
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Transactions
@@ -124,6 +125,17 @@ defmodule FreedomAccount.Factory do
     Enum.into(overrides, %{deposits_per_year: deposit_count(), name: account_name()})
   end
 
+  @spec activation_attrs([Fund.t()], Fund.activation_attrs()) :: Activation.attrs()
+  def activation_attrs(funds, attrs \\ %{}) do
+    fund_attrs =
+      funds
+      |> Enum.map(&fund_activation_attrs(&1.id, attrs))
+      |> Enum.with_index()
+      |> Map.new(fn {attrs, index} -> {to_string(index), attrs} end)
+
+    %{funds: fund_attrs}
+  end
+
   @spec budget_attrs([Fund.t()], Fund.budget_attrs()) :: Budget.attrs()
   def budget_attrs(funds, attrs \\ %{}) do
     fund_attrs =
@@ -168,11 +180,19 @@ defmodule FreedomAccount.Factory do
   def fund_attrs(overrides \\ %{}) do
     Enum.into(overrides, %{
       # This is done automatically by the database
-      # active?: true,
+      # active: true,
       budget: money(),
       icon: fund_icon(),
       name: fund_name(),
       times_per_year: times_per_year()
+    })
+  end
+
+  @spec fund_activation_attrs(Fund.id(), Fund.activation_attrs()) :: Fund.activation_attrs()
+  def fund_activation_attrs(id, overrides \\ %{}) do
+    Enum.into(overrides, %{
+      active: Enum.random([false, true]),
+      id: id
     })
   end
 
@@ -187,9 +207,13 @@ defmodule FreedomAccount.Factory do
 
   @spec inactive_fund(Account.t(), Fund.attrs()) :: Fund.t()
   def inactive_fund(account, attrs \\ %{}) do
-    account
-    |> fund(attrs)
-    |> Funds.deactivate_fund!()
+    {:ok, fund} =
+      account
+      |> fund(attrs)
+      |> Map.put(:current_balance, Money.zero(:usd))
+      |> Funds.deactivate_fund()
+
+    fund
   end
 
   @spec line_item_attrs(Fund.t(), LineItem.attrs()) :: LineItem.attrs()
