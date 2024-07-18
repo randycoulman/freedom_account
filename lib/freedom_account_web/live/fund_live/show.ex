@@ -2,6 +2,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
   @moduledoc false
   use FreedomAccountWeb, :live_view
 
+  import FreedomAccountWeb.Account, only: [account: 1]
   import FreedomAccountWeb.FundList, only: [fund_list: 1]
 
   alias FreedomAccount.Error
@@ -32,32 +33,12 @@ defmodule FreedomAccountWeb.FundLive.Show do
     end
   end
 
-  defp apply_action(socket, :activate) do
-    assign(socket, :page_title, "Activate/Deactivate")
-  end
-
   defp apply_action(socket, :edit) do
     assign(socket, :page_title, "Edit Fund")
   end
 
-  defp apply_action(socket, :edit_account) do
-    assign(socket, :page_title, "Edit Account Settings")
-  end
-
-  defp apply_action(socket, :edit_budget) do
-    assign(socket, :page_title, "Update Budget")
-  end
-
   defp apply_action(socket, :deposit) do
     assign(socket, :page_title, "Deposit")
-  end
-
-  defp apply_action(socket, :regular_deposit) do
-    assign(socket, :page_title, "Regular Deposit")
-  end
-
-  defp apply_action(socket, :regular_withdrawal) do
-    assign(socket, :page_title, "Regular Withdrawal")
   end
 
   defp apply_action(socket, :withdrawal) do
@@ -73,19 +54,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <.live_component
-      account={@account}
-      action={@live_action}
-      activate_path={~p"/funds/#{@fund}/activate"}
-      budget_path={~p"/funds/#{@fund}/budget"}
-      edit_path={~p"/funds/#{@fund}/account"}
-      funds={@funds}
-      id={@account.id}
-      module={FreedomAccountWeb.Account.Show}
-      regular_deposit_path={~p"/funds/#{@fund}/regular_deposit"}
-      regular_withdrawal_path={~p"/funds/#{@fund}/regular_withdrawal"}
-      return_path={~p"/funds/#{@fund}"}
-    />
+    <.account account={@account} />
     <div class="flex h-screen">
       <aside class="hidden md:flex flex-col w-56 bg-slate-100">
         <.fund_list funds={@funds} />

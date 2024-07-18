@@ -6,6 +6,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccountWeb.AccountBar
   alias FreedomAccountWeb.FundLive.Form
   alias Phoenix.LiveView
 
@@ -71,15 +72,9 @@ defmodule FreedomAccountWeb.FundLive.Index do
     <.live_component
       account={@account}
       action={@live_action}
-      activate_path={~p"/funds/activate"}
-      budget_path={~p"/funds/budget"}
-      edit_path={~p"/funds/account"}
       funds={@funds}
       id={@account.id}
-      module={FreedomAccountWeb.Account.Show}
-      regular_deposit_path={~p"/funds/regular_deposit"}
-      regular_withdrawal_path={~p"/funds/regular_withdrawal"}
-      return_path={~p"/funds"}
+      module={AccountBar.Show}
     />
     <.header>
       Funds

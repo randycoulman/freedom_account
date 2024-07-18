@@ -1,9 +1,9 @@
-defmodule FreedomAccountWeb.Account.Show do
+defmodule FreedomAccountWeb.AccountBar.Show do
   @moduledoc false
 
   use FreedomAccountWeb, :live_component
 
-  alias FreedomAccountWeb.Account.Form
+  alias FreedomAccountWeb.AccountBar.Form
   alias FreedomAccountWeb.ActivationForm
   alias FreedomAccountWeb.BudgetForm
   alias FreedomAccountWeb.RegularDepositForm
@@ -12,7 +12,10 @@ defmodule FreedomAccountWeb.Account.Show do
 
   @impl LiveComponent
   def update(assigns, socket) do
-    {:ok, assign(socket, assigns)}
+    {:ok,
+     socket
+     |> assign(assigns)
+     |> assign(:return_path, ~p"/funds")}
   end
 
   @impl LiveComponent
@@ -22,27 +25,27 @@ defmodule FreedomAccountWeb.Account.Show do
       <.header>
         <%= @account.name %>
         <:actions>
-          <.link patch={@regular_deposit_path} phx-click={JS.push_focus()}>
+          <.link patch={~p"/funds/regular_deposit"} phx-click={JS.push_focus()}>
             <.button>
               <.icon name="hero-folder-plus-mini" /> Regular Deposit
             </.button>
           </.link>
-          <.link patch={@regular_withdrawal_path} phx-click={JS.push_focus()}>
+          <.link patch={~p"/funds/regular_withdrawal"} phx-click={JS.push_focus()}>
             <.button>
               <.icon name="hero-folder-minus-mini" /> Regular Withdrawal
             </.button>
           </.link>
-          <.link patch={@budget_path} phx-click={JS.push_focus()}>
+          <.link patch={~p"/funds/budget"} phx-click={JS.push_focus()}>
             <.button>
               <.icon name="hero-chart-pie-mini" /> Budget
             </.button>
           </.link>
-          <.link patch={@activate_path} phx-click={JS.push_focus()}>
+          <.link patch={~p"/funds/activate"} phx-click={JS.push_focus()}>
             <.button>
               <.icon name="hero-archive-box-mini" /> Activate/Deactivate
             </.button>
           </.link>
-          <.link patch={@edit_path} phx-click={JS.push_focus()}>
+          <.link patch={~p"/funds/account"} phx-click={JS.push_focus()}>
             <.button>
               <.icon name="hero-cog-8-tooth-mini" /> Settings
             </.button>

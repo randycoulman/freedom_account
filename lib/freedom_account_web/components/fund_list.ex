@@ -10,6 +10,8 @@ defmodule FreedomAccountWeb.FundList do
   # specified and checked at compile time by `attr` and `slot`, and they all
   # return a HEEx template, so no spec is necessary here.
 
+  attr :funds, :list, required: true
+
   def fund_list(assigns) do
     ~H"""
     <div class="p-2">

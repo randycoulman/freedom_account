@@ -4,7 +4,6 @@ defmodule FreedomAccountWeb.RegularDepositTest do
   alias FreedomAccount.Factory
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
-  alias Phoenix.HTML.Safe
 
   describe "Show" do
     setup [:create_account, :create_funds]
@@ -28,26 +27,6 @@ defmodule FreedomAccountWeb.RegularDepositTest do
       |> assert_has(table_cell(), text: "#{balance1}")
       |> assert_has(table_cell(), text: "#{balance2}")
       |> assert_has(table_cell(), text: "#{balance3}")
-    end
-
-    test "makes regular deposit within modal on fund show view", %{account: account, conn: conn, funds: funds} do
-      fund = hd(funds)
-      fund_balance = expected_balance(fund, account.deposits_per_year)
-      [balance1, balance2, balance3] = Enum.map(funds, &expected_balance(&1, account.deposits_per_year))
-
-      conn
-      |> visit(~p"/funds/#{fund}")
-      |> click_link("Regular Deposit")
-      |> assert_has(page_title(), text: "Regular Deposit")
-      |> assert_has(heading(), text: "Regular Deposit")
-      |> click_button("Make Deposit")
-      |> assert_has(flash(:info), text: "Regular deposit successful")
-      |> assert_has(page_title(), text: Safe.to_iodata(fund.name))
-      |> assert_has(heading(), text: Safe.to_iodata(fund.name))
-      |> assert_has(heading(), text: "#{fund_balance}")
-      |> assert_has(sidebar_fund_balance(), text: "#{balance1}")
-      |> assert_has(sidebar_fund_balance(), text: "#{balance2}")
-      |> assert_has(sidebar_fund_balance(), text: "#{balance3}")
     end
   end
 

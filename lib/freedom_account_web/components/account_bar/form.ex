@@ -1,4 +1,4 @@
-defmodule FreedomAccountWeb.Account.Form do
+defmodule FreedomAccountWeb.AccountBar.Form do
   @moduledoc """
   For editing account settings.
   """
