@@ -6,6 +6,12 @@ defmodule FreedomAccountWeb.ElementSelectors do
   @spec action_link(selector()) :: selector()
   def action_link(selector), do: "#{selector} a"
 
+  @spec disabled(selector()) :: selector()
+  def disabled(selector), do: "#{selector}[disabled]"
+
+  @spec enabled(selector()) :: selector()
+  def enabled(selector), do: "#{selector}:not([disabled])"
+
   @spec field_error(selector()) :: selector()
   def field_error(selector), do: "#{selector} ~ [name='error']"
 

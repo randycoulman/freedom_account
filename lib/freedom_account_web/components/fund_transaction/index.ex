@@ -9,33 +9,38 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
   alias FreedomAccount.Transactions
   alias Phoenix.LiveComponent
 
-  @per_page 50
-  @keep_limit @per_page * 3
+  @page_size 10
+
+  @doc false
+  @spec page_size :: pos_integer()
+  def page_size, do: @page_size
 
   @impl LiveComponent
   def update(assigns, socket) do
     %{fund: fund} = assigns
-    {transactions, %Paging{}} = Transactions.list_fund_transactions(fund, per_page: @per_page)
+    {transactions, %Paging{} = paging} = Transactions.list_fund_transactions(fund, per_page: @page_size)
 
     {:ok,
      socket
      |> assign(assigns)
-     |> stream(:transactions, transactions, limit: @keep_limit, reset: true)}
+     |> assign(:paging, paging)
+     |> assign(:transactions, transactions)
+     |> stream(:transactions, transactions, reset: true)}
   end
 
   @impl LiveComponent
   def render(assigns) do
     ~H"""
     <div>
-      <.table id="fund-transactions" row_id={fn {id, _txn} -> id end} rows={@streams.transactions}>
-        <:col :let={{_id, txn}} label="Date"><span><%= txn.date %></span></:col>
-        <:col :let={{_id, txn}} label="Memo"><span><%= txn.memo %></span></:col>
-        <:col :let={{_id, txn}} label="Out">
+      <.table id="fund-transactions" row_id={&"txn-#{&1.id}"} rows={@transactions}>
+        <:col :let={txn} label="Date"><span><%= txn.date %></span></:col>
+        <:col :let={txn} label="Memo"><span><%= txn.memo %></span></:col>
+        <:col :let={txn} label="Out">
           <span :if={Money.negative?(txn.amount)} data-role="withdrawal">
             <%= MoneyUtils.negate(txn.amount) %>
           </span>
         </:col>
-        <:col :let={{_id, txn}} label="In">
+        <:col :let={txn} label="In">
           <span :if={Money.positive?(txn.amount)} data-role="deposit"><%= txn.amount %></span>
         </:col>
         <:empty_state>
@@ -44,7 +49,51 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
           </div>
         </:empty_state>
       </.table>
+      <.button
+        disabled={is_nil(@paging.prev_cursor)}
+        phx-click="prev-page"
+        phx-disable-with="Loading..."
+        phx-target={@myself}
+        type="button"
+      >
+        <.icon name="hero-arrow-left-circle-mini" /> Previous Page
+      </.button>
+      <.button
+        disabled={is_nil(@paging.next_cursor)}
+        phx-click="next-page"
+        phx-disable-with="Loading..."
+        phx-target={@myself}
+        type="button"
+      >
+        Next Page <.icon name="hero-arrow-right-circle-mini" />
+      </.button>
     </div>
     """
+  end
+
+  @impl LiveComponent
+  def handle_event("next-page", _params, socket) do
+    %{fund: fund, paging: paging} = socket.assigns
+
+    {transactions, %Paging{} = next_paging} =
+      Transactions.list_fund_transactions(fund, next_cursor: paging.next_cursor, per_page: @page_size)
+
+    {:noreply,
+     socket
+     |> assign(:paging, next_paging)
+     |> assign(:transactions, transactions)}
+  end
+
+  @impl LiveComponent
+  def handle_event("prev-page", _params, socket) do
+    %{fund: fund, paging: paging} = socket.assigns
+
+    {transactions, %Paging{} = next_paging} =
+      Transactions.list_fund_transactions(fund, prev_cursor: paging.prev_cursor, per_page: @page_size)
+
+    {:noreply,
+     socket
+     |> assign(:paging, next_paging)
+     |> assign(:transactions, transactions)}
   end
 end

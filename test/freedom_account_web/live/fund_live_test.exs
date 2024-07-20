@@ -7,7 +7,6 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
   alias FreedomAccount.Factory
   alias FreedomAccount.Funds
-  alias FreedomAccount.MoneyUtils
   alias Phoenix.HTML.Safe
 
   describe "Index" do
@@ -121,28 +120,6 @@ defmodule FreedomAccountWeb.FundLiveTest do
       conn
       |> visit(~p"/funds/#{fund}")
       |> assert_has(heading(), text: Safe.to_iodata(fund))
-    end
-
-    test "shows message when fund has no transactions", %{conn: conn, fund: fund} do
-      conn
-      |> visit(~p"/funds/#{fund}")
-      |> assert_has("#no-transactions")
-    end
-
-    test "displays transactions", %{conn: conn, account: account, fund: fund} do
-      deposit = Factory.deposit(fund)
-      [deposit_line_item] = deposit.line_items
-      withdrawal = Factory.withdrawal(account, fund)
-      [withdrawal_line_item] = withdrawal.line_items
-
-      conn
-      |> visit(~p"/funds/#{fund}")
-      |> assert_has(table_cell(), text: "#{deposit.date}")
-      |> assert_has(table_cell(), text: deposit.memo)
-      |> assert_has(role("deposit"), text: "#{deposit_line_item.amount}")
-      |> assert_has(table_cell(), text: "#{withdrawal.date}")
-      |> assert_has(table_cell(), text: withdrawal.memo)
-      |> assert_has(role("withdrawal"), text: "#{MoneyUtils.negate(withdrawal_line_item.amount)}")
     end
 
     test "updates fund within modal", %{conn: conn, fund: fund} do
