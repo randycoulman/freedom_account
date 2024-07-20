@@ -27,6 +27,9 @@ defmodule FreedomAccountWeb.ElementSelectors do
   @spec page_title :: selector()
   def page_title, do: "title"
 
+  @spec role(String.t()) :: selector()
+  def role(role), do: "[data-role=#{role}]"
+
   @spec selected_option(selector()) :: selector()
   def selected_option(selector), do: "#{selector} option[selected='selected']"
 

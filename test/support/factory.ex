@@ -229,6 +229,24 @@ defmodule FreedomAccount.Factory do
     })
   end
 
+  @spec withdrawal(Account.t(), Fund.t(), Transaction.attrs() | %{amount: Money.t()} | keyword()) :: Transaction.t()
+  def withdrawal(%Account{} = account, %Fund{} = fund, attrs \\ %{}) do
+    attrs = Map.new(attrs)
+    {amount, attrs} = Map.pop(attrs, :amount)
+    line_item = if amount, do: %{amount: amount}, else: %{}
+
+    attrs =
+      attrs
+      |> Map.put_new_lazy(:line_items, fn ->
+        [line_item_attrs(fund, line_item)]
+      end)
+      |> transaction_attrs()
+
+    {:ok, transaction} = Transactions.withdraw(account, attrs)
+
+    transaction
+  end
+
   @spec with_default_fund(Account.t(), Fund.t()) :: Account.t()
   def with_default_fund(%Account{} = account, %Fund{} = fund) do
     %{account | default_fund_id: fund.id}

@@ -15,6 +15,7 @@ defmodule FreedomAccount.Transactions do
     exports: [Transaction]
 
   alias Ecto.Changeset
+  alias Ecto.Query
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Error
   alias FreedomAccount.Error.InvariantError
@@ -22,10 +23,14 @@ defmodule FreedomAccount.Transactions do
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.PubSub
   alias FreedomAccount.Repo
+  alias FreedomAccount.Transactions.FundTransaction
   alias FreedomAccount.Transactions.LineItem
   alias FreedomAccount.Transactions.Transaction
 
+  require Ecto.Query
   require FreedomAccount.ErrorReporter, as: ErrorReporter
+
+  @type list_opt :: {:per_page, pos_integer()}
 
   @spec change_transaction(Transaction.t(), Transaction.attrs()) :: Changeset.t()
   def change_transaction(%Transaction{} = transaction, attrs \\ %{}) do
@@ -39,6 +44,20 @@ defmodule FreedomAccount.Transactions do
     |> Repo.insert()
     |> PubSub.broadcast(pubsub_topic(), :transaction_created)
   end
+
+  @spec list_fund_transactions(Fund.t(), [list_opt]) :: [FundTransaction.t()]
+  def list_fund_transactions(%Fund{} = fund, opts \\ []) do
+    fund
+    |> LineItem.by_fund()
+    |> LineItem.join_transaction()
+    |> FundTransaction.newest_first()
+    |> FundTransaction.select()
+    |> maybe_limit(opts[:per_page])
+    |> Repo.all()
+  end
+
+  defp maybe_limit(query, nil), do: query
+  defp maybe_limit(query, limit), do: Query.limit(query, ^limit)
 
   @spec new_transaction([Fund.t()]) :: Changeset.t()
   def new_transaction(funds) do

@@ -6,12 +6,15 @@ defmodule FreedomAccount.Transactions.LineItem do
   use TypedEctoSchema
 
   import Ecto.Changeset
+  import Ecto.Query
   import Money.Validate
 
   alias Ecto.Changeset
+  alias Ecto.Queryable
   alias Ecto.Schema
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.MoneyUtils
+  alias FreedomAccount.Transactions.Transaction
 
   @type attrs :: %{
           optional(:amount) => Money.t(),
@@ -21,7 +24,8 @@ defmodule FreedomAccount.Transactions.LineItem do
   typed_schema "line_items" do
     field(:amount, Money.Ecto.Composite.Type) :: Money.t()
     field :fund_id, :integer
-    field :transaction_id, :integer
+
+    belongs_to :transaction, Transaction
 
     timestamps()
   end
@@ -59,6 +63,21 @@ defmodule FreedomAccount.Transactions.LineItem do
     |> ignore_if_amount_missing()
   end
 
+  @spec by_fund(Fund.t()) :: Queryable.t()
+  @spec by_fund(Queryable.t(), Fund.t()) :: Queryable.t()
+  def by_fund(query \\ base_query(), %Fund{} = fund) do
+    from [line_item: l] in query,
+      where: [fund_id: ^fund.id]
+  end
+
+  @spec join_transaction :: Queryable.t()
+  @spec join_transaction(Queryable.t()) :: Queryable.t()
+  def join_transaction(query \\ base_query()) do
+    from [line_item: l] in query,
+      join: t in assoc(l, :transaction),
+      as: :transaction
+  end
+
   defp ignore_if_amount_missing(%Changeset{} = changeset) do
     amount = Changeset.get_field(changeset, :amount)
 
@@ -74,5 +93,9 @@ defmodule FreedomAccount.Transactions.LineItem do
     |> cast(attrs, [:amount, :fund_id])
     |> validate_required([:amount, :fund_id])
     |> validate_money(:amount, not_equal_to: Money.zero(:usd))
+  end
+
+  defp base_query do
+    from __MODULE__, as: :line_item
   end
 end

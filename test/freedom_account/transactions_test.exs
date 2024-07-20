@@ -11,6 +11,7 @@ defmodule FreedomAccount.TransactionsTest do
   alias FreedomAccount.MoneyUtils
   alias FreedomAccount.PubSub
   alias FreedomAccount.Transactions
+  alias FreedomAccount.Transactions.FundTransaction
   alias FreedomAccount.Transactions.LineItem
   alias FreedomAccount.Transactions.Transaction
 
@@ -79,6 +80,55 @@ defmodule FreedomAccount.TransactionsTest do
       attrs = Factory.transaction_attrs(line_items: [invalid_line_item_attrs])
 
       assert {:error, %Changeset{valid?: false}} = Transactions.deposit(attrs)
+    end
+  end
+
+  describe "listing transactions for a fund" do
+    test "returns empty list if the fund has no transactions", %{fund: fund} do
+      assert Transactions.list_fund_transactions(fund) == []
+    end
+
+    test "returns a list of 'fund transactions' ordered descending by date", %{account: account, fund: fund} do
+      deposits = for _i <- 1..3, do: Factory.deposit(fund)
+      withdrawals = for _i <- 1..2, do: Factory.withdrawal(account, fund)
+
+      expected =
+        (deposits ++ withdrawals)
+        |> Enum.sort_by(& &1.date, {:desc, Date})
+        |> Enum.map(fn %Transaction{} = transaction ->
+          [line_item] = transaction.line_items
+
+          %FundTransaction{
+            amount: line_item.amount,
+            date: transaction.date,
+            id: line_item.id,
+            memo: transaction.memo
+          }
+        end)
+
+      assert Transactions.list_fund_transactions(fund) == expected
+    end
+
+    test "respects page size limit when specified", %{fund: fund} do
+      transactions = for _i <- 1..5, do: Factory.deposit(fund)
+      limit = 3
+
+      expected =
+        transactions
+        |> Enum.sort_by(& &1.date, {:desc, Date})
+        |> Enum.take(limit)
+        |> Enum.map(fn %Transaction{} = transaction ->
+          [line_item] = transaction.line_items
+
+          %FundTransaction{
+            amount: line_item.amount,
+            date: transaction.date,
+            id: line_item.id,
+            memo: transaction.memo
+          }
+        end)
+
+      assert Transactions.list_fund_transactions(fund, per_page: limit) == expected
     end
   end
 

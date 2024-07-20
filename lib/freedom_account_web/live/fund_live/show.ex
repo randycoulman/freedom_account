@@ -9,6 +9,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Funds.Fund
   alias FreedomAccountWeb.FundLive.Form
+  alias FreedomAccountWeb.FundTransaction
   alias FreedomAccountWeb.TransactionForm
   alias Phoenix.HTML.Safe
   alias Phoenix.LiveView
@@ -97,6 +98,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
             </.link>
           </:actions>
         </.header>
+        <.live_component fund={@fund} id={@fund.id} module={FundTransaction.Index} />
 
         <.back navigate={~p"/funds"}>Back to Funds</.back>
       </main>

@@ -104,7 +104,8 @@ defmodule FreedomAccount.MixProject do
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.1"},
       {:timex, "~> 3.7"},
-      {:typed_ecto_schema, "~> 0.4.1"}
+      {:typed_ecto_schema, "~> 0.4.1"},
+      {:typed_struct, "~> 0.3.0"}
     ]
   end
 
