@@ -9,28 +9,31 @@ defmodule FreedomAccount.Transactions do
       FreedomAccount.ErrorReporter,
       FreedomAccount.Funds,
       FreedomAccount.MoneyUtils,
+      FreedomAccount.Paging,
       FreedomAccount.PubSub,
       FreedomAccount.Repo
     ],
     exports: [Transaction]
 
   alias Ecto.Changeset
-  alias Ecto.Query
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Error
   alias FreedomAccount.Error.InvariantError
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.Paging
   alias FreedomAccount.PubSub
   alias FreedomAccount.Repo
   alias FreedomAccount.Transactions.FundTransaction
   alias FreedomAccount.Transactions.LineItem
   alias FreedomAccount.Transactions.Transaction
+  alias Paginator.Page
 
   require Ecto.Query
   require FreedomAccount.ErrorReporter, as: ErrorReporter
 
-  @type list_opt :: {:per_page, pos_integer()}
+  @opaque cursor :: Paging.cursor()
+  @type list_opt :: {:next_cursor, cursor()} | {:per_page, pos_integer()} | {:prev_cursor, cursor()}
 
   @spec change_transaction(Transaction.t(), Transaction.attrs()) :: Changeset.t()
   def change_transaction(%Transaction{} = transaction, attrs \\ %{}) do
@@ -45,19 +48,25 @@ defmodule FreedomAccount.Transactions do
     |> PubSub.broadcast(pubsub_topic(), :transaction_created)
   end
 
-  @spec list_fund_transactions(Fund.t(), [list_opt]) :: [FundTransaction.t()]
+  @spec list_fund_transactions(Fund.t(), [list_opt]) :: {[FundTransaction.t()], map()}
   def list_fund_transactions(%Fund{} = fund, opts \\ []) do
-    fund
-    |> LineItem.by_fund()
-    |> LineItem.join_transaction()
-    |> FundTransaction.newest_first()
-    |> FundTransaction.select()
-    |> maybe_limit(opts[:per_page])
-    |> Repo.all()
-  end
+    limit = Keyword.get(opts, :per_page, 50)
 
-  defp maybe_limit(query, nil), do: query
-  defp maybe_limit(query, limit), do: Query.limit(query, ^limit)
+    %Page{entries: transactions, metadata: metadata} =
+      fund
+      |> LineItem.by_fund()
+      |> LineItem.join_transaction()
+      |> FundTransaction.newest_first()
+      |> FundTransaction.select()
+      |> Repo.paginate(
+        after: opts[:next_cursor],
+        before: opts[:prev_cursor],
+        cursor_fields: FundTransaction.cursor_fields(),
+        limit: limit
+      )
+
+    {transactions, %Paging{next_cursor: metadata.after, prev_cursor: metadata.before}}
+  end
 
   @spec new_transaction([Fund.t()]) :: Changeset.t()
   def new_transaction(funds) do

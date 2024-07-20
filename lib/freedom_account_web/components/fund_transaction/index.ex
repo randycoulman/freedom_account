@@ -5,6 +5,7 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
   import FreedomAccountWeb.CoreComponents
 
   alias FreedomAccount.MoneyUtils
+  alias FreedomAccount.Paging
   alias FreedomAccount.Transactions
   alias Phoenix.LiveComponent
 
@@ -14,7 +15,7 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
   @impl LiveComponent
   def update(assigns, socket) do
     %{fund: fund} = assigns
-    transactions = Transactions.list_fund_transactions(fund, per_page: @per_page)
+    {transactions, %Paging{}} = Transactions.list_fund_transactions(fund, per_page: @per_page)
 
     {:ok,
      socket

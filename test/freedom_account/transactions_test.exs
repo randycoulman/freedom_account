@@ -9,6 +9,7 @@ defmodule FreedomAccount.TransactionsTest do
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.MoneyUtils
+  alias FreedomAccount.Paging
   alias FreedomAccount.PubSub
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.FundTransaction
@@ -85,50 +86,75 @@ defmodule FreedomAccount.TransactionsTest do
 
   describe "listing transactions for a fund" do
     test "returns empty list if the fund has no transactions", %{fund: fund} do
-      assert Transactions.list_fund_transactions(fund) == []
+      assert {[], %Paging{}} = Transactions.list_fund_transactions(fund)
     end
 
     test "returns a list of 'fund transactions' ordered descending by date", %{account: account, fund: fund} do
       deposits = for _i <- 1..3, do: Factory.deposit(fund)
       withdrawals = for _i <- 1..2, do: Factory.withdrawal(account, fund)
 
-      expected =
-        (deposits ++ withdrawals)
-        |> Enum.sort_by(& &1.date, {:desc, Date})
-        |> Enum.map(fn %Transaction{} = transaction ->
-          [line_item] = transaction.line_items
+      expected = to_expected(deposits ++ withdrawals)
 
-          %FundTransaction{
-            amount: line_item.amount,
-            date: transaction.date,
-            id: line_item.id,
-            memo: transaction.memo
-          }
-        end)
-
-      assert Transactions.list_fund_transactions(fund) == expected
+      assert {^expected, %Paging{}} = Transactions.list_fund_transactions(fund)
     end
 
     test "respects page size limit when specified", %{fund: fund} do
       transactions = for _i <- 1..5, do: Factory.deposit(fund)
       limit = 3
 
-      expected =
-        transactions
-        |> Enum.sort_by(& &1.date, {:desc, Date})
-        |> Enum.take(limit)
-        |> Enum.map(fn %Transaction{} = transaction ->
-          [line_item] = transaction.line_items
+      expected = transactions |> to_expected() |> Enum.take(limit)
 
-          %FundTransaction{
-            amount: line_item.amount,
-            date: transaction.date,
-            id: line_item.id,
-            memo: transaction.memo
-          }
-        end)
+      assert {^expected, %Paging{}} = Transactions.list_fund_transactions(fund, per_page: limit)
+    end
 
-      assert Transactions.list_fund_transactions(fund, per_page: limit) == expected
+    test "pages forward", %{fund: fund} do
+      transactions = for _i <- 1..5, do: Factory.deposit(fund)
+      limit = 2
+      [first, second, third] = transactions |> to_expected() |> Enum.chunk_every(limit)
+
+      assert {^first, %Paging{next_cursor: next_cursor}} = Transactions.list_fund_transactions(fund, per_page: limit)
+
+      assert {^second, %Paging{next_cursor: next_cursor}} =
+               Transactions.list_fund_transactions(fund, next_cursor: next_cursor, per_page: limit)
+
+      assert {^third, %Paging{next_cursor: nil}} =
+               Transactions.list_fund_transactions(fund, next_cursor: next_cursor, per_page: limit)
+    end
+
+    test "pages backward", %{fund: fund} do
+      transactions = for _i <- 1..5, do: Factory.deposit(fund)
+      limit = 2
+      [first, second, _third] = transactions |> to_expected() |> Enum.chunk_every(limit)
+
+      {_list, %Paging{next_cursor: next_cursor}} = Transactions.list_fund_transactions(fund, per_page: limit)
+
+      {_list, %Paging{next_cursor: next_cursor}} =
+        Transactions.list_fund_transactions(fund, next_cursor: next_cursor, per_page: limit)
+
+      {_list, %Paging{prev_cursor: prev_cursor}} =
+        Transactions.list_fund_transactions(fund, next_cursor: next_cursor, per_page: limit)
+
+      assert {^second, %Paging{prev_cursor: prev_cursor}} =
+               Transactions.list_fund_transactions(fund, per_page: limit, prev_cursor: prev_cursor)
+
+      assert {^first, %Paging{prev_cursor: nil}} =
+               Transactions.list_fund_transactions(fund, per_page: limit, prev_cursor: prev_cursor)
+    end
+
+    defp to_expected(transactions) do
+      transactions
+      |> Enum.map(fn %Transaction{} = transaction ->
+        [line_item] = transaction.line_items
+
+        %FundTransaction{
+          amount: line_item.amount,
+          date: transaction.date,
+          id: line_item.id,
+          inserted_at: line_item.inserted_at,
+          memo: transaction.memo
+        }
+      end)
+      |> Enum.sort_by(& &1, {:desc, FundTransaction})
     end
   end
 

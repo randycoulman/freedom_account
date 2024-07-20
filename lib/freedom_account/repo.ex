@@ -12,6 +12,8 @@ defmodule FreedomAccount.Repo do
     otp_app: :freedom_account,
     adapter: Ecto.Adapters.Postgres
 
+  use Paginator
+
   alias Ecto.Queryable
   alias Ecto.Schema
   alias FreedomAccount.Error

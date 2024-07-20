@@ -90,6 +90,7 @@ defmodule FreedomAccount.MixProject do
        github: "tailwindlabs/heroicons", tag: "v2.1.1", sparse: "optimized", app: false, compile: false, depth: 1},
       {:jason, "~> 1.2"},
       {:mix_test_interactive, "~> 3.0", only: :dev, runtime: false},
+      {:paginator, "~> 1.2"},
       {:phoenix_ecto, "~> 4.5"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_dashboard, "~> 0.8.4"},
@@ -97,6 +98,8 @@ defmodule FreedomAccount.MixProject do
       {:phoenix_live_view, "~> 1.0.0-rc.1", override: true},
       {:phoenix_test, "~> 0.3.1", only: :test, runtime: false},
       {:phoenix, "~> 1.7"},
+      # This is here to resolve a conflict with paginator's dependencies
+      {:plug_crypto, "~> 2.1", override: true},
       {:postgrex, ">= 0.0.0"},
       {:process_tree, "~> 0.1.3"},
       {:styler, "~> 0.11.9", only: [:dev, :test], runtime: false},

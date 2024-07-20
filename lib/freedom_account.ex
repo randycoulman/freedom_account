@@ -15,6 +15,7 @@ defmodule FreedomAccount do
       Funds,
       Funds.Fund,
       MoneyUtils,
+      Paging,
       PubSub,
       Transactions,
       Transactions.Transaction
