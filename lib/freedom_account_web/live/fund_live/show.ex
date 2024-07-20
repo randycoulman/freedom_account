@@ -17,9 +17,9 @@ defmodule FreedomAccountWeb.FundLive.Show do
   @impl LiveView
   def handle_params(params, _url, socket) do
     id = String.to_integer(params["id"])
-    %{live_action: action} = socket.assigns
+    %{funds: funds, live_action: action} = socket.assigns
 
-    case fetch_fund(socket, id) do
+    case fetch_fund(funds, id) do
       {:ok, %Fund{} = fund} ->
         {:noreply,
          socket
@@ -136,10 +136,10 @@ defmodule FreedomAccountWeb.FundLive.Show do
   end
 
   @impl LiveView
-  def handle_info({:funds_updated, _funds}, socket) do
+  def handle_info({:funds_updated, funds}, socket) do
     %{fund: fund, live_action: action} = socket.assigns
 
-    case fetch_fund(socket, fund.id) do
+    case fetch_fund(funds, fund.id) do
       {:ok, %Fund{} = fund} ->
         {:noreply,
          socket
@@ -153,9 +153,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
 
   def handle_info(_message, socket), do: {:noreply, socket}
 
-  defp fetch_fund(socket, id) do
-    %{funds: funds} = socket.assigns
-
+  defp fetch_fund(funds, id) do
     with %Fund{} = fund <- Enum.find(funds, {:error, Error.not_found(details: %{id: id}, entity: Fund)}, &(&1.id == id)) do
       {:ok, fund}
     end

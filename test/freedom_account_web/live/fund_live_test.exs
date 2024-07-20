@@ -172,6 +172,8 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
     test "deposits money to a fund", %{conn: conn, fund: fund} do
       today = Timex.today(:local)
+      date = Factory.date()
+      memo = Factory.memo()
       amount = Factory.money()
 
       conn
@@ -180,8 +182,8 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(page_title(), text: "Deposit")
       |> assert_has(heading(), text: "Deposit")
       |> assert_has(field_value("#transaction_date", today))
-      |> fill_in("Date", with: Factory.date())
-      |> fill_in("Memo", with: Factory.memo())
+      |> fill_in("Date", with: date)
+      |> fill_in("Memo", with: memo)
       |> click_button("Make Deposit")
       |> refute_has("#line-items-error")
       |> fill_in("Amount 0", with: amount)
@@ -190,11 +192,16 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(heading(), text: Safe.to_iodata(fund))
       |> assert_has(heading(), text: "#{amount}")
       |> assert_has(sidebar_fund_balance(), text: "#{amount}")
+      |> assert_has(table_cell(), text: "#{date}")
+      |> assert_has(table_cell(), text: memo)
+      |> assert_has(role("deposit"), text: "#{amount}")
     end
 
     test "withdraws money from a fund", %{conn: conn, fund: fund} do
       today = Timex.today(:local)
       deposit_amount = ~M[5000]usd
+      date = Factory.date()
+      memo = Factory.memo()
       amount = Factory.money()
       balance = Money.sub!(deposit_amount, amount)
 
@@ -206,8 +213,8 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(page_title(), text: "Withdraw")
       |> assert_has(heading(), text: "Withdraw")
       |> assert_has(field_value("#transaction_date", today))
-      |> fill_in("Date", with: Factory.date())
-      |> fill_in("Memo", with: Factory.memo())
+      |> fill_in("Date", with: date)
+      |> fill_in("Memo", with: memo)
       |> click_button("Make Withdrawal")
       |> refute_has("#line-items-error")
       |> fill_in("Amount 0", with: amount)
@@ -216,6 +223,9 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(heading(), text: Safe.to_iodata(fund))
       |> assert_has(heading(), text: "#{balance}")
       |> assert_has(sidebar_fund_balance(), text: "#{balance}")
+      |> assert_has(table_cell(), text: "#{date}")
+      |> assert_has(table_cell(), text: memo)
+      |> assert_has(role("withdrawal"), text: "#{amount}")
     end
   end
 end

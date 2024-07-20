@@ -19,18 +19,14 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
     {:ok,
      socket
      |> assign(assigns)
-     |> stream(:transactions, transactions, limit: @keep_limit)}
+     |> stream(:transactions, transactions, limit: @keep_limit, reset: true)}
   end
 
   @impl LiveComponent
   def render(assigns) do
     ~H"""
     <div>
-      <.table
-        id="fund-transactions"
-        row_id={fn {_id, txn} -> "txn-#{txn.id}" end}
-        rows={@streams.transactions}
-      >
+      <.table id="fund-transactions" row_id={fn {id, _txn} -> id end} rows={@streams.transactions}>
         <:col :let={{_id, txn}} label="Date"><span><%= txn.date %></span></:col>
         <:col :let={{_id, txn}} label="Memo"><span><%= txn.memo %></span></:col>
         <:col :let={{_id, txn}} label="Out">
