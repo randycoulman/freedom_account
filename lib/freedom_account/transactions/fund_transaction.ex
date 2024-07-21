@@ -12,6 +12,7 @@ defmodule FreedomAccount.Transactions.FundTransaction do
     field :id, non_neg_integer()
     field :inserted_at, NaiveDateTime.t()
     field :memo, String.t()
+    field :running_balance, Money.t()
   end
 
   @spec compare(t(), t()) :: :eq | :gt | :lt
@@ -27,23 +28,30 @@ defmodule FreedomAccount.Transactions.FundTransaction do
   end
 
   @spec cursor_fields :: list()
-  def cursor_fields, do: [{{:transaction, :date}, :desc}, {{:line_item, :inserted_at}, :desc}, {{:line_item, :id}, :desc}]
+  def cursor_fields, do: [{:date, :desc}, {:inserted_at, :desc}, {:id, :desc}]
 
   @spec newest_first(Queryable.t()) :: Queryable.t()
   def newest_first(query) do
-    from [line_item: l, transaction: t] in query,
-      order_by: [desc: t.date, desc: l.inserted_at, desc: l.id]
+    from t in query,
+      order_by: [desc: t.date, desc: t.inserted_at, desc: t.id]
   end
 
-  @spec select(Queryable.t()) :: Queryable.t()
-  def select(query) do
+  @spec with_running_balances(Queryable.t()) :: Queryable.t()
+  def with_running_balances(query) do
     from [line_item: l, transaction: t] in query,
       select: %__MODULE__{
         amount: l.amount,
         date: t.date,
         id: l.id,
         inserted_at: l.inserted_at,
-        memo: t.memo
-      }
+        memo: t.memo,
+        running_balance: over(sum(l.amount), :fund)
+      },
+      windows: [
+        fund: [
+          order_by: [t.date, l.inserted_at, l.id],
+          partition_by: l.fund_id
+        ]
+      ]
   end
 end

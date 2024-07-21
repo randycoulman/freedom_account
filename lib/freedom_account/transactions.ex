@@ -15,6 +15,8 @@ defmodule FreedomAccount.Transactions do
     ],
     exports: [Transaction]
 
+  import Ecto.Query, only: [from: 1, subquery: 1]
+
   alias Ecto.Changeset
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Error
@@ -52,12 +54,15 @@ defmodule FreedomAccount.Transactions do
   def list_fund_transactions(%Fund{} = fund, opts \\ []) do
     limit = Keyword.get(opts, :per_page, 50)
 
-    %Page{entries: transactions, metadata: metadata} =
+    fund_transactions =
       fund
       |> LineItem.by_fund()
       |> LineItem.join_transaction()
+      |> FundTransaction.with_running_balances()
+
+    %Page{entries: transactions, metadata: metadata} =
+      from(s in subquery(fund_transactions))
       |> FundTransaction.newest_first()
-      |> FundTransaction.select()
       |> Repo.paginate(
         after: opts[:next_cursor],
         before: opts[:prev_cursor],

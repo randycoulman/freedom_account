@@ -19,6 +19,7 @@ defmodule FreedomAccountWeb.FundTransactionTest do
       [deposit_line_item] = deposit.line_items
       withdrawal = Factory.withdrawal(account, fund)
       [withdrawal_line_item] = withdrawal.line_items
+      balance = Money.add!(deposit_line_item.amount, withdrawal_line_item.amount)
 
       conn
       |> visit(~p"/funds/#{fund}")
@@ -28,6 +29,7 @@ defmodule FreedomAccountWeb.FundTransactionTest do
       |> assert_has(table_cell(), text: "#{withdrawal.date}")
       |> assert_has(table_cell(), text: withdrawal.memo)
       |> assert_has(role("withdrawal"), text: "#{MoneyUtils.negate(withdrawal_line_item.amount)}")
+      |> assert_has(table_cell(), text: "#{balance}")
     end
 
     test "paginates transactions", %{conn: conn, fund: fund} do

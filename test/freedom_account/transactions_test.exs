@@ -151,10 +151,18 @@ defmodule FreedomAccount.TransactionsTest do
           date: transaction.date,
           id: line_item.id,
           inserted_at: line_item.inserted_at,
-          memo: transaction.memo
+          memo: transaction.memo,
+          running_balance: Money.zero(:usd)
         }
       end)
       |> Enum.sort_by(& &1, {:desc, FundTransaction})
+      |> Enum.reverse()
+      |> Enum.reduce({[], Money.zero(:usd)}, fn txn, {result, balance} ->
+        next_balance = Money.add!(balance, txn.amount)
+        txn_with_balance = %{txn | running_balance: next_balance}
+        {[txn_with_balance | result], next_balance}
+      end)
+      |> elem(0)
     end
   end
 

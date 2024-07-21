@@ -43,6 +43,9 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
         <:col :let={txn} label="In">
           <span :if={Money.positive?(txn.amount)} data-role="deposit"><%= txn.amount %></span>
         </:col>
+        <:col :let={txn} label="Balance">
+          <%= txn.running_balance %>
+        </:col>
         <:empty_state>
           <div id="no-transactions">
             This fund has no transactions yet.
