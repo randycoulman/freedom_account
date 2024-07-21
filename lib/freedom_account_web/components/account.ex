@@ -1,5 +1,6 @@
 defmodule FreedomAccountWeb.Account do
   @moduledoc false
+  use FreedomAccountWeb, :verified_routes
   use Phoenix.Component
 
   import FreedomAccountWeb.CoreComponents
@@ -14,7 +15,7 @@ defmodule FreedomAccountWeb.Account do
   def account(assigns) do
     ~H"""
     <.header>
-      <%= @account.name %>
+      <.link navigate={~p"/funds"}><%= @account.name %></.link>
     </.header>
     """
   end
