@@ -17,12 +17,11 @@ defmodule FreedomAccount.Transactions.Transaction do
           optional(:memo) => String.t(),
           optional(:line_items) => [LineItem.attrs()]
         }
-  @type partial :: %__MODULE__{}
 
   typed_schema "transactions" do
     field :date, :date
     field :memo, :string
-    field :total, Money.Ecto.Composite.Type, virtual: true
+    field(:total, Money.Ecto.Composite.Type, virtual: true) :: Money.t() | nil
 
     has_many :line_items, LineItem
 
