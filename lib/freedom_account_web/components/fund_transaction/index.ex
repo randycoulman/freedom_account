@@ -33,17 +33,17 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
     ~H"""
     <div>
       <.table id="fund-transactions" row_id={&"txn-#{&1.id}"} rows={@transactions}>
-        <:col :let={txn} label="Date"><span><%= txn.date %></span></:col>
-        <:col :let={txn} label="Memo"><span><%= txn.memo %></span></:col>
-        <:col :let={txn} label="Out">
+        <:col :let={txn} label="Date"><%= txn.date %></:col>
+        <:col :let={txn} label="Memo"><%= txn.memo %></:col>
+        <:col :let={txn} align={:right} label="Out">
           <span :if={Money.negative?(txn.amount)} data-role="withdrawal">
             <%= MoneyUtils.negate(txn.amount) %>
           </span>
         </:col>
-        <:col :let={txn} label="In">
+        <:col :let={txn} align={:right} label="In">
           <span :if={Money.positive?(txn.amount)} data-role="deposit"><%= txn.amount %></span>
         </:col>
-        <:col :let={txn} label="Balance">
+        <:col :let={txn} align={:right} label="Balance">
           <%= txn.running_balance %>
         </:col>
         <:empty_state>

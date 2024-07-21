@@ -93,11 +93,11 @@ defmodule FreedomAccountWeb.FundLive.Index do
       row_id={fn fund -> "funds-#{fund.id}" end}
       rows={@funds}
     >
-      <:col :let={fund} label="Icon"><%= fund.icon %></:col>
+      <:col :let={fund} align={:center} label="Icon"><%= fund.icon %></:col>
       <:col :let={fund} label="Name"><%= fund.name %></:col>
-      <:col :let={fund} label="Budget"><%= fund.budget %></:col>
-      <:col :let={fund} label="Times/Year"><%= fund.times_per_year %></:col>
-      <:col :let={fund} label="Current Balance"><%= fund.current_balance %></:col>
+      <:col :let={fund} align={:right} label="Budget"><%= fund.budget %></:col>
+      <:col :let={fund} align={:right} label="Times/Year"><%= fund.times_per_year %></:col>
+      <:col :let={fund} align={:right} label="Current Balance"><%= fund.current_balance %></:col>
       <:action :let={fund}>
         <div class="sr-only">
           <.link navigate={~p"/funds/#{fund}"}>Show</.link>
