@@ -14,12 +14,17 @@ defmodule FreedomAccountWeb.RegularWithdrawalTest do
           {amount, balance}
         end
 
+      total1 = amount1
+      total2 = Money.add!(total1, amount2)
+      total3 = Money.add!(total2, amount3)
+
       conn
       |> visit(~p"/")
       |> click_link("Regular Withdrawal")
       |> assert_has(page_title(), text: "Regular Withdrawal")
       |> assert_has(heading(), text: "Regular Withdrawal")
       |> assert_has(field_value("#transaction_date", "#{Timex.today(:local)}"))
+      |> assert_has("#transaction-total", text: "#{Money.zero(:usd)}")
       |> fill_in("Date", with: "")
       |> assert_has(field_error("#transaction_date"), text: "can't be blank")
       |> fill_in("Date", with: Factory.date())
@@ -27,8 +32,11 @@ defmodule FreedomAccountWeb.RegularWithdrawalTest do
       |> click_button("Make Withdrawal")
       |> assert_has("#line-items-error", text: "Requires at least one line item with a non-zero amount")
       |> fill_in("Amount 0", with: "#{amount1}")
+      |> assert_has("#transaction-total", text: "#{total1}")
       |> fill_in("Amount 1", with: "#{amount2}")
+      |> assert_has("#transaction-total", text: "#{total2}")
       |> fill_in("Amount 2", with: "#{amount3}")
+      |> assert_has("#transaction-total", text: "#{total3}")
       |> click_button("Make Withdrawal")
       |> assert_has(flash(:info), text: "Withdrawal successful")
       |> assert_has(page_title(), text: "Funds")

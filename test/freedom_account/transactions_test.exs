@@ -22,6 +22,20 @@ defmodule FreedomAccount.TransactionsTest do
     test "returns the changeset", %{} do
       assert %Changeset{} = Transactions.change_transaction(%Transaction{})
     end
+
+    test "computes an initial total" do
+      %Changeset{} = changeset = Transactions.change_transaction(%Transaction{})
+      assert Changeset.get_field(changeset, :total) == Money.zero(:usd)
+    end
+
+    test "recomputes the total with updated line items", %{fund: fund} do
+      line_item_attrs = Factory.line_item_attrs(fund)
+      valid_attrs = Factory.transaction_attrs(line_items: [line_item_attrs])
+
+      %Changeset{} = changeset = Transactions.change_transaction(%Transaction{}, valid_attrs)
+
+      assert Changeset.get_field(changeset, :total) == line_item_attrs[:amount]
+    end
   end
 
   describe "making a deposit to a single fund" do
@@ -187,6 +201,11 @@ defmodule FreedomAccount.TransactionsTest do
                %LineItem{fund_id: ^fund_id2},
                %LineItem{fund_id: ^fund_id3}
              ] = line_items
+    end
+
+    test "computes an initial total for all line items", %{funds: funds} do
+      %Changeset{} = changeset = Transactions.new_transaction(funds)
+      assert Changeset.get_field(changeset, :total) == Money.zero(:usd)
     end
   end
 

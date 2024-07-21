@@ -7,6 +7,6 @@ defmodule FreedomAccount.MoneyUtils do
 
   @spec sum([Money.t()]) :: Money.t()
   def sum(monies) do
-    Enum.reduce(monies, &Money.add!/2)
+    Enum.reduce(monies, Money.zero(:usd), &Money.add!/2)
   end
 end

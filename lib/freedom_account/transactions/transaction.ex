@@ -22,6 +22,7 @@ defmodule FreedomAccount.Transactions.Transaction do
   typed_schema "transactions" do
     field :date, :date
     field :memo, :string
+    field :total, Money.Ecto.Composite.Type, virtual: true
 
     has_many :line_items, LineItem
 
@@ -78,5 +79,17 @@ defmodule FreedomAccount.Transactions.Transaction do
     |> cast(attrs, [:date, :memo])
     |> validate_required([:date, :memo])
     |> cast_assoc(:line_items, default_opts ++ opts)
+    |> compute_total()
+  end
+
+  defp compute_total(%Changeset{} = changeset) do
+    total =
+      changeset
+      |> get_assoc(:line_items)
+      |> Enum.map(&get_field(&1, :amount))
+      |> Enum.reject(&is_nil/1)
+      |> MoneyUtils.sum()
+
+    put_change(changeset, :total, total)
   end
 end

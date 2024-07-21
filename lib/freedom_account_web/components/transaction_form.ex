@@ -42,13 +42,18 @@ defmodule FreedomAccountWeb.TransactionForm do
 
   @impl LiveComponent
   def render(assigns) do
+    %{form: form} = assigns
+
     line_items_error =
-      case assigns.form.errors[:line_items] do
+      case form.errors[:line_items] do
         nil -> nil
         error -> translate_error(error)
       end
 
-    assigns = assign(assigns, :line_items_error, line_items_error)
+    assigns =
+      assigns
+      |> assign(:line_items_error, line_items_error)
+      |> assign(:multi_line?, length(form[:line_items].value) > 1)
 
     ~H"""
     <div>
@@ -65,7 +70,7 @@ defmodule FreedomAccountWeb.TransactionForm do
       >
         <.input field={@form[:date]} label="Date" phx-debounce="blur" type="date" />
         <.input field={@form[:memo]} label="Memo" phx-debounce="blur" type="text" />
-        <div :if={@line_items_error && length(@form[:line_items].value) > 1} id="line-items-error">
+        <div :if={@line_items_error && @multi_line?} id="line-items-error">
           <.error><%= @line_items_error %></.error>
         </div>
         <div class="grid grid-cols-3 gap-x-4 items-center mx-auto">
@@ -83,6 +88,9 @@ defmodule FreedomAccountWeb.TransactionForm do
             />
             <.input field={li[:fund_id]} type="hidden" />
           </.inputs_for>
+        </div>
+        <div :if={@multi_line?} id="transaction-total">
+          Total withdrawal: <%= @form[:total].value %>
         </div>
         <:actions>
           <.button phx-disable-with="Saving..." type="submit">
