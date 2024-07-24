@@ -7,6 +7,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
 
   alias FreedomAccount.Accounts
   alias FreedomAccount.Accounts.Account
+  alias FreedomAccount.Balances
   alias FreedomAccount.Error.ServiceError
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
@@ -28,12 +29,14 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
       end
 
     account = Accounts.only_account()
+    account_balance = Balances.account_balance(account)
     funds = Funds.list_active_funds(account)
 
     {:cont,
      socket
      |> attach_hook(:pubsub_events, :handle_info, &handle_info/2)
      |> assign(:account, account)
+     |> assign(:account_balance, account_balance)
      |> assign(:funds, funds)}
   end
 
@@ -87,9 +90,13 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
   defp handle_info({:transaction_created, %Transaction{} = transaction}, socket) do
     %{account: account} = socket.assigns
     ids = Enum.map(transaction.line_items, & &1.fund_id)
+    account_balance = Balances.account_balance(account)
     updated_funds = Funds.list_active_funds(account, ids)
 
-    {:cont, update_funds(socket, &FundCache.update_all(&1, updated_funds))}
+    {:cont,
+     socket
+     |> assign(:account_balance, account_balance)
+     |> update_funds(&FundCache.update_all(&1, updated_funds))}
   end
 
   defp handle_info(_message, socket), do: {:cont, socket}

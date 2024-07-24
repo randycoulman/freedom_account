@@ -71,6 +71,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
     ~H"""
     <.live_component
       account={@account}
+      balance={@account_balance}
       action={@live_action}
       funds={@funds}
       id={@account.id}

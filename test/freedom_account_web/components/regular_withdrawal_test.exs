@@ -9,7 +9,7 @@ defmodule FreedomAccountWeb.RegularWithdrawalTest do
     test "makes regular withdrawal within modal on fund list view", %{conn: conn, funds: funds} do
       [{amount1, balance1}, {amount2, balance2}, {amount3, balance3}] =
         for fund <- funds do
-          amount = Money.mult!(fund.current_balance, :rand.uniform())
+          amount = fund.current_balance |> Money.mult!(:rand.uniform()) |> Money.round()
           balance = Money.sub!(fund.current_balance, amount)
           {amount, balance}
         end

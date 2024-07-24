@@ -11,11 +11,13 @@ defmodule FreedomAccountWeb.Account do
   # return a HEEx template, so no spec is necessary here.
 
   attr :account, :map, required: true
+  attr :balance, :map, required: true
 
   def account(assigns) do
     ~H"""
     <.header>
       <.link navigate={~p"/funds"}><%= @account.name %></.link>
+      <span><%= @balance %></span>
     </.header>
     """
   end

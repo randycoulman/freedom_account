@@ -55,7 +55,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <.account account={@account} />
+    <.account account={@account} balance={@account_balance} />
     <div class="flex h-screen">
       <aside class="hidden md:flex flex-col w-56 bg-slate-100">
         <.fund_list funds={@funds} />

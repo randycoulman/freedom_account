@@ -10,6 +10,7 @@ defmodule FreedomAccount do
     exports: [
       Accounts,
       Accounts.Account,
+      Balances,
       Error,
       {Error, []},
       Funds,
