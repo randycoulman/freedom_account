@@ -21,6 +21,7 @@ defmodule FreedomAccount.Transactions do
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Error
   alias FreedomAccount.Error.InvariantError
+  alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Paging
@@ -48,6 +49,11 @@ defmodule FreedomAccount.Transactions do
     |> Transaction.deposit_changeset(attrs)
     |> Repo.insert()
     |> PubSub.broadcast(pubsub_topic(), :transaction_created)
+  end
+
+  @spec fetch_transaction(Transaction.id()) :: {:ok, Transaction.t()} | {:error, NotFoundError.t()}
+  def fetch_transaction(id) do
+    Repo.fetch(Transaction.preload_line_items(), id)
   end
 
   @spec list_fund_transactions(Fund.t(), [list_opt]) :: {[FundTransaction.t()], map()}
@@ -114,6 +120,14 @@ defmodule FreedomAccount.Transactions do
 
   @spec pubsub_topic :: PubSub.topic()
   def pubsub_topic, do: ProcessTree.get(:transactions_topic, default: "transactions")
+
+  @spec update_transaction(Transaction.t(), Transaction.attrs()) :: {:ok, Transaction.t()} | {:error, Changeset.t()}
+  def update_transaction(%Transaction{} = transaction, attrs) do
+    transaction
+    |> Transaction.changeset(attrs)
+    |> Repo.update()
+    |> PubSub.broadcast(pubsub_topic(), :transaction_updated)
+  end
 
   @spec withdraw(Account.t(), Transaction.attrs()) :: {:ok, Transaction.t()} | {:error, Changeset.t()}
   def withdraw(%Account{} = account, attrs \\ %{}) do

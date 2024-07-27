@@ -87,7 +87,8 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
     {:cont, update_funds(socket, &FundCache.update_fund(&1, fund))}
   end
 
-  defp handle_info({:transaction_created, %Transaction{} = transaction}, socket) do
+  defp handle_info({event, %Transaction{} = transaction}, socket)
+       when event in [:transaction_created, :transaction_updated] do
     %{account: account} = socket.assigns
     ids = Enum.map(transaction.line_items, & &1.fund_id)
     account_balance = Balances.account_balance(account)

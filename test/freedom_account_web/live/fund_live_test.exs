@@ -62,9 +62,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
     end
 
     test "edits fund in listing", %{account: account, conn: conn} do
-      fund = Factory.fund(account)
-      Factory.deposit(fund)
-      {:ok, fund} = Funds.with_updated_balance(fund)
+      fund = account |> Factory.fund() |> Factory.with_balance()
       %{budget: budget, icon: icon, name: name, times_per_year: times_per_year} = Factory.fund_attrs()
 
       conn

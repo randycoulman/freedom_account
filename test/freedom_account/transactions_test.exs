@@ -5,6 +5,7 @@ defmodule FreedomAccount.TransactionsTest do
   import Money.Sigil
 
   alias Ecto.Changeset
+  alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Factory
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
@@ -98,6 +99,22 @@ defmodule FreedomAccount.TransactionsTest do
     end
   end
 
+  describe "fetching a transaction" do
+    test "when transaction exists, finds it by ID", %{fund: fund} do
+      transaction = Factory.deposit(fund)
+
+      assert {:ok, result} = Transactions.fetch_transaction(transaction.id)
+
+      fields = Map.keys(transaction) -- [:total]
+      assert_structs_equal(result, transaction, fields)
+    end
+
+    @tag capture_log: true
+    test "when transaction does not exist, returns an error" do
+      assert {:error, %NotFoundError{}} = Transactions.fetch_transaction(Factory.id())
+    end
+  end
+
   describe "listing transactions for a fund" do
     test "returns empty list if the fund has no transactions", %{fund: fund} do
       assert {[], %Paging{}} = Transactions.list_fund_transactions(fund)
@@ -163,8 +180,9 @@ defmodule FreedomAccount.TransactionsTest do
         %FundTransaction{
           amount: line_item.amount,
           date: transaction.date,
-          id: line_item.id,
+          id: transaction.id,
           inserted_at: line_item.inserted_at,
+          line_item_id: line_item.id,
           memo: transaction.memo,
           running_balance: Money.zero(:usd)
         }
@@ -244,6 +262,49 @@ defmodule FreedomAccount.TransactionsTest do
       {:ok, %Transaction{} = transaction} = Transactions.regular_deposit(account, Factory.date(), funds)
 
       assert_received({:transaction_created, ^transaction})
+    end
+  end
+
+  describe "updating a single-fund transaction" do
+    setup %{fund: fund} do
+      transaction = Factory.deposit(fund)
+
+      %{transaction: transaction}
+    end
+
+    test "with valid data updates the transaction", %{fund: fund, transaction: transaction} do
+      [line_item] = transaction.line_items
+      line_item_attrs = Factory.line_item_attrs(fund, id: line_item.id)
+      valid_attrs = Factory.transaction_attrs(line_items: [line_item_attrs])
+
+      assert {:ok, %Transaction{} = updated} = Transactions.update_transaction(transaction, valid_attrs)
+      [updated_line_item] = updated.line_items
+      assert updated.date == valid_attrs[:date]
+      assert updated.memo == valid_attrs[:memo]
+      assert updated_line_item.amount == line_item_attrs[:amount]
+    end
+
+    test "publishes a transaction updated event", %{fund: fund, transaction: transaction} do
+      [line_item] = transaction.line_items
+      line_item_attrs = Factory.line_item_attrs(fund, id: line_item.id)
+      valid_attrs = Factory.transaction_attrs(line_items: [line_item_attrs])
+
+      :ok = PubSub.subscribe(Transactions.pubsub_topic())
+
+      {:ok, updated} = Transactions.update_transaction(transaction, valid_attrs)
+
+      assert_received({:transaction_updated, ^updated})
+    end
+
+    test "with invalid data returns an error changeset", %{fund: fund, transaction: transaction} do
+      [line_item] = transaction.line_items
+      line_item_attrs = Factory.line_item_attrs(fund, amount: Money.zero(:usd), id: line_item.id)
+      invalid_attrs = Factory.transaction_attrs(line_items: [line_item_attrs])
+
+      expected = %{transaction | total: nil}
+
+      assert {:error, %Changeset{valid?: false}} = Transactions.update_transaction(transaction, invalid_attrs)
+      assert {:ok, expected} == Transactions.fetch_transaction(transaction.id)
     end
   end
 

@@ -1,6 +1,8 @@
 defmodule FreedomAccountWeb.HomeControllerTest do
   use FreedomAccountWeb.ConnCase, async: true
 
+  setup :create_account
+
   test "redirects to fund list page", %{conn: conn} do
     conn
     |> visit(~p"/")

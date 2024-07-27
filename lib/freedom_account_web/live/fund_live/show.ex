@@ -8,6 +8,8 @@ defmodule FreedomAccountWeb.FundLive.Show do
   alias FreedomAccount.Error
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.Transactions
+  alias FreedomAccount.Transactions.Transaction
   alias FreedomAccountWeb.FundLive.Form
   alias FreedomAccountWeb.FundTransaction
   alias FreedomAccountWeb.TransactionForm
@@ -24,7 +26,8 @@ defmodule FreedomAccountWeb.FundLive.Show do
         {:noreply,
          socket
          |> assign(:fund, fund)
-         |> apply_action(action)}
+         |> assign(:transaction, nil)
+         |> apply_action(action, params)}
 
       {:error, %NotFoundError{}} ->
         {:noreply,
@@ -34,19 +37,33 @@ defmodule FreedomAccountWeb.FundLive.Show do
     end
   end
 
-  defp apply_action(socket, :edit) do
+  defp apply_action(socket, :edit, _params) do
     assign(socket, :page_title, "Edit Fund")
   end
 
-  defp apply_action(socket, :deposit) do
+  defp apply_action(socket, :edit_transaction, params) do
+    transaction_id = String.to_integer(params["transaction_id"])
+
+    case Transactions.fetch_transaction(transaction_id) do
+      {:ok, %Transaction{} = transaction} ->
+        socket
+        |> assign(:page_title, "Edit Transaction")
+        |> assign(:transaction, transaction)
+
+      {:error, %NotFoundError{}} ->
+        put_flash(socket, :error, "Transaction is no longer present")
+    end
+  end
+
+  defp apply_action(socket, :deposit, _params) do
     assign(socket, :page_title, "Deposit")
   end
 
-  defp apply_action(socket, :withdrawal) do
+  defp apply_action(socket, :withdrawal, _params) do
     assign(socket, :page_title, "Withdraw")
   end
 
-  defp apply_action(socket, _action) do
+  defp apply_action(socket, _action, _params) do
     %{fund: fund} = socket.assigns
 
     assign(socket, :page_title, Safe.to_iodata(fund))
@@ -117,7 +134,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
     </.modal>
 
     <.modal
-      :if={@live_action in [:deposit, :withdrawal]}
+      :if={@live_action in [:deposit, :edit_transaction, :withdrawal]}
       id="transaction-modal"
       show
       on_cancel={JS.patch(~p"/funds/#{@fund}")}
@@ -126,10 +143,11 @@ defmodule FreedomAccountWeb.FundLive.Show do
         account={@account}
         action={@live_action}
         funds={[@fund]}
-        id={:new}
+        id={(@transaction && @transaction.id) || :new}
         module={TransactionForm}
         return_path={~p"/funds/#{@fund}"}
         title={@page_title}
+        transaction={@transaction}
       />
     </.modal>
     """
@@ -144,7 +162,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
         {:noreply,
          socket
          |> assign(:fund, fund)
-         |> apply_action(action)}
+         |> apply_action(action, %{})}
 
       {:error, %NotFoundError{}} ->
         {:noreply, socket}

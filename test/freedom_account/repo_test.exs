@@ -9,6 +9,8 @@ defmodule FreedomAccount.RepoTest do
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Factory
 
+  @moduletag capture_log: true
+
   describe "mapping Ecto responses to ok/error tuples" do
     test "maps successful result to ok tuple" do
       account = Factory.account()

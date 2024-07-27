@@ -5,8 +5,10 @@ defmodule FreedomAccount.Transactions.Transaction do
   use TypedEctoSchema
 
   import Ecto.Changeset
+  import Ecto.Query
 
   alias Ecto.Changeset
+  alias Ecto.Queryable
   alias Ecto.Schema
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.MoneyUtils
@@ -17,6 +19,7 @@ defmodule FreedomAccount.Transactions.Transaction do
           optional(:memo) => String.t(),
           optional(:line_items) => [LineItem.attrs()]
         }
+  @type id :: non_neg_integer()
 
   typed_schema "transactions" do
     field :date, :date
@@ -66,6 +69,13 @@ defmodule FreedomAccount.Transactions.Transaction do
     base_changeset(transaction, attrs, with: &LineItem.deposit_changeset/2)
   end
 
+  @spec preload_line_items :: Queryable.t()
+  @spec preload_line_items(Queryable.t()) :: Queryable.t()
+  def preload_line_items(query \\ base_query()) do
+    from t in query,
+      preload: :line_items
+  end
+
   @spec withdrawal_changeset(Changeset.t() | Schema.t(), attrs()) :: Changeset.t()
   def withdrawal_changeset(transaction, attrs) do
     base_changeset(transaction, attrs, with: &LineItem.withdrawal_changeset/2)
@@ -79,6 +89,10 @@ defmodule FreedomAccount.Transactions.Transaction do
     |> validate_required([:date, :memo])
     |> cast_assoc(:line_items, default_opts ++ opts)
     |> compute_total()
+  end
+
+  defp base_query do
+    __MODULE__
   end
 
   defp compute_total(%Changeset{} = changeset) do

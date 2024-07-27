@@ -32,7 +32,7 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
   def render(assigns) do
     ~H"""
     <div>
-      <.table id="fund-transactions" row_id={&"txn-#{&1.id}"} rows={@transactions}>
+      <.table id="fund-transactions" row_id={&"txn-#{&1.line_item_id}"} rows={@transactions}>
         <:col :let={txn} label="Date"><%= txn.date %></:col>
         <:col :let={txn} label="Memo"><%= txn.memo %></:col>
         <:col :let={txn} align={:right} label="Out">
@@ -46,6 +46,11 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
         <:col :let={txn} align={:right} label="Balance">
           <%= txn.running_balance %>
         </:col>
+        <:action :let={txn}>
+          <.link patch={~p"/funds/#{@fund}/transactions/#{txn}/edit"}>
+            <.icon name="hero-pencil-square-mini" /> Edit
+          </.link>
+        </:action>
         <:empty_state>
           <div id="no-transactions">
             This fund has no transactions yet.

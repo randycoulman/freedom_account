@@ -13,7 +13,15 @@ defmodule FreedomAccountWeb.TransactionForm do
   @impl LiveComponent
   def update(assigns, socket) do
     %{action: action, funds: funds} = assigns
-    changeset = Transactions.new_transaction(funds)
+
+    changeset =
+      case assigns[:transaction] do
+        %Transaction{} = transaction ->
+          Transactions.change_transaction(transaction)
+
+        nil ->
+          Transactions.new_transaction(funds)
+      end
 
     {:ok,
      socket
@@ -26,6 +34,12 @@ defmodule FreedomAccountWeb.TransactionForm do
     socket
     |> assign(:heading, "Deposit")
     |> assign(:save, "Make Deposit")
+  end
+
+  defp apply_action(socket, :edit_transaction) do
+    socket
+    |> assign(:heading, "Edit Transaction")
+    |> assign(:save, "Save Transaction")
   end
 
   defp apply_action(socket, :regular_withdrawal) do
@@ -50,10 +64,16 @@ defmodule FreedomAccountWeb.TransactionForm do
         error -> translate_error(error)
       end
 
+    line_count =
+      case form[:line_items].value do
+        l when is_list(l) -> length(l)
+        m when is_map(m) -> map_size(m)
+      end
+
     assigns =
       assigns
       |> assign(:line_items_error, line_items_error)
-      |> assign(:multi_line?, length(form[:line_items].value) > 1)
+      |> assign(:multi_line?, line_count > 1)
 
     ~H"""
     <div>
@@ -106,8 +126,10 @@ defmodule FreedomAccountWeb.TransactionForm do
   def handle_event("validate", params, socket) do
     %{"transaction" => transaction_params} = params
 
+    transaction = socket.assigns[:transaction] || %Transaction{}
+
     changeset =
-      %Transaction{}
+      transaction
       |> Transactions.change_transaction(transaction_params)
       |> Map.put(:action, :validate)
 
@@ -129,6 +151,21 @@ defmodule FreedomAccountWeb.TransactionForm do
         {:noreply,
          socket
          |> put_flash(:info, "Deposit successful")
+         |> push_patch(to: return_path)}
+
+      {:error, %Changeset{} = changeset} ->
+        {:noreply, assign_form(socket, changeset)}
+    end
+  end
+
+  defp save_transaction(socket, :edit_transaction, params) do
+    %{return_path: return_path, transaction: transaction} = socket.assigns
+
+    case Transactions.update_transaction(transaction, params) do
+      {:ok, _transaction} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "Transaction updated successfully")
          |> push_patch(to: return_path)}
 
       {:error, %Changeset{} = changeset} ->

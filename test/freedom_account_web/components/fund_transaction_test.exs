@@ -63,6 +63,32 @@ defmodule FreedomAccountWeb.FundTransactionTest do
       |> assert_has(enabled("button"), text: "Next Page")
     end
 
+    test "edits single-fund transaction in listing", %{conn: conn, fund: fund} do
+      deposit = Factory.deposit(fund)
+      [line_item] = deposit.line_items
+      new_date = Factory.date()
+      new_memo = Factory.memo()
+      new_amount = Factory.money()
+
+      conn
+      |> visit(~p"/funds/#{fund}")
+      |> click_link(action_link("#txn-#{line_item.id}"), "Edit")
+      |> assert_has(page_title(), text: "Edit Transaction")
+      |> assert_has(heading(), text: "Edit Transaction")
+      |> assert_has(field_value("#transaction_date", deposit.date))
+      |> assert_has(field_value("#transaction_memo", deposit.memo))
+      |> assert_has(field_value("#transaction_line_items_0_amount", line_item.amount))
+      |> assert_has("label", text: fund.name)
+      |> fill_in("Date", with: new_date)
+      |> fill_in("Memo", with: new_memo)
+      |> fill_in("Amount 0", with: new_amount)
+      |> click_button("Save Transaction")
+      |> assert_has(flash(:info), text: "Transaction updated successfully")
+      |> assert_has(table_cell(), text: "#{new_date}")
+      |> assert_has(table_cell(), text: new_memo)
+      |> assert_has(role("deposit"), text: "#{new_amount}")
+    end
+
     defp assert_has_all_transactions(session, transactions) do
       Enum.reduce(transactions, session, fn txn, session ->
         assert_has(session, table_cell(), text: "#{txn.date}")

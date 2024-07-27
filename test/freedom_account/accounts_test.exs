@@ -31,6 +31,7 @@ defmodule FreedomAccount.AccountsTest do
       assert Accounts.only_account() == account
     end
 
+    @tag capture_log: true
     test "creates a new account if missing" do
       assert %Account{
                deposits_per_year: 24,
