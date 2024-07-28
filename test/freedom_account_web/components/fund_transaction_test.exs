@@ -5,6 +5,7 @@ defmodule FreedomAccountWeb.FundTransactionTest do
   alias FreedomAccount.MoneyUtils
   alias FreedomAccount.Transactions
   alias FreedomAccountWeb.FundTransaction
+  alias Phoenix.HTML.Safe
 
   setup [:create_account, :create_fund]
 
@@ -85,6 +86,9 @@ defmodule FreedomAccountWeb.FundTransactionTest do
       |> fill_in("Amount 0", with: new_amount)
       |> click_button("Save Transaction")
       |> assert_has(flash(:info), text: "Transaction updated successfully")
+      |> assert_has(heading(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: "#{new_amount}")
+      |> assert_has(sidebar_fund_balance(), text: "#{new_amount}")
       |> assert_has(table_cell(), text: "#{new_date}")
       |> assert_has(table_cell(), text: new_memo)
       |> assert_has(role("deposit"), text: "#{new_amount}")
@@ -122,6 +126,19 @@ defmodule FreedomAccountWeb.FundTransactionTest do
       |> assert_has(table_cell(), text: "#{new_date}")
       |> assert_has(table_cell(), text: new_memo)
       |> assert_has(role("deposit"), text: "#{new_amount1}")
+    end
+
+    test "deletes transaction in listing", %{conn: conn, fund: fund} do
+      deposit = Factory.deposit(fund)
+      [line_item] = deposit.line_items
+
+      conn
+      |> visit(~p"/funds/#{fund}")
+      |> click_link(action_link("#txn-#{line_item.id}"), "Delete")
+      |> assert_has(heading(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: "$0.00")
+      |> assert_has(sidebar_fund_balance(), text: "$0.00")
+      |> refute_has("#txn-#{line_item.id}")
     end
 
     defp assert_has_all_transactions(session, transactions) do

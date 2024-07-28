@@ -22,6 +22,7 @@ defmodule FreedomAccount.Transactions do
   alias FreedomAccount.Error
   alias FreedomAccount.Error.InvariantError
   alias FreedomAccount.Error.NotFoundError
+  alias FreedomAccount.Error.ServiceError
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Paging
@@ -41,6 +42,25 @@ defmodule FreedomAccount.Transactions do
   @spec change_transaction(Transaction.t(), Transaction.attrs()) :: Changeset.t()
   def change_transaction(%Transaction{} = transaction, attrs \\ %{}) do
     Transaction.changeset(transaction, attrs)
+  end
+
+  @spec delete_transaction(Transaction.t()) :: :ok | {:error, ServiceError.t()}
+  def delete_transaction(%Transaction{} = transaction) do
+    transaction
+    |> Repo.delete()
+    |> PubSub.broadcast(pubsub_topic(), :transaction_deleted)
+    |> case do
+      {:ok, _transaction} ->
+        :ok
+
+      {:error, %Changeset{} = changeset} ->
+        ErrorReporter.call("Failed to delete a transaction",
+          error: inspect(changeset),
+          metadata: %{transaction_id: transaction.id}
+        )
+
+        {:error, Error.service(message: "Failed to delete a transaction", service: :database)}
+    end
   end
 
   @spec deposit(Transaction.attrs()) :: {:ok, Transaction.t()} | {:error, Changeset.t()}

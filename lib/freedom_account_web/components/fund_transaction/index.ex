@@ -33,22 +33,35 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
     ~H"""
     <div>
       <.table id="fund-transactions" row_id={&"txn-#{&1.line_item_id}"} rows={@transactions}>
-        <:col :let={txn} label="Date"><%= txn.date %></:col>
-        <:col :let={txn} label="Memo"><%= txn.memo %></:col>
-        <:col :let={txn} align={:right} label="Out">
-          <span :if={Money.negative?(txn.amount)} data-role="withdrawal">
-            <%= MoneyUtils.negate(txn.amount) %>
+        <:col :let={transaction} label="Date"><%= transaction.date %></:col>
+        <:col :let={transaction} label="Memo"><%= transaction.memo %></:col>
+        <:col :let={transaction} align={:right} label="Out">
+          <span :if={Money.negative?(transaction.amount)} data-role="withdrawal">
+            <%= MoneyUtils.negate(transaction.amount) %>
           </span>
         </:col>
-        <:col :let={txn} align={:right} label="In">
-          <span :if={Money.positive?(txn.amount)} data-role="deposit"><%= txn.amount %></span>
+        <:col :let={transaction} align={:right} label="In">
+          <span :if={Money.positive?(transaction.amount)} data-role="deposit">
+            <%= transaction.amount %>
+          </span>
         </:col>
-        <:col :let={txn} align={:right} label="Balance">
-          <%= txn.running_balance %>
+        <:col :let={transaction} align={:right} label="Balance">
+          <%= transaction.running_balance %>
         </:col>
-        <:action :let={txn}>
-          <.link patch={~p"/funds/#{@fund}/transactions/#{txn}/edit"}>
-            <.icon name="hero-pencil-square-mini" /> Edit
+        <:action :let={transaction}>
+          <.link patch={~p"/funds/#{@fund}/transactions/#{transaction}/edit"}>
+            <.icon name="hero-pencil-square-micro" /> Edit
+          </.link>
+        </:action>
+        <:action :let={transaction}>
+          <.link
+            data-confirm="Are you sure?"
+            phx-click={
+              JS.push("delete", value: %{id: transaction.id}) |> hide("##{transaction.line_item_id}")
+            }
+            phx-target={@myself}
+          >
+            <.icon name="hero-trash-micro" /> Delete
           </.link>
         </:action>
         <:empty_state>
@@ -80,6 +93,16 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
   end
 
   @impl LiveComponent
+  def handle_event("delete", %{"id" => id}, socket) do
+    with {:ok, transaction} <- Transactions.fetch_transaction(id),
+         :ok <- Transactions.delete_transaction(transaction) do
+      {:noreply, socket}
+    else
+      {:error, error} ->
+        {:noreply, put_flash(socket, :error, Exception.message(error))}
+    end
+  end
+
   def handle_event("next-page", _params, socket) do
     %{fund: fund, paging: paging} = socket.assigns
 

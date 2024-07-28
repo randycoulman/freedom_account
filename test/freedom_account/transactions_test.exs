@@ -39,6 +39,28 @@ defmodule FreedomAccount.TransactionsTest do
     end
   end
 
+  describe "deleting a transaction" do
+    @tag capture_log: true
+    test "deletes the transaction and all of its line items", %{fund: fund} do
+      transaction = Factory.deposit(fund)
+      [line_item] = transaction.line_items
+
+      assert :ok = Transactions.delete_transaction(transaction)
+      assert {:error, %NotFoundError{}} = Transactions.fetch_transaction(transaction.id)
+      assert Repo.reload(line_item) == nil
+    end
+
+    test "publishes a transaction deleted event", %{fund: fund} do
+      transaction = Factory.deposit(fund)
+      transaction_id = transaction.id
+      :ok = PubSub.subscribe(Transactions.pubsub_topic())
+
+      :ok = Transactions.delete_transaction(transaction)
+
+      assert_received({:transaction_deleted, %Transaction{id: ^transaction_id}})
+    end
+  end
+
   describe "making a deposit to a single fund" do
     test "creates a transaction and its line item with valid data", %{fund: fund} do
       line_item_attrs = Factory.line_item_attrs(fund)
