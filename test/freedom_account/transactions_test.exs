@@ -308,6 +308,47 @@ defmodule FreedomAccount.TransactionsTest do
     end
   end
 
+  describe "updating a multi-fund transaction" do
+    setup :create_funds
+
+    setup %{account: account, funds: funds} do
+      {:ok, transaction} = Transactions.regular_deposit(account, Factory.date(), funds)
+
+      %{transaction: transaction}
+    end
+
+    test "with valid data updates the transaction", %{funds: funds, transaction: transaction} do
+      line_item_attrs =
+        funds
+        |> Enum.zip(transaction.line_items)
+        |> Enum.map(fn {fund, line_item} ->
+          Factory.line_item_attrs(fund, id: line_item.id)
+        end)
+
+      valid_attrs = Factory.transaction_attrs(line_items: line_item_attrs)
+
+      assert {:ok, %Transaction{} = updated} = Transactions.update_transaction(transaction, valid_attrs)
+      assert updated.date == valid_attrs[:date]
+      assert updated.memo == valid_attrs[:memo]
+      assert_lists_equal(updated.line_items, line_item_attrs, &assert_maps_equal(&1, &2, [:amount]))
+    end
+
+    test "with an invalid line item returns an error changeset", %{funds: funds, transaction: transaction} do
+      [to_zero | line_item_attrs] =
+        funds
+        |> Enum.zip(transaction.line_items)
+        |> Enum.map(fn {fund, line_item} ->
+          Factory.line_item_attrs(fund, id: line_item.id)
+        end)
+
+      to_zero = Map.put(to_zero, :amount, Money.zero(:usd))
+
+      valid_attrs = Factory.transaction_attrs(line_items: [to_zero | line_item_attrs])
+
+      assert {:error, %Changeset{valid?: false}} = Transactions.update_transaction(transaction, valid_attrs)
+    end
+  end
+
   describe "making a withdrawal from a single fund" do
     setup %{fund: fund} do
       %{fund: Factory.with_balance(fund, ~M[5000]usd)}

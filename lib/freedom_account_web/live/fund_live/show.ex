@@ -56,11 +56,15 @@ defmodule FreedomAccountWeb.FundLive.Show do
   end
 
   defp apply_action(socket, :deposit, _params) do
-    assign(socket, :page_title, "Deposit")
+    socket
+    |> assign(:page_title, "Deposit")
+    |> assign(:transaction, %Transaction{})
   end
 
   defp apply_action(socket, :withdrawal, _params) do
-    assign(socket, :page_title, "Withdraw")
+    socket
+    |> assign(:page_title, "Withdraw")
+    |> assign(:transaction, %Transaction{})
   end
 
   defp apply_action(socket, _action, _params) do
@@ -142,8 +146,9 @@ defmodule FreedomAccountWeb.FundLive.Show do
       <.live_component
         account={@account}
         action={@live_action}
-        funds={[@fund]}
-        id={(@transaction && @transaction.id) || :new}
+        all_funds={@funds}
+        initial_funds={[@fund]}
+        id={@transaction.id || :new}
         module={TransactionForm}
         return_path={~p"/funds/#{@fund}"}
         title={@page_title}

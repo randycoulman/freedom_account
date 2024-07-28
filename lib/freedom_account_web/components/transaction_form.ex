@@ -12,15 +12,13 @@ defmodule FreedomAccountWeb.TransactionForm do
 
   @impl LiveComponent
   def update(assigns, socket) do
-    %{action: action, funds: funds} = assigns
+    %{action: action, initial_funds: initial_funds, transaction: transaction} = assigns
 
     changeset =
-      case assigns[:transaction] do
-        %Transaction{} = transaction ->
-          Transactions.change_transaction(transaction)
-
-        nil ->
-          Transactions.new_transaction(funds)
+      if is_nil(transaction.id) do
+        Transactions.new_transaction(initial_funds)
+      else
+        Transactions.change_transaction(transaction)
       end
 
     {:ok,
@@ -98,7 +96,9 @@ defmodule FreedomAccountWeb.TransactionForm do
           <.label>Amount</.label>
           <span />
           <.inputs_for :let={li} field={@form[:line_items]}>
-            <.label><%= Enum.at(@funds, li.index).name %></.label>
+            <.label>
+              <%= fund_name(@all_funds, li[:fund_id].value) %>
+            </.label>
             <.input
               field={li[:amount]}
               label={"Amount #{li.index}"}
@@ -120,6 +120,14 @@ defmodule FreedomAccountWeb.TransactionForm do
       </.simple_form>
     </div>
     """
+  end
+
+  defp fund_name(funds, fund_id) when is_binary(fund_id) do
+    fund_name(funds, String.to_integer(fund_id))
+  end
+
+  defp fund_name(funds, fund_id) do
+    Enum.find(funds, &(&1.id == fund_id)).name
   end
 
   @impl LiveComponent

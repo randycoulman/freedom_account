@@ -3,6 +3,7 @@ defmodule FreedomAccountWeb.AccountBar.Show do
 
   use FreedomAccountWeb, :live_component
 
+  alias FreedomAccount.Transactions.Transaction
   alias FreedomAccountWeb.AccountBar.Form
   alias FreedomAccountWeb.ActivationForm
   alias FreedomAccountWeb.BudgetForm
@@ -114,10 +115,12 @@ defmodule FreedomAccountWeb.AccountBar.Show do
         <.live_component
           account={@account}
           action={@action}
-          funds={@funds}
+          all_funds={@funds}
+          initial_funds={@funds}
           id={:new}
           module={TransactionForm}
           return_path={@return_path}
+          transaction={%Transaction{}}
         />
       </.modal>
     </div>
