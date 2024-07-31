@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   app:
     depends_on:
@@ -14,6 +12,7 @@ services:
       - "8080:4000"
     profiles:
       - prod
+    restart: unless-stopped
 
   db:
     env_file:
@@ -21,6 +20,7 @@ services:
     image: postgres:15.1
     ports:
       - "5432:5432"
+    restart: unless-stopped
     volumes:
       - dbdata:/var/lib/postgresql/data
 
