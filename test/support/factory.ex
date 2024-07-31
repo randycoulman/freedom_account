@@ -5,9 +5,10 @@ defmodule FreedomAccount.Factory do
   alias FreedomAccount.Accounts
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Funds
-  alias FreedomAccount.Funds.Activation
   alias FreedomAccount.Funds.Budget
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.Loans
+  alias FreedomAccount.Loans.Loan
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.LineItem
   alias FreedomAccount.Transactions.Transaction
@@ -98,6 +99,12 @@ defmodule FreedomAccount.Factory do
   @spec id :: non_neg_integer()
   def id, do: Faker.random_between(1000, 1_000_000)
 
+  @spec loan_icon :: Loan.icon()
+  def loan_icon, do: Enum.random(@emoji)
+
+  @spec loan_name :: Loan.name()
+  def loan_name, do: sequence("Loan ")
+
   @spec memo :: String.t()
   def memo, do: Faker.Lorem.sentence()
 
@@ -123,17 +130,6 @@ defmodule FreedomAccount.Factory do
   @spec account_attrs(Account.attrs()) :: Account.attrs()
   def account_attrs(overrides \\ %{}) do
     Enum.into(overrides, %{deposits_per_year: deposit_count(), name: account_name()})
-  end
-
-  @spec activation_attrs([Fund.t()], Fund.activation_attrs()) :: Activation.attrs()
-  def activation_attrs(funds, attrs \\ %{}) do
-    fund_attrs =
-      funds
-      |> Enum.map(&fund_activation_attrs(&1.id, attrs))
-      |> Enum.with_index()
-      |> Map.new(fn {attrs, index} -> {to_string(index), attrs} end)
-
-    %{funds: fund_attrs}
   end
 
   @spec budget_attrs([Fund.t()], Fund.budget_attrs()) :: Budget.attrs()
@@ -205,6 +201,17 @@ defmodule FreedomAccount.Factory do
     })
   end
 
+  @spec funds_activation_attrs([Fund.t()], Fund.activation_attrs()) :: Funds.Activation.attrs()
+  def funds_activation_attrs(funds, attrs \\ %{}) do
+    fund_attrs =
+      funds
+      |> Enum.map(&fund_activation_attrs(&1.id, attrs))
+      |> Enum.with_index()
+      |> Map.new(fn {attrs, index} -> {to_string(index), attrs} end)
+
+    %{funds: fund_attrs}
+  end
+
   @spec inactive_fund(Account.t(), Fund.attrs()) :: Fund.t()
   def inactive_fund(account, attrs \\ %{}) do
     {:ok, fund} =
@@ -216,9 +223,78 @@ defmodule FreedomAccount.Factory do
     fund
   end
 
+  @spec inactive_loan(Account.t(), Loan.attrs()) :: Loan.t()
+  def inactive_loan(account, attrs \\ %{}) do
+    {:ok, loan} =
+      account
+      |> loan(attrs)
+      |> Map.put(:current_balance, Money.zero(:usd))
+      |> Loans.deactivate_loan()
+
+    loan
+  end
+
+  # @spec lend(Fund.t(), Transaction.attrs() | %{amount: Money.t()} | keyword()) :: Transaction.t()
+  # def lend(fund, attrs \\ %{}) do
+  #   attrs = Map.new(attrs)
+  #   {amount, attrs} = Map.pop(attrs, :amount)
+  #   line_item = if amount, do: %{amount: amount}, else: %{}
+
+  #   attrs =
+  #     attrs
+  #     |> Map.put_new_lazy(:line_items, fn ->
+  #       [line_item_attrs(fund, line_item)]
+  #     end)
+  #     |> transaction_attrs()
+
+  #   {:ok, transaction} = Transactions.deposit(attrs)
+
+  #   transaction
+  # end
+
   @spec line_item_attrs(Fund.t(), LineItem.attrs()) :: LineItem.attrs()
   def line_item_attrs(fund, overrides \\ %{}) do
     Enum.into(overrides, %{amount: money(), fund_id: fund.id})
+  end
+
+  @spec loan(Account.t(), Loan.attrs()) :: Loan.t()
+  def loan(account, attrs \\ %{}) do
+    attrs = loan_attrs(attrs)
+    {:ok, loan} = Loans.create_loan(account, attrs)
+
+    case attrs[:current_balance] do
+      %Money{} = balance -> %{loan | current_balance: balance}
+      nil -> loan
+    end
+  end
+
+  @spec loan_attrs(Loan.attrs()) :: Loan.attrs()
+  def loan_attrs(overrides \\ %{}) do
+    Enum.into(overrides, %{
+      # This is done automatically by the database
+      # active: true,
+      icon: loan_icon(),
+      name: loan_name()
+    })
+  end
+
+  @spec loan_activation_attrs(Loan.id(), Loan.activation_attrs()) :: Loan.activation_attrs()
+  def loan_activation_attrs(id, overrides \\ %{}) do
+    Enum.into(overrides, %{
+      active: Enum.random([false, true]),
+      id: id
+    })
+  end
+
+  @spec loans_activation_attrs([Loan.t()], Loan.activation_attrs()) :: Loans.Activation.attrs()
+  def loans_activation_attrs(loans, attrs \\ %{}) do
+    loan_attrs =
+      loans
+      |> Enum.map(&loan_activation_attrs(&1.id, attrs))
+      |> Enum.with_index()
+      |> Map.new(fn {attrs, index} -> {to_string(index), attrs} end)
+
+    %{loans: loan_attrs}
   end
 
   @spec transaction_attrs(Transaction.attrs()) :: Transaction.attrs()
@@ -252,13 +328,23 @@ defmodule FreedomAccount.Factory do
     %{account | default_fund_id: fund.id}
   end
 
-  @spec with_balance(Fund.t()) :: Fund.t()
-  @spec with_balance(Fund.t(), Money.t()) :: Fund.t()
-  def with_balance(%Fund{} = fund, balance \\ money()) do
+  @spec with_fund_balance(Fund.t()) :: Fund.t()
+  @spec with_fund_balance(Fund.t(), Money.t()) :: Fund.t()
+  def with_fund_balance(%Fund{} = fund, balance \\ money()) do
     unless Money.zero?(balance) do
       deposit(fund, amount: balance)
     end
 
     %{fund | current_balance: balance}
+  end
+
+  @spec with_loan_balance(Loan.t()) :: Loan.t()
+  @spec with_loan_balance(Loan.t(), Money.t()) :: Loan.t()
+  def with_loan_balance(%Loan{} = loan, balance \\ money()) do
+    # unless Money.zero?(balance) do
+    #   lend(loan, amount: balance)
+    # end
+
+    %{loan | current_balance: balance}
   end
 end

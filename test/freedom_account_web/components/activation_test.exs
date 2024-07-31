@@ -38,7 +38,7 @@ defmodule FreedomAccountWeb.ActivationTest do
     funds = [
       Factory.fund(account, name: "Can Deactivate", current_balance: Money.zero(:usd)),
       Factory.inactive_fund(account, name: "Inactive", current_balance: Money.zero(:usd)),
-      account |> Factory.fund(name: "Has Non-Zero Balance") |> Factory.with_balance(~M[150]usd),
+      account |> Factory.fund(name: "Has Non-Zero Balance") |> Factory.with_fund_balance(~M[150]usd),
       Factory.fund(account, name: "To Deactivate", current_balance: Money.zero(:usd))
     ]
 

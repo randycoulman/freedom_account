@@ -47,6 +47,11 @@ defmodule FreedomAccount.DataCase do
     %{fund: Factory.fund(account)}
   end
 
+  @spec create_loan(map()) :: map()
+  def create_loan(%{account: account} = _context) do
+    %{loan: Factory.loan(account)}
+  end
+
   @doc """
   A helper that transforms changeset errors into a map of messages.
 

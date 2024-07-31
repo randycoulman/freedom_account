@@ -373,7 +373,7 @@ defmodule FreedomAccount.TransactionsTest do
 
   describe "making a withdrawal from a single fund" do
     setup %{fund: fund} do
-      %{fund: Factory.with_balance(fund, ~M[5000]usd)}
+      %{fund: Factory.with_fund_balance(fund, ~M[5000]usd)}
     end
 
     test "creates a transaction and its line item with valid data", %{account: account, fund: fund} do
@@ -487,7 +487,7 @@ defmodule FreedomAccount.TransactionsTest do
     setup :create_funds
 
     setup %{funds: funds} do
-      funds = for fund <- funds, do: Factory.with_balance(fund, ~M[5000]usd)
+      funds = for fund <- funds, do: Factory.with_fund_balance(fund, ~M[5000]usd)
 
       %{funds: funds}
     end

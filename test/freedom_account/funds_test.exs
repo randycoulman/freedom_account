@@ -25,7 +25,7 @@ defmodule FreedomAccount.FundsTest do
       _funds = [
         Factory.fund(account, name: "Can Deactivate", current_balance: Money.zero(:usd)),
         Factory.inactive_fund(account, name: "Inactive", current_balance: Money.zero(:usd)),
-        account |> Factory.fund(name: "Has Non-Zero Balance") |> Factory.with_balance(~M[150]usd),
+        account |> Factory.fund(name: "Has Non-Zero Balance") |> Factory.with_fund_balance(~M[150]usd),
         Factory.fund(account, name: "To Deactivate", current_balance: Money.zero(:usd))
       ]
 
@@ -102,7 +102,7 @@ defmodule FreedomAccount.FundsTest do
     end
 
     test "returns error if fund cannot be deactivated", %{account: account} do
-      fund = account |> Factory.fund() |> Factory.with_balance()
+      fund = account |> Factory.fund() |> Factory.with_fund_balance()
 
       assert {:error, %NotAllowedError{}} = Funds.deactivate_fund(fund)
     end
@@ -254,7 +254,7 @@ defmodule FreedomAccount.FundsTest do
         Factory.fund(account)
       ]
 
-      valid_attrs = Factory.activation_attrs(funds)
+      valid_attrs = Factory.funds_activation_attrs(funds)
 
       assert {:ok, updated_funds} = Funds.update_activation(account, valid_attrs)
 
@@ -289,7 +289,7 @@ defmodule FreedomAccount.FundsTest do
 
       invalid_attrs =
         funds
-        |> Factory.activation_attrs()
+        |> Factory.funds_activation_attrs()
         |> update_in([:funds, "1"], &Map.put(&1, :active, nil))
 
       assert {:error, %Changeset{valid?: false} = changeset} = Funds.update_activation(account, invalid_attrs)

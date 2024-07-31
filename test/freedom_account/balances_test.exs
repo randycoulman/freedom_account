@@ -21,7 +21,7 @@ defmodule FreedomAccount.BalancesTest do
     end
 
     test "sums the balances of all funds in the account", %{account: account} do
-      funds = for _i <- 1..5, do: account |> Factory.fund() |> Factory.with_balance()
+      funds = for _i <- 1..5, do: account |> Factory.fund() |> Factory.with_fund_balance()
       expected = funds |> Enum.map(& &1.current_balance) |> MoneyUtils.sum()
 
       assert expected == Balances.account_balance(account)

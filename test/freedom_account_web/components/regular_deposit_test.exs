@@ -33,7 +33,7 @@ defmodule FreedomAccountWeb.RegularDepositTest do
   defp create_funds(%{account: account}) do
     funds =
       for _i <- 1..3 do
-        account |> Factory.fund() |> Factory.with_balance()
+        account |> Factory.fund() |> Factory.with_fund_balance()
       end
 
     %{funds: Enum.sort_by(funds, & &1.name)}

@@ -95,7 +95,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData.FundCacheTest do
       {:ok, newly_inactive_fund} =
         funds
         |> Enum.random()
-        |> Factory.with_balance(Money.zero(:usd))
+        |> Factory.with_fund_balance(Money.zero(:usd))
         |> Funds.deactivate_fund()
 
       result = FundCache.update_activations(funds, [newly_inactive_fund])
