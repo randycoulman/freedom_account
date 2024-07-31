@@ -9,11 +9,12 @@ defmodule Mix.Tasks.Import do
   alias FreedomAccount.Error
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.Loans
   alias FreedomAccount.Transactions
   alias NimbleCSV.RFC4180, as: CSV
 
   @requirements ["app.start"]
-  @steps [:account_settings, :funds, :fund_transactions, :default_fund]
+  @steps [:account_settings, :funds, :fund_transactions, :default_fund, :loans]
 
   @impl Mix.Task
   def run(args) do
@@ -36,7 +37,8 @@ defmodule Mix.Tasks.Import do
          {:ok, funds} <- import_funds(account, opts),
          :ok <- import_fund_transactions(account, funds, opts),
          # Do this after fund transactions to avoid overdraft coverage kicking in during import
-         {:ok, _account} <- update_default_fund(account, funds, default_fund_name, opts) do
+         {:ok, _account} <- update_default_fund(account, funds, default_fund_name, opts),
+         {:ok, _loans} <- import_loans(account, opts) do
       Mix.shell().info("✅ Import completed successfully!")
     else
       {:error, error} ->
@@ -180,6 +182,45 @@ defmodule Mix.Tasks.Import do
       Mix.shell().info("➖ Skipping default fund...")
       {:ok, account}
     end
+  end
+
+  defp import_loans(%Account{} = account, opts) do
+    if :loans in opts[:steps] do
+      Mix.shell().info("🏦 Importing loans...")
+      do_import_loans(account, opts[:directory])
+    else
+      Mix.shell().info("➖ Skipping loans...")
+      {:ok, Loans.list_all_loans(account)}
+    end
+  end
+
+  defp do_import_loans(%Account{} = account, directory) do
+    funds =
+      directory
+      |> Path.join("loans.csv")
+      |> File.stream!()
+      |> CSV.parse_stream()
+      |> Stream.map(fn [name, active] ->
+        active? = active == "true"
+
+        {:ok, loan} =
+          Loans.create_loan(account, %{
+            icon: "❓",
+            name: name
+          })
+
+        loan = %{loan | current_balance: Money.zero(:usd)}
+
+        if active? do
+          loan
+        else
+          {:ok, loan} = Loans.deactivate_loan(loan)
+          loan
+        end
+      end)
+      |> Enum.to_list()
+
+    {:ok, funds}
   end
 
   defp find_fund(funds, name) do
