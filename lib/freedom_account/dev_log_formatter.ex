@@ -29,8 +29,6 @@ defmodule FreedomAccount.DevLogFormatter do
           timestamp :: time,
           metadata :: keyword
         ) :: IO.chardata()
-  # format signature is defined by Logger and requires 4 args
-  # credo:disable-for-next-line Credo.Check.Refactor.FunctionArity
   def format(level, msg, timestamp, metadata) do
     metadata =
       metadata

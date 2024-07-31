@@ -123,7 +123,7 @@
           {Credo.Check.Refactor.Apply, []},
           {Credo.Check.Refactor.CyclomaticComplexity, []},
           {Credo.Check.Refactor.FilterReject, []},
-          {Credo.Check.Refactor.FunctionArity, [max_arity: 3]},
+          {Credo.Check.Refactor.FunctionArity, [max_arity: 4]},
           {Credo.Check.Refactor.IoPuts, []},
           {Credo.Check.Refactor.LongQuoteBlocks, []},
           {Credo.Check.Refactor.MatchInCondition, []},

@@ -13,19 +13,30 @@ defmodule Mix.Tasks.Import do
   alias NimbleCSV.RFC4180, as: CSV
 
   @requirements ["app.start"]
+  @steps [:account_settings, :funds, :fund_transactions, :default_fund]
 
   @impl Mix.Task
   def run(args) do
-    [directory] = args
+    {opts, [directory]} = OptionParser.parse!(args, switches: [from: :string])
+
+    steps =
+      case opts[:from] do
+        nil ->
+          @steps
+
+        from ->
+          Enum.drop_while(@steps, &(to_string(&1) != from))
+      end
+
+    opts = [directory: directory, steps: steps]
 
     account = Accounts.only_account()
 
-    with {:ok, account, default_fund_name} <- import_account_settings(account, directory),
-         {:ok, funds} <- import_funds(account, directory),
-         {:ok, default_fund} <- find_fund(funds, default_fund_name),
-         :ok <- import_fund_transactions(account, funds, directory),
-         # Do this last to avoid overdraft coverage kicking in during import
-         {:ok, _account} <- update_default_fund(account, default_fund) do
+    with {:ok, account, default_fund_name} <- import_account_settings(account, opts),
+         {:ok, funds} <- import_funds(account, opts),
+         :ok <- import_fund_transactions(account, funds, opts),
+         # Do this after fund transactions to avoid overdraft coverage kicking in during import
+         {:ok, _account} <- update_default_fund(account, funds, default_fund_name, opts) do
       Mix.shell().info("✅ Import completed successfully!")
     else
       {:error, error} ->
@@ -33,12 +44,17 @@ defmodule Mix.Tasks.Import do
     end
   end
 
-  defp import_account_settings(%Account{} = account, directory) do
-    Mix.shell().info("⚙️ Importing account settings...")
+  defp import_account_settings(%Account{} = account, opts) do
+    if :account_settings in opts[:steps] do
+      Mix.shell().info("⚙️ Importing account settings...")
 
-    with {:ok, settings} <- load_account_settings(directory),
-         {:ok, account} <- Accounts.update_account(account, settings) do
-      {:ok, account, settings[:default_fund_name]}
+      with {:ok, settings} <- load_account_settings(opts[:directory]),
+           {:ok, account} <- Accounts.update_account(account, settings) do
+        {:ok, account, settings[:default_fund_name]}
+      end
+    else
+      Mix.shell().info("➖ Skipping account settings...")
+      {:ok, account, nil}
     end
   end
 
@@ -58,9 +74,17 @@ defmodule Mix.Tasks.Import do
     {:ok, settings}
   end
 
-  defp import_funds(%Account{} = account, directory) do
-    Mix.shell().info("💰 Importing funds...")
+  defp import_funds(%Account{} = account, opts) do
+    if :funds in opts[:steps] do
+      Mix.shell().info("💰 Importing funds...")
+      do_import_funds(account, opts[:directory])
+    else
+      Mix.shell().info("➖ Skipping funds...")
+      {:ok, Funds.list_all_funds(account)}
+    end
+  end
 
+  defp do_import_funds(%Account{} = account, directory) do
     funds =
       directory
       |> Path.join("categories.csv")
@@ -92,14 +116,17 @@ defmodule Mix.Tasks.Import do
     {:ok, funds}
   end
 
-  defp update_default_fund(%Account{} = account, %Fund{} = fund) do
-    Mix.shell().info("🫵 Updating default fund...")
-    Accounts.update_account(account, %{default_fund_id: fund.id})
+  defp import_fund_transactions(%Account{} = account, funds, opts) do
+    if :fund_transactions in opts[:steps] do
+      Mix.shell().info("📓 Importing fund transactions...")
+      do_import_fund_transactions(account, funds, opts[:directory])
+    else
+      Mix.shell().info("➖ Skipping fund transactions...")
+      :ok
+    end
   end
 
-  defp import_fund_transactions(%Account{} = account, funds, directory) do
-    Mix.shell().info("📓 Importing fund transactions...")
-
+  defp do_import_fund_transactions(%Account{} = account, funds, directory) do
     directory
     |> Path.join("categoryTransactions.csv")
     |> File.stream!()
@@ -135,6 +162,24 @@ defmodule Mix.Tasks.Import do
         end
     end)
     |> Stream.run()
+  end
+
+  defp update_default_fund(%Account{} = account, _funds, nil, _opts) do
+    Mix.shell().info("➖ Skipping default fund; no default fund specified")
+    {:ok, account}
+  end
+
+  defp update_default_fund(%Account{} = account, funds, default_fund_name, opts) do
+    if :default_fund in opts[:steps] do
+      Mix.shell().info("🫵 Updating default fund...")
+
+      with {:ok, fund} <- find_fund(funds, default_fund_name) do
+        Accounts.update_account(account, %{default_fund_id: fund.id})
+      end
+    else
+      Mix.shell().info("➖ Skipping default fund...")
+      {:ok, account}
+    end
   end
 
   defp find_fund(funds, name) do
