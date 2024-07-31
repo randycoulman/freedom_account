@@ -4,22 +4,25 @@ defmodule FreedomAccountWeb.ActivationTest do
   import Money.Sigil
 
   alias FreedomAccount.Factory
+  alias Phoenix.HTML.Safe
 
   describe "Show" do
     setup [:create_account, :create_funds]
 
-    test "activates/deactivates funds within modal on fund list view", %{conn: conn} do
+    test "activates/deactivates funds within modal on fund list view", %{conn: conn, funds: funds} do
+      [can_deactivate, inactive, non_zero_balance, to_deactivate] = Enum.map(funds, &Safe.to_iodata/1)
+
       conn
       |> visit(~p"/")
       |> click_link("Activate/Deactivate")
       |> assert_has(page_title(), text: "Activate/Deactivate")
       |> assert_has(heading(), text: "Activate/Deactivate")
-      |> assert_has("label", text: "Can Deactivate")
-      |> assert_has("label", text: "Inactive")
-      |> assert_has("label", text: "To Deactivate")
-      |> refute_has("label", text: "Has Non-Zero Balance")
-      |> uncheck("To Deactivate")
-      |> check("Inactive")
+      |> assert_has("label", text: can_deactivate)
+      |> assert_has("label", text: inactive)
+      |> assert_has("label", text: to_deactivate)
+      |> refute_has("label", text: non_zero_balance)
+      |> uncheck(to_deactivate)
+      |> check(inactive)
       |> click_button("Update Funds")
       |> assert_has(flash(:info), text: "Funds updated successfully")
       |> assert_has(page_title(), text: "Funds")

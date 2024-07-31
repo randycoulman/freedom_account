@@ -97,7 +97,7 @@ defmodule FreedomAccountWeb.TransactionForm do
           <span />
           <.inputs_for :let={li} field={@form[:line_items]}>
             <.label>
-              <%= fund_name(@all_funds, li[:fund_id].value) %>
+              <%= find_fund(@all_funds, li[:fund_id].value) %>
             </.label>
             <.input
               field={li[:amount]}
@@ -122,12 +122,12 @@ defmodule FreedomAccountWeb.TransactionForm do
     """
   end
 
-  defp fund_name(funds, fund_id) when is_binary(fund_id) do
-    fund_name(funds, String.to_integer(fund_id))
+  defp find_fund(funds, fund_id) when is_binary(fund_id) do
+    find_fund(funds, String.to_integer(fund_id))
   end
 
-  defp fund_name(funds, fund_id) do
-    Enum.find(funds, &(&1.id == fund_id)).name
+  defp find_fund(funds, fund_id) do
+    Enum.find(funds, &(&1.id == fund_id))
   end
 
   @impl LiveComponent

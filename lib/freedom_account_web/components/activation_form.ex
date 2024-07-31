@@ -30,7 +30,7 @@ defmodule FreedomAccountWeb.ActivationForm do
         phx-submit="save"
       >
         <.inputs_for :let={fund} field={@form[:funds]}>
-          <.input field={fund[:active]} label={fund[:name].value} type="checkbox" />
+          <.input field={fund[:active]} label={fund.data} type="checkbox" />
         </.inputs_for>
         <:actions>
           <.button phx-disable-with="Updating..." type="submit">

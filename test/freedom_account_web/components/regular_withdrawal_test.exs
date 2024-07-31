@@ -2,11 +2,14 @@ defmodule FreedomAccountWeb.RegularWithdrawalTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
+  alias Phoenix.HTML.Safe
 
   describe "Show" do
     setup [:create_account, :create_funds]
 
     test "makes regular withdrawal within modal on fund list view", %{conn: conn, funds: funds} do
+      [fund1, fund2, fund3] = Enum.map(funds, &Safe.to_iodata/1)
+
       [{amount1, balance1}, {amount2, balance2}, {amount3, balance3}] =
         for fund <- funds do
           amount = fund.current_balance |> Money.mult!(:rand.uniform()) |> Money.round()
@@ -25,6 +28,9 @@ defmodule FreedomAccountWeb.RegularWithdrawalTest do
       |> assert_has(heading(), text: "Regular Withdrawal")
       |> assert_has(field_value("#transaction_date", "#{Timex.today(:local)}"))
       |> assert_has("#transaction-total", text: "#{Money.zero(:usd)}")
+      |> assert_has("label", text: fund1)
+      |> assert_has("label", text: fund2)
+      |> assert_has("label", text: fund3)
       |> fill_in("Date", with: "")
       |> assert_has(field_error("#transaction_date"), text: "can't be blank")
       |> fill_in("Date", with: Factory.date())

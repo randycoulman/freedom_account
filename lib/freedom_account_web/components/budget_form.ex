@@ -36,7 +36,7 @@ defmodule FreedomAccountWeb.BudgetForm do
           <.label>Budget</.label>
           <.label>Times/Year</.label>
           <.inputs_for :let={fund} field={@form[:funds]}>
-            <.label><%= fund[:name].value %></.label>
+            <.label><%= fund.data %></.label>
             <.input
               field={fund[:budget]}
               label={"Budget #{fund.index}"}
