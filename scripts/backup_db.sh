@@ -31,6 +31,7 @@ BACKUP_FILE="${BACKUP_DIR}/${POSTGRES_DB}_$(date +%Y%m%d).sql"
 
 mkdir -p $BACKUP_DIR
 
+cd ${SCRIPT_DIR}/..
 PGPASSWORD="$POSTGRES_PASSWORD" pg_dump -h localhost -U "$POSTGRES_USER" "$POSTGRES_DB" > "$BACKUP_FILE"
 
 find "$BACKUP_DIR" -type f -name "*.sql" -mtime +7 -exec rm {} \;
