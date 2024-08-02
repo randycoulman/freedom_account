@@ -10,11 +10,12 @@ defmodule Mix.Tasks.Import do
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Loans
+  alias FreedomAccount.Loans.Loan
   alias FreedomAccount.Transactions
   alias NimbleCSV.RFC4180, as: CSV
 
   @requirements ["app.start"]
-  @steps [:account_settings, :funds, :fund_transactions, :default_fund, :loans]
+  @steps [:account_settings, :funds, :fund_transactions, :default_fund, :loans, :loan_transactions]
 
   @impl Mix.Task
   def run(args) do
@@ -38,7 +39,8 @@ defmodule Mix.Tasks.Import do
          :ok <- import_fund_transactions(account, funds, opts),
          # Do this after fund transactions to avoid overdraft coverage kicking in during import
          {:ok, _account} <- update_default_fund(account, funds, default_fund_name, opts),
-         {:ok, _loans} <- import_loans(account, opts) do
+         {:ok, loans} <- import_loans(account, opts),
+         :ok <- import_loan_transactions(loans, opts) do
       Mix.shell().info("✅ Import completed successfully!")
     else
       {:error, error} ->
@@ -223,10 +225,57 @@ defmodule Mix.Tasks.Import do
     {:ok, funds}
   end
 
+  defp import_loan_transactions(loans, opts) do
+    if :loan_transactions in opts[:steps] do
+      Mix.shell().info("💰 Importing loan transactions...")
+      do_import_loan_transactions(loans, opts[:directory])
+    else
+      Mix.shell().info("➖ Skipping loan transactions...")
+      :ok
+    end
+  end
+
+  defp do_import_loan_transactions(loans, directory) do
+    directory
+    |> Path.join("loanTransactions.csv")
+    |> File.stream!()
+    |> CSV.parse_stream()
+    |> Stream.each(fn [loan_name, date, memo, amount] ->
+      date = Date.from_iso8601!(date)
+      %Money{} = amount = Money.parse(amount)
+      {:ok, loan} = find_loan(loans, loan_name)
+
+      {:ok, _transaction} =
+        if Money.negative?(amount) do
+          Transactions.lend(%{
+            amount: Money.abs(amount),
+            date: date,
+            loan_id: loan.id,
+            memo: memo
+          })
+        else
+          Transactions.receive_payment(%{
+            amount: amount,
+            date: date,
+            loan_id: loan.id,
+            memo: memo
+          })
+        end
+    end)
+    |> Stream.run()
+  end
+
   defp find_fund(funds, name) do
     case Enum.find(funds, :none, &(&1.name == name)) do
       %Fund{} = fund -> {:ok, fund}
       :none -> {:error, Error.not_found(details: %{name: name}, entity: Fund)}
+    end
+  end
+
+  defp find_loan(loans, name) do
+    case Enum.find(loans, :none, &(&1.name == name)) do
+      %Loan{} = loan -> {:ok, loan}
+      :none -> {:error, Error.not_found(details: %{name: name}, entity: Loan)}
     end
   end
 end
