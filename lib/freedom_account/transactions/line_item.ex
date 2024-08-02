@@ -18,7 +18,7 @@ defmodule FreedomAccount.Transactions.LineItem do
 
   @type attrs :: %{
           optional(:amount) => Money.t(),
-          optional(:fund_id) => non_neg_integer()
+          optional(:fund_id) => Fund.id()
         }
 
   typed_schema "line_items" do

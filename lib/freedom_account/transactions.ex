@@ -8,6 +8,7 @@ defmodule FreedomAccount.Transactions do
       FreedomAccount.Error,
       FreedomAccount.ErrorReporter,
       FreedomAccount.Funds,
+      FreedomAccount.Loans,
       FreedomAccount.MoneyUtils,
       FreedomAccount.Paging,
       FreedomAccount.PubSub,
@@ -25,11 +26,13 @@ defmodule FreedomAccount.Transactions do
   alias FreedomAccount.Error.ServiceError
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.Loans.Loan
   alias FreedomAccount.Paging
   alias FreedomAccount.PubSub
   alias FreedomAccount.Repo
   alias FreedomAccount.Transactions.FundTransaction
   alias FreedomAccount.Transactions.LineItem
+  alias FreedomAccount.Transactions.LoanTransaction
   alias FreedomAccount.Transactions.Transaction
   alias Paginator.Page
 
@@ -39,9 +42,33 @@ defmodule FreedomAccount.Transactions do
   @opaque cursor :: Paging.cursor()
   @type list_opt :: {:next_cursor, cursor()} | {:per_page, pos_integer()} | {:prev_cursor, cursor()}
 
+  @spec change_loan_transaction(LoanTransaction.t(), LoanTransaction.attrs()) :: Changeset.t()
+  def change_loan_transaction(%LoanTransaction{} = transaction, attrs \\ %{}) do
+    LoanTransaction.changeset(transaction, attrs)
+  end
+
   @spec change_transaction(Transaction.t(), Transaction.attrs()) :: Changeset.t()
   def change_transaction(%Transaction{} = transaction, attrs \\ %{}) do
     Transaction.changeset(transaction, attrs)
+  end
+
+  @spec delete_loan_transaction(LoanTransaction.t()) :: :ok | {:error, ServiceError.t()}
+  def delete_loan_transaction(%LoanTransaction{} = transaction) do
+    transaction
+    |> Repo.delete()
+    |> PubSub.broadcast(pubsub_topic(), :loan_transaction_deleted)
+    |> case do
+      {:ok, _transaction} ->
+        :ok
+
+      {:error, %Changeset{} = changeset} ->
+        ErrorReporter.call("Failed to delete a loan transaction",
+          error: inspect(changeset),
+          metadata: %{transaction_id: transaction.id}
+        )
+
+        {:error, Error.service(message: "Failed to delete a transaction", service: :database)}
+    end
   end
 
   @spec delete_transaction(Transaction.t()) :: :ok | {:error, ServiceError.t()}
@@ -71,12 +98,36 @@ defmodule FreedomAccount.Transactions do
     |> PubSub.broadcast(pubsub_topic(), :transaction_created)
   end
 
+  @spec fetch_loan_transaction(LoanTransaction.id()) :: {:ok, LoanTransaction.t()} | {:error, NotFoundError.t()}
+  def fetch_loan_transaction(id) do
+    Repo.fetch(LoanTransaction, id)
+  end
+
   @spec fetch_transaction(Transaction.id()) :: {:ok, Transaction.t()} | {:error, NotFoundError.t()}
   def fetch_transaction(id) do
     Repo.fetch(Transaction.preload_line_items(), id)
   end
 
-  @spec list_fund_transactions(Fund.t(), [list_opt]) :: {[FundTransaction.t()], map()}
+  @spec lend(LoanTransaction.attrs()) :: {:ok, LoanTransaction.t()} | {:error, Changeset.t()}
+  def lend(attrs \\ %{}) do
+    %LoanTransaction{}
+    |> LoanTransaction.loan_changeset(attrs)
+    |> Repo.insert()
+    |> PubSub.broadcast(pubsub_topic(), :loan_transaction_created)
+    |> case do
+      {:ok, transaction} ->
+        {:ok, transaction}
+
+      {:error, %Changeset{} = changeset} ->
+        {:error,
+         %LoanTransaction{}
+         |> LoanTransaction.changeset(attrs)
+         |> Map.put(:action, changeset.action)
+         |> Map.put(:errors, changeset.errors)}
+    end
+  end
+
+  @spec list_fund_transactions(Fund.t(), [list_opt]) :: {[FundTransaction.t()], Paging.t()}
   def list_fund_transactions(%Fund{} = fund, opts \\ []) do
     limit = Keyword.get(opts, :per_page, 50)
 
@@ -99,6 +150,28 @@ defmodule FreedomAccount.Transactions do
     {transactions, %Paging{next_cursor: metadata.after, prev_cursor: metadata.before}}
   end
 
+  @spec list_loan_transactions(Loan.t(), [list_opt]) :: {[LoanTransaction.t()], Paging.t()}
+  def list_loan_transactions(%Loan{} = loan, opts \\ []) do
+    limit = Keyword.get(opts, :per_page, 50)
+
+    loan_transactions =
+      loan
+      |> LoanTransaction.by_loan()
+      |> LoanTransaction.with_running_balances()
+
+    %Page{entries: transactions, metadata: metadata} =
+      from(s in subquery(loan_transactions))
+      |> LoanTransaction.newest_first()
+      |> Repo.paginate(
+        after: opts[:next_cursor],
+        before: opts[:prev_cursor],
+        cursor_fields: LoanTransaction.cursor_fields(),
+        limit: limit
+      )
+
+    {transactions, %Paging{next_cursor: metadata.after, prev_cursor: metadata.before}}
+  end
+
   @spec new_transaction([Fund.t()]) :: Changeset.t()
   def new_transaction(funds) do
     line_items = Enum.map(funds, &%LineItem{fund_id: &1.id})
@@ -106,6 +179,14 @@ defmodule FreedomAccount.Transactions do
     %Transaction{}
     |> change_transaction(%{date: Timex.today(:local)})
     |> Changeset.put_assoc(:line_items, line_items)
+  end
+
+  @spec receive_payment(LoanTransaction.attrs()) :: {:ok, LoanTransaction.t()} | {:error, Changeset.t()}
+  def receive_payment(attrs \\ %{}) do
+    %LoanTransaction{}
+    |> LoanTransaction.payment_changeset(attrs)
+    |> Repo.insert()
+    |> PubSub.broadcast(pubsub_topic(), :loan_transaction_created)
   end
 
   @spec regular_deposit(Account.t(), Date.t(), [Fund.t()]) ::
@@ -140,6 +221,15 @@ defmodule FreedomAccount.Transactions do
 
   @spec pubsub_topic :: PubSub.topic()
   def pubsub_topic, do: ProcessTree.get(:transactions_topic, default: "transactions")
+
+  @spec update_loan_transaction(LoanTransaction.t(), LoanTransaction.attrs()) ::
+          {:ok, LoanTransaction.t()} | {:error, Changeset.t()}
+  def update_loan_transaction(%LoanTransaction{} = transaction, attrs) do
+    transaction
+    |> LoanTransaction.changeset(attrs)
+    |> Repo.update()
+    |> PubSub.broadcast(pubsub_topic(), :loan_transaction_updated)
+  end
 
   @spec update_transaction(Transaction.t(), Transaction.attrs()) :: {:ok, Transaction.t()} | {:error, Changeset.t()}
   def update_transaction(%Transaction{} = transaction, attrs) do

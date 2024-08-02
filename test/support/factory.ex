@@ -11,6 +11,7 @@ defmodule FreedomAccount.Factory do
   alias FreedomAccount.Loans.Loan
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.LineItem
+  alias FreedomAccount.Transactions.LoanTransaction
   alias FreedomAccount.Transactions.Transaction
 
   @emoji [
@@ -234,23 +235,13 @@ defmodule FreedomAccount.Factory do
     loan
   end
 
-  # @spec lend(Fund.t(), Transaction.attrs() | %{amount: Money.t()} | keyword()) :: Transaction.t()
-  # def lend(fund, attrs \\ %{}) do
-  #   attrs = Map.new(attrs)
-  #   {amount, attrs} = Map.pop(attrs, :amount)
-  #   line_item = if amount, do: %{amount: amount}, else: %{}
+  @spec lend(Loan.t(), LoanTransaction.attrs() | keyword()) :: LoanTransaction.t()
+  def lend(%Loan{} = loan, attrs \\ %{}) do
+    attrs = loan_transaction_attrs(loan, attrs)
 
-  #   attrs =
-  #     attrs
-  #     |> Map.put_new_lazy(:line_items, fn ->
-  #       [line_item_attrs(fund, line_item)]
-  #     end)
-  #     |> transaction_attrs()
-
-  #   {:ok, transaction} = Transactions.deposit(attrs)
-
-  #   transaction
-  # end
+    {:ok, transaction} = Transactions.lend(attrs)
+    transaction
+  end
 
   @spec line_item_attrs(Fund.t(), LineItem.attrs()) :: LineItem.attrs()
   def line_item_attrs(fund, overrides \\ %{}) do
@@ -286,6 +277,16 @@ defmodule FreedomAccount.Factory do
     })
   end
 
+  @spec loan_transaction_attrs(Loan.t(), LoanTransaction.attrs() | keyword()) :: LoanTransaction.attrs()
+  def loan_transaction_attrs(%Loan{} = loan, overrides \\ %{}) do
+    Enum.into(overrides, %{
+      amount: money(),
+      date: date(),
+      loan_id: loan.id,
+      memo: memo()
+    })
+  end
+
   @spec loans_activation_attrs([Loan.t()], Loan.activation_attrs()) :: Loans.Activation.attrs()
   def loans_activation_attrs(loans, attrs \\ %{}) do
     loan_attrs =
@@ -295,6 +296,14 @@ defmodule FreedomAccount.Factory do
       |> Map.new(fn {attrs, index} -> {to_string(index), attrs} end)
 
     %{loans: loan_attrs}
+  end
+
+  @spec payment(Loan.t(), LoanTransaction.attrs() | keyword()) :: LoanTransaction.t()
+  def payment(%Loan{} = loan, attrs \\ %{}) do
+    attrs = loan_transaction_attrs(loan, attrs)
+
+    {:ok, transaction} = Transactions.receive_payment(attrs)
+    transaction
   end
 
   @spec transaction_attrs(Transaction.attrs()) :: Transaction.attrs()
@@ -341,9 +350,9 @@ defmodule FreedomAccount.Factory do
   @spec with_loan_balance(Loan.t()) :: Loan.t()
   @spec with_loan_balance(Loan.t(), Money.t()) :: Loan.t()
   def with_loan_balance(%Loan{} = loan, balance \\ money()) do
-    # unless Money.zero?(balance) do
-    #   lend(loan, amount: balance)
-    # end
+    unless Money.zero?(balance) do
+      lend(loan, amount: balance)
+    end
 
     %{loan | current_balance: balance}
   end

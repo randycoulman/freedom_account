@@ -119,7 +119,7 @@ defmodule FreedomAccount.Loans do
     |> Repo.transaction()
     |> case do
       {:ok, changes} ->
-        PubSub.broadcast({:ok, Map.values(changes)}, pubsub_topic(), :activation_updated)
+        PubSub.broadcast({:ok, Map.values(changes)}, pubsub_topic(), :loan_activation_updated)
 
       {:error, {:loan, index}, changeset, _changes_so_far} ->
         {:error, Map.put(activation_changeset, index, changeset)}

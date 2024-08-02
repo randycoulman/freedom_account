@@ -12,7 +12,7 @@ defmodule FreedomAccount.Loans.Loan do
   alias Ecto.Queryable
   alias Ecto.Schema
   alias FreedomAccount.Accounts.Account
-  # alias FreedomAccount.Transactions.LineItem
+  alias FreedomAccount.Transactions.LoanTransaction
 
   @type activation_attrs :: %{
           optional(:active) => boolean()
@@ -33,7 +33,7 @@ defmodule FreedomAccount.Loans.Loan do
     field :icon, :string, null: false
     field :name, :string, null: false
 
-    # has_many :line_items, LineItem
+    has_many :transactions, LoanTransaction
 
     field(:current_balance, Money.Ecto.Composite.Type, virtual: true) :: Money.t() | nil
 
@@ -58,13 +58,14 @@ defmodule FreedomAccount.Loans.Loan do
 
   @spec can_change_activation?(t()) :: boolean()
   def can_change_activation?(%__MODULE__{} = loan) do
-    not loan.active or is_nil(loan.current_balance) || Money.zero?(loan.current_balance)
+    not loan.active or Money.zero?(loan.current_balance)
   end
 
   @spec deletion_changeset(Changeset.t() | Schema.t()) :: Changeset.t()
   def deletion_changeset(loan) do
-    cast(loan, %{}, [])
-    # |> foreign_key_constraint(:line_items, name: :line_items_loan_id_fkey)
+    loan
+    |> cast(%{}, [])
+    |> foreign_key_constraint(:transactions, name: :loan_transactions_loan_id_fkey)
   end
 
   @spec by_account(Account.t()) :: Queryable.t()
@@ -95,13 +96,12 @@ defmodule FreedomAccount.Loans.Loan do
   @spec with_balance :: Queryable.t()
   @spec with_balance(Queryable.t()) :: Queryable.t()
   def with_balance(query \\ base_query()) do
-    # zero = Money.zero(:usd)
+    zero = Money.zero(:usd)
 
     from l in query,
-      # left_join: l in assoc(f, :line_items),
-      group_by: l.id
-
-    # select_merge: %{current_balance: type(coalesce(sum(l.amount), ^zero), l.amount)}
+      left_join: t in assoc(l, :transactions),
+      group_by: l.id,
+      select_merge: %{current_balance: type(coalesce(sum(t.amount), ^zero), t.amount)}
   end
 
   defp base_query do

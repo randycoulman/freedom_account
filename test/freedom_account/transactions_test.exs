@@ -15,9 +15,16 @@ defmodule FreedomAccount.TransactionsTest do
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.FundTransaction
   alias FreedomAccount.Transactions.LineItem
+  alias FreedomAccount.Transactions.LoanTransaction
   alias FreedomAccount.Transactions.Transaction
 
-  setup [:create_account, :create_fund]
+  setup [:create_account, :create_fund, :create_loan]
+
+  describe "creating a changeset for a LoanTransaction" do
+    test "returns the changeset", %{} do
+      assert %Changeset{} = Transactions.change_loan_transaction(%LoanTransaction{})
+    end
+  end
 
   describe "creating a changeset for a Transaction" do
     test "returns the changeset", %{} do
@@ -36,6 +43,26 @@ defmodule FreedomAccount.TransactionsTest do
       %Changeset{} = changeset = Transactions.change_transaction(%Transaction{}, valid_attrs)
 
       assert Changeset.get_field(changeset, :total) == line_item_attrs[:amount]
+    end
+  end
+
+  describe "deleting a loan transaction" do
+    @tag capture_log: true
+    test "deletes the transaction", %{loan: loan} do
+      transaction = Factory.lend(loan)
+
+      assert :ok = Transactions.delete_loan_transaction(transaction)
+      assert {:error, %NotFoundError{}} = Transactions.fetch_loan_transaction(transaction.id)
+    end
+
+    test "publishes a loan transaction deleted event", %{loan: loan} do
+      transaction = Factory.lend(loan)
+      transaction_id = transaction.id
+      :ok = PubSub.subscribe(Transactions.pubsub_topic())
+
+      :ok = Transactions.delete_loan_transaction(transaction)
+
+      assert_received({:loan_transaction_deleted, %LoanTransaction{id: ^transaction_id}})
     end
   end
 
@@ -121,6 +148,19 @@ defmodule FreedomAccount.TransactionsTest do
     end
   end
 
+  describe "fetching a loan transaction" do
+    test "when transaction exists, finds it by ID", %{loan: loan} do
+      transaction = Factory.lend(loan)
+
+      assert {:ok, ^transaction} = Transactions.fetch_loan_transaction(transaction.id)
+    end
+
+    @tag capture_log: true
+    test "when transaction does not exist, returns an error" do
+      assert {:error, %NotFoundError{}} = Transactions.fetch_loan_transaction(Factory.id())
+    end
+  end
+
   describe "fetching a transaction" do
     test "when transaction exists, finds it by ID", %{fund: fund} do
       transaction = Factory.deposit(fund)
@@ -137,6 +177,124 @@ defmodule FreedomAccount.TransactionsTest do
     end
   end
 
+  describe "lending money" do
+    test "creates a loan transaction with valid data", %{loan: loan} do
+      valid_attrs = Factory.loan_transaction_attrs(loan)
+
+      assert {:ok, %LoanTransaction{} = transaction} = Transactions.lend(valid_attrs)
+      assert transaction.amount == MoneyUtils.negate(valid_attrs[:amount])
+      assert transaction.date == valid_attrs[:date]
+      assert transaction.memo == valid_attrs[:memo]
+    end
+
+    test "associates the transaction to its loan", %{loan: loan} do
+      valid_attrs = Factory.loan_transaction_attrs(loan)
+
+      {:ok, transaction} = Transactions.lend(valid_attrs)
+      assert transaction.loan_id == loan.id
+    end
+
+    test "publishes a loan transaction created event", %{loan: loan} do
+      valid_attrs = Factory.loan_transaction_attrs(loan)
+
+      :ok = PubSub.subscribe(Transactions.pubsub_topic())
+
+      {:ok, transaction} = Transactions.lend(valid_attrs)
+
+      assert_received({:loan_transaction_created, ^transaction})
+    end
+
+    test "requires a non-zero amount", %{loan: loan} do
+      attrs = Factory.loan_transaction_attrs(loan, amount: Money.zero(:usd))
+
+      assert {:error, %Changeset{valid?: false} = changeset} = Transactions.lend(attrs)
+      assert hd(errors_on(changeset)[:amount]) == "must be not equal to $0.00"
+    end
+
+    test "returns error changeset for invalid transaction data", %{loan: loan} do
+      invalid_attrs = Factory.loan_transaction_attrs(loan, date: nil, memo: nil)
+
+      assert {:error, %Changeset{valid?: false}} = Transactions.lend(invalid_attrs)
+    end
+
+    test "error changeset un-negates the amount", %{loan: loan} do
+      attrs = Factory.loan_transaction_attrs(loan, date: nil)
+
+      assert {:error, %Changeset{action: :insert, valid?: false} = changeset} = Transactions.lend(attrs)
+      assert Changeset.get_change(changeset, :amount) == attrs[:amount]
+    end
+  end
+
+  describe "listing transactions for a loan" do
+    test "returns empty list if the loan has no transactions", %{loan: loan} do
+      assert {[], %Paging{}} = Transactions.list_loan_transactions(loan)
+    end
+
+    test "returns a list of 'loan transactions' ordered descending by date", %{loan: loan} do
+      loans = for _i <- 1..3, do: Factory.lend(loan)
+      payments = for _i <- 1..2, do: Factory.payment(loan)
+
+      expected = expected_loan_transactions(loans ++ payments)
+
+      assert {^expected, %Paging{}} = Transactions.list_loan_transactions(loan)
+    end
+
+    test "respects page size limit when specified", %{loan: loan} do
+      transactions = for _i <- 1..5, do: Factory.lend(loan)
+      limit = 3
+
+      expected = transactions |> expected_loan_transactions() |> Enum.take(limit)
+
+      assert {^expected, %Paging{}} = Transactions.list_loan_transactions(loan, per_page: limit)
+    end
+
+    test "pages forward", %{loan: loan} do
+      transactions = for _i <- 1..5, do: Factory.lend(loan)
+      limit = 2
+      [first, second, third] = transactions |> expected_loan_transactions() |> Enum.chunk_every(limit)
+
+      assert {^first, %Paging{next_cursor: next_cursor}} = Transactions.list_loan_transactions(loan, per_page: limit)
+
+      assert {^second, %Paging{next_cursor: next_cursor}} =
+               Transactions.list_loan_transactions(loan, next_cursor: next_cursor, per_page: limit)
+
+      assert {^third, %Paging{next_cursor: nil}} =
+               Transactions.list_loan_transactions(loan, next_cursor: next_cursor, per_page: limit)
+    end
+
+    test "pages backward", %{loan: loan} do
+      transactions = for _i <- 1..5, do: Factory.lend(loan)
+      limit = 2
+      [first, second, _third] = transactions |> expected_loan_transactions() |> Enum.chunk_every(limit)
+
+      {_list, %Paging{next_cursor: next_cursor}} = Transactions.list_loan_transactions(loan, per_page: limit)
+
+      {_list, %Paging{next_cursor: next_cursor}} =
+        Transactions.list_loan_transactions(loan, next_cursor: next_cursor, per_page: limit)
+
+      {_list, %Paging{prev_cursor: prev_cursor}} =
+        Transactions.list_loan_transactions(loan, next_cursor: next_cursor, per_page: limit)
+
+      assert {^second, %Paging{prev_cursor: prev_cursor}} =
+               Transactions.list_loan_transactions(loan, per_page: limit, prev_cursor: prev_cursor)
+
+      assert {^first, %Paging{prev_cursor: nil}} =
+               Transactions.list_loan_transactions(loan, per_page: limit, prev_cursor: prev_cursor)
+    end
+
+    defp expected_loan_transactions(transactions) do
+      transactions
+      |> Enum.sort_by(& &1, {:desc, LoanTransaction})
+      |> Enum.reverse()
+      |> Enum.reduce({[], Money.zero(:usd)}, fn txn, {result, balance} ->
+        next_balance = Money.add!(balance, txn.amount)
+        txn_with_balance = %{txn | running_balance: next_balance}
+        {[txn_with_balance | result], next_balance}
+      end)
+      |> elem(0)
+    end
+  end
+
   describe "listing transactions for a fund" do
     test "returns empty list if the fund has no transactions", %{fund: fund} do
       assert {[], %Paging{}} = Transactions.list_fund_transactions(fund)
@@ -146,7 +304,7 @@ defmodule FreedomAccount.TransactionsTest do
       deposits = for _i <- 1..3, do: Factory.deposit(fund)
       withdrawals = for _i <- 1..2, do: Factory.withdrawal(account, fund)
 
-      expected = to_expected(deposits ++ withdrawals)
+      expected = expected_fund_transactions(deposits ++ withdrawals)
 
       assert {^expected, %Paging{}} = Transactions.list_fund_transactions(fund)
     end
@@ -155,7 +313,7 @@ defmodule FreedomAccount.TransactionsTest do
       transactions = for _i <- 1..5, do: Factory.deposit(fund)
       limit = 3
 
-      expected = transactions |> to_expected() |> Enum.take(limit)
+      expected = transactions |> expected_fund_transactions() |> Enum.take(limit)
 
       assert {^expected, %Paging{}} = Transactions.list_fund_transactions(fund, per_page: limit)
     end
@@ -163,7 +321,7 @@ defmodule FreedomAccount.TransactionsTest do
     test "pages forward", %{fund: fund} do
       transactions = for _i <- 1..5, do: Factory.deposit(fund)
       limit = 2
-      [first, second, third] = transactions |> to_expected() |> Enum.chunk_every(limit)
+      [first, second, third] = transactions |> expected_fund_transactions() |> Enum.chunk_every(limit)
 
       assert {^first, %Paging{next_cursor: next_cursor}} = Transactions.list_fund_transactions(fund, per_page: limit)
 
@@ -177,7 +335,7 @@ defmodule FreedomAccount.TransactionsTest do
     test "pages backward", %{fund: fund} do
       transactions = for _i <- 1..5, do: Factory.deposit(fund)
       limit = 2
-      [first, second, _third] = transactions |> to_expected() |> Enum.chunk_every(limit)
+      [first, second, _third] = transactions |> expected_fund_transactions() |> Enum.chunk_every(limit)
 
       {_list, %Paging{next_cursor: next_cursor}} = Transactions.list_fund_transactions(fund, per_page: limit)
 
@@ -194,7 +352,7 @@ defmodule FreedomAccount.TransactionsTest do
                Transactions.list_fund_transactions(fund, per_page: limit, prev_cursor: prev_cursor)
     end
 
-    defp to_expected(transactions) do
+    defp expected_fund_transactions(transactions) do
       transactions
       |> Enum.map(fn %Transaction{} = transaction ->
         [line_item] = transaction.line_items
@@ -249,6 +407,51 @@ defmodule FreedomAccount.TransactionsTest do
     end
   end
 
+  describe "receiving a loan payment" do
+    setup %{loan: loan} do
+      %{loan: Factory.with_loan_balance(loan, ~M[-5000]usd)}
+    end
+
+    test "creates a transaction with valid data", %{loan: loan} do
+      valid_attrs = Factory.loan_transaction_attrs(loan)
+
+      assert {:ok, %LoanTransaction{} = transaction} = Transactions.receive_payment(valid_attrs)
+      assert transaction.amount == valid_attrs[:amount]
+      assert transaction.date == valid_attrs[:date]
+      assert transaction.memo == valid_attrs[:memo]
+    end
+
+    test "associates the transaction to its loan", %{loan: loan} do
+      valid_attrs = Factory.loan_transaction_attrs(loan)
+
+      {:ok, transaction} = Transactions.receive_payment(valid_attrs)
+      assert transaction.loan_id == loan.id
+    end
+
+    test "publishes a loan transaction created event", %{loan: loan} do
+      valid_attrs = Factory.loan_transaction_attrs(loan)
+
+      :ok = PubSub.subscribe(Transactions.pubsub_topic())
+
+      {:ok, transaction} = Transactions.receive_payment(valid_attrs)
+
+      assert_received({:loan_transaction_created, ^transaction})
+    end
+
+    test "requires a non-zero amount", %{loan: loan} do
+      attrs = Factory.loan_transaction_attrs(loan, amount: Money.zero(:usd))
+
+      assert {:error, %Changeset{valid?: false} = changeset} = Transactions.receive_payment(attrs)
+      assert hd(errors_on(changeset)[:amount]) == "must be not equal to $0.00"
+    end
+
+    test "returns error changeset for invalid transaction data", %{loan: loan} do
+      invalid_attrs = Factory.loan_transaction_attrs(loan, date: nil, memo: nil)
+
+      assert {:error, %Changeset{valid?: false}} = Transactions.receive_payment(invalid_attrs)
+    end
+  end
+
   describe "making a regular deposit" do
     setup :create_funds
 
@@ -284,6 +487,40 @@ defmodule FreedomAccount.TransactionsTest do
       {:ok, %Transaction{} = transaction} = Transactions.regular_deposit(account, Factory.date(), funds)
 
       assert_received({:transaction_created, ^transaction})
+    end
+  end
+
+  describe "updating a loan transaction" do
+    setup %{loan: loan} do
+      transaction = Factory.lend(loan)
+
+      %{transaction: transaction}
+    end
+
+    test "with valid data updates the transaction", %{loan: loan, transaction: transaction} do
+      valid_attrs = Factory.loan_transaction_attrs(loan)
+
+      assert {:ok, %LoanTransaction{} = updated} = Transactions.update_loan_transaction(transaction, valid_attrs)
+      assert updated.amount == valid_attrs[:amount]
+      assert updated.date == valid_attrs[:date]
+      assert updated.memo == valid_attrs[:memo]
+    end
+
+    test "publishes a loan transaction updated event", %{loan: loan, transaction: transaction} do
+      valid_attrs = Factory.loan_transaction_attrs(loan)
+
+      :ok = PubSub.subscribe(Transactions.pubsub_topic())
+
+      {:ok, updated} = Transactions.update_loan_transaction(transaction, valid_attrs)
+
+      assert_received({:loan_transaction_updated, ^updated})
+    end
+
+    test "with invalid data returns an error changeset", %{loan: loan, transaction: transaction} do
+      invalid_attrs = Factory.loan_transaction_attrs(loan, amount: Money.zero(:usd))
+
+      assert {:error, %Changeset{valid?: false}} = Transactions.update_loan_transaction(transaction, invalid_attrs)
+      assert {:ok, transaction} == Transactions.fetch_loan_transaction(transaction.id)
     end
   end
 
