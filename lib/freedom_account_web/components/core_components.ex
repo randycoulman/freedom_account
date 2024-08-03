@@ -527,6 +527,44 @@ defmodule FreedomAccountWeb.CoreComponents do
   end
 
   @doc ~S"""
+  Renders a tab bar.
+
+  ## Examples
+
+      <.tab_bar>
+        <:tab active>
+          <.link navigate=~p"/page1">Tab 1</.link>
+        </:tab>
+        <:tab>
+          <.link navigate=~p"/page2">Tab 2</.link>
+        </:tab>
+      </.tab_bar>
+  """
+  slot :tab, required: true do
+    attr :active, :boolean, required: false
+  end
+
+  def tab_bar(assigns) do
+    assigns = assign_new(assigns, :active, fn -> false end)
+
+    ~H"""
+    <ul class="flex border-b">
+      <li
+        :for={tab <- @tab}
+        class={[
+          "bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold mr-1",
+          tab.active &&
+            "-mb-px border-l border-t border-r rounded-t text-blue-700 hover:text-blue-700"
+        ]}
+        data-active={"#{tab.active}"}
+      >
+        <%= render_slot(tab) %>
+      </li>
+    </ul>
+    """
+  end
+
+  @doc ~S"""
   Renders a table with generic styling.
 
   ## Examples

@@ -3,6 +3,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
   use FreedomAccountWeb, :live_view
 
   import FreedomAccountWeb.AccountBar.Show, only: [account_bar: 1]
+  import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
   import FreedomAccountWeb.ActivationForm, only: [activation_form: 1]
   import FreedomAccountWeb.BudgetForm, only: [budget_form: 1]
   import FreedomAccountWeb.FundLive.Form, only: [settings_form: 1]
@@ -77,6 +78,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
   def render(assigns) do
     ~H"""
     <.account_bar account={@account} balance={@account_balance} action={@live_action} funds={@funds} />
+    <.account_tabs active={:funds} />
     <.header>
       Funds
       <:actions>

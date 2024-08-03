@@ -6,6 +6,9 @@ defmodule FreedomAccountWeb.ElementSelectors do
   @spec action_link(selector()) :: selector()
   def action_link(selector), do: "#{selector} a"
 
+  @spec active_tab :: selector()
+  def active_tab, do: "li[data-active=true]"
+
   @spec disabled(selector()) :: selector()
   def disabled(selector), do: "#{selector}[disabled]"
 
@@ -26,6 +29,9 @@ defmodule FreedomAccountWeb.ElementSelectors do
 
   @spec heading :: selector()
   def heading, do: "h2"
+
+  @spec inactive_tab :: selector()
+  def inactive_tab, do: "li[data-active=false]"
 
   @spec link :: selector()
   def link, do: "a"
