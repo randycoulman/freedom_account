@@ -16,6 +16,7 @@ defmodule FreedomAccount do
       Funds,
       Funds.Fund,
       Loans,
+      Loans.Loan,
       MoneyUtils,
       Paging,
       PubSub,

@@ -38,6 +38,7 @@ defmodule FreedomAccountWeb.Router do
       live "/funds/:id/transactions/:transaction_id/edit", FundLive.Show, :edit_transaction
 
       live "/loans", LoanLive.Index, :index
+      live "/loans/new", LoanLive.Index, :new
       live "/loans/account", LoanLive.Index, :edit_account
     end
   end

@@ -1,16 +1,16 @@
-defmodule FreedomAccountWeb.Hooks.LoadInitialData.FundCacheTest do
+defmodule FreedomAccountWeb.Hooks.LoadInitialData.CacheTest do
   use FreedomAccount.DataCase, async: false
 
   alias FreedomAccount.Factory
   alias FreedomAccount.Funds
-  alias FreedomAccountWeb.Hooks.LoadInitialData.FundCache
+  alias FreedomAccountWeb.Hooks.LoadInitialData.Cache
 
   setup [:create_account, :create_funds]
 
-  describe "adding a fund" do
-    test "inserts fund in sorted order", %{account: account, funds: funds} do
+  describe "adding an element" do
+    test "inserts element in sorted order", %{account: account, funds: funds} do
       fund = Factory.fund(account, name: "PPP")
-      result = FundCache.add_fund(funds, fund)
+      result = Cache.add(funds, fund)
 
       assert names(result) == ~w(AAA GGG MMM PPP UUU ZZZ)
     end
@@ -19,7 +19,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData.FundCacheTest do
   describe "deleting a fund" do
     test "deletes a fund", %{funds: funds} do
       fund = Enum.random(funds)
-      result = FundCache.delete_fund(funds, fund)
+      result = Cache.delete(funds, fund)
 
       refute fund in result
     end
@@ -27,7 +27,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData.FundCacheTest do
     test "deletes fund even if balance is different", %{funds: funds} do
       fund = Enum.random(funds)
       different_balance = %{fund | current_balance: Factory.money()}
-      result = FundCache.delete_fund(funds, different_balance)
+      result = Cache.delete(funds, different_balance)
 
       refute fund in result
       refute different_balance in result
@@ -38,7 +38,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData.FundCacheTest do
     test "when name doesn't change, updates fund in-place", %{funds: funds} do
       fund = Enum.random(funds)
       updated_fund = %{fund | icon: new_icon(fund.icon)}
-      result = FundCache.update_fund(funds, updated_fund)
+      result = Cache.update(funds, updated_fund)
 
       assert updated_fund in result
       refute fund in result
@@ -47,7 +47,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData.FundCacheTest do
     test "when name changes, updated fund and moves to correct place", %{funds: funds} do
       fund = Enum.at(funds, 3)
       updated_fund = %{fund | name: "JJJ"}
-      result = FundCache.update_fund(funds, updated_fund)
+      result = Cache.update(funds, updated_fund)
 
       assert names(result) == ~w(AAA GGG JJJ MMM ZZZ)
     end
@@ -55,7 +55,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData.FundCacheTest do
     test "when updated fund doesn't have a balance, its previous balance is retained", %{funds: funds} do
       fund = Enum.random(funds)
       updated_fund = %{fund | current_balance: nil, icon: new_icon(fund.icon)}
-      result = FundCache.update_fund(funds, updated_fund)
+      result = Cache.update(funds, updated_fund)
 
       expected = %{updated_fund | current_balance: fund.current_balance}
 
@@ -78,7 +78,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData.FundCacheTest do
     test "adds newly-active funds", %{account: account, funds: funds} do
       newly_active_fund = Factory.fund(account, current_balance: Money.zero(:usd), name: "SSS")
 
-      result = FundCache.update_activations(funds, [newly_active_fund])
+      result = Cache.update_activations(funds, [newly_active_fund])
 
       assert names(result) == ~w(AAA GGG MMM SSS UUU ZZZ)
     end
@@ -86,7 +86,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData.FundCacheTest do
     test "ignores still-active funds", %{funds: funds} do
       still_active_fund = Enum.random(funds)
 
-      result = FundCache.update_activations(funds, [still_active_fund])
+      result = Cache.update_activations(funds, [still_active_fund])
 
       assert result == funds
     end
@@ -98,7 +98,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData.FundCacheTest do
         |> Factory.with_fund_balance(Money.zero(:usd))
         |> Funds.deactivate_fund()
 
-      result = FundCache.update_activations(funds, [newly_inactive_fund])
+      result = Cache.update_activations(funds, [newly_inactive_fund])
 
       refute newly_inactive_fund.name in names(result)
     end
@@ -106,7 +106,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData.FundCacheTest do
     test "ignores still-inactive funds", %{account: account, funds: funds} do
       still_inactive_fund = Factory.inactive_fund(account, current_balance: Money.zero(:usd))
 
-      result = FundCache.update_activations(funds, [still_inactive_fund])
+      result = Cache.update_activations(funds, [still_inactive_fund])
 
       assert result == funds
     end
@@ -118,7 +118,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData.FundCacheTest do
       updated_fund2 = %{fund2 | budget: Factory.money()}
       updated_fund4 = %{fund4 | budget: Factory.money()}
 
-      result = FundCache.update_all(funds, [updated_fund2, updated_fund4])
+      result = Cache.update_all(funds, [updated_fund2, updated_fund4])
 
       assert [fund1, updated_fund2, fund3, updated_fund4, fund5] == result
     end

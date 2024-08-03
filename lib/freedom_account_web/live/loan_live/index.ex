@@ -4,13 +4,13 @@ defmodule FreedomAccountWeb.LoanLive.Index do
 
   import FreedomAccountWeb.AccountBar.Show, only: [account_bar: 1]
   import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
+  import FreedomAccountWeb.LoanLive.Form, only: [settings_form: 1]
+
+  alias FreedomAccount.Loans.Loan
   # import FreedomAccountWeb.ActivationForm, only: [activation_form: 1]
-  # import FreedomAccountWeb.FundLive.Form, only: [settings_form: 1]
 
   # alias FreedomAccount.Error
   # alias FreedomAccount.Error.NotFoundError
-  # alias FreedomAccount.Funds
-  # alias FreedomAccount.Funds.Fund
   # alias FreedomAccount.Transactions.Transaction
   alias Phoenix.LiveView
 
@@ -20,7 +20,7 @@ defmodule FreedomAccountWeb.LoanLive.Index do
 
     {:noreply,
      socket
-     #  |> assign(:fund, nil)
+     |> assign(:loan, nil)
      |> assign(:return_path, ~p"/loans")
      |> apply_action(action, params)}
   end
@@ -47,15 +47,16 @@ defmodule FreedomAccountWeb.LoanLive.Index do
     assign(socket, :page_title, "Edit Account Settings")
   end
 
-  # defp apply_action(socket, :new, _params) do
-  #   socket
-  #   |> assign(:page_title, "Add Fund")
-  #   |> assign(:fund, %Fund{})
-  # end
+  defp apply_action(socket, :new, _params) do
+    socket
+    |> assign(:page_title, "Add Loan")
+    |> assign(:loan, %Loan{})
+  end
 
   defp apply_action(socket, _action, _params) do
-    assign(socket, :page_title, "Loans")
-    # |> assign(:fund, nil)
+    socket
+    |> assign(:page_title, "Loans")
+    |> assign(:loan, nil)
   end
 
   @impl LiveView
@@ -72,18 +73,18 @@ defmodule FreedomAccountWeb.LoanLive.Index do
     <.account_tabs active={:loans} />
     <.header>
       Loans
-      <%!-- <:actions>
-        <.link patch={~p"/funds/activate"} phx-click={JS.push_focus()}>
+      <:actions>
+        <%!-- <.link patch={~p"/funds/activate"} phx-click={JS.push_focus()}>
           <.button>
             <.icon name="hero-archive-box-mini" /> Activate/Deactivate
           </.button>
-        </.link>
-        <.link patch={~p"/funds/new"}>
+        </.link> --%>
+        <.link patch={~p"/loans/new"}>
           <.button>
-            <.icon name="hero-plus-circle-mini" /> Add Fund
+            <.icon name="hero-plus-circle-mini" /> Add Loan
           </.button>
         </.link>
-      </:actions> --%>
+      </:actions>
     </.header>
 
     <%!-- <.table
@@ -128,15 +129,15 @@ defmodule FreedomAccountWeb.LoanLive.Index do
       <.activation_form account={@account} return_path={@return_path} />
     </.modal> --%>
 
-    <%!-- <.modal :if={@live_action in [:edit, :new]} id="fund-modal" show on_cancel={JS.patch(~p"/funds")}>
+    <.modal :if={@live_action in [:edit, :new]} id="loan-modal" show on_cancel={JS.patch(~p"/loans")}>
       <.settings_form
         account={@account}
         action={@live_action}
-        fund={@fund}
-        return_path={~p"/funds"}
+        loan={@loan}
+        return_path={~p"/loans"}
         title={@page_title}
       />
-    </.modal> --%>
+    </.modal>
     """
   end
 

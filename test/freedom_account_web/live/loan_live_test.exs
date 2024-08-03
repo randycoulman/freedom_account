@@ -33,31 +33,27 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       |> assert_has("#no-loans", text: "This account has no active loans. Use the Add Loan button to add one.")
     end
 
-    # test "saves new fund", %{conn: conn} do
-    #   %{budget: budget, icon: icon, name: name, times_per_year: times_per_year} = Factory.fund_attrs()
+    test "saves new loan", %{conn: conn} do
+      %{icon: icon, name: name} = Factory.loan_attrs()
 
-    #   conn
-    #   |> visit(~p"/funds")
-    #   |> click_link("Add Fund")
-    #   |> assert_path(~p"/funds/new")
-    #   |> assert_has(page_title(), text: "Add Fund")
-    #   |> assert_has(heading(), text: "Add Fund")
-    #   |> fill_in("Icon", with: "")
-    #   |> fill_in("Name", with: "")
-    #   |> assert_has(field_error("#fund_icon"), text: "can't be blank")
-    #   |> assert_has(field_error("#fund_name"), text: "can't be blank")
-    #   |> fill_in("Icon", with: icon)
-    #   |> fill_in("Name", with: name)
-    #   |> fill_in("Budget", with: budget)
-    #   |> fill_in("Times/Year", with: times_per_year)
-    #   |> click_button("Save Fund")
-    #   |> assert_has(flash(:info), text: "Fund created successfully")
-    #   |> assert_has(table_cell(), text: icon)
-    #   |> assert_has(table_cell(), text: name)
-    #   |> assert_has(table_cell(), text: "#{budget}")
-    #   |> assert_has(table_cell(), text: "#{times_per_year}")
-    #   |> assert_has(table_cell(), text: "$0.00")
-    # end
+      conn
+      |> visit(~p"/loans")
+      |> click_link("Add Loan")
+      |> assert_path(~p"/loans/new")
+      |> assert_has(page_title(), text: "Add Loan")
+      |> assert_has(heading(), text: "Add Loan")
+      |> fill_in("Icon", with: "")
+      |> fill_in("Name", with: "")
+      |> assert_has(field_error("#loan_icon"), text: "can't be blank")
+      |> assert_has(field_error("#loan_name"), text: "can't be blank")
+      |> fill_in("Icon", with: icon)
+      |> fill_in("Name", with: name)
+      |> click_button("Save Loan")
+      |> assert_has(flash(:info), text: "Loan created successfully")
+      |> assert_has(table_cell(), text: icon)
+      |> assert_has(table_cell(), text: name)
+      |> assert_has(table_cell(), text: "$0.00")
+    end
 
     # test "edits fund in listing", %{account: account, conn: conn} do
     #   fund = account |> Factory.fund() |> Factory.with_fund_balance()
