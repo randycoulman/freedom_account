@@ -3,13 +3,29 @@ defmodule FreedomAccountWeb.AccountBar.Show do
 
   use FreedomAccountWeb, :live_component
 
+  import FreedomAccountWeb.AccountBar.Form, only: [settings_form: 1]
+  import FreedomAccountWeb.ActivationForm, only: [activation_form: 1]
+  import FreedomAccountWeb.BudgetForm, only: [budget_form: 1]
+  import FreedomAccountWeb.RegularDepositForm, only: [regular_deposit_form: 1]
+  import FreedomAccountWeb.TransactionForm, only: [transaction_form: 1]
+
+  alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Transactions.Transaction
-  alias FreedomAccountWeb.AccountBar.Form
-  alias FreedomAccountWeb.ActivationForm
-  alias FreedomAccountWeb.BudgetForm
-  alias FreedomAccountWeb.RegularDepositForm
-  alias FreedomAccountWeb.TransactionForm
   alias Phoenix.LiveComponent
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.Socket
+
+  attr :account, Account, required: true
+  attr :action, :string, required: true
+  attr :balance, Money, required: true
+  attr :funds, :list, required: true
+
+  @spec account_bar(Socket.assigns()) :: LiveView.Rendered.t()
+  def account_bar(assigns) do
+    ~H"""
+    <.live_component id={@account.id} module={__MODULE__} {assigns} />
+    """
+  end
 
   @impl LiveComponent
   def update(assigns, socket) do
@@ -56,12 +72,7 @@ defmodule FreedomAccountWeb.AccountBar.Show do
       </.header>
 
       <.modal :if={@action == :activate} id="activate-modal" show on_cancel={JS.patch(@return_path)}>
-        <.live_component
-          account={@account}
-          id={@account.id}
-          module={ActivationForm}
-          return_path={@return_path}
-        />
+        <.activation_form account={@account} return_path={@return_path} />
       </.modal>
       <.modal
         :if={@action == :edit_account}
@@ -69,25 +80,11 @@ defmodule FreedomAccountWeb.AccountBar.Show do
         show
         on_cancel={JS.patch(@return_path)}
       >
-        <.live_component
-          account={@account}
-          action={@action}
-          funds={@funds}
-          id={@account.id}
-          module={Form}
-          return_path={@return_path}
-        />
+        <.settings_form account={@account} funds={@funds} return_path={@return_path} />
       </.modal>
 
       <.modal :if={@action == :edit_budget} id="budget-modal" show on_cancel={JS.patch(@return_path)}>
-        <.live_component
-          account={@account}
-          action={@action}
-          funds={@funds}
-          id={@account.id}
-          module={BudgetForm}
-          return_path={@return_path}
-        />
+        <.budget_form account={@account} funds={@funds} return_path={@return_path} />
       </.modal>
 
       <.modal
@@ -96,14 +93,7 @@ defmodule FreedomAccountWeb.AccountBar.Show do
         show
         on_cancel={JS.patch(@return_path)}
       >
-        <.live_component
-          account={@account}
-          action={@action}
-          funds={@funds}
-          id={@account.id}
-          module={RegularDepositForm}
-          return_path={@return_path}
-        />
+        <.regular_deposit_form account={@account} funds={@funds} return_path={@return_path} />
       </.modal>
 
       <.modal
@@ -112,13 +102,11 @@ defmodule FreedomAccountWeb.AccountBar.Show do
         show
         on_cancel={JS.patch(@return_path)}
       >
-        <.live_component
+        <.transaction_form
           account={@account}
           action={@action}
           all_funds={@funds}
           initial_funds={@funds}
-          id={:new}
-          module={TransactionForm}
           return_path={@return_path}
           transaction={%Transaction{}}
         />

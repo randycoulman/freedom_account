@@ -4,15 +4,15 @@ defmodule FreedomAccountWeb.FundLive.Show do
 
   import FreedomAccountWeb.Account, only: [account: 1]
   import FreedomAccountWeb.FundList, only: [fund_list: 1]
+  import FreedomAccountWeb.FundLive.Form, only: [settings_form: 1]
+  import FreedomAccountWeb.FundTransaction.Index, only: [fund_transaction_list: 1]
+  import FreedomAccountWeb.TransactionForm, only: [transaction_form: 1]
 
   alias FreedomAccount.Error
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.Transaction
-  alias FreedomAccountWeb.FundLive.Form
-  alias FreedomAccountWeb.FundTransaction
-  alias FreedomAccountWeb.TransactionForm
   alias Phoenix.HTML.Safe
   alias Phoenix.LiveView
 
@@ -119,19 +119,17 @@ defmodule FreedomAccountWeb.FundLive.Show do
             </.link>
           </:actions>
         </.header>
-        <.live_component fund={@fund} id={@fund.id} module={FundTransaction.Index} />
+        <.fund_transaction_list fund={@fund} />
 
         <.back navigate={~p"/funds"}>Back to Funds</.back>
       </main>
     </div>
 
     <.modal :if={@live_action == :edit} id="fund-modal" show on_cancel={JS.patch(~p"/funds/#{@fund}")}>
-      <.live_component
+      <.settings_form
         account={@account}
         action={@live_action}
         fund={@fund}
-        id={@fund.id}
-        module={Form}
         return_path={~p"/funds/#{@fund}"}
         title={@page_title}
       />
@@ -143,15 +141,12 @@ defmodule FreedomAccountWeb.FundLive.Show do
       show
       on_cancel={JS.patch(~p"/funds/#{@fund}")}
     >
-      <.live_component
+      <.transaction_form
         account={@account}
         action={@live_action}
         all_funds={@funds}
         initial_funds={[@fund]}
-        id={@transaction.id || :new}
-        module={TransactionForm}
         return_path={~p"/funds/#{@fund}"}
-        title={@page_title}
         transaction={@transaction}
       />
     </.modal>

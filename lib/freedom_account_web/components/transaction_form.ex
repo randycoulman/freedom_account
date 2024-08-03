@@ -5,10 +5,27 @@ defmodule FreedomAccountWeb.TransactionForm do
   use FreedomAccountWeb, :live_component
 
   alias Ecto.Changeset
+  alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.Transaction
   alias FreedomAccountWeb.Params
   alias Phoenix.LiveComponent
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.Socket
+
+  attr :account, Account, required: true
+  attr :action, :string, required: true
+  attr :all_funds, :list, required: true
+  attr :initial_funds, :list, required: true
+  attr :return_path, :string, required: true
+  attr :transaction, Transaction, required: true
+
+  @spec transaction_form(Socket.assigns()) :: LiveView.Rendered.t()
+  def transaction_form(assigns) do
+    ~H"""
+    <.live_component id={@transaction.id || :new} module={__MODULE__} {assigns} />
+    """
+  end
 
   @impl LiveComponent
   def update(assigns, socket) do

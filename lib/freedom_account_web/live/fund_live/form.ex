@@ -3,9 +3,26 @@ defmodule FreedomAccountWeb.FundLive.Form do
   use FreedomAccountWeb, :live_component
 
   alias Ecto.Changeset
+  alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Funds
+  alias FreedomAccount.Funds.Fund
   alias FreedomAccountWeb.Params
   alias Phoenix.LiveComponent
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.Socket
+
+  attr :account, Account, required: true
+  attr :action, :string, required: true
+  attr :fund, Fund, required: true
+  attr :return_path, :string, required: true
+  attr :title, :string, required: true
+
+  @spec settings_form(Socket.assigns()) :: LiveView.Rendered.t()
+  def settings_form(assigns) do
+    ~H"""
+    <.live_component id={@fund.id || :new} module={__MODULE__} {assigns} />
+    """
+  end
 
   @impl LiveComponent
   def update(assigns, socket) do

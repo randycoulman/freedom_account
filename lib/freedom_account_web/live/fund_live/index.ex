@@ -2,12 +2,13 @@ defmodule FreedomAccountWeb.FundLive.Index do
   @moduledoc false
   use FreedomAccountWeb, :live_view
 
+  import FreedomAccountWeb.AccountBar.Show, only: [account_bar: 1]
+  import FreedomAccountWeb.FundLive.Form, only: [settings_form: 1]
+
   alias FreedomAccount.Error
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
-  alias FreedomAccountWeb.AccountBar
-  alias FreedomAccountWeb.FundLive.Form
   alias Phoenix.LiveView
 
   @impl LiveView
@@ -69,14 +70,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <.live_component
-      account={@account}
-      balance={@account_balance}
-      action={@live_action}
-      funds={@funds}
-      id={@account.id}
-      module={AccountBar.Show}
-    />
+    <.account_bar account={@account} balance={@account_balance} action={@live_action} funds={@funds} />
     <.header>
       Funds
       <:actions>
@@ -123,12 +117,10 @@ defmodule FreedomAccountWeb.FundLive.Index do
     </.table>
 
     <.modal :if={@live_action in [:new, :edit]} id="fund-modal" show on_cancel={JS.patch(~p"/funds")}>
-      <.live_component
+      <.settings_form
         account={@account}
         action={@live_action}
         fund={@fund}
-        id={@fund.id || :new}
-        module={Form}
         return_path={~p"/funds"}
         title={@page_title}
       />

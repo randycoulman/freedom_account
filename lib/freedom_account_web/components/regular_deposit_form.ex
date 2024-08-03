@@ -5,9 +5,12 @@ defmodule FreedomAccountWeb.RegularDepositForm do
   use FreedomAccountWeb, :live_component
 
   alias Ecto.Changeset
+  alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Error.InvariantError
   alias FreedomAccount.Transactions
   alias Phoenix.LiveComponent
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.Socket
 
   defmodule Inputs do
     @moduledoc false
@@ -29,6 +32,17 @@ defmodule FreedomAccountWeb.RegularDepositForm do
       |> cast(attrs, [:date])
       |> validate_required([:date])
     end
+  end
+
+  attr :account, Account, required: true
+  attr :funds, :list, required: true
+  attr :return_path, :string, required: true
+
+  @spec regular_deposit_form(Socket.assigns()) :: LiveView.Rendered.t()
+  def regular_deposit_form(assigns) do
+    ~H"""
+    <.live_component id={@account.id} module={__MODULE__} {assigns} />
+    """
   end
 
   @impl LiveComponent

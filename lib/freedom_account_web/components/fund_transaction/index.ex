@@ -4,12 +4,24 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
 
   import FreedomAccountWeb.CoreComponents
 
+  alias FreedomAccount.Funds.Fund
   alias FreedomAccount.MoneyUtils
   alias FreedomAccount.Paging
   alias FreedomAccount.Transactions
   alias Phoenix.LiveComponent
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.Socket
 
   @page_size 10
+
+  attr :fund, Fund, required: true
+
+  @spec fund_transaction_list(Socket.assigns()) :: LiveView.Rendered.t()
+  def fund_transaction_list(assigns) do
+    ~H"""
+    <.live_component id={@fund.id} module={__MODULE__} {assigns} />
+    """
+  end
 
   @doc false
   @spec page_size :: pos_integer()

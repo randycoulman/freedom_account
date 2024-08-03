@@ -3,8 +3,21 @@ defmodule FreedomAccountWeb.ActivationForm do
   use FreedomAccountWeb, :live_component
 
   alias Ecto.Changeset
+  alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Funds
   alias Phoenix.LiveComponent
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.Socket
+
+  attr :account, Account, required: true
+  attr :return_path, :string, required: true
+
+  @spec activation_form(Socket.assigns()) :: LiveView.Rendered.t()
+  def activation_form(assigns) do
+    ~H"""
+    <.live_component id={@account.id} module={__MODULE__} {assigns} />
+    """
+  end
 
   @impl LiveComponent
   def update(assigns, socket) do
