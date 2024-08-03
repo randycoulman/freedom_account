@@ -15,6 +15,7 @@ defmodule FreedomAccount do
       {Error, []},
       Funds,
       Funds.Fund,
+      Loans,
       MoneyUtils,
       Paging,
       PubSub,

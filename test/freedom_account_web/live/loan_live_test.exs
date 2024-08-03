@@ -5,36 +5,34 @@ defmodule FreedomAccountWeb.LoanLiveTest do
 
   # import Money.Sigil
 
-  # alias FreedomAccount.Factory
+  alias FreedomAccount.Factory
   # alias FreedomAccount.Loans
   # alias Phoenix.HTML.Safe
 
   describe "Index" do
     setup [:create_account]
 
-    test "lists all loans", %{account: _account, conn: conn} do
-      # fund = Factory.fund(account)
-      # Factory.deposit(fund)
-      # {:ok, fund} = Funds.with_updated_balance(fund)
+    test "lists all loans", %{account: account, conn: conn} do
+      loan = Factory.loan(account)
+      Factory.lend(loan)
+      # {:ok, loan} = Loans.with_updated_balance(loan)
 
       conn
       |> visit(~p"/loans")
       |> assert_has(page_title(), text: "Loans")
       |> assert_has(heading(), text: "Loans")
+      |> assert_has(table_cell(), text: loan.icon)
+      |> assert_has(table_cell(), text: loan.name)
 
-      # |> assert_has(table_cell(), text: fund.icon)
-      # |> assert_has(table_cell(), text: fund.name)
-      # |> assert_has(table_cell(), text: "#{fund.budget}")
-      # |> assert_has(table_cell(), text: "#{fund.times_per_year}")
-      # |> assert_has(table_cell(), text: to_string(fund.current_balance))
+      # |> assert_has(table_cell(), text: to_string(loan.current_balance))
     end
 
-    # test "shows prompt when list is empty", %{conn: conn} do
-    #   conn
-    #   |> visit(~p"/funds")
-    #   |> assert_has(heading(), text: "Funds")
-    #   |> assert_has("#no-funds", text: "This account has no funds yet. Use the Add Fund button to add one.")
-    # end
+    test "shows prompt when list is empty", %{conn: conn} do
+      conn
+      |> visit(~p"/loans")
+      |> assert_has(heading(), text: "Loans")
+      |> assert_has("#no-loans", text: "This account has no active loans. Use the Add Loan button to add one.")
+    end
 
     # test "saves new fund", %{conn: conn} do
     #   %{budget: budget, icon: icon, name: name, times_per_year: times_per_year} = Factory.fund_attrs()

@@ -11,6 +11,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
   alias FreedomAccount.Error.ServiceError
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.Loans
   alias FreedomAccount.PubSub
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.Transaction
@@ -29,13 +30,15 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
     account = Accounts.only_account()
     account_balance = Balances.account_balance(account)
     funds = Funds.list_active_funds(account)
+    loans = Loans.list_active_loans(account)
 
     {:cont,
      socket
      |> attach_hook(:pubsub_events, :handle_info, &handle_info/2)
      |> assign(:account, account)
      |> assign(:account_balance, account_balance)
-     |> assign(:funds, funds)}
+     |> assign(:funds, funds)
+     |> assign(:loans, loans)}
   end
 
   defp subscribe_to_topics(socket) do

@@ -81,37 +81,36 @@ defmodule FreedomAccountWeb.LoanLive.Index do
 
     <%!-- <.table
       id="loans"
-      row_click={fn fund -> JS.navigate(~p"/funds/#{fund}") end}
-      row_id={fn fund -> "funds-#{fund.id}" end}
+      row_click={fn fund -> JS.navigate(~p"/loans/#{loan}") end}
+      row_id={fn loan -> "loans-#{loan.id}" end}
       rows={@funds}
-    >
-      <:col :let={fund} align={:center} label="Icon"><%= fund.icon %></:col>
-      <:col :let={fund} label="Name"><%= fund.name %></:col>
-      <:col :let={fund} align={:right} label="Budget"><%= fund.budget %></:col>
-      <:col :let={fund} align={:right} label="Times/Year"><%= fund.times_per_year %></:col>
-      <:col :let={fund} align={:right} label="Current Balance"><%= fund.current_balance %></:col>
-      <:action :let={fund}>
+    > --%>
+    <.table id="loans" row_id={fn loan -> "loans-#{loan.id}" end} rows={@loans}>
+      <:col :let={loan} align={:center} label="Icon"><%= loan.icon %></:col>
+      <:col :let={loan} label="Name"><%= loan.name %></:col>
+      <%!-- <:col :let={fund} align={:right} label="Current Balance"><%= fund.current_balance %></:col> --%>
+      <%!-- <:action :let={fund}>
         <div class="sr-only">
           <.link navigate={~p"/funds/#{fund}"}>Show</.link>
         </div>
         <.link patch={~p"/funds/#{fund}/edit"}>
           <.icon name="hero-pencil-square-micro" /> Edit
         </.link>
-      </:action>
-      <:action :let={fund}>
+      </:action> --%>
+      <%!-- <:action :let={fund}>
         <.link
           phx-click={JS.push("delete", value: %{id: fund.id}) |> hide("##{fund.id}")}
           data-confirm="Are you sure?"
         >
           <.icon name="hero-trash-micro" /> Delete
         </.link>
-      </:action>
+      </:action> --%>
       <:empty_state>
-        <div id="no-funds">
-          This account has no funds yet. Use the Add Fund button to add one.
+        <div id="no-loans">
+          This account has no active loans. Use the Add Loan button to add one.
         </div>
       </:empty_state>
-    </.table> --%>
+    </.table>
 
     <%!-- <.modal
       :if={@live_action == :activate}
