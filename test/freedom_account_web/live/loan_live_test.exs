@@ -6,7 +6,7 @@ defmodule FreedomAccountWeb.LoanLiveTest do
   # import Money.Sigil
 
   alias FreedomAccount.Factory
-  # alias FreedomAccount.Loans
+  alias FreedomAccount.Loans
   # alias Phoenix.HTML.Safe
 
   describe "Index" do
@@ -15,7 +15,7 @@ defmodule FreedomAccountWeb.LoanLiveTest do
     test "lists all loans", %{account: account, conn: conn} do
       loan = Factory.loan(account)
       Factory.lend(loan)
-      # {:ok, loan} = Loans.with_updated_balance(loan)
+      {:ok, loan} = Loans.with_updated_balance(loan)
 
       conn
       |> visit(~p"/loans")
@@ -23,8 +23,7 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       |> assert_has(heading(), text: "Loans")
       |> assert_has(table_cell(), text: loan.icon)
       |> assert_has(table_cell(), text: loan.name)
-
-      # |> assert_has(table_cell(), text: to_string(loan.current_balance))
+      |> assert_has(table_cell(), text: to_string(loan.current_balance))
     end
 
     test "shows prompt when list is empty", %{conn: conn} do

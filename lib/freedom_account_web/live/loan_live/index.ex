@@ -88,7 +88,7 @@ defmodule FreedomAccountWeb.LoanLive.Index do
     <.table id="loans" row_id={fn loan -> "loans-#{loan.id}" end} rows={@loans}>
       <:col :let={loan} align={:center} label="Icon"><%= loan.icon %></:col>
       <:col :let={loan} label="Name"><%= loan.name %></:col>
-      <%!-- <:col :let={fund} align={:right} label="Current Balance"><%= fund.current_balance %></:col> --%>
+      <:col :let={loan} align={:right} label="Current Balance"><%= loan.current_balance %></:col>
       <%!-- <:action :let={fund}>
         <div class="sr-only">
           <.link navigate={~p"/funds/#{fund}"}>Show</.link>
