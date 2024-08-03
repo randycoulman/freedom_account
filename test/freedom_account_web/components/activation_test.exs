@@ -13,7 +13,7 @@ defmodule FreedomAccountWeb.ActivationTest do
       [can_deactivate, inactive, non_zero_balance, to_deactivate] = Enum.map(funds, &Safe.to_iodata/1)
 
       conn
-      |> visit(~p"/")
+      |> visit(~p"/funds")
       |> click_link("Activate/Deactivate")
       |> assert_has(page_title(), text: "Activate/Deactivate")
       |> assert_has(heading(), text: "Activate/Deactivate")

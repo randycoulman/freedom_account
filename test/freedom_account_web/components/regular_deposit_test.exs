@@ -12,7 +12,7 @@ defmodule FreedomAccountWeb.RegularDepositTest do
       [balance1, balance2, balance3] = Enum.map(funds, &expected_balance(&1, account.deposits_per_year))
 
       conn
-      |> visit(~p"/")
+      |> visit(~p"/funds")
       |> click_link("Regular Deposit")
       |> assert_has(page_title(), text: "Regular Deposit")
       |> assert_has(heading(), text: "Regular Deposit")

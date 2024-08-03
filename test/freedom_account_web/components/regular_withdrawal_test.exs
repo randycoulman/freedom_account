@@ -22,7 +22,7 @@ defmodule FreedomAccountWeb.RegularWithdrawalTest do
       total3 = Money.add!(total2, amount3)
 
       conn
-      |> visit(~p"/")
+      |> visit(~p"/funds")
       |> click_link("Regular Withdrawal")
       |> assert_has(page_title(), text: "Regular Withdrawal")
       |> assert_has(heading(), text: "Regular Withdrawal")

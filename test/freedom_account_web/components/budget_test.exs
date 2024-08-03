@@ -14,7 +14,7 @@ defmodule FreedomAccountWeb.BudgetTest do
       [attrs0, attrs1, attrs2] = Enum.map(funds, fn _fund -> Factory.fund_attrs() end)
 
       conn
-      |> visit(~p"/")
+      |> visit(~p"/funds")
       |> click_link("Budget")
       |> assert_has(page_title(), text: "Update Budget")
       |> assert_has(heading(), text: "Update Budget")

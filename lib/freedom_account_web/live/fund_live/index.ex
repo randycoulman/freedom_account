@@ -3,12 +3,17 @@ defmodule FreedomAccountWeb.FundLive.Index do
   use FreedomAccountWeb, :live_view
 
   import FreedomAccountWeb.AccountBar.Show, only: [account_bar: 1]
+  import FreedomAccountWeb.ActivationForm, only: [activation_form: 1]
+  import FreedomAccountWeb.BudgetForm, only: [budget_form: 1]
   import FreedomAccountWeb.FundLive.Form, only: [settings_form: 1]
+  import FreedomAccountWeb.RegularDepositForm, only: [regular_deposit_form: 1]
+  import FreedomAccountWeb.TransactionForm, only: [transaction_form: 1]
 
   alias FreedomAccount.Error
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.Transactions.Transaction
   alias Phoenix.LiveView
 
   @impl LiveView
@@ -18,6 +23,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
     {:noreply,
      socket
      |> assign(:fund, nil)
+     |> assign(:return_path, ~p"/funds")
      |> apply_action(action, params)}
   end
 
@@ -74,6 +80,26 @@ defmodule FreedomAccountWeb.FundLive.Index do
     <.header>
       Funds
       <:actions>
+        <.link patch={~p"/funds/regular_deposit"} phx-click={JS.push_focus()}>
+          <.button>
+            <.icon name="hero-folder-plus-mini" /> Regular Deposit
+          </.button>
+        </.link>
+        <.link patch={~p"/funds/regular_withdrawal"} phx-click={JS.push_focus()}>
+          <.button>
+            <.icon name="hero-folder-minus-mini" /> Regular Withdrawal
+          </.button>
+        </.link>
+        <.link patch={~p"/funds/budget"} phx-click={JS.push_focus()}>
+          <.button>
+            <.icon name="hero-chart-pie-mini" /> Budget
+          </.button>
+        </.link>
+        <.link patch={~p"/funds/activate"} phx-click={JS.push_focus()}>
+          <.button>
+            <.icon name="hero-archive-box-mini" /> Activate/Deactivate
+          </.button>
+        </.link>
         <.link patch={~p"/funds/new"}>
           <.button>
             <.icon name="hero-plus-circle-mini" /> Add Fund
@@ -116,13 +142,56 @@ defmodule FreedomAccountWeb.FundLive.Index do
       </:empty_state>
     </.table>
 
-    <.modal :if={@live_action in [:new, :edit]} id="fund-modal" show on_cancel={JS.patch(~p"/funds")}>
+    <.modal
+      :if={@live_action == :activate}
+      id="activate-modal"
+      show
+      on_cancel={JS.patch(@return_path)}
+    >
+      <.activation_form account={@account} return_path={@return_path} />
+    </.modal>
+
+    <.modal :if={@live_action in [:edit, :new]} id="fund-modal" show on_cancel={JS.patch(~p"/funds")}>
       <.settings_form
         account={@account}
         action={@live_action}
         fund={@fund}
         return_path={~p"/funds"}
         title={@page_title}
+      />
+    </.modal>
+
+    <.modal
+      :if={@live_action == :edit_budget}
+      id="budget-modal"
+      show
+      on_cancel={JS.patch(@return_path)}
+    >
+      <.budget_form account={@account} funds={@funds} return_path={@return_path} />
+    </.modal>
+
+    <.modal
+      :if={@live_action == :regular_deposit}
+      id="regular-deposit-modal"
+      show
+      on_cancel={JS.patch(@return_path)}
+    >
+      <.regular_deposit_form account={@account} funds={@funds} return_path={@return_path} />
+    </.modal>
+
+    <.modal
+      :if={@live_action == :regular_withdrawal}
+      id="regular-withdrawal-modal"
+      show
+      on_cancel={JS.patch(@return_path)}
+    >
+      <.transaction_form
+        account={@account}
+        action={@live_action}
+        all_funds={@funds}
+        initial_funds={@funds}
+        return_path={@return_path}
+        transaction={%Transaction{}}
       />
     </.modal>
     """
