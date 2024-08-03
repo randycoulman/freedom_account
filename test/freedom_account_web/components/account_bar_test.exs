@@ -22,7 +22,7 @@ defmodule FreedomAccountWeb.AccountBarTest do
       %{deposits_per_year: deposits, name: name} = Factory.account_attrs()
 
       conn
-      |> visit(~p"/")
+      |> visit(~p"/funds")
       |> click_link("Settings")
       |> assert_has(page_title(), text: "Edit Account Settings")
       |> assert_has(heading(), text: "Edit Account Settings")
@@ -37,6 +37,27 @@ defmodule FreedomAccountWeb.AccountBarTest do
       |> assert_has(page_title(), text: "Funds")
       |> assert_has(heading(), text: name)
       |> assert_has(heading(), text: "Funds")
+    end
+
+    test "updates account within modal on loan list view", %{conn: conn} do
+      %{deposits_per_year: deposits, name: name} = Factory.account_attrs()
+
+      conn
+      |> visit(~p"/loans")
+      |> click_link("Settings")
+      |> assert_has(page_title(), text: "Edit Account Settings")
+      |> assert_has(heading(), text: "Edit Account Settings")
+      |> fill_in("Name", with: "")
+      |> fill_in("Deposits / year", with: "")
+      |> assert_has(field_error("#account_name"), text: "can't be blank")
+      |> assert_has(field_error("#account_deposits_per_year"), text: "can't be blank")
+      |> fill_in("Name", with: name)
+      |> fill_in("Deposits / year", with: deposits)
+      |> click_button("Save Account")
+      |> assert_has(flash(:info), text: "Account updated successfully")
+      |> assert_has(page_title(), text: "Loans")
+      |> assert_has(heading(), text: name)
+      |> assert_has(heading(), text: "Loans")
     end
 
     test "selects default fund", %{account: account, conn: conn} do

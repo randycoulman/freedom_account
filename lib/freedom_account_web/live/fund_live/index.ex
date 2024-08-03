@@ -77,7 +77,14 @@ defmodule FreedomAccountWeb.FundLive.Index do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <.account_bar account={@account} balance={@account_balance} action={@live_action} funds={@funds} />
+    <.account_bar
+      account={@account}
+      action={@live_action}
+      balance={@account_balance}
+      funds={@funds}
+      return_path={~p"/funds"}
+      settings_path={~p"/funds/account"}
+    />
     <.account_tabs active={:funds} />
     <.header>
       Funds

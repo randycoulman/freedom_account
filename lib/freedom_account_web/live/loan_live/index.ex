@@ -43,9 +43,9 @@ defmodule FreedomAccountWeb.LoanLive.Index do
   #   end
   # end
 
-  # defp apply_action(socket, :edit_account, _params) do
-  #   assign(socket, :page_title, "Edit Account Settings")
-  # end
+  defp apply_action(socket, :edit_account, _params) do
+    assign(socket, :page_title, "Edit Account Settings")
+  end
 
   # defp apply_action(socket, :new, _params) do
   #   socket
@@ -61,7 +61,14 @@ defmodule FreedomAccountWeb.LoanLive.Index do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <.account_bar account={@account} balance={@account_balance} action={@live_action} funds={@funds} />
+    <.account_bar
+      account={@account}
+      action={@live_action}
+      balance={@account_balance}
+      funds={@funds}
+      return_path={~p"/loans"}
+      settings_path={~p"/loans/account"}
+    />
     <.account_tabs active={:loans} />
     <.header>
       Loans

@@ -14,6 +14,8 @@ defmodule FreedomAccountWeb.AccountBar.Show do
   attr :action, :string, required: true
   attr :balance, Money, required: true
   attr :funds, :list, required: true
+  attr :return_path, :string, required: true
+  attr :settings_path, :string, required: true
 
   @spec account_bar(Socket.assigns()) :: LiveView.Rendered.t()
   def account_bar(assigns) do
@@ -24,10 +26,7 @@ defmodule FreedomAccountWeb.AccountBar.Show do
 
   @impl LiveComponent
   def update(assigns, socket) do
-    {:ok,
-     socket
-     |> assign(assigns)
-     |> assign(:return_path, ~p"/funds")}
+    {:ok, assign(socket, assigns)}
   end
 
   @impl LiveComponent
@@ -38,7 +37,7 @@ defmodule FreedomAccountWeb.AccountBar.Show do
         <.link navigate={~p"/funds"}><%= @account.name %></.link>
         <span><%= @balance %></span>
         <:actions>
-          <.link patch={~p"/funds/account"} phx-click={JS.push_focus()}>
+          <.link patch={@settings_path} phx-click={JS.push_focus()}>
             <.button>
               <.icon name="hero-cog-8-tooth-mini" /> Settings
             </.button>
