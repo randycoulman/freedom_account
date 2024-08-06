@@ -7,7 +7,7 @@ defmodule FreedomAccountWeb.LoanLiveTest do
 
   alias FreedomAccount.Factory
   alias FreedomAccount.Loans
-  # alias Phoenix.HTML.Safe
+  alias Phoenix.HTML.Safe
 
   describe "Index" do
     setup [:create_account]
@@ -91,114 +91,112 @@ defmodule FreedomAccountWeb.LoanLiveTest do
     # end
   end
 
-  # describe "Show" do
-  #   setup [:create_account, :create_fund]
+  describe "Show" do
+    setup [:create_account, :create_loan]
 
-  #   test "drills down to individual fund and back", %{conn: conn, fund: fund} do
-  #     conn
-  #     |> visit(~p"/funds")
-  #     |> click_link("td", fund.name)
-  #     |> assert_has(page_title(), text: Safe.to_iodata(fund))
-  #     |> assert_has(heading(), text: Safe.to_iodata(fund))
-  #     |> assert_has(heading(), text: "$0.00")
-  #     |> assert_has(fund_subtitle(), text: "#{fund.budget}")
-  #     |> assert_has(fund_subtitle(), text: "#{fund.times_per_year}")
-  #     |> click_link("Back to Funds")
-  #     |> assert_has(page_title(), text: "Funds")
-  #     |> assert_has(heading(), text: "Funds")
-  #   end
+    test "drills down to individual loan and back", %{conn: conn, loan: loan} do
+      conn
+      |> visit(~p"/loans")
+      |> click_link("td", loan.name)
+      |> assert_has(page_title(), text: Safe.to_iodata(loan))
+      |> assert_has(heading(), text: Safe.to_iodata(loan))
+      |> assert_has(heading(), text: "$0.00")
+      |> click_link("Back to Loans")
+      |> assert_has(page_title(), text: "Loans")
+      |> assert_has(heading(), text: "Loans")
+    end
 
-  #   test "displays fund", %{conn: conn, fund: fund} do
-  #     conn
-  #     |> visit(~p"/funds/#{fund}")
-  #     |> assert_has(heading(), text: Safe.to_iodata(fund))
-  #   end
+    test "displays loan", %{conn: conn, loan: loan} do
+      conn
+      |> visit(~p"/loans/#{loan}")
+      |> assert_has(heading(), text: Safe.to_iodata(loan))
+    end
 
-  #   test "updates fund within modal", %{conn: conn, fund: fund} do
-  #     %{icon: icon, name: name} = Factory.fund_attrs()
-  #     Factory.deposit(fund)
-  #     {:ok, fund} = Funds.with_updated_balance(fund)
+    #   test "updates fund within modal", %{conn: conn, fund: fund} do
+    #     %{icon: icon, name: name} = Factory.fund_attrs()
+    #     Factory.deposit(fund)
+    #     {:ok, fund} = Loans.with_updated_balance(fund)
 
-  #     conn
-  #     |> visit(~p"/funds/#{fund}")
-  #     |> click_link("Edit Details")
-  #     |> assert_has(page_title(), text: "Edit Fund")
-  #     |> assert_has(heading(), text: "Edit Fund")
-  #     |> fill_in("Icon", with: "")
-  #     |> fill_in("Name", with: "")
-  #     |> assert_has(field_error("#fund_icon"), text: "can't be blank")
-  #     |> assert_has(field_error("#fund_name"), text: "can't be blank")
-  #     |> fill_in("Icon", with: icon)
-  #     |> fill_in("Name", with: name)
-  #     |> click_button("Save Fund")
-  #     |> assert_has(flash(:info), text: "Fund updated successfully")
-  #     |> assert_has(page_title(), text: "#{icon} #{name}")
-  #     |> assert_has(heading(), text: "#{icon} #{name}")
-  #     |> assert_has(heading(), text: "#{fund.current_balance}")
-  #     |> assert_has(sidebar_fund_name(), text: "#{icon} #{name}")
-  #     |> assert_has(sidebar_fund_balance(), text: "#{fund.current_balance}")
-  #   end
+    #     conn
+    #     |> visit(~p"/funds/#{fund}")
+    #     |> click_link("Edit Details")
+    #     |> assert_has(page_title(), text: "Edit Fund")
+    #     |> assert_has(heading(), text: "Edit Fund")
+    #     |> fill_in("Icon", with: "")
+    #     |> fill_in("Name", with: "")
+    #     |> assert_has(field_error("#fund_icon"), text: "can't be blank")
+    #     |> assert_has(field_error("#fund_name"), text: "can't be blank")
+    #     |> fill_in("Icon", with: icon)
+    #     |> fill_in("Name", with: name)
+    #     |> click_button("Save Fund")
+    #     |> assert_has(flash(:info), text: "Fund updated successfully")
+    #     |> assert_has(page_title(), text: "#{icon} #{name}")
+    #     |> assert_has(heading(), text: "#{icon} #{name}")
+    #     |> assert_has(heading(), text: "#{fund.current_balance}")
+    #     |> assert_has(sidebar_fund_name(), text: "#{icon} #{name}")
+    #     |> assert_has(sidebar_fund_balance(), text: "#{fund.current_balance}")
+    #   end
 
-  #   test "deposits money to a fund", %{conn: conn, fund: fund} do
-  #     today = Timex.today(:local)
-  #     date = Factory.date()
-  #     memo = Factory.memo()
-  #     amount = Factory.money()
+    #   test "deposits money to a fund", %{conn: conn, fund: fund} do
+    #     today = Timex.today(:local)
+    #     date = Factory.date()
+    #     memo = Factory.memo()
+    #     amount = Factory.money()
 
-  #     conn
-  #     |> visit(~p"/funds/#{fund}")
-  #     |> click_link("#single-fund-deposit", "Deposit")
-  #     |> assert_has(page_title(), text: "Deposit")
-  #     |> assert_has(heading(), text: "Deposit")
-  #     |> assert_has(field_value("#transaction_date", today))
-  #     |> assert_has("label", text: Safe.to_iodata(fund))
-  #     |> refute_has("#transaction-total")
-  #     |> fill_in("Date", with: date)
-  #     |> fill_in("Memo", with: memo)
-  #     |> click_button("Make Deposit")
-  #     |> refute_has("#line-items-error")
-  #     |> fill_in("Amount 0", with: amount)
-  #     |> click_button("Make Deposit")
-  #     |> assert_has(flash(:info), text: "Deposit successful")
-  #     |> assert_has(heading(), text: Safe.to_iodata(fund))
-  #     |> assert_has(heading(), text: "#{amount}")
-  #     |> assert_has(sidebar_fund_balance(), text: "#{amount}")
-  #     |> assert_has(table_cell(), text: "#{date}")
-  #     |> assert_has(table_cell(), text: memo)
-  #     |> assert_has(role("deposit"), text: "#{amount}")
-  #   end
+    #     conn
+    #     |> visit(~p"/funds/#{fund}")
+    #     |> click_link("#single-fund-deposit", "Deposit")
+    #     |> assert_has(page_title(), text: "Deposit")
+    #     |> assert_has(heading(), text: "Deposit")
+    #     |> assert_has(field_value("#transaction_date", today))
+    #     |> assert_has("label", text: Safe.to_iodata(fund))
+    #     |> refute_has("#transaction-total")
+    #     |> fill_in("Date", with: date)
+    #     |> fill_in("Memo", with: memo)
+    #     |> click_button("Make Deposit")
+    #     |> refute_has("#line-items-error")
+    #     |> fill_in("Amount 0", with: amount)
+    #     |> click_button("Make Deposit")
+    #     |> assert_has(flash(:info), text: "Deposit successful")
+    #     |> assert_has(heading(), text: Safe.to_iodata(fund))
+    #     |> assert_has(heading(), text: "#{amount}")
+    #     |> assert_has(sidebar_fund_balance(), text: "#{amount}")
+    #     |> assert_has(table_cell(), text: "#{date}")
+    #     |> assert_has(table_cell(), text: memo)
+    #     |> assert_has(role("deposit"), text: "#{amount}")
+    #   end
 
-  #   test "withdraws money from a fund", %{conn: conn, fund: fund} do
-  #     today = Timex.today(:local)
-  #     deposit_amount = ~M[5000]usd
-  #     date = Factory.date()
-  #     memo = Factory.memo()
-  #     amount = Factory.money()
-  #     balance = Money.sub!(deposit_amount, amount)
+    #   test "withdraws money from a fund", %{conn: conn, fund: fund} do
+    #     today = Timex.today(:local)
+    #     deposit_amount = ~M[5000]usd
+    #     date = Factory.date()
+    #     memo = Factory.memo()
+    #     amount = Factory.money()
+    #     balance = Money.sub!(deposit_amount, amount)
 
-  #     Factory.deposit(fund, amount: deposit_amount)
+    #     Factory.deposit(fund, amount: deposit_amount)
 
-  #     conn
-  #     |> visit(~p"/funds/#{fund}")
-  #     |> click_link("#single-fund-withdrawal", "Withdraw")
-  #     |> assert_has(page_title(), text: "Withdraw")
-  #     |> assert_has(heading(), text: "Withdraw")
-  #     |> assert_has(field_value("#transaction_date", today))
-  #     |> assert_has("label", text: Safe.to_iodata(fund))
-  #     |> refute_has("#transaction-total")
-  #     |> fill_in("Date", with: date)
-  #     |> fill_in("Memo", with: memo)
-  #     |> click_button("Make Withdrawal")
-  #     |> refute_has("#line-items-error")
-  #     |> fill_in("Amount 0", with: amount)
-  #     |> click_button("Make Withdrawal")
-  #     |> assert_has(flash(:info), text: "Withdrawal successful")
-  #     |> assert_has(heading(), text: Safe.to_iodata(fund))
-  #     |> assert_has(heading(), text: "#{balance}")
-  #     |> assert_has(sidebar_fund_balance(), text: "#{balance}")
-  #     |> assert_has(table_cell(), text: "#{date}")
-  #     |> assert_has(table_cell(), text: memo)
-  #     |> assert_has(role("withdrawal"), text: "#{amount}")
-  #   end
-  # end
+    #     conn
+    #     |> visit(~p"/funds/#{fund}")
+    #     |> click_link("#single-fund-withdrawal", "Withdraw")
+    #     |> assert_has(page_title(), text: "Withdraw")
+    #     |> assert_has(heading(), text: "Withdraw")
+    #     |> assert_has(field_value("#transaction_date", today))
+    #     |> assert_has("label", text: Safe.to_iodata(fund))
+    #     |> refute_has("#transaction-total")
+    #     |> fill_in("Date", with: date)
+    #     |> fill_in("Memo", with: memo)
+    #     |> click_button("Make Withdrawal")
+    #     |> refute_has("#line-items-error")
+    #     |> fill_in("Amount 0", with: amount)
+    #     |> click_button("Make Withdrawal")
+    #     |> assert_has(flash(:info), text: "Withdrawal successful")
+    #     |> assert_has(heading(), text: Safe.to_iodata(fund))
+    #     |> assert_has(heading(), text: "#{balance}")
+    #     |> assert_has(sidebar_fund_balance(), text: "#{balance}")
+    #     |> assert_has(table_cell(), text: "#{date}")
+    #     |> assert_has(table_cell(), text: memo)
+    #     |> assert_has(role("withdrawal"), text: "#{amount}")
+    #   end
+  end
 end

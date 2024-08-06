@@ -132,6 +132,8 @@ defmodule FreedomAccountWeb.FundLive.Index do
         <div class="sr-only">
           <.link navigate={~p"/funds/#{fund}"}>Show</.link>
         </div>
+      </:action>
+      <:action :let={fund}>
         <.link patch={~p"/funds/#{fund}/edit"}>
           <.icon name="hero-pencil-square-micro" /> Edit
         </.link>

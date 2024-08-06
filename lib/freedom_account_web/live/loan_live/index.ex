@@ -87,20 +87,21 @@ defmodule FreedomAccountWeb.LoanLive.Index do
       </:actions>
     </.header>
 
-    <%!-- <.table
+    <.table
       id="loans"
-      row_click={fn fund -> JS.navigate(~p"/loans/#{loan}") end}
+      row_click={fn loan -> JS.navigate(~p"/loans/#{loan}") end}
       row_id={fn loan -> "loans-#{loan.id}" end}
-      rows={@funds}
-    > --%>
-    <.table id="loans" row_id={fn loan -> "loans-#{loan.id}" end} rows={@loans}>
+      rows={@loans}
+    >
       <:col :let={loan} align={:center} label="Icon"><%= loan.icon %></:col>
       <:col :let={loan} label="Name"><%= loan.name %></:col>
       <:col :let={loan} align={:right} label="Current Balance"><%= loan.current_balance %></:col>
-      <%!-- <:action :let={fund}>
+      <:action :let={loan}>
         <div class="sr-only">
-          <.link navigate={~p"/funds/#{fund}"}>Show</.link>
+          <.link navigate={~p"/loans/#{loan}"}>Show</.link>
         </div>
+      </:action>
+      <%!-- <:action :let={fund}>
         <.link patch={~p"/funds/#{fund}/edit"}>
           <.icon name="hero-pencil-square-micro" /> Edit
         </.link>

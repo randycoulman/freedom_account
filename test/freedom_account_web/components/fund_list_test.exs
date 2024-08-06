@@ -35,5 +35,14 @@ defmodule FreedomAccountWeb.FundListTest do
       |> click_link(fund2.name)
       |> assert_has(heading(), text: Safe.to_iodata(fund2))
     end
+
+    test "returns to fund list when header clicked", %{conn: conn, funds: funds} do
+      fund = hd(funds)
+
+      conn
+      |> visit(~p"/funds/#{fund}")
+      |> click_link(heading_link(), "Funds")
+      |> assert_path(~p"/funds")
+    end
   end
 end

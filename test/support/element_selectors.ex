@@ -30,6 +30,9 @@ defmodule FreedomAccountWeb.ElementSelectors do
   @spec heading :: selector()
   def heading, do: "h2"
 
+  @spec heading_link :: selector()
+  def heading_link, do: "#{heading()} #{link()}"
+
   @spec inactive_tab :: selector()
   def inactive_tab, do: "li[data-active=false]"
 
