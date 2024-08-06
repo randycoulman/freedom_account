@@ -11,7 +11,7 @@ defmodule FreedomAccountWeb.LoanLive.Show do
   alias FreedomAccount.Error
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Loans.Loan
-  # alias FreedomAccount.Transactions
+  alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.LoanTransaction
   alias Phoenix.HTML.Safe
   alias Phoenix.LiveView
@@ -41,19 +41,19 @@ defmodule FreedomAccountWeb.LoanLive.Show do
     assign(socket, :page_title, "Edit Loan")
   end
 
-  # defp apply_action(socket, :edit_transaction, params) do
-  #   transaction_id = String.to_integer(params["transaction_id"])
+  defp apply_action(socket, :edit_transaction, params) do
+    transaction_id = String.to_integer(params["transaction_id"])
 
-  #   case Transactions.fetch_transaction(transaction_id) do
-  #     {:ok, %Transaction{} = transaction} ->
-  #       socket
-  #       |> assign(:page_title, "Edit Transaction")
-  #       |> assign(:transaction, transaction)
+    case Transactions.fetch_loan_transaction(transaction_id) do
+      {:ok, %LoanTransaction{} = transaction} ->
+        socket
+        |> assign(:page_title, "Edit Loan Transaction")
+        |> assign(:transaction, transaction)
 
-  #     {:error, %NotFoundError{}} ->
-  #       put_flash(socket, :error, "Transaction is no longer present")
-  #   end
-  # end
+      {:error, %NotFoundError{}} ->
+        put_flash(socket, :error, "Transaction is no longer present")
+    end
+  end
 
   defp apply_action(socket, :lend, _params) do
     socket

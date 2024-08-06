@@ -60,11 +60,11 @@ defmodule FreedomAccountWeb.LoanTransaction.Index do
         <:col :let={transaction} align={:right} label="Balance">
           <%= transaction.running_balance %>
         </:col>
-        <%!-- <:action :let={transaction}>
+        <:action :let={transaction}>
           <.link patch={~p"/loans/#{@loan}/transactions/#{transaction}/edit"}>
             <.icon name="hero-pencil-square-micro" /> Edit
           </.link>
-        </:action> --%>
+        </:action>
         <%!-- <:action :let={transaction}>
           <.link
             data-confirm="Are you sure?"

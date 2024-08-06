@@ -2,6 +2,8 @@ defmodule FreedomAccountWeb.AccountTabsTest do
   @moduledoc false
   use FreedomAccountWeb.ConnCase, async: true
 
+  setup :create_account
+
   describe "switching tabs" do
     test "only funds tab is active on fund list page", %{conn: conn} do
       conn

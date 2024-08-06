@@ -34,8 +34,8 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
     changeset =
       if is_nil(transaction.id) do
         Transactions.new_loan_transaction(loan)
-        # else
-        #   Transactions.change_loan_transaction(transaction)
+      else
+        Transactions.change_loan_transaction(transaction)
       end
 
     socket
@@ -45,11 +45,11 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
     |> ok()
   end
 
-  # defp apply_action(socket, :edit_transaction) do
-  #   socket
-  #   |> assign(:heading, "Edit Transaction")
-  #   |> assign(:save, "Save Transaction")
-  # end
+  defp apply_action(socket, :edit_transaction) do
+    socket
+    |> assign(:heading, "Edit Loan Transaction")
+    |> assign(:save, "Save Transaction")
+  end
 
   defp apply_action(socket, :lend) do
     socket
@@ -115,22 +115,22 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
     save_transaction(socket, action, Params.atomize_keys(transaction_params))
   end
 
-  # defp save_transaction(socket, :edit_transaction, params) do
-  #   %{return_path: return_path, transaction: transaction} = socket.assigns
+  defp save_transaction(socket, :edit_transaction, params) do
+    %{return_path: return_path, transaction: transaction} = socket.assigns
 
-  #   case Transactions.update_transaction(transaction, params) do
-  #     {:ok, _transaction} ->
-  #       socket
-  #       |> put_flash(:info, "Transaction updated successfully")
-  #       |> push_patch(to: return_path)
-  #       |> noreply()
+    case Transactions.update_loan_transaction(transaction, params) do
+      {:ok, _transaction} ->
+        socket
+        |> put_flash(:info, "Transaction updated successfully")
+        |> push_patch(to: return_path)
+        |> noreply()
 
-  #     {:error, %Changeset{} = changeset} ->
-  #       socket
-  #       |> assign_form(changeset)
-  #       |> noreply()
-  #   end
-  # end
+      {:error, %Changeset{} = changeset} ->
+        socket
+        |> assign_form(changeset)
+        |> noreply()
+    end
+  end
 
   defp save_transaction(socket, :lend, params) do
     %{return_path: return_path} = socket.assigns

@@ -1,10 +1,12 @@
 defmodule FreedomAccountWeb.LoanTransactionTest do
-  use FreedomAccountWeb.ConnCase, async: true
+  # Started hitting a flickering test failure when this was async: true.
+  # Doing this for now, but will fix later.
+  use FreedomAccountWeb.ConnCase, async: false
 
   alias FreedomAccount.Factory
   alias FreedomAccount.MoneyUtils
   alias FreedomAccountWeb.LoanTransaction
-  # alias Phoenix.HTML.Safe
+  alias Phoenix.HTML.Safe
 
   setup [:create_account, :create_loan]
 
@@ -62,34 +64,32 @@ defmodule FreedomAccountWeb.LoanTransactionTest do
       |> assert_has(enabled("button"), text: "Next Page")
     end
 
-    # test "edits single-loan transaction in listing", %{conn: conn, loan: loan} do
-    #   deposit = Factory.deposit(loan)
-    #   [line_item] = deposit.line_items
-    #   new_date = Factory.date()
-    #   new_memo = Factory.memo()
-    #   new_amount = Factory.money()
+    test "edits transaction in listing", %{conn: conn, loan: loan} do
+      transaction = Factory.lend(loan)
+      new_date = Factory.date()
+      new_memo = Factory.memo()
+      new_amount = MoneyUtils.negate(Factory.money())
 
-    #   conn
-    #   |> visit(~p"/loans/#{loan}")
-    #   |> click_link(action_link("#txn-#{line_item.id}"), "Edit")
-    #   |> assert_has(page_title(), text: "Edit Transaction")
-    #   |> assert_has(heading(), text: "Edit Transaction")
-    #   |> assert_has(field_value("#transaction_date", deposit.date))
-    #   |> assert_has(field_value("#transaction_memo", deposit.memo))
-    #   |> assert_has(field_value("#transaction_line_items_0_amount", line_item.amount))
-    #   |> assert_has("label", text: loan.name)
-    #   |> fill_in("Date", with: new_date)
-    #   |> fill_in("Memo", with: new_memo)
-    #   |> fill_in("Amount 0", with: new_amount)
-    #   |> click_button("Save Transaction")
-    #   |> assert_has(flash(:info), text: "Transaction updated successfully")
-    #   |> assert_has(heading(), text: Safe.to_iodata(loan))
-    #   |> assert_has(heading(), text: "#{new_amount}")
-    #   |> assert_has(sidebar_loan_balance(), text: "#{new_amount}")
-    #   |> assert_has(table_cell(), text: "#{new_date}")
-    #   |> assert_has(table_cell(), text: new_memo)
-    #   |> assert_has(role("deposit"), text: "#{new_amount}")
-    # end
+      conn
+      |> visit(~p"/loans/#{loan}")
+      |> click_link(action_link("#txn-#{transaction.id}"), "Edit")
+      |> assert_has(page_title(), text: "Edit Loan Transaction")
+      |> assert_has(heading(), text: "Edit Loan Transaction")
+      |> assert_has(field_value("#loan_transaction_date", transaction.date))
+      |> assert_has(field_value("#loan_transaction_memo", transaction.memo))
+      |> assert_has(field_value("#loan_transaction_amount", transaction.amount))
+      |> fill_in("Date", with: new_date)
+      |> fill_in("Memo", with: new_memo)
+      |> fill_in("Amount", with: new_amount)
+      |> click_button("Save Transaction")
+      |> assert_has(flash(:info), text: "Transaction updated successfully")
+      |> assert_has(heading(), text: Safe.to_iodata(loan))
+      |> assert_has(heading(), text: "#{new_amount}")
+      |> assert_has(sidebar_loan_balance(), text: "#{new_amount}")
+      |> assert_has(table_cell(), text: "#{new_date}")
+      |> assert_has(table_cell(), text: new_memo)
+      |> assert_has(role("loan"), text: "#{MoneyUtils.negate(new_amount)}")
+    end
 
     # test "deletes transaction in listing", %{conn: conn, loan: loan} do
     #   deposit = Factory.deposit(loan)
