@@ -127,7 +127,7 @@ defmodule FreedomAccount.Funds do
     |> Repo.transaction()
     |> case do
       {:ok, changes} ->
-        PubSub.broadcast({:ok, Map.values(changes)}, pubsub_topic(), :activation_updated)
+        PubSub.broadcast({:ok, Map.values(changes)}, pubsub_topic(), :fund_activation_updated)
 
       {:error, {:fund, index}, changeset, _changes_so_far} ->
         {:error, Map.put(activation_changeset, index, changeset)}

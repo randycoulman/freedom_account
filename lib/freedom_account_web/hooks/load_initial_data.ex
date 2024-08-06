@@ -72,15 +72,15 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
     |> cont()
   end
 
-  defp handle_info({:activation_updated, funds}, socket) do
-    socket
-    |> update_funds(&Cache.update_activations(&1, funds))
-    |> cont()
-  end
-
   defp handle_info({:budget_updated, funds}, socket) do
     socket
     |> update_funds(&Cache.update_all(&1, funds))
+    |> cont()
+  end
+
+  defp handle_info({:fund_activation_updated, funds}, socket) do
+    socket
+    |> update_funds(&Cache.update_activations(&1, funds))
     |> cont()
   end
 
@@ -101,6 +101,12 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
   defp handle_info({:fund_updated, %Fund{} = fund}, socket) do
     socket
     |> update_funds(&Cache.update(&1, fund))
+    |> cont()
+  end
+
+  defp handle_info({:loan_activation_updated, loans}, socket) do
+    socket
+    |> update_loans(&Cache.update_activations(&1, loans))
     |> cont()
   end
 

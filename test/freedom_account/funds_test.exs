@@ -278,7 +278,7 @@ defmodule FreedomAccount.FundsTest do
 
       {:ok, updated_funds} = Funds.update_activation(account, valid_attrs)
 
-      assert_received({:activation_updated, ^updated_funds})
+      assert_received({:fund_activation_updated, ^updated_funds})
     end
 
     test "with invalid data returns an error changeset", %{account: account} do

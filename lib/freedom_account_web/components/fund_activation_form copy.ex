@@ -1,4 +1,4 @@
-defmodule FreedomAccountWeb.ActivationForm do
+defmodule FreedomAccountWeb.FundActivationForm do
   @moduledoc false
   use FreedomAccountWeb, :live_component
 
@@ -12,8 +12,8 @@ defmodule FreedomAccountWeb.ActivationForm do
   attr :account, Account, required: true
   attr :return_path, :string, required: true
 
-  @spec activation_form(Socket.assigns()) :: LiveView.Rendered.t()
-  def activation_form(assigns) do
+  @spec fund_activation_form(Socket.assigns()) :: LiveView.Rendered.t()
+  def fund_activation_form(assigns) do
     ~H"""
     <.live_component id={@account.id} module={__MODULE__} {assigns} />
     """

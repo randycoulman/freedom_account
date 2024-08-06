@@ -4,7 +4,7 @@ defmodule FreedomAccountWeb.LoanLive.Index do
 
   import FreedomAccountWeb.AccountBar.Show, only: [account_bar: 1]
   import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
-  # import FreedomAccountWeb.ActivationForm, only: [activation_form: 1]
+  import FreedomAccountWeb.LoanActivationForm, only: [loan_activation_form: 1]
   import FreedomAccountWeb.LoanLive.Form, only: [settings_form: 1]
 
   alias FreedomAccount.Error
@@ -25,9 +25,9 @@ defmodule FreedomAccountWeb.LoanLive.Index do
     |> noreply()
   end
 
-  # defp apply_action(socket, :activate, _params) do
-  #   assign(socket, :page_title, "Activate/Deactivate")
-  # end
+  defp apply_action(socket, :activate, _params) do
+    assign(socket, :page_title, "Activate/Deactivate")
+  end
 
   defp apply_action(socket, :edit, params) do
     id = String.to_integer(params["id"])
@@ -74,11 +74,11 @@ defmodule FreedomAccountWeb.LoanLive.Index do
     <.header>
       Loans
       <:actions>
-        <%!-- <.link patch={~p"/funds/activate"} phx-click={JS.push_focus()}>
+        <.link patch={~p"/loans/activate"} phx-click={JS.push_focus()}>
           <.button>
             <.icon name="hero-archive-box-mini" /> Activate/Deactivate
           </.button>
-        </.link> --%>
+        </.link>
         <.link patch={~p"/loans/new"}>
           <.button>
             <.icon name="hero-plus-circle-mini" /> Add Loan
@@ -121,14 +121,14 @@ defmodule FreedomAccountWeb.LoanLive.Index do
       </:empty_state>
     </.table>
 
-    <%!-- <.modal
+    <.modal
       :if={@live_action == :activate}
       id="activate-modal"
       show
       on_cancel={JS.patch(@return_path)}
     >
-      <.activation_form account={@account} return_path={@return_path} />
-    </.modal> --%>
+      <.loan_activation_form account={@account} return_path={@return_path} />
+    </.modal>
 
     <.modal :if={@live_action in [:edit, :new]} id="loan-modal" show on_cancel={JS.patch(~p"/loans")}>
       <.settings_form
@@ -154,9 +154,6 @@ defmodule FreedomAccountWeb.LoanLive.Index do
         |> noreply()
     end
   end
-
-  # @impl LiveView
-  # def handle_info(_message, socket), do: noreply(socket)
 
   defp fetch_loan(socket, id) do
     %{loans: loans} = socket.assigns

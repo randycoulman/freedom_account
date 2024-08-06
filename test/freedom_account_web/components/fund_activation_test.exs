@@ -1,4 +1,4 @@
-defmodule FreedomAccountWeb.ActivationTest do
+defmodule FreedomAccountWeb.FundActivationTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   import Money.Sigil

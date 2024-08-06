@@ -4,8 +4,8 @@ defmodule FreedomAccountWeb.FundLive.Index do
 
   import FreedomAccountWeb.AccountBar.Show, only: [account_bar: 1]
   import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
-  import FreedomAccountWeb.ActivationForm, only: [activation_form: 1]
   import FreedomAccountWeb.BudgetForm, only: [budget_form: 1]
+  import FreedomAccountWeb.FundActivationForm, only: [fund_activation_form: 1]
   import FreedomAccountWeb.FundLive.Form, only: [settings_form: 1]
   import FreedomAccountWeb.RegularDepositForm, only: [regular_deposit_form: 1]
   import FreedomAccountWeb.TransactionForm, only: [transaction_form: 1]
@@ -159,7 +159,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
       show
       on_cancel={JS.patch(@return_path)}
     >
-      <.activation_form account={@account} return_path={@return_path} />
+      <.fund_activation_form account={@account} return_path={@return_path} />
     </.modal>
 
     <.modal :if={@live_action in [:edit, :new]} id="fund-modal" show on_cancel={JS.patch(~p"/funds")}>
@@ -220,9 +220,6 @@ defmodule FreedomAccountWeb.FundLive.Index do
         |> noreply()
     end
   end
-
-  @impl LiveView
-  def handle_info(_message, socket), do: noreply(socket)
 
   defp fetch_fund(socket, id) do
     %{funds: funds} = socket.assigns
