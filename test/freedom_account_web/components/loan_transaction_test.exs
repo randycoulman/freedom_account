@@ -91,18 +91,17 @@ defmodule FreedomAccountWeb.LoanTransactionTest do
       |> assert_has(role("loan"), text: "#{MoneyUtils.negate(new_amount)}")
     end
 
-    # test "deletes transaction in listing", %{conn: conn, loan: loan} do
-    #   deposit = Factory.deposit(loan)
-    #   [line_item] = deposit.line_items
+    test "deletes transaction in listing", %{conn: conn, loan: loan} do
+      transaction = Factory.lend(loan)
 
-    #   conn
-    #   |> visit(~p"/loans/#{loan}")
-    #   |> click_link(action_link("#txn-#{line_item.id}"), "Delete")
-    #   |> assert_has(heading(), text: Safe.to_iodata(loan))
-    #   |> assert_has(heading(), text: "$0.00")
-    #   |> assert_has(sidebar_loan_balance(), text: "$0.00")
-    #   |> refute_has("#txn-#{line_item.id}")
-    # end
+      conn
+      |> visit(~p"/loans/#{loan}")
+      |> click_link(action_link("#txn-#{transaction.id}"), "Delete")
+      |> assert_has(heading(), text: Safe.to_iodata(loan))
+      |> assert_has(heading(), text: "$0.00")
+      |> assert_has(sidebar_loan_balance(), text: "$0.00")
+      |> refute_has("#txn-#{transaction.id}")
+    end
 
     defp assert_has_all_transactions(session, transactions) do
       Enum.reduce(transactions, session, fn txn, session ->

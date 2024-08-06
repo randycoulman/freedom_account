@@ -65,17 +65,15 @@ defmodule FreedomAccountWeb.LoanTransaction.Index do
             <.icon name="hero-pencil-square-micro" /> Edit
           </.link>
         </:action>
-        <%!-- <:action :let={transaction}>
+        <:action :let={transaction}>
           <.link
             data-confirm="Are you sure?"
-            phx-click={
-              JS.push("delete", value: %{id: transaction.id}) |> hide("##{transaction.line_item_id}")
-            }
+            phx-click={JS.push("delete", value: %{id: transaction.id}) |> hide("##{transaction.id}")}
             phx-target={@myself}
           >
             <.icon name="hero-trash-micro" /> Delete
           </.link>
-        </:action> --%>
+        </:action>
         <:empty_state>
           <div id="no-transactions">
             This loan has no transactions yet.
@@ -105,17 +103,17 @@ defmodule FreedomAccountWeb.LoanTransaction.Index do
   end
 
   @impl LiveComponent
-  # def handle_event("delete", %{"id" => id}, socket) do
-  #   with {:ok, transaction} <- Transactions.fetch_transaction(id),
-  #        :ok <- Transactions.delete_transaction(transaction) do
-  #     noreply(socket)
-  #   else
-  #     {:error, error} ->
-  #       socket
-  #       |> put_flash(:error, Exception.message(error))
-  #       |> noreply()
-  #   end
-  # end
+  def handle_event("delete", %{"id" => id}, socket) do
+    with {:ok, transaction} <- Transactions.fetch_loan_transaction(id),
+         :ok <- Transactions.delete_loan_transaction(transaction) do
+      noreply(socket)
+    else
+      {:error, error} ->
+        socket
+        |> put_flash(:error, Exception.message(error))
+        |> noreply()
+    end
+  end
 
   def handle_event("next-page", _params, socket) do
     %{loan: loan, paging: paging} = socket.assigns

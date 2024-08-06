@@ -11,7 +11,6 @@ defmodule FreedomAccountWeb.LoanLive.Index do
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Loans
   alias FreedomAccount.Loans.Loan
-  # alias FreedomAccount.Transactions.Transaction
   alias Phoenix.LiveView
 
   @impl LiveView
