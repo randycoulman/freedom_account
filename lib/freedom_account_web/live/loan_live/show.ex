@@ -3,7 +3,7 @@ defmodule FreedomAccountWeb.LoanLive.Show do
   use FreedomAccountWeb, :live_view
 
   import FreedomAccountWeb.Account, only: [account: 1]
-  import FreedomAccountWeb.LoanList, only: [loan_list: 1]
+  import FreedomAccountWeb.Sidebar, only: [sidebar: 1]
   # import FreedomAccountWeb.LoanLive.Form, only: [settings_form: 1]
   # import FreedomAccountWeb.LoanTransaction.Index, only: [loan_transaction_list: 1]
   # import FreedomAccountWeb.TransactionForm, only: [transaction_form: 1]
@@ -79,7 +79,7 @@ defmodule FreedomAccountWeb.LoanLive.Show do
     <.account account={@account} balance={@account_balance} />
     <div class="flex h-screen">
       <aside class="hidden md:flex flex-col w-56 bg-slate-100">
-        <.loan_list loans={@loans} />
+        <.sidebar funds={@funds} loans={@loans} />
       </aside>
       <main class="flex flex-col flex-1 overflow-y-auto pl-2">
         <.header>

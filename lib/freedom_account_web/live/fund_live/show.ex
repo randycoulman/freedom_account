@@ -3,9 +3,9 @@ defmodule FreedomAccountWeb.FundLive.Show do
   use FreedomAccountWeb, :live_view
 
   import FreedomAccountWeb.Account, only: [account: 1]
-  import FreedomAccountWeb.FundList, only: [fund_list: 1]
   import FreedomAccountWeb.FundLive.Form, only: [settings_form: 1]
   import FreedomAccountWeb.FundTransaction.Index, only: [fund_transaction_list: 1]
+  import FreedomAccountWeb.Sidebar, only: [sidebar: 1]
   import FreedomAccountWeb.TransactionForm, only: [transaction_form: 1]
 
   alias FreedomAccount.Error
@@ -79,7 +79,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
     <.account account={@account} balance={@account_balance} />
     <div class="flex h-screen">
       <aside class="hidden md:flex flex-col w-56 bg-slate-100">
-        <.fund_list funds={@funds} />
+        <.sidebar funds={@funds} loans={@loans} />
       </aside>
       <main class="flex flex-col flex-1 overflow-y-auto pl-2">
         <.header>
