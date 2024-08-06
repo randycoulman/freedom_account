@@ -16,6 +16,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
   alias FreedomAccount.Loans.Loan
   alias FreedomAccount.PubSub
   alias FreedomAccount.Transactions
+  alias FreedomAccount.Transactions.LoanTransaction
   alias FreedomAccount.Transactions.Transaction
   alias FreedomAccountWeb.Hooks.LoadInitialData.Cache
   alias Phoenix.LiveView.Socket
@@ -119,6 +120,19 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
 
   defp handle_info({:loan_updated, %Loan{} = loan}, socket) do
     socket
+    |> update_loans(&Cache.update(&1, loan))
+    |> cont()
+  end
+
+  defp handle_info({event, %LoanTransaction{} = transaction}, socket)
+       when event in [:loan_transaction_created, :loan_transaction_deleted, :loan_transaction_updated] do
+    %{account: account} = socket.assigns
+    {:ok, loan} = Loans.fetch_active_loan(account, transaction.loan_id)
+    {:ok, loan} = Loans.with_updated_balance(loan)
+    # account_balance = Balances.account_balance(account)
+
+    socket
+    # |> assign(:account_balance, account_balance)
     |> update_loans(&Cache.update(&1, loan))
     |> cont()
   end

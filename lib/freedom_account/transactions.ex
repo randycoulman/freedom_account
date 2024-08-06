@@ -14,7 +14,7 @@ defmodule FreedomAccount.Transactions do
       FreedomAccount.PubSub,
       FreedomAccount.Repo
     ],
-    exports: [Transaction]
+    exports: [LoanTransaction, Transaction]
 
   import Ecto.Query, only: [from: 1, subquery: 1]
 
@@ -170,6 +170,11 @@ defmodule FreedomAccount.Transactions do
       )
 
     {transactions, %Paging{next_cursor: metadata.after, prev_cursor: metadata.before}}
+  end
+
+  @spec new_loan_transaction(Loan.t()) :: Changeset.t()
+  def new_loan_transaction(%Loan{} = loan) do
+    LoanTransaction.changeset(%LoanTransaction{loan_id: loan.id}, %{date: Timex.today(:local)})
   end
 
   @spec new_transaction([Fund.t()]) :: Changeset.t()

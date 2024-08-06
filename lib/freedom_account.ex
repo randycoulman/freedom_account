@@ -21,6 +21,7 @@ defmodule FreedomAccount do
       Paging,
       PubSub,
       Transactions,
+      Transactions.LoanTransaction,
       Transactions.Transaction
     ]
 end

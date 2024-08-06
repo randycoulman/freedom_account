@@ -7,6 +7,7 @@ defmodule FreedomAccountWeb.LoanLiveTest do
 
   alias FreedomAccount.Factory
   alias FreedomAccount.Loans
+  alias FreedomAccount.MoneyUtils
   alias Phoenix.HTML.Safe
 
   describe "Index" do
@@ -133,34 +134,32 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       |> assert_has(sidebar_loan_balance(), text: "#{loan.current_balance}")
     end
 
-    #   test "deposits money to a fund", %{conn: conn, fund: fund} do
-    #     today = Timex.today(:local)
-    #     date = Factory.date()
-    #     memo = Factory.memo()
-    #     amount = Factory.money()
+    test "lends money from a loan", %{conn: conn, loan: loan} do
+      today = Timex.today(:local)
+      date = Factory.date()
+      memo = Factory.memo()
+      amount = Factory.money()
+      balance = MoneyUtils.negate(amount)
 
-    #     conn
-    #     |> visit(~p"/funds/#{fund}")
-    #     |> click_link("#single-fund-deposit", "Deposit")
-    #     |> assert_has(page_title(), text: "Deposit")
-    #     |> assert_has(heading(), text: "Deposit")
-    #     |> assert_has(field_value("#transaction_date", today))
-    #     |> assert_has("label", text: Safe.to_iodata(fund))
-    #     |> refute_has("#transaction-total")
-    #     |> fill_in("Date", with: date)
-    #     |> fill_in("Memo", with: memo)
-    #     |> click_button("Make Deposit")
-    #     |> refute_has("#line-items-error")
-    #     |> fill_in("Amount 0", with: amount)
-    #     |> click_button("Make Deposit")
-    #     |> assert_has(flash(:info), text: "Deposit successful")
-    #     |> assert_has(heading(), text: Safe.to_iodata(fund))
-    #     |> assert_has(heading(), text: "#{amount}")
-    #     |> assert_has(sidebar_fund_balance(), text: "#{amount}")
-    #     |> assert_has(table_cell(), text: "#{date}")
-    #     |> assert_has(table_cell(), text: memo)
-    #     |> assert_has(role("deposit"), text: "#{amount}")
-    #   end
+      conn
+      |> visit(~p"/loans/#{loan}")
+      |> click_link("Lend")
+      |> assert_has(page_title(), text: "Lend")
+      |> assert_has(heading(), text: "Lend")
+      |> assert_has(field_value("#loan_transaction_date", today))
+      |> fill_in("Date", with: date)
+      |> fill_in("Memo", with: memo)
+      |> fill_in("Amount", with: amount)
+      |> click_button("Lend Money")
+      |> assert_has(flash(:info), text: "Money lent successfully")
+      |> assert_has(heading(), text: Safe.to_iodata(loan))
+      |> assert_has(heading(), text: "#{balance}")
+      |> assert_has(sidebar_loan_balance(), text: "#{balance}")
+
+      # |> assert_has(table_cell(), text: "#{date}")
+      # |> assert_has(table_cell(), text: memo)
+      # |> assert_has(role("loan"), text: "#{amount}")
+    end
 
     #   test "withdraws money from a fund", %{conn: conn, fund: fund} do
     #     today = Timex.today(:local)

@@ -378,6 +378,23 @@ defmodule FreedomAccount.TransactionsTest do
     end
   end
 
+  describe "creating a changeset for a new loan transaction" do
+    setup :create_loan
+
+    test "defaults the date to today", %{loan: loan} do
+      today = Timex.today(:local)
+      %Changeset{} = changeset = Transactions.new_loan_transaction(loan)
+
+      assert Changeset.get_field(changeset, :date) == today
+    end
+
+    test "includes a line item for each fund", %{loan: loan} do
+      %Changeset{} = changeset = Transactions.new_loan_transaction(loan)
+
+      assert Changeset.get_field(changeset, :loan_id) == loan.id
+    end
+  end
+
   describe "creating a changeset for a new transaction" do
     setup :create_funds
 

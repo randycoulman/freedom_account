@@ -4,16 +4,15 @@ defmodule FreedomAccountWeb.LoanLive.Show do
 
   import FreedomAccountWeb.Account, only: [account: 1]
   import FreedomAccountWeb.LoanLive.Form, only: [settings_form: 1]
+  import FreedomAccountWeb.LoanTransactionForm, only: [loan_transaction_form: 1]
   import FreedomAccountWeb.Sidebar, only: [sidebar: 1]
 
   # import FreedomAccountWeb.LoanTransaction.Index, only: [loan_transaction_list: 1]
-  # import FreedomAccountWeb.TransactionForm, only: [transaction_form: 1]
-
   alias FreedomAccount.Error
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Loans.Loan
   # alias FreedomAccount.Transactions
-  # alias FreedomAccount.Transactions.Transaction
+  alias FreedomAccount.Transactions.LoanTransaction
   alias Phoenix.HTML.Safe
   alias Phoenix.LiveView
 
@@ -26,7 +25,7 @@ defmodule FreedomAccountWeb.LoanLive.Show do
       {:ok, %Loan{} = loan} ->
         socket
         |> assign(:loan, loan)
-        # |> assign(:transaction, nil)
+        |> assign(:transaction, nil)
         |> apply_action(action, params)
         |> noreply()
 
@@ -56,11 +55,11 @@ defmodule FreedomAccountWeb.LoanLive.Show do
   #   end
   # end
 
-  # defp apply_action(socket, :deposit, _params) do
-  #   socket
-  #   |> assign(:page_title, "Deposit")
-  #   |> assign(:transaction, %Transaction{})
-  # end
+  defp apply_action(socket, :lend, _params) do
+    socket
+    |> assign(:page_title, "Lend")
+    |> assign(:transaction, %LoanTransaction{})
+  end
 
   # defp apply_action(socket, :withdrawal, _params) do
   #   socket
@@ -94,15 +93,11 @@ defmodule FreedomAccountWeb.LoanLive.Show do
                 <.icon name="hero-pencil-square-mini" /> Edit Details
               </.button>
             </.link>
-            <%!-- <.link
-              id="single-loan-deposit"
-              patch={~p"/loans/#{@loan}/deposits/new"}
-              phx-click={JS.push_focus()}
-            >
+            <.link patch={~p"/loans/#{@loan}/loans/new"} phx-click={JS.push_focus()}>
               <.button>
-                <.icon name="hero-plus-circle-mini" /> Deposit
+                <.icon name="hero-banknotes-mini" /> Lend
               </.button>
-            </.link> --%>
+            </.link>
             <%!-- <.link
               id="single-loan-withdrawal"
               patch={~p"/loans/#{@loan}/withdrawals/new"}
@@ -130,21 +125,20 @@ defmodule FreedomAccountWeb.LoanLive.Show do
       />
     </.modal>
 
-    <%!-- <.modal
-      :if={@live_action in [:deposit, :edit_transaction, :withdrawal]}
-      id="transaction-modal"
+    <.modal
+      :if={@live_action in [:lend, :edit_transaction, :withdrawal]}
+      id="loan-transaction-modal"
       show
       on_cancel={JS.patch(~p"/loans/#{@loan}")}
     >
-      <.transaction_form
+      <.loan_transaction_form
         account={@account}
         action={@live_action}
-        all_loans={@loans}
-        initial_loans={[@loan]}
+        loan={@loan}
         return_path={~p"/loans/#{@loan}"}
         transaction={@transaction}
       />
-    </.modal> --%>
+    </.modal>
     """
   end
 
