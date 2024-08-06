@@ -111,6 +111,12 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
     |> cont()
   end
 
+  defp handle_info({:loan_deleted, %Loan{} = loan}, socket) do
+    socket
+    |> update_loans(&Cache.delete(&1, loan))
+    |> cont()
+  end
+
   defp handle_info({:loan_updated, %Loan{} = loan}, socket) do
     socket
     |> update_loans(&Cache.update(&1, loan))

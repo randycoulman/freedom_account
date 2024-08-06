@@ -9,6 +9,7 @@ defmodule FreedomAccountWeb.LoanLive.Index do
 
   alias FreedomAccount.Error
   alias FreedomAccount.Error.NotFoundError
+  alias FreedomAccount.Loans
   alias FreedomAccount.Loans.Loan
   # alias FreedomAccount.Transactions.Transaction
   alias Phoenix.LiveView
@@ -105,14 +106,14 @@ defmodule FreedomAccountWeb.LoanLive.Index do
           <.icon name="hero-pencil-square-micro" /> Edit
         </.link>
       </:action>
-      <%!-- <:action :let={fund}>
+      <:action :let={loan}>
         <.link
-          phx-click={JS.push("delete", value: %{id: fund.id}) |> hide("##{fund.id}")}
+          phx-click={JS.push("delete", value: %{id: loan.id}) |> hide("##{loan.id}")}
           data-confirm="Are you sure?"
         >
           <.icon name="hero-trash-micro" /> Delete
         </.link>
-      </:action> --%>
+      </:action>
       <:empty_state>
         <div id="no-loans">
           This account has no active loans. Use the Add Loan button to add one.
@@ -141,17 +142,18 @@ defmodule FreedomAccountWeb.LoanLive.Index do
     """
   end
 
-  # @impl LiveView
-  # def handle_event("delete", %{"id" => id}, socket) do
-  #   with {:ok, fund} <- fetch_fund(socket, id),
-  #        :ok <- Funds.delete_fund(fund) do
-  #     noreply(socket)
-  #   else
-  #     {:error, error} ->
-  #       put_flash(socket, :error, Exception.message(error))
-  #       |> noreply()
-  #   end
-  # end
+  @impl LiveView
+  def handle_event("delete", %{"id" => id}, socket) do
+    with {:ok, loan} <- fetch_loan(socket, id),
+         :ok <- Loans.delete_loan(loan) do
+      noreply(socket)
+    else
+      {:error, error} ->
+        socket
+        |> put_flash(:error, Exception.message(error))
+        |> noreply()
+    end
+  end
 
   # @impl LiveView
   # def handle_info(_message, socket), do: noreply(socket)

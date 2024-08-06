@@ -77,14 +77,14 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       |> assert_has(table_cell(), text: "#{loan.current_balance}")
     end
 
-    # test "deletes fund in listing", %{account: account, conn: conn} do
-    #   fund = Factory.fund(account)
+    test "deletes loan in listing", %{account: account, conn: conn} do
+      loan = Factory.loan(account)
 
-    #   conn
-    #   |> visit(~p"/funds")
-    #   |> click_link(action_link("#funds-#{fund.id}"), "Delete")
-    #   |> refute_has("#funds-#{fund.id}")
-    # end
+      conn
+      |> visit(~p"/loans")
+      |> click_link(action_link("#loans-#{loan.id}"), "Delete")
+      |> refute_has("#loans-#{loan.id}")
+    end
   end
 
   describe "Show" do
