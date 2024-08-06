@@ -129,10 +129,10 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
     %{account: account} = socket.assigns
     {:ok, loan} = Loans.fetch_active_loan(account, transaction.loan_id)
     {:ok, loan} = Loans.with_updated_balance(loan)
-    # account_balance = Balances.account_balance(account)
+    account_balance = Balances.account_balance(account)
 
     socket
-    # |> assign(:account_balance, account_balance)
+    |> assign(:account_balance, account_balance)
     |> update_loans(&Cache.update(&1, loan))
     |> cont()
   end

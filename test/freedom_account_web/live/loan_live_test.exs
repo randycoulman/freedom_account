@@ -134,12 +134,14 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       |> assert_has(sidebar_loan_balance(), text: "#{loan.current_balance}")
     end
 
-    test "lends money from a loan", %{conn: conn, loan: loan} do
+    test "lends money from a loan", %{account: account, conn: conn, loan: loan} do
+      fund = account |> Factory.fund() |> Factory.with_fund_balance()
       today = Timex.today(:local)
       date = Factory.date()
       memo = Factory.memo()
       amount = Factory.money()
       balance = MoneyUtils.negate(amount)
+      account_balance = Money.sub!(fund.current_balance, amount)
 
       conn
       |> visit(~p"/loans/#{loan}")
@@ -154,6 +156,7 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       |> assert_has(flash(:info), text: "Money lent successfully")
       |> assert_has(heading(), text: Safe.to_iodata(loan))
       |> assert_has(heading(), text: "#{balance}")
+      |> assert_has(heading(), text: "#{account_balance}")
       |> assert_has(sidebar_loan_balance(), text: "#{balance}")
 
       # |> assert_has(table_cell(), text: "#{date}")
