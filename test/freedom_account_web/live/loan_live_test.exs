@@ -158,10 +158,9 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       |> assert_has(heading(), text: "#{balance}")
       |> assert_has(heading(), text: "#{account_balance}")
       |> assert_has(sidebar_loan_balance(), text: "#{balance}")
-
-      # |> assert_has(table_cell(), text: "#{date}")
-      # |> assert_has(table_cell(), text: memo)
-      # |> assert_has(role("loan"), text: "#{amount}")
+      |> assert_has(table_cell(), text: "#{date}")
+      |> assert_has(table_cell(), text: memo)
+      |> assert_has(role("loan"), text: "#{amount}")
     end
 
     test "receives a payment on a loan", %{account: account, conn: conn, loan: loan} do
@@ -191,10 +190,9 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       |> assert_has(heading(), text: "#{balance}")
       |> assert_has(heading(), text: "#{account_balance}")
       |> assert_has(sidebar_loan_balance(), text: "#{balance}")
-
-      # |> assert_has(table_cell(), text: "#{date}")
-      # |> assert_has(table_cell(), text: memo)
-      # |> assert_has(role("payment"), text: "#{amount}")
+      |> assert_has(table_cell(), text: "#{date}")
+      |> assert_has(table_cell(), text: memo)
+      |> assert_has(role("payment"), text: "#{amount}")
     end
   end
 end

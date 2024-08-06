@@ -4,10 +4,10 @@ defmodule FreedomAccountWeb.LoanLive.Show do
 
   import FreedomAccountWeb.Account, only: [account: 1]
   import FreedomAccountWeb.LoanLive.Form, only: [settings_form: 1]
+  import FreedomAccountWeb.LoanTransaction.Index, only: [loan_transaction_list: 1]
   import FreedomAccountWeb.LoanTransactionForm, only: [loan_transaction_form: 1]
   import FreedomAccountWeb.Sidebar, only: [sidebar: 1]
 
-  # import FreedomAccountWeb.LoanTransaction.Index, only: [loan_transaction_list: 1]
   alias FreedomAccount.Error
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Loans.Loan
@@ -105,7 +105,7 @@ defmodule FreedomAccountWeb.LoanLive.Show do
             </.link>
           </:actions>
         </.header>
-        <%!-- <.loan_transaction_list loan={@loan} /> --%>
+        <.loan_transaction_list loan={@loan} />
 
         <.back navigate={~p"/loans"}>Back to Loans</.back>
       </main>
