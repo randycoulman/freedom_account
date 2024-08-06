@@ -7,7 +7,7 @@ services:
       - ./config/db_secret.env
       - ./config/docker_prod.env
       - ./config/docker_prod_secret.env
-    image: freedom_account:0.1.0
+    image: freedom_account:1.0.0
     ports:
       - "8080:4000"
     profiles:
@@ -32,7 +32,7 @@ services:
       - ./config/db_secret.env
       - ./config/docker_prod.env
       - ./config/docker_prod_secret.env
-    image: freedom_account:0.1.0
+    image: freedom_account:1.0.0
     profiles:
       - prod
 
