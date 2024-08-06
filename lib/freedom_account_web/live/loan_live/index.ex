@@ -4,13 +4,12 @@ defmodule FreedomAccountWeb.LoanLive.Index do
 
   import FreedomAccountWeb.AccountBar.Show, only: [account_bar: 1]
   import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
+  # import FreedomAccountWeb.ActivationForm, only: [activation_form: 1]
   import FreedomAccountWeb.LoanLive.Form, only: [settings_form: 1]
 
+  alias FreedomAccount.Error
+  alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Loans.Loan
-  # import FreedomAccountWeb.ActivationForm, only: [activation_form: 1]
-
-  # alias FreedomAccount.Error
-  # alias FreedomAccount.Error.NotFoundError
   # alias FreedomAccount.Transactions.Transaction
   alias Phoenix.LiveView
 
@@ -29,19 +28,19 @@ defmodule FreedomAccountWeb.LoanLive.Index do
   #   assign(socket, :page_title, "Activate/Deactivate")
   # end
 
-  # defp apply_action(socket, :edit, params) do
-  #   id = String.to_integer(params["id"])
+  defp apply_action(socket, :edit, params) do
+    id = String.to_integer(params["id"])
 
-  #   case fetch_fund(socket, id) do
-  #     {:ok, %Fund{} = fund} ->
-  #       socket
-  #       |> assign(:page_title, "Edit Fund")
-  #       |> assign(:fund, fund)
+    case fetch_loan(socket, id) do
+      {:ok, %Loan{} = loan} ->
+        socket
+        |> assign(:page_title, "Edit Loan")
+        |> assign(:loan, loan)
 
-  #     {:error, %NotFoundError{}} ->
-  #       put_flash(socket, :error, "Fund is no longer present")
-  #   end
-  # end
+      {:error, %NotFoundError{}} ->
+        put_flash(socket, :error, "Loan is no longer present")
+    end
+  end
 
   defp apply_action(socket, :edit_account, _params) do
     assign(socket, :page_title, "Edit Account Settings")
@@ -101,11 +100,11 @@ defmodule FreedomAccountWeb.LoanLive.Index do
           <.link navigate={~p"/loans/#{loan}"}>Show</.link>
         </div>
       </:action>
-      <%!-- <:action :let={fund}>
-        <.link patch={~p"/funds/#{fund}/edit"}>
+      <:action :let={loan}>
+        <.link patch={~p"/loans/#{loan}/edit"}>
           <.icon name="hero-pencil-square-micro" /> Edit
         </.link>
-      </:action> --%>
+      </:action>
       <%!-- <:action :let={fund}>
         <.link
           phx-click={JS.push("delete", value: %{id: fund.id}) |> hide("##{fund.id}")}
@@ -157,11 +156,11 @@ defmodule FreedomAccountWeb.LoanLive.Index do
   # @impl LiveView
   # def handle_info(_message, socket), do: noreply(socket)
 
-  # defp fetch_fund(socket, id) do
-  #   %{funds: funds} = socket.assigns
+  defp fetch_loan(socket, id) do
+    %{loans: loans} = socket.assigns
 
-  #   with %Fund{} = fund <- Enum.find(funds, {:error, Error.not_found(details: %{id: id}, entity: Fund)}, &(&1.id == id)) do
-  #     {:ok, fund}
-  #   end
-  # end
+    with %Loan{} = loan <- Enum.find(loans, {:error, Error.not_found(details: %{id: id}, entity: Fund)}, &(&1.id == id)) do
+      {:ok, loan}
+    end
+  end
 end

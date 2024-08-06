@@ -111,6 +111,12 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
     |> cont()
   end
 
+  defp handle_info({:loan_updated, %Loan{} = loan}, socket) do
+    socket
+    |> update_loans(&Cache.update(&1, loan))
+    |> cont()
+  end
+
   defp handle_info({event, %Transaction{} = transaction}, socket)
        when event in [:transaction_created, :transaction_deleted, :transaction_updated] do
     %{account: account} = socket.assigns

@@ -9,6 +9,7 @@ defmodule FreedomAccount.Factory do
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Loans
   alias FreedomAccount.Loans.Loan
+  alias FreedomAccount.MoneyUtils
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.LineItem
   alias FreedomAccount.Transactions.LoanTransaction
@@ -354,6 +355,6 @@ defmodule FreedomAccount.Factory do
       lend(loan, amount: balance)
     end
 
-    %{loan | current_balance: balance}
+    %{loan | current_balance: MoneyUtils.negate(balance)}
   end
 end

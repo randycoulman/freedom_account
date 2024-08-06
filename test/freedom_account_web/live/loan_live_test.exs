@@ -55,31 +55,27 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       |> assert_has(table_cell(), text: "$0.00")
     end
 
-    # test "edits fund in listing", %{account: account, conn: conn} do
-    #   fund = account |> Factory.fund() |> Factory.with_fund_balance()
-    #   %{budget: budget, icon: icon, name: name, times_per_year: times_per_year} = Factory.fund_attrs()
+    test "edits loan in listing", %{account: account, conn: conn} do
+      loan = account |> Factory.loan() |> Factory.with_loan_balance()
+      %{icon: icon, name: name} = Factory.loan_attrs()
 
-    #   conn
-    #   |> visit(~p"/funds")
-    #   |> click_link(action_link("#funds-#{fund.id}"), "Edit")
-    #   |> assert_has(page_title(), text: "Edit Fund")
-    #   |> assert_has(heading(), text: "Edit Fund")
-    #   |> fill_in("Icon", with: "")
-    #   |> fill_in("Name", with: "")
-    #   |> assert_has(field_error("#fund_icon"), text: "can't be blank")
-    #   |> assert_has(field_error("#fund_name"), text: "can't be blank")
-    #   |> fill_in("Icon", with: icon)
-    #   |> fill_in("Name", with: name)
-    #   |> fill_in("Budget", with: budget)
-    #   |> fill_in("Times/Year", with: times_per_year)
-    #   |> click_button("Save Fund")
-    #   |> assert_has(flash(:info), text: "Fund updated successfully")
-    #   |> assert_has(table_cell(), text: icon)
-    #   |> assert_has(table_cell(), text: name)
-    #   |> assert_has(table_cell(), text: "#{budget}")
-    #   |> assert_has(table_cell(), text: "#{times_per_year}")
-    #   |> assert_has(table_cell(), text: "#{fund.current_balance}")
-    # end
+      conn
+      |> visit(~p"/loans")
+      |> click_link(action_link("#loans-#{loan.id}"), "Edit")
+      |> assert_has(page_title(), text: "Edit Loan")
+      |> assert_has(heading(), text: "Edit Loan")
+      |> fill_in("Icon", with: "")
+      |> fill_in("Name", with: "")
+      |> assert_has(field_error("#loan_icon"), text: "can't be blank")
+      |> assert_has(field_error("#loan_name"), text: "can't be blank")
+      |> fill_in("Icon", with: icon)
+      |> fill_in("Name", with: name)
+      |> click_button("Save Loan")
+      |> assert_has(flash(:info), text: "Loan updated successfully")
+      |> assert_has(table_cell(), text: icon)
+      |> assert_has(table_cell(), text: name)
+      |> assert_has(table_cell(), text: "#{loan.current_balance}")
+    end
 
     # test "deletes fund in listing", %{account: account, conn: conn} do
     #   fund = Factory.fund(account)
@@ -112,30 +108,30 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       |> assert_has(heading(), text: Safe.to_iodata(loan))
     end
 
-    #   test "updates fund within modal", %{conn: conn, fund: fund} do
-    #     %{icon: icon, name: name} = Factory.fund_attrs()
-    #     Factory.deposit(fund)
-    #     {:ok, fund} = Loans.with_updated_balance(fund)
+    test "updates loan within modal", %{conn: conn, loan: loan} do
+      %{icon: icon, name: name} = Factory.loan_attrs()
+      Factory.lend(loan)
+      {:ok, loan} = Loans.with_updated_balance(loan)
 
-    #     conn
-    #     |> visit(~p"/funds/#{fund}")
-    #     |> click_link("Edit Details")
-    #     |> assert_has(page_title(), text: "Edit Fund")
-    #     |> assert_has(heading(), text: "Edit Fund")
-    #     |> fill_in("Icon", with: "")
-    #     |> fill_in("Name", with: "")
-    #     |> assert_has(field_error("#fund_icon"), text: "can't be blank")
-    #     |> assert_has(field_error("#fund_name"), text: "can't be blank")
-    #     |> fill_in("Icon", with: icon)
-    #     |> fill_in("Name", with: name)
-    #     |> click_button("Save Fund")
-    #     |> assert_has(flash(:info), text: "Fund updated successfully")
-    #     |> assert_has(page_title(), text: "#{icon} #{name}")
-    #     |> assert_has(heading(), text: "#{icon} #{name}")
-    #     |> assert_has(heading(), text: "#{fund.current_balance}")
-    #     |> assert_has(sidebar_fund_name(), text: "#{icon} #{name}")
-    #     |> assert_has(sidebar_fund_balance(), text: "#{fund.current_balance}")
-    #   end
+      conn
+      |> visit(~p"/loans/#{loan}")
+      |> click_link("Edit Details")
+      |> assert_has(page_title(), text: "Edit Loan")
+      |> assert_has(heading(), text: "Edit Loan")
+      |> fill_in("Icon", with: "")
+      |> fill_in("Name", with: "")
+      |> assert_has(field_error("#loan_icon"), text: "can't be blank")
+      |> assert_has(field_error("#loan_name"), text: "can't be blank")
+      |> fill_in("Icon", with: icon)
+      |> fill_in("Name", with: name)
+      |> click_button("Save Loan")
+      |> assert_has(flash(:info), text: "Loan updated successfully")
+      |> assert_has(page_title(), text: "#{icon} #{name}")
+      |> assert_has(heading(), text: "#{icon} #{name}")
+      |> assert_has(heading(), text: "#{loan.current_balance}")
+      |> assert_has(sidebar_loan_name(), text: "#{icon} #{name}")
+      |> assert_has(sidebar_loan_balance(), text: "#{loan.current_balance}")
+    end
 
     #   test "deposits money to a fund", %{conn: conn, fund: fund} do
     #     today = Timex.today(:local)

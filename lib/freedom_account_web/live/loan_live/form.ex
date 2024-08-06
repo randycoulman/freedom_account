@@ -84,21 +84,22 @@ defmodule FreedomAccountWeb.LoanLive.Form do
     save_loan(socket, action, Params.atomize_keys(loan_params))
   end
 
-  # defp save_loan(socket, :edit, loan_params) do
-  #   %{loan: loan, return_path: return_path} = socket.assigns
+  defp save_loan(socket, :edit, loan_params) do
+    %{loan: loan, return_path: return_path} = socket.assigns
 
-  #   case Loans.update_loan(loan, loan_params) do
-  #     {:ok, _loan} ->
-  #        socket
-  #        |> put_flash(:info, "Loan updated successfully")
-  #        |> push_patch(to: return_path)
-  #        |> noreply()
+    case Loans.update_loan(loan, loan_params) do
+      {:ok, _loan} ->
+        socket
+        |> put_flash(:info, "Loan updated successfully")
+        |> push_patch(to: return_path)
+        |> noreply()
 
-  #     {:error, %Changeset{} = changeset} ->
-  #       assign_form(socket, changeset)
-  #       |> noreply()
-  #   end
-  # end
+      {:error, %Changeset{} = changeset} ->
+        socket
+        |> assign_form(changeset)
+        |> noreply()
+    end
+  end
 
   defp save_loan(socket, :new, loan_params) do
     %{account: account, return_path: return_path} = socket.assigns

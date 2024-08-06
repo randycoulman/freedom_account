@@ -54,6 +54,12 @@ defmodule FreedomAccountWeb.ElementSelectors do
   @spec sidebar_fund_name :: selector()
   def sidebar_fund_name, do: "aside nav a"
 
+  @spec sidebar_loan_balance :: selector()
+  def sidebar_loan_balance, do: "#{sidebar_loan_name()} ~ span"
+
+  @spec sidebar_loan_name :: selector()
+  def sidebar_loan_name, do: "aside nav a"
+
   @spec table_cell :: selector()
   def table_cell, do: "td"
 

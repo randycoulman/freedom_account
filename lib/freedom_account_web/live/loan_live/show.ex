@@ -3,8 +3,9 @@ defmodule FreedomAccountWeb.LoanLive.Show do
   use FreedomAccountWeb, :live_view
 
   import FreedomAccountWeb.Account, only: [account: 1]
+  import FreedomAccountWeb.LoanLive.Form, only: [settings_form: 1]
   import FreedomAccountWeb.Sidebar, only: [sidebar: 1]
-  # import FreedomAccountWeb.LoanLive.Form, only: [settings_form: 1]
+
   # import FreedomAccountWeb.LoanTransaction.Index, only: [loan_transaction_list: 1]
   # import FreedomAccountWeb.TransactionForm, only: [transaction_form: 1]
 
@@ -37,9 +38,9 @@ defmodule FreedomAccountWeb.LoanLive.Show do
     end
   end
 
-  # defp apply_action(socket, :edit, _params) do
-  #   assign(socket, :page_title, "Edit Loan")
-  # end
+  defp apply_action(socket, :edit, _params) do
+    assign(socket, :page_title, "Edit Loan")
+  end
 
   # defp apply_action(socket, :edit_transaction, params) do
   #   transaction_id = String.to_integer(params["transaction_id"])
@@ -88,11 +89,11 @@ defmodule FreedomAccountWeb.LoanLive.Show do
             <span><%= @loan.current_balance %></span>
           </div>
           <:actions>
-            <%!-- <.link patch={~p"/loans/#{@loan}/show/edit"} phx-click={JS.push_focus()}>
+            <.link patch={~p"/loans/#{@loan}/show/edit"} phx-click={JS.push_focus()}>
               <.button>
                 <.icon name="hero-pencil-square-mini" /> Edit Details
               </.button>
-            </.link> --%>
+            </.link>
             <%!-- <.link
               id="single-loan-deposit"
               patch={~p"/loans/#{@loan}/deposits/new"}
@@ -119,7 +120,7 @@ defmodule FreedomAccountWeb.LoanLive.Show do
       </main>
     </div>
 
-    <%!-- <.modal :if={@live_action == :edit} id="loan-modal" show on_cancel={JS.patch(~p"/loans/#{@loan}")}>
+    <.modal :if={@live_action == :edit} id="loan-modal" show on_cancel={JS.patch(~p"/loans/#{@loan}")}>
       <.settings_form
         account={@account}
         action={@live_action}
@@ -127,7 +128,7 @@ defmodule FreedomAccountWeb.LoanLive.Show do
         return_path={~p"/loans/#{@loan}"}
         title={@page_title}
       />
-    </.modal> --%>
+    </.modal>
 
     <%!-- <.modal
       :if={@live_action in [:deposit, :edit_transaction, :withdrawal]}
@@ -147,23 +148,23 @@ defmodule FreedomAccountWeb.LoanLive.Show do
     """
   end
 
-  # @impl LiveView
-  # def handle_info({:loans_updated, loans}, socket) do
-  #   %{loan: loan, live_action: action} = socket.assigns
+  @impl LiveView
+  def handle_info({:loans_updated, loans}, socket) do
+    %{loan: loan, live_action: action} = socket.assigns
 
-  #   case fetch_loan(loans, loan.id) do
-  #     {:ok, %Loan{} = loan} ->
-  #       socket
-  #       |> assign(:loan, loan)
-  #       |> apply_action(action, %{})
-  #       |> noreply()
+    case fetch_loan(loans, loan.id) do
+      {:ok, %Loan{} = loan} ->
+        socket
+        |> assign(:loan, loan)
+        |> apply_action(action, %{})
+        |> noreply()
 
-  #     {:error, %NotFoundError{}} ->
-  #       noreply(socket)
-  #   end
-  # end
+      {:error, %NotFoundError{}} ->
+        noreply(socket)
+    end
+  end
 
-  # def handle_info(_message, socket), do: noreply(socket)
+  def handle_info(_message, socket), do: noreply(socket)
 
   defp fetch_loan(loans, id) do
     with %Loan{} = loan <- Enum.find(loans, {:error, Error.not_found(details: %{id: id}, entity: Loan)}, &(&1.id == id)) do
