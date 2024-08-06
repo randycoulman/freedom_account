@@ -1,6 +1,6 @@
 defmodule FreedomAccount.Factory do
   @moduledoc false
-  import ExMachina, only: [sequence: 1]
+  import ExMachina, only: [sequence: 2]
 
   alias FreedomAccount.Accounts
   alias FreedomAccount.Accounts.Account
@@ -84,7 +84,7 @@ defmodule FreedomAccount.Factory do
   ]
 
   @spec account_name :: Account.name()
-  def account_name, do: sequence("Account ")
+  def account_name, do: sequence(:account, &padded_with_prefix(&1, "Account"))
 
   @spec date :: Date.t()
   def date, do: Faker.Date.backward(100)
@@ -96,7 +96,7 @@ defmodule FreedomAccount.Factory do
   def fund_icon, do: Enum.random(@emoji)
 
   @spec fund_name :: Fund.name()
-  def fund_name, do: sequence("Fund ")
+  def fund_name, do: sequence(:fund, &padded_with_prefix(&1, "Fund"))
 
   @spec id :: non_neg_integer()
   def id, do: Faker.random_between(1000, 1_000_000)
@@ -105,7 +105,7 @@ defmodule FreedomAccount.Factory do
   def loan_icon, do: Enum.random(@emoji)
 
   @spec loan_name :: Loan.name()
-  def loan_name, do: sequence("Loan ")
+  def loan_name, do: sequence(:loan, &padded_with_prefix(&1, "Loan"))
 
   @spec memo :: String.t()
   def memo, do: Faker.Lorem.sentence()
@@ -118,6 +118,11 @@ defmodule FreedomAccount.Factory do
 
   @spec times_per_year :: float()
   def times_per_year, do: one_of([0.5, 1.0, 2.0, 4.0])
+
+  defp padded_with_prefix(number, prefix) do
+    suffix = number |> to_string() |> String.pad_leading(3, "0")
+    "#{prefix} #{suffix}"
+  end
 
   @spec account(Account.attrs()) :: Account.t()
   def account(attrs \\ %{}) do
