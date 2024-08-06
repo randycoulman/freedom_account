@@ -45,12 +45,6 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
     |> ok()
   end
 
-  # defp apply_action(socket, :deposit) do
-  #   socket
-  #   |> assign(:heading, "Deposit")
-  #   |> assign(:save, "Make Deposit")
-  # end
-
   # defp apply_action(socket, :edit_transaction) do
   #   socket
   #   |> assign(:heading, "Edit Transaction")
@@ -61,6 +55,12 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
     socket
     |> assign(:heading, "Lend")
     |> assign(:save, "Lend Money")
+  end
+
+  defp apply_action(socket, :payment) do
+    socket
+    |> assign(:heading, "Payment")
+    |> assign(:save, "Receive Payment")
   end
 
   @impl LiveComponent
@@ -115,23 +115,6 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
     save_transaction(socket, action, Params.atomize_keys(transaction_params))
   end
 
-  defp save_transaction(socket, :lend, params) do
-    %{return_path: return_path} = socket.assigns
-
-    case Transactions.lend(params) do
-      {:ok, _transaction} ->
-        socket
-        |> put_flash(:info, "Money lent successfully")
-        |> push_patch(to: return_path)
-        |> noreply()
-
-      {:error, %Changeset{} = changeset} ->
-        socket
-        |> assign_form(changeset)
-        |> noreply()
-    end
-  end
-
   # defp save_transaction(socket, :edit_transaction, params) do
   #   %{return_path: return_path, transaction: transaction} = socket.assigns
 
@@ -149,22 +132,39 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
   #   end
   # end
 
-  # defp save_transaction(socket, action, params) when action in [:regular_withdrawal, :withdrawal] do
-  #   %{account: account, return_path: return_path} = socket.assigns
+  defp save_transaction(socket, :lend, params) do
+    %{return_path: return_path} = socket.assigns
 
-  #   case Transactions.withdraw(account, params) do
-  #     {:ok, _transaction} ->
-  #       socket
-  #       |> put_flash(:info, "Withdrawal successful")
-  #       |> push_patch(to: return_path)
-  #       |> noreply()
+    case Transactions.lend(params) do
+      {:ok, _transaction} ->
+        socket
+        |> put_flash(:info, "Money lent successfully")
+        |> push_patch(to: return_path)
+        |> noreply()
 
-  #     {:error, %Changeset{} = changeset} ->
-  #       socket
-  #       |> assign_form(changeset)
-  #       |> noreply()
-  #   end
-  # end
+      {:error, %Changeset{} = changeset} ->
+        socket
+        |> assign_form(changeset)
+        |> noreply()
+    end
+  end
+
+  defp save_transaction(socket, :payment, params) do
+    %{return_path: return_path} = socket.assigns
+
+    case Transactions.receive_payment(params) do
+      {:ok, _transaction} ->
+        socket
+        |> put_flash(:info, "Payment successful")
+        |> push_patch(to: return_path)
+        |> noreply()
+
+      {:error, %Changeset{} = changeset} ->
+        socket
+        |> assign_form(changeset)
+        |> noreply()
+    end
+  end
 
   defp assign_form(socket, %Changeset{} = changeset) do
     assign(socket, :form, to_form(changeset))

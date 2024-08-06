@@ -61,11 +61,11 @@ defmodule FreedomAccountWeb.LoanLive.Show do
     |> assign(:transaction, %LoanTransaction{})
   end
 
-  # defp apply_action(socket, :withdrawal, _params) do
-  #   socket
-  #   |> assign(:page_title, "Withdraw")
-  #   |> assign(:transaction, %Transaction{})
-  # end
+  defp apply_action(socket, :payment, _params) do
+    socket
+    |> assign(:page_title, "Payment")
+    |> assign(:transaction, %LoanTransaction{})
+  end
 
   defp apply_action(socket, _action, _params) do
     %{loan: loan} = socket.assigns
@@ -95,18 +95,14 @@ defmodule FreedomAccountWeb.LoanLive.Show do
             </.link>
             <.link patch={~p"/loans/#{@loan}/loans/new"} phx-click={JS.push_focus()}>
               <.button>
-                <.icon name="hero-banknotes-mini" /> Lend
+                <.icon name="hero-credit-card-mini" /> Lend
               </.button>
             </.link>
-            <%!-- <.link
-              id="single-loan-withdrawal"
-              patch={~p"/loans/#{@loan}/withdrawals/new"}
-              phx-click={JS.push_focus()}
-            >
+            <.link patch={~p"/loans/#{@loan}/payments/new"} phx-click={JS.push_focus()}>
               <.button>
-                <.icon name="hero-minus-circle-mini" /> Withdraw
+                <.icon name="hero-banknotes-mini" /> Payment
               </.button>
-            </.link> --%>
+            </.link>
           </:actions>
         </.header>
         <%!-- <.loan_transaction_list loan={@loan} /> --%>
@@ -126,7 +122,7 @@ defmodule FreedomAccountWeb.LoanLive.Show do
     </.modal>
 
     <.modal
-      :if={@live_action in [:lend, :edit_transaction, :withdrawal]}
+      :if={@live_action in [:edit_transaction, :lend, :payment]}
       id="loan-transaction-modal"
       show
       on_cancel={JS.patch(~p"/loans/#{@loan}")}
