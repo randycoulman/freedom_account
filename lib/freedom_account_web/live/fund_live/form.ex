@@ -29,10 +29,10 @@ defmodule FreedomAccountWeb.FundLive.Form do
     %{fund: fund} = assigns
     changeset = Funds.change_fund(fund)
 
-    {:ok,
-     socket
-     |> assign(assigns)
-     |> assign_form(changeset)}
+    socket
+    |> assign(assigns)
+    |> assign_form(changeset)
+    |> ok()
   end
 
   @impl LiveComponent
@@ -74,7 +74,9 @@ defmodule FreedomAccountWeb.FundLive.Form do
       |> Funds.change_fund(fund_params)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign_form(socket, changeset)}
+    socket
+    |> assign_form(changeset)
+    |> noreply()
   end
 
   def handle_event("save", params, socket) do
@@ -89,13 +91,15 @@ defmodule FreedomAccountWeb.FundLive.Form do
 
     case Funds.update_fund(fund, fund_params) do
       {:ok, _fund} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Fund updated successfully")
-         |> push_patch(to: return_path)}
+        socket
+        |> put_flash(:info, "Fund updated successfully")
+        |> push_patch(to: return_path)
+        |> noreply()
 
       {:error, %Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
+        socket
+        |> assign_form(changeset)
+        |> noreply()
     end
   end
 
@@ -104,13 +108,15 @@ defmodule FreedomAccountWeb.FundLive.Form do
 
     case Funds.create_fund(account, fund_params) do
       {:ok, _fund} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Fund created successfully")
-         |> push_patch(to: return_path)}
+        socket
+        |> put_flash(:info, "Fund created successfully")
+        |> push_patch(to: return_path)
+        |> noreply()
 
       {:error, %Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
+        socket
+        |> assign_form(changeset)
+        |> noreply()
     end
   end
 

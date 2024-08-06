@@ -57,8 +57,9 @@ defmodule FreedomAccountWeb do
   @spec live_view :: Macro.t()
   def live_view do
     quote do
-      use Phoenix.LiveView,
-        layout: {FreedomAccountWeb.Layouts, :app}
+      use Phoenix.LiveView, layout: {FreedomAccountWeb.Layouts, :app}
+
+      import FreedomAccountWeb.SocketHelpers
 
       unquote(html_helpers())
     end
@@ -68,6 +69,8 @@ defmodule FreedomAccountWeb do
   def live_component do
     quote do
       use Phoenix.LiveComponent
+
+      import FreedomAccountWeb.SocketHelpers
 
       unquote(html_helpers())
     end

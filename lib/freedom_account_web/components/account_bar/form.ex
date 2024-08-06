@@ -29,10 +29,10 @@ defmodule FreedomAccountWeb.AccountBar.Form do
     %{account: account} = assigns
     changeset = Accounts.change_account(account)
 
-    {:ok,
-     socket
-     |> assign(assigns)
-     |> assign_form(changeset)}
+    socket
+    |> assign(assigns)
+    |> assign_form(changeset)
+    |> ok()
   end
 
   @impl LiveComponent
@@ -85,7 +85,9 @@ defmodule FreedomAccountWeb.AccountBar.Form do
       |> Accounts.change_account(account_params)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign_form(socket, changeset)}
+    socket
+    |> assign_form(changeset)
+    |> noreply()
   end
 
   def handle_event("save", %{"account" => account_params}, socket) do
@@ -97,13 +99,15 @@ defmodule FreedomAccountWeb.AccountBar.Form do
 
     case Accounts.update_account(account, account_params) do
       {:ok, _account} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Account updated successfully")
-         |> push_patch(to: return_path)}
+        socket
+        |> put_flash(:info, "Account updated successfully")
+        |> push_patch(to: return_path)
+        |> noreply()
 
       {:error, %Changeset{} = changeset} ->
-        {:noreply, assign(socket, :form, to_form(changeset))}
+        socket
+        |> assign(:form, to_form(changeset))
+        |> noreply()
     end
   end
 

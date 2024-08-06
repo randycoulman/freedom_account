@@ -23,17 +23,17 @@ defmodule FreedomAccountWeb.FundLive.Show do
 
     case fetch_fund(funds, id) do
       {:ok, %Fund{} = fund} ->
-        {:noreply,
-         socket
-         |> assign(:fund, fund)
-         |> assign(:transaction, nil)
-         |> apply_action(action, params)}
+        socket
+        |> assign(:fund, fund)
+        |> assign(:transaction, nil)
+        |> apply_action(action, params)
+        |> noreply()
 
       {:error, %NotFoundError{}} ->
-        {:noreply,
-         socket
-         |> put_flash(:error, "Fund not found")
-         |> push_navigate(to: ~p"/funds")}
+        socket
+        |> put_flash(:error, "Fund not found")
+        |> push_navigate(to: ~p"/funds")
+        |> noreply()
     end
   end
 
@@ -159,17 +159,17 @@ defmodule FreedomAccountWeb.FundLive.Show do
 
     case fetch_fund(funds, fund.id) do
       {:ok, %Fund{} = fund} ->
-        {:noreply,
-         socket
-         |> assign(:fund, fund)
-         |> apply_action(action, %{})}
+        socket
+        |> assign(:fund, fund)
+        |> apply_action(action, %{})
+        |> noreply()
 
       {:error, %NotFoundError{}} ->
-        {:noreply, socket}
+        noreply(socket)
     end
   end
 
-  def handle_info(_message, socket), do: {:noreply, socket}
+  def handle_info(_message, socket), do: noreply(socket)
 
   defp fetch_fund(funds, id) do
     with %Fund{} = fund <- Enum.find(funds, {:error, Error.not_found(details: %{id: id}, entity: Fund)}, &(&1.id == id)) do

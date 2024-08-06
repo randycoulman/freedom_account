@@ -50,11 +50,11 @@ defmodule FreedomAccountWeb.RegularDepositForm do
     inputs = %Inputs{date: Timex.today(:local)}
     changeset = Inputs.changeset(inputs, %{})
 
-    {:ok,
-     socket
-     |> assign(assigns)
-     |> assign(:inputs, inputs)
-     |> assign_form(changeset)}
+    socket
+    |> assign(assigns)
+    |> assign(:inputs, inputs)
+    |> assign_form(changeset)
+    |> ok()
   end
 
   @impl LiveComponent
@@ -90,7 +90,9 @@ defmodule FreedomAccountWeb.RegularDepositForm do
       |> Inputs.changeset(input_params)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign_form(socket, changeset)}
+    socket
+    |> assign_form(changeset)
+    |> noreply()
   end
 
   def handle_event("save", params, socket) do
@@ -101,16 +103,20 @@ defmodule FreedomAccountWeb.RegularDepositForm do
 
     with {:ok, updated_inputs} <- Changeset.apply_action(changeset, :save),
          {:ok, _transaction} <- Transactions.regular_deposit(account, updated_inputs.date, funds) do
-      {:noreply,
-       socket
-       |> put_flash(:info, "Regular deposit successful")
-       |> push_patch(to: return_path)}
+      socket
+      |> put_flash(:info, "Regular deposit successful")
+      |> push_patch(to: return_path)
+      |> noreply()
     else
       {:error, %Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
+        socket
+        |> assign_form(changeset)
+        |> noreply()
 
       {:error, %InvariantError{} = error} ->
-        {:noreply, put_flash(socket, :error, Exception.message(error))}
+        socket
+        |> put_flash(:error, Exception.message(error))
+        |> noreply()
     end
   end
 

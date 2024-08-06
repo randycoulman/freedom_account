@@ -26,7 +26,9 @@ defmodule FreedomAccountWeb.AccountBar.Show do
 
   @impl LiveComponent
   def update(assigns, socket) do
-    {:ok, assign(socket, assigns)}
+    socket
+    |> assign(assigns)
+    |> ok()
   end
 
   @impl LiveComponent

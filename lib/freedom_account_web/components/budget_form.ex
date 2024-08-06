@@ -27,10 +27,10 @@ defmodule FreedomAccountWeb.BudgetForm do
     %{funds: funds} = assigns
     changeset = Funds.change_budget(funds)
 
-    {:ok,
-     socket
-     |> assign(assigns)
-     |> assign_form(changeset)}
+    socket
+    |> assign(assigns)
+    |> assign_form(changeset)
+    |> ok()
   end
 
   @impl LiveComponent
@@ -85,7 +85,9 @@ defmodule FreedomAccountWeb.BudgetForm do
       |> Funds.change_budget(budget_params)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign_form(socket, changeset)}
+    socket
+    |> assign_form(changeset)
+    |> noreply()
   end
 
   def handle_event("save", params, socket) do
@@ -94,13 +96,15 @@ defmodule FreedomAccountWeb.BudgetForm do
 
     case Funds.update_budget(funds, budget_params) do
       {:ok, _updated_funds} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Budget updated successfully")
-         |> push_patch(to: return_path)}
+        socket
+        |> put_flash(:info, "Budget updated successfully")
+        |> push_patch(to: return_path)
+        |> noreply()
 
       {:error, %Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
+        socket
+        |> assign_form(changeset)
+        |> noreply()
     end
   end
 

@@ -32,12 +32,12 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
     %{fund: fund} = assigns
     {transactions, %Paging{} = paging} = Transactions.list_fund_transactions(fund, per_page: @page_size)
 
-    {:ok,
-     socket
-     |> assign(assigns)
-     |> assign(:paging, paging)
-     |> assign(:transactions, transactions)
-     |> stream(:transactions, transactions, reset: true)}
+    socket
+    |> assign(assigns)
+    |> assign(:paging, paging)
+    |> assign(:transactions, transactions)
+    |> stream(:transactions, transactions, reset: true)
+    |> ok()
   end
 
   @impl LiveComponent
@@ -108,10 +108,12 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
   def handle_event("delete", %{"id" => id}, socket) do
     with {:ok, transaction} <- Transactions.fetch_transaction(id),
          :ok <- Transactions.delete_transaction(transaction) do
-      {:noreply, socket}
+      noreply(socket)
     else
       {:error, error} ->
-        {:noreply, put_flash(socket, :error, Exception.message(error))}
+        socket
+        |> put_flash(:error, Exception.message(error))
+        |> noreply()
     end
   end
 
@@ -121,10 +123,10 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
     {transactions, %Paging{} = next_paging} =
       Transactions.list_fund_transactions(fund, next_cursor: paging.next_cursor, per_page: @page_size)
 
-    {:noreply,
-     socket
-     |> assign(:paging, next_paging)
-     |> assign(:transactions, transactions)}
+    socket
+    |> assign(:paging, next_paging)
+    |> assign(:transactions, transactions)
+    |> noreply()
   end
 
   @impl LiveComponent
@@ -134,9 +136,9 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
     {transactions, %Paging{} = next_paging} =
       Transactions.list_fund_transactions(fund, prev_cursor: paging.prev_cursor, per_page: @page_size)
 
-    {:noreply,
-     socket
-     |> assign(:paging, next_paging)
-     |> assign(:transactions, transactions)}
+    socket
+    |> assign(:paging, next_paging)
+    |> assign(:transactions, transactions)
+    |> noreply()
   end
 end

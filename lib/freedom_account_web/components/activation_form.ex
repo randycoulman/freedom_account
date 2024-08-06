@@ -24,10 +24,10 @@ defmodule FreedomAccountWeb.ActivationForm do
     %{account: account} = assigns
     changeset = Funds.change_activation(account)
 
-    {:ok,
-     socket
-     |> assign(assigns)
-     |> assign_form(changeset)}
+    socket
+    |> assign(assigns)
+    |> assign_form(changeset)
+    |> ok()
   end
 
   @impl LiveComponent
@@ -65,7 +65,9 @@ defmodule FreedomAccountWeb.ActivationForm do
       |> Funds.change_activation(activation_params)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign_form(socket, changeset)}
+    socket
+    |> assign_form(changeset)
+    |> noreply()
   end
 
   def handle_event("save", params, socket) do
@@ -74,13 +76,15 @@ defmodule FreedomAccountWeb.ActivationForm do
 
     case Funds.update_activation(account, activation_params) do
       {:ok, _updated_funds} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Funds updated successfully")
-         |> push_patch(to: return_path)}
+        socket
+        |> put_flash(:info, "Funds updated successfully")
+        |> push_patch(to: return_path)
+        |> noreply()
 
       {:error, %Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
+        socket
+        |> assign_form(changeset)
+        |> noreply()
     end
   end
 

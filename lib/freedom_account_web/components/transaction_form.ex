@@ -38,11 +38,11 @@ defmodule FreedomAccountWeb.TransactionForm do
         Transactions.change_transaction(transaction)
       end
 
-    {:ok,
-     socket
-     |> assign(assigns)
-     |> apply_action(action)
-     |> assign_form(changeset)}
+    socket
+    |> assign(assigns)
+    |> apply_action(action)
+    |> assign_form(changeset)
+    |> ok()
   end
 
   defp apply_action(socket, :deposit) do
@@ -158,7 +158,9 @@ defmodule FreedomAccountWeb.TransactionForm do
       |> Transactions.change_transaction(transaction_params)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign_form(socket, changeset)}
+    socket
+    |> assign_form(changeset)
+    |> noreply()
   end
 
   def handle_event("save", params, socket) do
@@ -173,13 +175,15 @@ defmodule FreedomAccountWeb.TransactionForm do
 
     case Transactions.deposit(params) do
       {:ok, _transaction} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Deposit successful")
-         |> push_patch(to: return_path)}
+        socket
+        |> put_flash(:info, "Deposit successful")
+        |> push_patch(to: return_path)
+        |> noreply()
 
       {:error, %Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
+        socket
+        |> assign_form(changeset)
+        |> noreply()
     end
   end
 
@@ -188,13 +192,15 @@ defmodule FreedomAccountWeb.TransactionForm do
 
     case Transactions.update_transaction(transaction, params) do
       {:ok, _transaction} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Transaction updated successfully")
-         |> push_patch(to: return_path)}
+        socket
+        |> put_flash(:info, "Transaction updated successfully")
+        |> push_patch(to: return_path)
+        |> noreply()
 
       {:error, %Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
+        socket
+        |> assign_form(changeset)
+        |> noreply()
     end
   end
 
@@ -203,13 +209,15 @@ defmodule FreedomAccountWeb.TransactionForm do
 
     case Transactions.withdraw(account, params) do
       {:ok, _transaction} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Withdrawal successful")
-         |> push_patch(to: return_path)}
+        socket
+        |> put_flash(:info, "Withdrawal successful")
+        |> push_patch(to: return_path)
+        |> noreply()
 
       {:error, %Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
+        socket
+        |> assign_form(changeset)
+        |> noreply()
     end
   end
 

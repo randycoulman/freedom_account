@@ -2,6 +2,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
   @moduledoc """
   Ensures that the account is available to all LiveViews using this hook.
   """
+  import FreedomAccountWeb.SocketHelpers
   import Phoenix.Component, only: [assign: 3, update: 3]
   import Phoenix.LiveView, only: [attach_hook: 4, connected?: 1, put_flash: 3]
 
@@ -33,13 +34,13 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
     funds = Funds.list_active_funds(account)
     loans = Loans.list_active_loans(account)
 
-    {:cont,
-     socket
-     |> attach_hook(:pubsub_events, :handle_info, &handle_info/2)
-     |> assign(:account, account)
-     |> assign(:account_balance, account_balance)
-     |> assign(:funds, funds)
-     |> assign(:loans, loans)}
+    socket
+    |> attach_hook(:pubsub_events, :handle_info, &handle_info/2)
+    |> assign(:account, account)
+    |> assign(:account_balance, account_balance)
+    |> assign(:funds, funds)
+    |> assign(:loans, loans)
+    |> cont()
   end
 
   defp subscribe_to_topics(socket) do
@@ -65,35 +66,49 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
   end
 
   defp handle_info({:account_updated, %Account{} = account}, socket) do
-    {:cont, assign(socket, :account, account)}
+    socket
+    |> assign(:account, account)
+    |> cont()
   end
 
   defp handle_info({:activation_updated, funds}, socket) do
-    {:cont, update_funds(socket, &Cache.update_activations(&1, funds))}
+    socket
+    |> update_funds(&Cache.update_activations(&1, funds))
+    |> cont()
   end
 
   defp handle_info({:budget_updated, funds}, socket) do
-    {:cont, update_funds(socket, &Cache.update_all(&1, funds))}
+    socket
+    |> update_funds(&Cache.update_all(&1, funds))
+    |> cont()
   end
 
   defp handle_info({:fund_created, %Fund{} = fund}, socket) do
     fund = %{fund | current_balance: Money.zero(:usd)}
 
-    {:cont, update_funds(socket, &Cache.add(&1, fund))}
+    socket
+    |> update_funds(&Cache.add(&1, fund))
+    |> cont()
   end
 
   defp handle_info({:fund_deleted, %Fund{} = fund}, socket) do
-    {:cont, update_funds(socket, &Cache.delete(&1, fund))}
+    socket
+    |> update_funds(&Cache.delete(&1, fund))
+    |> cont()
   end
 
   defp handle_info({:fund_updated, %Fund{} = fund}, socket) do
-    {:cont, update_funds(socket, &Cache.update(&1, fund))}
+    socket
+    |> update_funds(&Cache.update(&1, fund))
+    |> cont()
   end
 
   defp handle_info({:loan_created, %Loan{} = loan}, socket) do
     loan = %{loan | current_balance: Money.zero(:usd)}
 
-    {:cont, update_loans(socket, &Cache.add(&1, loan))}
+    socket
+    |> update_loans(&Cache.add(&1, loan))
+    |> cont()
   end
 
   defp handle_info({event, %Transaction{} = transaction}, socket)
@@ -103,13 +118,13 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
     account_balance = Balances.account_balance(account)
     updated_funds = Funds.list_active_funds(account, ids)
 
-    {:cont,
-     socket
-     |> assign(:account_balance, account_balance)
-     |> update_funds(&Cache.update_all(&1, updated_funds))}
+    socket
+    |> assign(:account_balance, account_balance)
+    |> update_funds(&Cache.update_all(&1, updated_funds))
+    |> cont()
   end
 
-  defp handle_info(_message, socket), do: {:cont, socket}
+  defp handle_info(_message, socket), do: cont(socket)
 
   defp update_funds(socket, fun) do
     socket = update(socket, :funds, fun)

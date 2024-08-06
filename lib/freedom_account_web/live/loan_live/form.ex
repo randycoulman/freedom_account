@@ -29,10 +29,10 @@ defmodule FreedomAccountWeb.LoanLive.Form do
     %{loan: loan} = assigns
     changeset = Loans.change_loan(loan)
 
-    {:ok,
-     socket
-     |> assign(assigns)
-     |> assign_form(changeset)}
+    socket
+    |> assign(assigns)
+    |> assign_form(changeset)
+    |> ok()
   end
 
   @impl LiveComponent
@@ -72,7 +72,9 @@ defmodule FreedomAccountWeb.LoanLive.Form do
       |> Loans.change_loan(loan_params)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign_form(socket, changeset)}
+    socket
+    |> assign_form(changeset)
+    |> noreply()
   end
 
   def handle_event("save", params, socket) do
@@ -87,13 +89,14 @@ defmodule FreedomAccountWeb.LoanLive.Form do
 
   #   case Loans.update_loan(loan, loan_params) do
   #     {:ok, _loan} ->
-  #       {:noreply,
   #        socket
   #        |> put_flash(:info, "Loan updated successfully")
-  #        |> push_patch(to: return_path)}
+  #        |> push_patch(to: return_path)
+  #        |> noreply()
 
   #     {:error, %Changeset{} = changeset} ->
-  #       {:noreply, assign_form(socket, changeset)}
+  #       assign_form(socket, changeset)
+  #       |> noreply()
   #   end
   # end
 
@@ -102,13 +105,15 @@ defmodule FreedomAccountWeb.LoanLive.Form do
 
     case Loans.create_loan(account, loan_params) do
       {:ok, _loan} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Loan created successfully")
-         |> push_patch(to: return_path)}
+        socket
+        |> put_flash(:info, "Loan created successfully")
+        |> push_patch(to: return_path)
+        |> noreply()
 
       {:error, %Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
+        socket
+        |> assign_form(changeset)
+        |> noreply()
     end
   end
 

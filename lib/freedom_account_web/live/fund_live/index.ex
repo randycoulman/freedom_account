@@ -21,11 +21,11 @@ defmodule FreedomAccountWeb.FundLive.Index do
   def handle_params(params, _url, socket) do
     %{live_action: action} = socket.assigns
 
-    {:noreply,
-     socket
-     |> assign(:fund, nil)
-     |> assign(:return_path, ~p"/funds")
-     |> apply_action(action, params)}
+    socket
+    |> assign(:fund, nil)
+    |> assign(:return_path, ~p"/funds")
+    |> apply_action(action, params)
+    |> noreply()
   end
 
   defp apply_action(socket, :activate, _params) do
@@ -210,15 +210,17 @@ defmodule FreedomAccountWeb.FundLive.Index do
   def handle_event("delete", %{"id" => id}, socket) do
     with {:ok, fund} <- fetch_fund(socket, id),
          :ok <- Funds.delete_fund(fund) do
-      {:noreply, socket}
+      noreply(socket)
     else
       {:error, error} ->
-        {:noreply, put_flash(socket, :error, Exception.message(error))}
+        socket
+        |> put_flash(:error, Exception.message(error))
+        |> noreply()
     end
   end
 
   @impl LiveView
-  def handle_info(_message, socket), do: {:noreply, socket}
+  def handle_info(_message, socket), do: noreply(socket)
 
   defp fetch_fund(socket, id) do
     %{funds: funds} = socket.assigns
