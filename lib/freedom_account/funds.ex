@@ -36,9 +36,9 @@ defmodule FreedomAccount.Funds do
     Activation.changeset(%Activation{funds: allowed_funds}, attrs)
   end
 
-  @spec change_budget([Fund.t()], Budget.attrs()) :: Changeset.t()
-  def change_budget(funds, attrs \\ %{}) do
-    Budget.changeset(%Budget{funds: funds}, attrs)
+  @spec change_budget(Account.t(), [Fund.t()], Budget.attrs()) :: Changeset.t()
+  def change_budget(account, funds, attrs \\ %{}) do
+    Budget.changeset(%Budget{account: account, funds: funds}, attrs)
   end
 
   @spec change_fund(Fund.t(), Fund.attrs()) :: Changeset.t()
@@ -134,9 +134,9 @@ defmodule FreedomAccount.Funds do
     end
   end
 
-  @spec update_budget([Fund.t()], Budget.attrs()) :: {:ok, [Fund.t()]} | {:error, Changeset.t()}
-  def update_budget(funds, attrs) do
-    budget_changeset = change_budget(funds, attrs)
+  @spec update_budget(Account.t(), [Fund.t()], Budget.attrs()) :: {:ok, [Fund.t()]} | {:error, Changeset.t()}
+  def update_budget(%Account{} = account, funds, attrs) do
+    budget_changeset = change_budget(account, funds, attrs)
 
     budget_changeset
     |> Changeset.get_embed(:funds)

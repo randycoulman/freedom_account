@@ -45,6 +45,7 @@ defmodule FreedomAccount.Funds.Fund do
     has_many :line_items, LineItem
 
     field(:current_balance, Money.Ecto.Composite.Type, virtual: true) :: Money.t() | nil
+    field(:regular_deposit_amount, Money.Ecto.Composite.Type, virtual: true) :: Money.t()
 
     timestamps()
   end
@@ -98,10 +99,21 @@ defmodule FreedomAccount.Funds.Fund do
       order_by: f.name
   end
 
-  @spec regular_deposit_amount(t(), Account.t()) :: Money.t()
+  @spec regular_deposit_amount(t() | Changeset.t(), Account.t()) :: Money.t()
   def regular_deposit_amount(%__MODULE__{} = fund, %Account{} = account) do
-    fund.budget
-    |> Money.mult!(fund.times_per_year)
+    regular_deposit_amount(fund.budget, fund.times_per_year, account)
+  end
+
+  def regular_deposit_amount(%Changeset{} = changeset, %Account{} = account) do
+    budget = Changeset.get_field(changeset, :budget)
+    times_per_year = Changeset.get_field(changeset, :times_per_year)
+
+    regular_deposit_amount(budget, times_per_year, account)
+  end
+
+  defp regular_deposit_amount(budget, times_per_year, %Account{} = account) do
+    budget
+    |> Money.mult!(times_per_year)
     |> Money.div!(account.deposits_per_year)
     |> Money.round()
   end

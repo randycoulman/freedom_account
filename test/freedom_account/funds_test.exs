@@ -12,6 +12,7 @@ defmodule FreedomAccount.FundsTest do
   alias FreedomAccount.Factory
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.MoneyUtils
   alias FreedomAccount.PubSub
 
   @moduletag capture_log: true
@@ -41,9 +42,18 @@ defmodule FreedomAccount.FundsTest do
   describe "creating a changeset for the budget" do
     test "returns the changeset", %{account: account} do
       funds = for _i <- 1..3, do: Factory.fund(account)
+      amounts = Enum.map(funds, &Funds.regular_deposit_amount(&1, account))
+      total = MoneyUtils.sum(amounts)
 
-      assert %Changeset{} = changeset = Funds.change_budget(funds)
-      assert changeset |> Changeset.get_embed(:funds) |> length() == 3
+      assert %Changeset{} = changeset = Funds.change_budget(account, funds)
+      assert Changeset.get_field(changeset, :total_deposit_amount) == total
+
+      changeset
+      |> Changeset.get_embed(:funds)
+      |> Enum.zip(amounts)
+      |> Enum.each(fn {fund_changeset, amount} ->
+        assert Changeset.get_field(fund_changeset, :regular_deposit_amount) == amount
+      end)
     end
   end
 
@@ -232,7 +242,7 @@ defmodule FreedomAccount.FundsTest do
           {~M[5200]usd, 1.0, 24, ~M[216.67]usd},
           {~M[1200]usd, 1.0, 26, ~M[46.15]usd}
         ] do
-      test "calculates amount for #{budget} #{times}/year given #{periods} pay periods" do
+      test "calculates amount for a fund with #{budget} #{times}/year given #{periods} pay periods" do
         account = Factory.account(deposits_per_year: unquote(periods))
         budget = unquote(Macro.escape(budget))
         times = unquote(times)
@@ -240,6 +250,20 @@ defmodule FreedomAccount.FundsTest do
         fund = Factory.fund(account, budget: budget, times_per_year: times)
 
         actual = Funds.regular_deposit_amount(fund, account)
+
+        assert Money.equal?(expected, actual)
+      end
+
+      test "calculates amount for a fund changeset with #{budget} #{times}/year given #{periods} pay periods" do
+        account = Factory.account(deposits_per_year: unquote(periods))
+        budget = unquote(Macro.escape(budget))
+        times = unquote(times)
+        expected = unquote(Macro.escape(expected))
+
+        fund = Factory.fund(account)
+        changeset = Funds.change_fund(fund, %{budget: budget, times_per_year: times})
+
+        actual = Funds.regular_deposit_amount(changeset, account)
 
         assert Money.equal?(expected, actual)
       end
@@ -303,7 +327,7 @@ defmodule FreedomAccount.FundsTest do
       funds = for _n <- 1..3, do: Factory.fund(account)
       valid_attrs = Factory.budget_attrs(funds)
 
-      assert {:ok, updated_funds} = Funds.update_budget(funds, valid_attrs)
+      assert {:ok, updated_funds} = Funds.update_budget(account, funds, valid_attrs)
 
       valid_attrs.funds
       |> Enum.zip(updated_funds)
@@ -319,7 +343,7 @@ defmodule FreedomAccount.FundsTest do
 
       :ok = PubSub.subscribe(Funds.pubsub_topic())
 
-      {:ok, updated_funds} = Funds.update_budget(funds, valid_attrs)
+      {:ok, updated_funds} = Funds.update_budget(account, funds, valid_attrs)
 
       assert_received({:budget_updated, ^updated_funds})
     end
@@ -335,7 +359,7 @@ defmodule FreedomAccount.FundsTest do
         |> Factory.budget_attrs()
         |> update_in([:funds, "1"], &Map.put(&1, :budget, nil))
 
-      assert {:error, %Changeset{valid?: false} = changeset} = Funds.update_budget(funds, invalid_attrs)
+      assert {:error, %Changeset{valid?: false} = changeset} = Funds.update_budget(account, funds, invalid_attrs)
       assert [%Changeset{valid?: true}, %Changeset{valid?: false}] = Changeset.get_embed(changeset, :funds)
       assert_lists_equal(funds, Funds.list_active_funds(account))
     end

@@ -9,6 +9,7 @@ defmodule FreedomAccount.Funds.Budget do
 
   alias Ecto.Changeset
   alias Ecto.Schema
+  alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Funds.Fund
 
   @type attrs :: %{optional(:funds) => %{index() => Fund.budget_attrs()}}
@@ -16,6 +17,8 @@ defmodule FreedomAccount.Funds.Budget do
 
   @primary_key false
   typed_embedded_schema do
+    belongs_to :account, Account
+    field(:total_deposit_amount, Money.Ecto.Composite.Type) :: Money.t()
     embeds_many :funds, Fund
   end
 
@@ -24,5 +27,22 @@ defmodule FreedomAccount.Funds.Budget do
     budget
     |> cast(attrs, [])
     |> cast_embed(:funds, with: &Fund.budget_changeset/2)
+    |> compute_totals()
+  end
+
+  defp compute_totals(%Changeset{} = changeset) do
+    account = get_field(changeset, :account)
+
+    updated_funds =
+      changeset
+      |> get_embed(:funds)
+      |> Enum.map(&put_change(&1, :regular_deposit_amount, Fund.regular_deposit_amount(&1, account)))
+
+    total =
+      Enum.reduce(updated_funds, Money.zero(:usd), &(&1 |> get_field(:regular_deposit_amount) |> Money.add!(&2)))
+
+    changeset
+    |> put_embed(:funds, updated_funds)
+    |> put_change(:total_deposit_amount, total)
   end
 end

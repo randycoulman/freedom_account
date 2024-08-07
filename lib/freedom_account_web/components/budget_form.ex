@@ -24,8 +24,8 @@ defmodule FreedomAccountWeb.BudgetForm do
 
   @impl LiveComponent
   def update(assigns, socket) do
-    %{funds: funds} = assigns
-    changeset = Funds.change_budget(funds)
+    %{account: account, funds: funds} = assigns
+    changeset = Funds.change_budget(account, funds)
 
     socket
     |> assign(assigns)
@@ -45,25 +45,34 @@ defmodule FreedomAccountWeb.BudgetForm do
         phx-change="validate"
         phx-submit="save"
       >
-        <div class="grid grid-cols-3 gap-x-4 items-center mx-auto">
-          <span />
-          <.label>Budget</.label>
-          <.label>Times/Year</.label>
-          <.inputs_for :let={fund} field={@form[:funds]}>
-            <.label><%= fund.data %></.label>
-            <.input
-              field={fund[:budget]}
-              label={"Budget #{fund.index}"}
-              label_class="sr-only"
-              type="text"
-            />
-            <.input
-              field={fund[:times_per_year]}
-              label={"Times/Year #{fund.index}"}
-              label_class="sr-only"
-              type="text"
-            />
-          </.inputs_for>
+        <div>
+          <div class="grid grid-cols-4 gap-x-4 items-center mx-auto">
+            <span />
+            <.label>Budget</.label>
+            <.label>Times/Year</.label>
+            <.label>Deposit Amount</.label>
+            <.inputs_for :let={fund} field={@form[:funds]}>
+              <.label><%= fund.data %></.label>
+              <.input
+                field={fund[:budget]}
+                label={"Budget #{fund.index}"}
+                label_class="sr-only"
+                type="text"
+              />
+              <.input
+                field={fund[:times_per_year]}
+                label={"Times/Year #{fund.index}"}
+                label_class="sr-only"
+                type="text"
+              />
+              <span data-role={"deposit-amount-#{fund.index}"}>
+                <%= fund[:regular_deposit_amount].value %>
+              </span>
+            </.inputs_for>
+          </div>
+          <div id="deposit-total">
+            Total deposit amount: <%= @form[:total_deposit_amount].value %>
+          </div>
         </div>
         <:actions>
           <.button phx-disable-with="Updating..." type="submit">
@@ -78,11 +87,11 @@ defmodule FreedomAccountWeb.BudgetForm do
   @impl LiveComponent
   def handle_event("validate", params, socket) do
     %{"budget" => budget_params} = params
-    %{funds: funds} = socket.assigns
+    %{account: account, funds: funds} = socket.assigns
 
     changeset =
-      funds
-      |> Funds.change_budget(budget_params)
+      account
+      |> Funds.change_budget(funds, budget_params)
       |> Map.put(:action, :validate)
 
     socket
@@ -92,9 +101,9 @@ defmodule FreedomAccountWeb.BudgetForm do
 
   def handle_event("save", params, socket) do
     %{"budget" => budget_params} = params
-    %{funds: funds, return_path: return_path} = socket.assigns
+    %{account: account, funds: funds, return_path: return_path} = socket.assigns
 
-    case Funds.update_budget(funds, budget_params) do
+    case Funds.update_budget(account, funds, budget_params) do
       {:ok, _updated_funds} ->
         socket
         |> put_flash(:info, "Budget updated successfully")
