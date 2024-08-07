@@ -109,7 +109,9 @@ defmodule FreedomAccountWeb.FundLiveTest do
   describe "Show" do
     setup [:create_account, :create_fund]
 
-    test "drills down to individual fund and back", %{conn: conn, fund: fund} do
+    test "drills down to individual fund and back", %{account: account, conn: conn, fund: fund} do
+      per_deposit = Funds.regular_deposit_amount(fund, account.deposits_per_year)
+
       conn
       |> visit(~p"/funds")
       |> click_link("td", fund.name)
@@ -118,6 +120,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(heading(), text: "$0.00")
       |> assert_has(fund_subtitle(), text: "#{fund.budget}")
       |> assert_has(fund_subtitle(), text: "#{fund.times_per_year}")
+      |> assert_has(fund_subtitle(), text: "#{per_deposit}")
       |> click_link("Back to Funds")
       |> assert_has(page_title(), text: "Funds")
       |> assert_has(heading(), text: "Funds")

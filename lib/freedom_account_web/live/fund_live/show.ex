@@ -10,6 +10,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
 
   alias FreedomAccount.Error
   alias FreedomAccount.Error.NotFoundError
+  alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.Transaction
@@ -94,8 +95,9 @@ defmodule FreedomAccountWeb.FundLive.Show do
           </div>
           <:subtitle>
             <div class="flex flex-row" id="fund-subtitle">
-              <span>Budget: <%= @fund.budget %></span>
-              <span>(<%= @fund.times_per_year %> times/year)</span>
+              <span>
+                Deposit: <%= Funds.regular_deposit_amount(@fund, @account.deposits_per_year) %> (<%= @fund.budget %> @ <%= @fund.times_per_year %> times/year)
+              </span>
             </div>
           </:subtitle>
           <:actions>
