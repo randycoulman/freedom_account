@@ -35,6 +35,15 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has("#no-funds", text: "This account has no funds yet. Use the Add Fund button to add one.")
     end
 
+    test "shows total funds balance", %{account: account, conn: conn} do
+      fund = account |> Factory.fund() |> Factory.with_fund_balance()
+      _loan = account |> Factory.loan() |> Factory.with_loan_balance()
+
+      conn
+      |> visit(~p"/funds")
+      |> assert_has(heading(), text: "#{fund.current_balance}")
+    end
+
     test "saves new fund", %{conn: conn} do
       %{budget: budget, icon: icon, name: name, times_per_year: times_per_year} = Factory.fund_attrs()
 

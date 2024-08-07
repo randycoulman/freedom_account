@@ -87,7 +87,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
     />
     <.account_tabs active={:funds} />
     <.header>
-      Funds
+      Funds <span><%= @funds_balance %></span>
       <:actions>
         <.link patch={~p"/funds/regular_deposit"} phx-click={JS.push_focus()}>
           <.button>

@@ -79,7 +79,12 @@ defmodule FreedomAccountWeb.LoanLive.Show do
     <.account account={@account} balance={@account_balance} />
     <div class="flex h-screen">
       <aside class="hidden md:flex flex-col w-56 bg-slate-100">
-        <.sidebar funds={@funds} loans={@loans} />
+        <.sidebar
+          funds={@funds}
+          funds_balance={@funds_balance}
+          loans={@loans}
+          loans_balance={@loans_balance}
+        />
       </aside>
       <main class="flex flex-col flex-1 overflow-y-auto pl-2">
         <.header>

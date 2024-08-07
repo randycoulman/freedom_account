@@ -2,12 +2,13 @@ defmodule FreedomAccountWeb.SidebarTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
+  alias FreedomAccount.MoneyUtils
   alias Phoenix.HTML.Safe
 
   defp create_funds(%{account: account}) do
     funds =
       for _i <- 1..3 do
-        Factory.fund(account)
+        account |> Factory.fund() |> Factory.with_fund_balance()
       end
 
     %{funds: Enum.sort_by(funds, & &1.name)}
@@ -16,7 +17,7 @@ defmodule FreedomAccountWeb.SidebarTest do
   defp create_loans(%{account: account}) do
     loans =
       for _i <- 1..3 do
-        Factory.loan(account)
+        account |> Factory.loan() |> Factory.with_loan_balance()
       end
 
     %{loans: Enum.sort_by(loans, & &1.name)}
@@ -99,6 +100,16 @@ defmodule FreedomAccountWeb.SidebarTest do
       |> visit(~p"/loans/#{loan}")
       |> click_link(heading_link(), "Loans")
       |> assert_path(~p"/loans")
+    end
+
+    test "displays balances in headers", %{conn: conn, funds: funds, loans: loans} do
+      funds_balance = funds |> Enum.map(& &1.current_balance) |> MoneyUtils.sum()
+      loans_balance = loans |> Enum.map(& &1.current_balance) |> MoneyUtils.sum()
+
+      conn
+      |> visit(~p"/funds/#{hd(funds)}")
+      |> assert_has(heading(), text: "#{funds_balance}")
+      |> assert_has(heading(), text: "#{loans_balance}")
     end
   end
 end

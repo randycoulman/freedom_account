@@ -71,7 +71,7 @@ defmodule FreedomAccountWeb.LoanLive.Index do
     />
     <.account_tabs active={:loans} />
     <.header>
-      Loans
+      Loans <span><%= @loans_balance %></span>
       <:actions>
         <.link patch={~p"/loans/activate"} phx-click={JS.push_focus()}>
           <.button>

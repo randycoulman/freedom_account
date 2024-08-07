@@ -31,14 +31,13 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
       end
 
     account = Accounts.only_account()
-    account_balance = Balances.account_balance(account)
     funds = Funds.list_active_funds(account)
     loans = Loans.list_active_loans(account)
 
     socket
     |> attach_hook(:pubsub_events, :handle_info, &handle_info/2)
     |> assign(:account, account)
-    |> assign(:account_balance, account_balance)
+    |> assign_balances()
     |> assign(:funds, funds)
     |> assign(:loans, loans)
     |> cont()
@@ -135,10 +134,9 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
     %{account: account} = socket.assigns
     {:ok, loan} = Loans.fetch_active_loan(account, transaction.loan_id)
     {:ok, loan} = Loans.with_updated_balance(loan)
-    account_balance = Balances.account_balance(account)
 
     socket
-    |> assign(:account_balance, account_balance)
+    |> assign_balances()
     |> update_loans(&Cache.update(&1, loan))
     |> cont()
   end
@@ -147,16 +145,25 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
        when event in [:transaction_created, :transaction_deleted, :transaction_updated] do
     %{account: account} = socket.assigns
     ids = Enum.map(transaction.line_items, & &1.fund_id)
-    account_balance = Balances.account_balance(account)
     updated_funds = Funds.list_active_funds(account, ids)
 
     socket
-    |> assign(:account_balance, account_balance)
+    |> assign_balances()
     |> update_funds(&Cache.update_all(&1, updated_funds))
     |> cont()
   end
 
   defp handle_info(_message, socket), do: cont(socket)
+
+  defp assign_balances(socket) do
+    %{account: account} = socket.assigns
+    summary = Balances.summary(account)
+
+    socket
+    |> assign(:account_balance, summary.total)
+    |> assign(:funds_balance, summary.funds)
+    |> assign(:loans_balance, summary.loans)
+  end
 
   defp update_funds(socket, fun) do
     socket = update(socket, :funds, fun)

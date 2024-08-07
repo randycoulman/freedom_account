@@ -11,15 +11,18 @@ defmodule FreedomAccountWeb.Sidebar do
   # return a HEEx template, so no spec is necessary here.
 
   attr :funds, :list, required: true
+  attr :funds_balance, Money, required: true
   attr :loans, :list, required: true
+  attr :loans_balance, Money, required: true
 
   def sidebar(assigns) do
     ~H"""
-    <.fund_list funds={@funds} />
-    <.loan_list loans={@loans} />
+    <.fund_list balance={@funds_balance} funds={@funds} />
+    <.loan_list balance={@loans_balance} loans={@loans} />
     """
   end
 
+  attr :balance, Money, required: true
   attr :funds, :list, required: true
 
   defp fund_list(assigns) do
@@ -27,6 +30,7 @@ defmodule FreedomAccountWeb.Sidebar do
     <div class="p-2">
       <.header>
         <.link navigate={~p"/funds"}>Funds</.link>
+        <span><%= @balance %></span>
       </.header>
       <nav class="flex flex-col" id="fund-list">
         <div :for={fund <- @funds} class="flex flex-row justify-between" id={"fund-#{fund.id}"}>
@@ -42,6 +46,7 @@ defmodule FreedomAccountWeb.Sidebar do
     """
   end
 
+  attr :balance, Money, required: true
   attr :loans, :list, required: true
 
   defp loan_list(assigns) do
@@ -49,6 +54,7 @@ defmodule FreedomAccountWeb.Sidebar do
     <div class="p-2">
       <.header>
         <.link navigate={~p"/loans"}>Loans</.link>
+        <span><%= @balance %></span>
       </.header>
       <nav class="flex flex-col" id="loan-list">
         <div :for={loan <- @loans} class="flex flex-row justify-between" id={"loan-#{loan.id}"}>

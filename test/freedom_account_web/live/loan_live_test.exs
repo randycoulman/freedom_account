@@ -34,6 +34,15 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       |> assert_has("#no-loans", text: "This account has no active loans. Use the Add Loan button to add one.")
     end
 
+    test "shows total loans balance", %{account: account, conn: conn} do
+      loan = account |> Factory.loan() |> Factory.with_loan_balance()
+      _fund = account |> Factory.fund() |> Factory.with_fund_balance()
+
+      conn
+      |> visit(~p"/loans")
+      |> assert_has(heading(), text: "#{loan.current_balance}")
+    end
+
     test "saves new loan", %{conn: conn} do
       %{icon: icon, name: name} = Factory.loan_attrs()
 
