@@ -240,7 +240,8 @@ defmodule FreedomAccount.FundsTest do
           {~M[1200]usd, 2.0, 24, ~M[100]usd},
           {~M[5200]usd, 0.5, 26, ~M[100]usd},
           {~M[5200]usd, 1.0, 24, ~M[216.67]usd},
-          {~M[1200]usd, 1.0, 26, ~M[46.15]usd}
+          {~M[1200]usd, 1.0, 26, ~M[46.15]usd},
+          {~M[75]usd, 1.0, 24, ~M[3.13]usd}
         ] do
       test "calculates amount for a fund with #{budget} #{times}/year given #{periods} pay periods" do
         account = Factory.account(deposits_per_year: unquote(periods))

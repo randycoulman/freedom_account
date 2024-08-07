@@ -115,7 +115,7 @@ defmodule FreedomAccount.Funds.Fund do
     budget
     |> Money.mult!(times_per_year)
     |> Money.div!(account.deposits_per_year)
-    |> Money.round()
+    |> Money.round(rounding_mode: :half_up)
   end
 
   @spec where_ids([id()] | nil) :: Queryable.t()
