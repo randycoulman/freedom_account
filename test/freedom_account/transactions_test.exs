@@ -482,7 +482,7 @@ defmodule FreedomAccount.TransactionsTest do
       transaction.line_items
       |> Enum.zip(funds)
       |> Enum.each(fn {line_item, fund} ->
-        amount = Funds.regular_deposit_amount(fund, account.deposits_per_year)
+        amount = Funds.regular_deposit_amount(fund, account)
         fund_id = fund.id
         assert %LineItem{amount: ^amount, fund_id: ^fund_id} = line_item
       end)

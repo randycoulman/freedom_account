@@ -110,7 +110,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
     setup [:create_account, :create_fund]
 
     test "drills down to individual fund and back", %{account: account, conn: conn, fund: fund} do
-      per_deposit = Funds.regular_deposit_amount(fund, account.deposits_per_year)
+      per_deposit = Funds.regular_deposit_amount(fund, account)
 
       conn
       |> visit(~p"/funds")

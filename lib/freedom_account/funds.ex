@@ -112,7 +112,7 @@ defmodule FreedomAccount.Funds do
   @spec pubsub_topic :: PubSub.topic()
   def pubsub_topic, do: ProcessTree.get(:funds_topic, default: "funds")
 
-  defdelegate regular_deposit_amount(fund, deposits_per_year), to: Fund
+  defdelegate regular_deposit_amount(fund, account), to: Fund
 
   @spec update_activation(Account.t(), Activation.attrs()) :: {:ok, [Fund.t()]} | {:error, Changeset.t()}
   def update_activation(%Account{} = account, attrs) do

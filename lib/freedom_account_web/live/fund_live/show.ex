@@ -96,7 +96,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
           <:subtitle>
             <div class="flex flex-row" id="fund-subtitle">
               <span>
-                Deposit: <%= Funds.regular_deposit_amount(@fund, @account.deposits_per_year) %> (<%= @fund.budget %> @ <%= @fund.times_per_year %> times/year)
+                Deposit: <%= Funds.regular_deposit_amount(@fund, @account) %> (<%= @fund.budget %> @ <%= @fund.times_per_year %> times/year)
               </span>
             </div>
           </:subtitle>

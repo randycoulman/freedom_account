@@ -1,6 +1,7 @@
 defmodule FreedomAccountWeb.RegularDepositTest do
   use FreedomAccountWeb.ConnCase, async: true
 
+  alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Factory
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
@@ -9,7 +10,7 @@ defmodule FreedomAccountWeb.RegularDepositTest do
     setup [:create_account, :create_funds]
 
     test "makes regular deposit within modal on fund list view", %{account: account, conn: conn, funds: funds} do
-      [balance1, balance2, balance3] = Enum.map(funds, &expected_balance(&1, account.deposits_per_year))
+      [balance1, balance2, balance3] = Enum.map(funds, &expected_balance(&1, account))
 
       conn
       |> visit(~p"/funds")
@@ -39,9 +40,9 @@ defmodule FreedomAccountWeb.RegularDepositTest do
     %{funds: Enum.sort_by(funds, & &1.name)}
   end
 
-  defp expected_balance(%Fund{} = fund, deposits_per_year) do
+  defp expected_balance(%Fund{} = fund, %Account{} = account) do
     fund
-    |> Funds.regular_deposit_amount(deposits_per_year)
+    |> Funds.regular_deposit_amount(account)
     |> Money.add!(fund.current_balance)
   end
 end

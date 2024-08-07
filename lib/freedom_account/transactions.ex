@@ -198,7 +198,7 @@ defmodule FreedomAccount.Transactions do
           {:ok, Transaction.t()} | {:error, InvariantError.t()}
   def regular_deposit(%Account{} = account, %Date{} = date, funds) do
     date
-    |> regular_deposit_params(funds, account.deposits_per_year)
+    |> regular_deposit_params(funds, account)
     |> deposit()
     |> case do
       {:ok, %Transaction{} = transaction} ->
@@ -210,12 +210,12 @@ defmodule FreedomAccount.Transactions do
     end
   end
 
-  defp regular_deposit_params(%Date{} = date, funds, deposits_per_year) do
+  defp regular_deposit_params(%Date{} = date, funds, %Account{} = account) do
     line_items =
       funds
       |> Enum.map(
         &%{
-          amount: Funds.regular_deposit_amount(&1, deposits_per_year),
+          amount: Funds.regular_deposit_amount(&1, account),
           fund_id: &1.id
         }
       )
