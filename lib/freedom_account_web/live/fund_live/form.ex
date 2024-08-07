@@ -50,10 +50,10 @@ defmodule FreedomAccountWeb.FundLive.Form do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:icon]} label="Icon" type="text" />
-        <.input field={@form[:name]} label="Name" type="text" />
-        <.input field={@form[:budget]} label="Budget" type="text" />
-        <.input field={@form[:times_per_year]} label="Times/Year" type="text" />
+        <.input field={@form[:icon]} label="Icon" phx-debounce="blur" type="text" />
+        <.input field={@form[:name]} label="Name" phx-debounce="blur" type="text" />
+        <.input field={@form[:budget]} label="Budget" phx-debounce="blur" type="text" />
+        <.input field={@form[:times_per_year]} label="Times/Year" phx-debounce="blur" type="text" />
         <:actions>
           <.button phx-disable-with="Saving..." type="submit">
             <.icon name="hero-check-circle-mini" /> Save Fund

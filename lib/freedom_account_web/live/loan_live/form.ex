@@ -50,8 +50,8 @@ defmodule FreedomAccountWeb.LoanLive.Form do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:icon]} label="Icon" type="text" />
-        <.input field={@form[:name]} label="Name" type="text" />
+        <.input field={@form[:icon]} label="Icon" phx-debounce="blur" type="text" />
+        <.input field={@form[:name]} label="Name" phx-debounce="blur" type="text" />
         <:actions>
           <.button phx-disable-with="Saving..." type="submit">
             <.icon name="hero-check-circle-mini" /> Save Loan

@@ -57,13 +57,19 @@ defmodule FreedomAccountWeb.AccountBar.Form do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:name]} label="Name" type="text" />
-        <.input field={@form[:deposits_per_year]} label="Deposits / year" type="number" />
+        <.input field={@form[:name]} label="Name" phx-debounce="blur" type="text" />
+        <.input
+          field={@form[:deposits_per_year]}
+          label="Deposits / year"
+          phx-debounce="blur"
+          type="number"
+        />
         <.input
           field={@form[:default_fund_id]}
           id="default-fund"
           label="Default fund"
           options={@options}
+          phx-debounce="blur"
           type="select"
         />
         <:actions>

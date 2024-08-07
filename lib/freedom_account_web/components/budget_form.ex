@@ -57,12 +57,14 @@ defmodule FreedomAccountWeb.BudgetForm do
                 field={fund[:budget]}
                 label={"Budget #{fund.index}"}
                 label_class="sr-only"
+                phx-debounce="blur"
                 type="text"
               />
               <.input
                 field={fund[:times_per_year]}
                 label={"Times/Year #{fund.index}"}
                 label_class="sr-only"
+                phx-debounce="blur"
                 type="text"
               />
               <span data-role={"deposit-amount-#{fund.index}"}>
