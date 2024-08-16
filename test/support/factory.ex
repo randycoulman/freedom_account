@@ -116,6 +116,9 @@ defmodule FreedomAccount.Factory do
   @spec one_of(list()) :: term()
   def one_of(items), do: Enum.random(items)
 
+  @spec process_name(atom()) :: atom()
+  def process_name(prefix), do: :"#{prefix}_#{System.unique_integer([:positive])}"
+
   @spec times_per_year :: float()
   def times_per_year, do: one_of([0.5, 1.0, 2.0, 4.0])
 
@@ -155,6 +158,7 @@ defmodule FreedomAccount.Factory do
     attrs = Map.new(attrs)
     {amount, attrs} = Map.pop(attrs, :amount)
     line_item = if amount, do: %{amount: amount}, else: %{}
+    {:ok, account} = Accounts.fetch_account(fund.account_id)
 
     attrs =
       attrs
@@ -163,7 +167,7 @@ defmodule FreedomAccount.Factory do
       end)
       |> transaction_attrs()
 
-    {:ok, transaction} = Transactions.deposit(attrs)
+    {:ok, transaction} = Transactions.deposit(account, attrs)
 
     transaction
   end
@@ -244,8 +248,9 @@ defmodule FreedomAccount.Factory do
   @spec lend(Loan.t(), LoanTransaction.attrs() | keyword()) :: LoanTransaction.t()
   def lend(%Loan{} = loan, attrs \\ %{}) do
     attrs = loan_transaction_attrs(loan, attrs)
+    {:ok, account} = Accounts.fetch_account(loan.account_id)
 
-    {:ok, transaction} = Transactions.lend(attrs)
+    {:ok, transaction} = Transactions.lend(account, attrs)
     transaction
   end
 
@@ -307,8 +312,9 @@ defmodule FreedomAccount.Factory do
   @spec payment(Loan.t(), LoanTransaction.attrs() | keyword()) :: LoanTransaction.t()
   def payment(%Loan{} = loan, attrs \\ %{}) do
     attrs = loan_transaction_attrs(loan, attrs)
+    {:ok, account} = Accounts.fetch_account(loan.account_id)
 
-    {:ok, transaction} = Transactions.receive_payment(attrs)
+    {:ok, transaction} = Transactions.receive_payment(account, attrs)
     transaction
   end
 

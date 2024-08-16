@@ -159,7 +159,6 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
     test "deposits money to a fund", %{account: account, conn: conn, fund: fund} do
       other_fund = account |> Factory.fund() |> Factory.with_fund_balance()
-      today = Timex.today(:local)
       date = Factory.date()
       memo = Factory.memo()
       amount = Factory.money()
@@ -170,7 +169,6 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> click_link("#single-fund-deposit", "Deposit")
       |> assert_has(page_title(), text: "Deposit")
       |> assert_has(heading(), text: "Deposit")
-      |> assert_has(field_value("#transaction_date", today))
       |> assert_has("label", text: Safe.to_iodata(fund))
       |> refute_has("#transaction-total")
       |> fill_in("Date", with: date)
@@ -191,7 +189,6 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
     test "withdraws money from a fund", %{account: account, conn: conn, fund: fund} do
       other_fund = account |> Factory.fund() |> Factory.with_fund_balance()
-      today = Timex.today(:local)
       deposit_amount = ~M[5000]usd
       date = Factory.date()
       memo = Factory.memo()
@@ -206,7 +203,6 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> click_link("#single-fund-withdrawal", "Withdraw")
       |> assert_has(page_title(), text: "Withdraw")
       |> assert_has(heading(), text: "Withdraw")
-      |> assert_has(field_value("#transaction_date", today))
       |> assert_has("label", text: Safe.to_iodata(fund))
       |> refute_has("#transaction-total")
       |> fill_in("Date", with: date)

@@ -5,6 +5,7 @@ defmodule FreedomAccount.AccountsTest do
 
   alias FreedomAccount.Accounts
   alias FreedomAccount.Accounts.Account
+  alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Factory
   alias FreedomAccount.PubSub
 
@@ -21,6 +22,19 @@ defmodule FreedomAccount.AccountsTest do
 
     test "returns error changeset for invalid data" do
       assert {:error, %Ecto.Changeset{}} = Accounts.create_account(@invalid_attrs)
+    end
+  end
+
+  describe "retrieving an account by ID" do
+    test "returns the account if present" do
+      account = Factory.account()
+
+      assert {:ok, ^account} = Accounts.fetch_account(account.id)
+    end
+
+    @tag capture_log: true
+    test "returns an error if not present" do
+      assert {:error, %NotFoundError{}} = Accounts.fetch_account(Factory.id())
     end
   end
 

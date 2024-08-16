@@ -40,7 +40,7 @@ defmodule Mix.Tasks.Import do
          # Do this after fund transactions to avoid overdraft coverage kicking in during import
          {:ok, _account} <- update_default_fund(account, funds, default_fund_name, opts),
          {:ok, loans} <- import_loans(account, opts),
-         :ok <- import_loan_transactions(loans, opts) do
+         :ok <- import_loan_transactions(account, loans, opts) do
       Mix.shell().info("✅ Import completed successfully!")
     else
       {:error, error} ->
@@ -153,7 +153,7 @@ defmodule Mix.Tasks.Import do
             ]
           })
         else
-          Transactions.deposit(%{
+          Transactions.deposit(account, %{
             date: date,
             memo: memo,
             line_items: [
@@ -225,17 +225,17 @@ defmodule Mix.Tasks.Import do
     {:ok, funds}
   end
 
-  defp import_loan_transactions(loans, opts) do
+  defp import_loan_transactions(%Account{} = account, loans, opts) do
     if :loan_transactions in opts[:steps] do
       Mix.shell().info("💰 Importing loan transactions...")
-      do_import_loan_transactions(loans, opts[:directory])
+      do_import_loan_transactions(account, loans, opts[:directory])
     else
       Mix.shell().info("➖ Skipping loan transactions...")
       :ok
     end
   end
 
-  defp do_import_loan_transactions(loans, directory) do
+  defp do_import_loan_transactions(%Account{} = account, loans, directory) do
     directory
     |> Path.join("loanTransactions.csv")
     |> File.stream!()
@@ -247,14 +247,14 @@ defmodule Mix.Tasks.Import do
 
       {:ok, _transaction} =
         if Money.negative?(amount) do
-          Transactions.lend(%{
+          Transactions.lend(account, %{
             amount: Money.abs(amount),
             date: date,
             loan_id: loan.id,
             memo: memo
           })
         else
-          Transactions.receive_payment(%{
+          Transactions.receive_payment(account, %{
             amount: amount,
             date: date,
             loan_id: loan.id,

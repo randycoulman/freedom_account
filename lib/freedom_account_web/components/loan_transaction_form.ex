@@ -116,9 +116,9 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
   end
 
   defp save_transaction(socket, :edit_transaction, params) do
-    %{return_path: return_path, transaction: transaction} = socket.assigns
+    %{account: account, return_path: return_path, transaction: transaction} = socket.assigns
 
-    case Transactions.update_loan_transaction(transaction, params) do
+    case Transactions.update_loan_transaction(account, transaction, params) do
       {:ok, _transaction} ->
         socket
         |> put_flash(:info, "Transaction updated successfully")
@@ -133,9 +133,9 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
   end
 
   defp save_transaction(socket, :lend, params) do
-    %{return_path: return_path} = socket.assigns
+    %{account: account, return_path: return_path} = socket.assigns
 
-    case Transactions.lend(params) do
+    case Transactions.lend(account, params) do
       {:ok, _transaction} ->
         socket
         |> put_flash(:info, "Money lent successfully")
@@ -150,9 +150,9 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
   end
 
   defp save_transaction(socket, :payment, params) do
-    %{return_path: return_path} = socket.assigns
+    %{account: account, return_path: return_path} = socket.assigns
 
-    case Transactions.receive_payment(params) do
+    case Transactions.receive_payment(account, params) do
       {:ok, _transaction} ->
         socket
         |> put_flash(:info, "Payment successful")

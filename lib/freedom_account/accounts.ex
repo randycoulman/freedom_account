@@ -11,6 +11,18 @@ defmodule FreedomAccount.Accounts do
   alias FreedomAccount.PubSub
   alias FreedomAccount.Repo
 
+  @spec create_account(Account.attrs()) :: {:ok, Account.t()} | {:error, Changeset.t()}
+  def create_account(attrs \\ %{}) do
+    %Account{}
+    |> Account.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @spec fetch_account(Account.id()) :: {:ok, Account.t()} | {:error, NotFoundError.t()}
+  def fetch_account(id) do
+    Repo.fetch(Account, id)
+  end
+
   @spec only_account :: Account.t()
   def only_account do
     case Repo.fetch_one(Account) do
@@ -21,13 +33,6 @@ defmodule FreedomAccount.Accounts do
         {:ok, account} = create_account(%{deposits_per_year: 24, name: "Initial Account"})
         account
     end
-  end
-
-  @spec create_account(Account.attrs()) :: {:ok, Account.t()} | {:error, Changeset.t()}
-  def create_account(attrs \\ %{}) do
-    %Account{}
-    |> Account.changeset(attrs)
-    |> Repo.insert()
   end
 
   @spec pubsub_topic :: PubSub.topic()

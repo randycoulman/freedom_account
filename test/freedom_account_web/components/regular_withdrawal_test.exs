@@ -26,7 +26,6 @@ defmodule FreedomAccountWeb.RegularWithdrawalTest do
       |> click_link("Regular Withdrawal")
       |> assert_has(page_title(), text: "Regular Withdrawal")
       |> assert_has(heading(), text: "Regular Withdrawal")
-      |> assert_has(field_value("#transaction_date", "#{Timex.today(:local)}"))
       |> assert_has("#transaction-total", text: "#{Money.zero(:usd)}")
       |> assert_has("label", text: fund1)
       |> assert_has("label", text: fund2)

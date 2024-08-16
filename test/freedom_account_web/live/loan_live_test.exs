@@ -145,7 +145,6 @@ defmodule FreedomAccountWeb.LoanLiveTest do
 
     test "lends money from a loan", %{account: account, conn: conn, loan: loan} do
       fund = account |> Factory.fund() |> Factory.with_fund_balance()
-      today = Timex.today(:local)
       date = Factory.date()
       memo = Factory.memo()
       amount = Factory.money()
@@ -157,7 +156,6 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       |> click_link("Lend")
       |> assert_has(page_title(), text: "Lend")
       |> assert_has(heading(), text: "Lend")
-      |> assert_has(field_value("#loan_transaction_date", today))
       |> fill_in("Date", with: date)
       |> fill_in("Memo", with: memo)
       |> fill_in("Amount", with: amount)
@@ -174,7 +172,6 @@ defmodule FreedomAccountWeb.LoanLiveTest do
 
     test "receives a payment on a loan", %{account: account, conn: conn, loan: loan} do
       fund = account |> Factory.fund() |> Factory.with_fund_balance()
-      today = Timex.today(:local)
       loan_amount = ~M[5000]usd
       date = Factory.date()
       memo = Factory.memo()
@@ -189,7 +186,6 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       |> click_link("Payment")
       |> assert_has(page_title(), text: "Payment")
       |> assert_has(heading(), text: "Payment")
-      |> assert_has(field_value("#loan_transaction_date", today))
       |> fill_in("Date", with: date)
       |> fill_in("Memo", with: memo)
       |> fill_in("Amount", with: amount)

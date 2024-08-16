@@ -171,9 +171,9 @@ defmodule FreedomAccountWeb.TransactionForm do
   end
 
   defp save_transaction(socket, :deposit, params) do
-    %{return_path: return_path} = socket.assigns
+    %{account: account, return_path: return_path} = socket.assigns
 
-    case Transactions.deposit(params) do
+    case Transactions.deposit(account, params) do
       {:ok, _transaction} ->
         socket
         |> put_flash(:info, "Deposit successful")
@@ -188,9 +188,9 @@ defmodule FreedomAccountWeb.TransactionForm do
   end
 
   defp save_transaction(socket, :edit_transaction, params) do
-    %{return_path: return_path, transaction: transaction} = socket.assigns
+    %{account: account, return_path: return_path, transaction: transaction} = socket.assigns
 
-    case Transactions.update_transaction(transaction, params) do
+    case Transactions.update_transaction(account, transaction, params) do
       {:ok, _transaction} ->
         socket
         |> put_flash(:info, "Transaction updated successfully")

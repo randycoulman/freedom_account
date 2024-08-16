@@ -11,10 +11,9 @@ defmodule FreedomAccount.Application do
     children = [
       FreedomAccountWeb.Telemetry,
       FreedomAccount.Repo,
+      FreedomAccount.Transactions.DateCache,
       {DNSCluster, query: Application.get_env(:freedom_account, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: FreedomAccount.PubSub},
-      # Start a worker by calling: FreedomAccount.Worker.start_link(arg)
-      # {FreedomAccount.Worker, arg},
       # Start to serve requests, typically the last entry
       FreedomAccountWeb.Endpoint
     ]
