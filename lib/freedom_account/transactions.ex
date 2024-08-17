@@ -112,7 +112,7 @@ defmodule FreedomAccount.Transactions do
 
   @spec lend(Account.t(), LoanTransaction.attrs()) :: {:ok, LoanTransaction.t()} | {:error, Changeset.t()}
   def lend(%Account{} = account, attrs \\ %{}) do
-    %LoanTransaction{}
+    %LoanTransaction{account_id: account.id}
     |> LoanTransaction.loan_changeset(attrs)
     |> Repo.insert()
     |> cache_date(account)
@@ -191,7 +191,7 @@ defmodule FreedomAccount.Transactions do
 
   @spec receive_payment(Account.t(), LoanTransaction.attrs()) :: {:ok, LoanTransaction.t()} | {:error, Changeset.t()}
   def receive_payment(%Account{} = account, attrs \\ %{}) do
-    %LoanTransaction{}
+    %LoanTransaction{account_id: account.id}
     |> LoanTransaction.payment_changeset(attrs)
     |> Repo.insert()
     |> cache_date(account)

@@ -23,6 +23,7 @@ defmodule FreedomAccount.Transactions.LoanTransaction do
   @type id :: non_neg_integer()
 
   typed_schema "loan_transactions" do
+    field :account_id, :integer
     field(:amount, Money.Ecto.Composite.Type) :: Money.t()
     field :date, :date
     field :loan_id, :integer

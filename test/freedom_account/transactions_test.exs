@@ -211,6 +211,13 @@ defmodule FreedomAccount.TransactionsTest do
       assert transaction.loan_id == loan.id
     end
 
+    test "associates the transaction to its account", %{account: account, loan: loan} do
+      valid_attrs = Factory.loan_transaction_attrs(loan)
+
+      {:ok, transaction} = Transactions.lend(account, valid_attrs)
+      assert transaction.account_id == account.id
+    end
+
     test "publishes a loan transaction created event", %{account: account, loan: loan} do
       valid_attrs = Factory.loan_transaction_attrs(loan)
 
@@ -484,6 +491,13 @@ defmodule FreedomAccount.TransactionsTest do
 
       {:ok, transaction} = Transactions.receive_payment(account, valid_attrs)
       assert transaction.loan_id == loan.id
+    end
+
+    test "associates the transaction to its account", %{account: account, loan: loan} do
+      valid_attrs = Factory.loan_transaction_attrs(loan)
+
+      {:ok, transaction} = Transactions.receive_payment(account, valid_attrs)
+      assert transaction.account_id == account.id
     end
 
     test "publishes a loan transaction created event", %{account: account, loan: loan} do
