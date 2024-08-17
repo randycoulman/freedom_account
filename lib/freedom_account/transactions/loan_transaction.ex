@@ -11,6 +11,7 @@ defmodule FreedomAccount.Transactions.LoanTransaction do
   alias Ecto.Changeset
   alias Ecto.Queryable
   alias Ecto.Schema
+  alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Loans.Loan
   alias FreedomAccount.MoneyUtils
 
@@ -32,6 +33,13 @@ defmodule FreedomAccount.Transactions.LoanTransaction do
     field(:running_balance, Money.Ecto.Composite.Type, virtual: true) :: Money.t()
 
     timestamps()
+  end
+
+  @spec by_account(Account.t()) :: Queryable.t()
+  @spec by_account(Queryable.t(), Account.t()) :: Queryable.t()
+  def by_account(query \\ base_query(), %Account{} = account) do
+    from l in query,
+      where: [account_id: ^account.id]
   end
 
   @spec by_loan(Loan.t()) :: Queryable.t()

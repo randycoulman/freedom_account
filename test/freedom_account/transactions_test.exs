@@ -13,6 +13,7 @@ defmodule FreedomAccount.TransactionsTest do
   alias FreedomAccount.Paging
   alias FreedomAccount.PubSub
   alias FreedomAccount.Transactions
+  alias FreedomAccount.Transactions.AccountTransaction
   alias FreedomAccount.Transactions.DateCache
   alias FreedomAccount.Transactions.FundTransaction
   alias FreedomAccount.Transactions.LineItem
@@ -254,6 +255,111 @@ defmodule FreedomAccount.TransactionsTest do
 
       assert {:error, %Changeset{action: :insert, valid?: false} = changeset} = Transactions.lend(account, attrs)
       assert Changeset.get_change(changeset, :amount) == attrs[:amount]
+    end
+  end
+
+  describe "listing all transactions for an account" do
+    setup %{account: account, fund: fund1, loan: loan} do
+      fund2 = Factory.fund(account)
+      {:ok, regular_deposit} = Transactions.regular_deposit(account, Factory.date(), [fund1, fund2])
+      single_deposit = Factory.deposit(fund1)
+      withdrawal = Factory.withdrawal(account, fund1)
+      lend = Factory.lend(loan)
+      payment = Factory.payment(loan)
+
+      %{transactions: [regular_deposit, single_deposit, withdrawal, lend, payment]}
+    end
+
+    test "returns empty list if the account has no transactions or loan_transactions" do
+      account = Factory.account()
+
+      assert {[], %Paging{}} = Transactions.list_account_transactions(account)
+    end
+
+    test "returns a list of 'account transactions' ordered descending by date", %{
+      account: account,
+      transactions: transactions
+    } do
+      expected = expected_account_transactions(transactions)
+
+      assert {^expected, %Paging{}} = Transactions.list_account_transactions(account)
+    end
+
+    test "respects page size limit when specified", %{account: account, transactions: transactions} do
+      limit = 3
+      expected = transactions |> expected_account_transactions() |> Enum.take(limit)
+
+      assert {^expected, %Paging{}} = Transactions.list_account_transactions(account, per_page: limit)
+    end
+
+    test "pages forward", %{account: account, transactions: transactions} do
+      limit = 2
+      [first, second, third] = transactions |> expected_account_transactions() |> Enum.chunk_every(limit)
+
+      assert {^first, %Paging{next_cursor: next_cursor}} =
+               Transactions.list_account_transactions(account, per_page: limit)
+
+      assert {^second, %Paging{next_cursor: next_cursor}} =
+               Transactions.list_account_transactions(account, next_cursor: next_cursor, per_page: limit)
+
+      assert {^third, %Paging{next_cursor: nil}} =
+               Transactions.list_account_transactions(account, next_cursor: next_cursor, per_page: limit)
+    end
+
+    test "pages backward", %{account: account, transactions: transactions} do
+      limit = 2
+      [first, second, _third] = transactions |> expected_account_transactions() |> Enum.chunk_every(limit)
+
+      {_list, %Paging{next_cursor: next_cursor}} = Transactions.list_account_transactions(account, per_page: limit)
+
+      {_list, %Paging{next_cursor: next_cursor}} =
+        Transactions.list_account_transactions(account, next_cursor: next_cursor, per_page: limit)
+
+      {_list, %Paging{prev_cursor: prev_cursor}} =
+        Transactions.list_account_transactions(account, next_cursor: next_cursor, per_page: limit)
+
+      assert {^second, %Paging{prev_cursor: prev_cursor}} =
+               Transactions.list_account_transactions(account, per_page: limit, prev_cursor: prev_cursor)
+
+      assert {^first, %Paging{prev_cursor: nil}} =
+               Transactions.list_account_transactions(account, per_page: limit, prev_cursor: prev_cursor)
+    end
+
+    defp expected_account_transactions(transactions) do
+      transactions
+      |> Enum.map(fn
+        %Transaction{} = transaction ->
+          amount = transaction.line_items |> Enum.map(& &1.amount) |> MoneyUtils.sum()
+
+          %AccountTransaction{
+            amount: amount,
+            date: transaction.date,
+            id: transaction.id,
+            inserted_at: transaction.inserted_at,
+            memo: transaction.memo,
+            running_balance: Money.zero(:usd),
+            type: :fund
+          }
+
+        %LoanTransaction{} = loan_transaction ->
+          %AccountTransaction{
+            amount: loan_transaction.amount,
+            date: loan_transaction.date,
+            id: loan_transaction.id,
+            inserted_at: loan_transaction.inserted_at,
+            memo: loan_transaction.memo,
+            running_balance: Money.zero(:usd),
+            type: :loan
+          }
+      end)
+      |> Enum.sort_by(& &1, {:desc, AccountTransaction})
+      |> Enum.reverse()
+      |> Enum.reduce({[], Money.zero(:usd)}, fn txn, {result, balance} ->
+        next_balance = Money.add!(balance, txn.amount)
+        txn_with_balance = %{txn | running_balance: next_balance}
+        {[txn_with_balance | result], next_balance}
+      end)
+      |> elem(0)
     end
   end
 

@@ -10,6 +10,7 @@ defmodule FreedomAccount.Transactions.Transaction do
   alias Ecto.Changeset
   alias Ecto.Queryable
   alias Ecto.Schema
+  alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.MoneyUtils
   alias FreedomAccount.Transactions.LineItem
@@ -30,6 +31,13 @@ defmodule FreedomAccount.Transactions.Transaction do
     has_many :line_items, LineItem
 
     timestamps()
+  end
+
+  @spec by_account(Account.t()) :: Queryable.t()
+  @spec by_account(Queryable.t(), Account.t()) :: Queryable.t()
+  def by_account(query \\ base_query(), %Account{} = account) do
+    from t in query,
+      where: [account_id: ^account.id]
   end
 
   @spec changeset(Changeset.t() | Schema.t(), attrs()) :: Changeset.t()
@@ -68,6 +76,16 @@ defmodule FreedomAccount.Transactions.Transaction do
   @spec deposit_changeset(Changeset.t() | Schema.t(), attrs()) :: Changeset.t()
   def deposit_changeset(transaction, attrs) do
     base_changeset(transaction, attrs, with: &LineItem.deposit_changeset/2)
+  end
+
+  @spec join_line_items :: Queryable.t()
+  @spec join_line_items(Queryable.t()) :: Queryable.t()
+  def join_line_items(query \\ base_query()) do
+    from t in query,
+      as: :transaction,
+      left_join: l in assoc(t, :line_items),
+      as: :line_item,
+      group_by: t.id
   end
 
   @spec preload_line_items :: Queryable.t()

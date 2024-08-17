@@ -16,7 +16,7 @@ defmodule FreedomAccount.Transactions do
     ],
     exports: [LoanTransaction, Transaction]
 
-  import Ecto.Query, only: [from: 1, subquery: 1]
+  import Ecto.Query, only: [from: 1, subquery: 1, union: 2]
 
   alias Ecto.Changeset
   alias FreedomAccount.Accounts.Account
@@ -30,6 +30,7 @@ defmodule FreedomAccount.Transactions do
   alias FreedomAccount.Paging
   alias FreedomAccount.PubSub
   alias FreedomAccount.Repo
+  alias FreedomAccount.Transactions.AccountTransaction
   alias FreedomAccount.Transactions.DateCache
   alias FreedomAccount.Transactions.FundTransaction
   alias FreedomAccount.Transactions.LineItem
@@ -128,6 +129,43 @@ defmodule FreedomAccount.Transactions do
          |> Map.put(:action, changeset.action)
          |> Map.put(:errors, changeset.errors)}
     end
+  end
+
+  @spec list_account_transactions(Account.t(), [list_opt]) :: {[AccountTransaction.t()], Paging.t()}
+  def list_account_transactions(%Account{} = account, opts \\ []) do
+    limit = Keyword.get(opts, :per_page, 50)
+
+    fund_transactions =
+      account
+      |> Transaction.by_account()
+      |> Transaction.join_line_items()
+      |> AccountTransaction.select_from_fund_transaction()
+
+    loan_transactions =
+      account
+      |> LoanTransaction.by_account()
+      |> AccountTransaction.select_from_loan_transaction()
+
+    all_transactions =
+      fund_transactions
+      |> union(^loan_transactions)
+      |> subquery()
+      |> AccountTransaction.with_running_balances()
+
+    %Page{entries: transactions, metadata: metadata} =
+      from(s in subquery(all_transactions))
+      |> AccountTransaction.newest_first()
+      |> Repo.paginate(
+        after: opts[:next_cursor],
+        before: opts[:prev_cursor],
+        cursor_fields: AccountTransaction.cursor_fields(),
+        limit: limit
+      )
+
+    transactions =
+      Enum.map(transactions, fn transaction -> Map.update!(transaction, :type, &String.to_existing_atom/1) end)
+
+    {transactions, %Paging{next_cursor: metadata.after, prev_cursor: metadata.before}}
   end
 
   @spec list_fund_transactions(Fund.t(), [list_opt]) :: {[FundTransaction.t()], Paging.t()}
