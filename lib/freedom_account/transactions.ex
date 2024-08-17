@@ -93,7 +93,7 @@ defmodule FreedomAccount.Transactions do
 
   @spec deposit(Account.t(), Transaction.attrs()) :: {:ok, Transaction.t()} | {:error, Changeset.t()}
   def deposit(%Account{} = account, attrs \\ %{}) do
-    %Transaction{}
+    %Transaction{account_id: account.id}
     |> Transaction.deposit_changeset(attrs)
     |> Repo.insert()
     |> cache_date(account)
@@ -255,7 +255,7 @@ defmodule FreedomAccount.Transactions do
   def withdraw(%Account{} = account, attrs \\ %{}) do
     funds = Funds.list_active_funds(account)
 
-    %Transaction{}
+    %Transaction{account_id: account.id}
     |> Transaction.withdrawal_changeset(attrs)
     |> Transaction.cover_overdrafts(funds, account.default_fund_id)
     |> Repo.insert()

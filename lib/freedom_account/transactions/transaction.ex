@@ -22,6 +22,7 @@ defmodule FreedomAccount.Transactions.Transaction do
   @type id :: non_neg_integer()
 
   typed_schema "transactions" do
+    field :account_id, :integer
     field :date, :date
     field :memo, :string
     field(:total, Money.Ecto.Composite.Type, virtual: true) :: Money.t() | nil

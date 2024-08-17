@@ -109,6 +109,14 @@ defmodule FreedomAccount.TransactionsTest do
       assert line_item.fund_id == fund.id
     end
 
+    test "associates the transaction to its account", %{account: account, fund: fund} do
+      valid_attrs = Factory.transaction_attrs(line_items: [Factory.line_item_attrs(fund)])
+
+      {:ok, transaction} = Transactions.deposit(account, valid_attrs)
+
+      assert transaction.account_id == account.id
+    end
+
     test "publishes a transaction created event", %{account: account, fund: fund} do
       valid_attrs = Factory.transaction_attrs(line_items: [Factory.line_item_attrs(fund)])
 
@@ -539,6 +547,12 @@ defmodule FreedomAccount.TransactionsTest do
       refute zero_budget_fund.id in Enum.map(transaction.line_items, & &1.fund_id)
     end
 
+    test "associates the transaction to its account", %{account: account, funds: funds} do
+      {:ok, %Transaction{} = transaction} = Transactions.regular_deposit(account, Factory.date(), funds)
+
+      assert transaction.account_id == account.id
+    end
+
     test "publishes a transaction created event", %{account: account, funds: funds} do
       :ok = PubSub.subscribe(Transactions.pubsub_topic())
 
@@ -720,6 +734,14 @@ defmodule FreedomAccount.TransactionsTest do
       assert line_item.fund_id == fund.id
     end
 
+    test "associates the transaction to its account", %{account: account, fund: fund} do
+      valid_attrs = Factory.transaction_attrs(line_items: [Factory.line_item_attrs(fund)])
+
+      {:ok, transaction} = Transactions.withdraw(account, valid_attrs)
+
+      assert transaction.account_id == account.id
+    end
+
     test "publishes a transaction created event", %{account: account, fund: fund} do
       valid_attrs = Factory.transaction_attrs(line_items: [Factory.line_item_attrs(fund)])
 
@@ -851,6 +873,15 @@ defmodule FreedomAccount.TransactionsTest do
       |> Enum.each(fn {%LineItem{} = line_item, %Fund{} = fund} ->
         assert line_item.fund_id == fund.id
       end)
+    end
+
+    test "associates the transaction to its account", %{account: account, funds: funds} do
+      line_item_attrs = Enum.map(funds, &Factory.line_item_attrs/1)
+      valid_attrs = Factory.transaction_attrs(line_items: line_item_attrs)
+
+      {:ok, transaction} = Transactions.withdraw(account, valid_attrs)
+
+      assert transaction.account_id == account.id
     end
 
     test "publishes a transaction created event", %{account: account, funds: funds} do

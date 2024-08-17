@@ -18,7 +18,6 @@ defmodule FreedomAccount.Funds.Fund do
           optional(:active) => boolean()
         }
   @type attrs :: %{
-          optional(:account_id) => non_neg_integer,
           optional(:budget) => Money.t(),
           optional(:icon) => icon(),
           optional(:name) => name(),
