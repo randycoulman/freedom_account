@@ -96,7 +96,7 @@ defmodule FreedomAccount.Transactions do
     %Transaction{account_id: account.id}
     |> Transaction.deposit_changeset(attrs)
     |> Repo.insert()
-    |> cache_date(account)
+    |> cache_date(account.id)
     |> PubSub.broadcast(pubsub_topic(), :transaction_created)
   end
 
@@ -115,7 +115,7 @@ defmodule FreedomAccount.Transactions do
     %LoanTransaction{account_id: account.id}
     |> LoanTransaction.loan_changeset(attrs)
     |> Repo.insert()
-    |> cache_date(account)
+    |> cache_date(account.id)
     |> PubSub.broadcast(pubsub_topic(), :loan_transaction_created)
     |> case do
       {:ok, transaction} ->
@@ -194,7 +194,7 @@ defmodule FreedomAccount.Transactions do
     %LoanTransaction{account_id: account.id}
     |> LoanTransaction.payment_changeset(attrs)
     |> Repo.insert()
-    |> cache_date(account)
+    |> cache_date(account.id)
     |> PubSub.broadcast(pubsub_topic(), :loan_transaction_created)
   end
 
@@ -231,23 +231,23 @@ defmodule FreedomAccount.Transactions do
   @spec pubsub_topic :: PubSub.topic()
   def pubsub_topic, do: ProcessTree.get(:transactions_topic, default: "transactions")
 
-  @spec update_loan_transaction(Account.t(), LoanTransaction.t(), LoanTransaction.attrs()) ::
+  @spec update_loan_transaction(LoanTransaction.t(), LoanTransaction.attrs()) ::
           {:ok, LoanTransaction.t()} | {:error, Changeset.t()}
-  def update_loan_transaction(%Account{} = account, %LoanTransaction{} = transaction, attrs) do
+  def update_loan_transaction(%LoanTransaction{} = transaction, attrs) do
     transaction
     |> LoanTransaction.changeset(attrs)
     |> Repo.update()
-    |> cache_date(account)
+    |> cache_date(transaction.account_id)
     |> PubSub.broadcast(pubsub_topic(), :loan_transaction_updated)
   end
 
-  @spec update_transaction(Account.t(), Transaction.t(), Transaction.attrs()) ::
+  @spec update_transaction(Transaction.t(), Transaction.attrs()) ::
           {:ok, Transaction.t()} | {:error, Changeset.t()}
-  def update_transaction(%Account{} = account, %Transaction{} = transaction, attrs) do
+  def update_transaction(%Transaction{} = transaction, attrs) do
     transaction
     |> Transaction.changeset(attrs)
     |> Repo.update()
-    |> cache_date(account)
+    |> cache_date(transaction.account_id)
     |> PubSub.broadcast(pubsub_topic(), :transaction_updated)
   end
 
@@ -259,7 +259,7 @@ defmodule FreedomAccount.Transactions do
     |> Transaction.withdrawal_changeset(attrs)
     |> Transaction.cover_overdrafts(funds, account.default_fund_id)
     |> Repo.insert()
-    |> cache_date(account)
+    |> cache_date(account.id)
     |> PubSub.broadcast(pubsub_topic(), :transaction_created)
     |> case do
       {:ok, transaction} ->
@@ -274,11 +274,11 @@ defmodule FreedomAccount.Transactions do
     end
   end
 
-  defp cache_date({:error, _error} = result, _account), do: result
+  defp cache_date({:error, _error} = result, _account_id), do: result
 
-  defp cache_date({:ok, transaction} = result, %Account{} = account) do
+  defp cache_date({:ok, transaction} = result, account_id) do
     cache = ProcessTree.get(:date_cache, default: DateCache)
-    DateCache.remember(cache, account.id, transaction.date)
+    DateCache.remember(cache, account_id, transaction.date)
     result
   end
 

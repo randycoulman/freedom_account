@@ -589,21 +589,21 @@ defmodule FreedomAccount.TransactionsTest do
       %{transaction: transaction}
     end
 
-    test "with valid data updates the transaction", %{account: account, loan: loan, transaction: transaction} do
+    test "with valid data updates the transaction", %{loan: loan, transaction: transaction} do
       valid_attrs = Factory.loan_transaction_attrs(loan)
 
-      assert {:ok, %LoanTransaction{} = updated} = Transactions.update_loan_transaction(account, transaction, valid_attrs)
+      assert {:ok, %LoanTransaction{} = updated} = Transactions.update_loan_transaction(transaction, valid_attrs)
       assert updated.amount == valid_attrs[:amount]
       assert updated.date == valid_attrs[:date]
       assert updated.memo == valid_attrs[:memo]
     end
 
-    test "publishes a loan transaction updated event", %{account: account, loan: loan, transaction: transaction} do
+    test "publishes a loan transaction updated event", %{loan: loan, transaction: transaction} do
       valid_attrs = Factory.loan_transaction_attrs(loan)
 
       :ok = PubSub.subscribe(Transactions.pubsub_topic())
 
-      {:ok, updated} = Transactions.update_loan_transaction(account, transaction, valid_attrs)
+      {:ok, updated} = Transactions.update_loan_transaction(transaction, valid_attrs)
 
       assert_received({:loan_transaction_updated, ^updated})
     end
@@ -611,16 +611,16 @@ defmodule FreedomAccount.TransactionsTest do
     test "caches the date", %{account: account, date_cache: date_cache, loan: loan, transaction: transaction} do
       valid_attrs = Factory.loan_transaction_attrs(loan)
 
-      {:ok, updated} = Transactions.update_loan_transaction(account, transaction, valid_attrs)
+      {:ok, updated} = Transactions.update_loan_transaction(transaction, valid_attrs)
 
       assert DateCache.last_date(date_cache, account.id) == updated.date
     end
 
-    test "with invalid data returns an error changeset", %{account: account, loan: loan, transaction: transaction} do
+    test "with invalid data returns an error changeset", %{loan: loan, transaction: transaction} do
       invalid_attrs = Factory.loan_transaction_attrs(loan, amount: Money.zero(:usd))
 
       assert {:error, %Changeset{valid?: false}} =
-               Transactions.update_loan_transaction(account, transaction, invalid_attrs)
+               Transactions.update_loan_transaction(transaction, invalid_attrs)
 
       assert {:ok, transaction} == Transactions.fetch_loan_transaction(transaction.id)
     end
@@ -633,26 +633,26 @@ defmodule FreedomAccount.TransactionsTest do
       %{transaction: transaction}
     end
 
-    test "with valid data updates the transaction", %{account: account, fund: fund, transaction: transaction} do
+    test "with valid data updates the transaction", %{fund: fund, transaction: transaction} do
       [line_item] = transaction.line_items
       line_item_attrs = Factory.line_item_attrs(fund, id: line_item.id)
       valid_attrs = Factory.transaction_attrs(line_items: [line_item_attrs])
 
-      assert {:ok, %Transaction{} = updated} = Transactions.update_transaction(account, transaction, valid_attrs)
+      assert {:ok, %Transaction{} = updated} = Transactions.update_transaction(transaction, valid_attrs)
       [updated_line_item] = updated.line_items
       assert updated.date == valid_attrs[:date]
       assert updated.memo == valid_attrs[:memo]
       assert updated_line_item.amount == line_item_attrs[:amount]
     end
 
-    test "publishes a transaction updated event", %{account: account, fund: fund, transaction: transaction} do
+    test "publishes a transaction updated event", %{fund: fund, transaction: transaction} do
       [line_item] = transaction.line_items
       line_item_attrs = Factory.line_item_attrs(fund, id: line_item.id)
       valid_attrs = Factory.transaction_attrs(line_items: [line_item_attrs])
 
       :ok = PubSub.subscribe(Transactions.pubsub_topic())
 
-      {:ok, updated} = Transactions.update_transaction(account, transaction, valid_attrs)
+      {:ok, updated} = Transactions.update_transaction(transaction, valid_attrs)
 
       assert_received({:transaction_updated, ^updated})
     end
@@ -662,19 +662,19 @@ defmodule FreedomAccount.TransactionsTest do
       line_item_attrs = Factory.line_item_attrs(fund, id: line_item.id)
       valid_attrs = Factory.transaction_attrs(line_items: [line_item_attrs])
 
-      {:ok, updated} = Transactions.update_transaction(account, transaction, valid_attrs)
+      {:ok, updated} = Transactions.update_transaction(transaction, valid_attrs)
 
       assert DateCache.last_date(date_cache, account.id) == updated.date
     end
 
-    test "with invalid data returns an error changeset", %{account: account, fund: fund, transaction: transaction} do
+    test "with invalid data returns an error changeset", %{fund: fund, transaction: transaction} do
       [line_item] = transaction.line_items
       line_item_attrs = Factory.line_item_attrs(fund, amount: Money.zero(:usd), id: line_item.id)
       invalid_attrs = Factory.transaction_attrs(line_items: [line_item_attrs])
 
       expected = %{transaction | total: nil}
 
-      assert {:error, %Changeset{valid?: false}} = Transactions.update_transaction(account, transaction, invalid_attrs)
+      assert {:error, %Changeset{valid?: false}} = Transactions.update_transaction(transaction, invalid_attrs)
       assert {:ok, expected} == Transactions.fetch_transaction(transaction.id)
     end
   end
@@ -688,7 +688,7 @@ defmodule FreedomAccount.TransactionsTest do
       %{transaction: transaction}
     end
 
-    test "with valid data updates the transaction", %{account: account, funds: funds, transaction: transaction} do
+    test "with valid data updates the transaction", %{funds: funds, transaction: transaction} do
       line_item_attrs =
         funds
         |> Enum.zip(transaction.line_items)
@@ -698,17 +698,13 @@ defmodule FreedomAccount.TransactionsTest do
 
       valid_attrs = Factory.transaction_attrs(line_items: line_item_attrs)
 
-      assert {:ok, %Transaction{} = updated} = Transactions.update_transaction(account, transaction, valid_attrs)
+      assert {:ok, %Transaction{} = updated} = Transactions.update_transaction(transaction, valid_attrs)
       assert updated.date == valid_attrs[:date]
       assert updated.memo == valid_attrs[:memo]
       assert_lists_equal(updated.line_items, line_item_attrs, &assert_maps_equal(&1, &2, [:amount]))
     end
 
-    test "with an invalid line item returns an error changeset", %{
-      account: account,
-      funds: funds,
-      transaction: transaction
-    } do
+    test "with an invalid line item returns an error changeset", %{funds: funds, transaction: transaction} do
       [to_zero | line_item_attrs] =
         funds
         |> Enum.zip(transaction.line_items)
@@ -720,7 +716,7 @@ defmodule FreedomAccount.TransactionsTest do
 
       valid_attrs = Factory.transaction_attrs(line_items: [to_zero | line_item_attrs])
 
-      assert {:error, %Changeset{valid?: false}} = Transactions.update_transaction(account, transaction, valid_attrs)
+      assert {:error, %Changeset{valid?: false}} = Transactions.update_transaction(transaction, valid_attrs)
     end
   end
 
