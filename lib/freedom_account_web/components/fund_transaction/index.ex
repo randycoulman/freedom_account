@@ -68,7 +68,8 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
           <.link
             data-confirm="Are you sure?"
             phx-click={
-              JS.push("delete", value: %{id: transaction.id}) |> hide("##{transaction.line_item_id}")
+              JS.push("delete", value: %{id: transaction.id})
+              |> hide("#txn-#{transaction.line_item_id}")
             }
             phx-target={@myself}
           >

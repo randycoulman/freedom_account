@@ -140,7 +140,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
       </:action>
       <:action :let={fund}>
         <.link
-          phx-click={JS.push("delete", value: %{id: fund.id}) |> hide("##{fund.id}")}
+          phx-click={JS.push("delete", value: %{id: fund.id}) |> hide("#funds-#{fund.id}")}
           data-confirm="Are you sure?"
         >
           <.icon name="hero-trash-micro" /> Delete

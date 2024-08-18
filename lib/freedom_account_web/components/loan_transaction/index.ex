@@ -67,7 +67,9 @@ defmodule FreedomAccountWeb.LoanTransaction.Index do
         <:action :let={transaction}>
           <.link
             data-confirm="Are you sure?"
-            phx-click={JS.push("delete", value: %{id: transaction.id}) |> hide("##{transaction.id}")}
+            phx-click={
+              JS.push("delete", value: %{id: transaction.id}) |> hide("#txn-#{transaction.id}")
+            }
             phx-target={@myself}
           >
             <.icon name="hero-trash-micro" /> Delete

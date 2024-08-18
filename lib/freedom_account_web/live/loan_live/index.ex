@@ -107,7 +107,7 @@ defmodule FreedomAccountWeb.LoanLive.Index do
       </:action>
       <:action :let={loan}>
         <.link
-          phx-click={JS.push("delete", value: %{id: loan.id}) |> hide("##{loan.id}")}
+          phx-click={JS.push("delete", value: %{id: loan.id}) |> hide("#loans-#{loan.id}")}
           data-confirm="Are you sure?"
         >
           <.icon name="hero-trash-micro" /> Delete
