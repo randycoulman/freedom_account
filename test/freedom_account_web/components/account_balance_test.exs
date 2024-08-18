@@ -5,13 +5,16 @@ defmodule FreedomAccountWeb.AccountBalanceTest do
 
   alias FreedomAccount.Factory
   alias FreedomAccount.Funds
+  alias FreedomAccount.Loans
   alias FreedomAccount.MoneyUtils
   alias FreedomAccount.Transactions
 
-  setup [:create_account, :create_funds]
+  setup :create_account
 
   for page <- [:fund_list, :fund_show] do
     describe "showing the account balance on #{page} page" do
+      setup :create_funds
+
       test "displays account balance", %{conn: conn, funds: funds} = context do
         page = unquote(page)
         path = page_path(page, context)
@@ -37,6 +40,36 @@ defmodule FreedomAccountWeb.AccountBalanceTest do
     end
   end
 
+  for page <- [:loan_list, :loan_show] do
+    describe "showing the account balance on #{page} page" do
+      setup :create_loans
+
+      test "displays account balance", %{conn: conn, loans: loans} = context do
+        page = unquote(page)
+        path = page_path(page, context)
+        total_balance = expected_balance(loans)
+
+        conn
+        |> visit(path)
+        |> assert_has(heading(), text: "#{total_balance}")
+      end
+
+      test "updates balance when transaction is created", %{account: account, conn: conn, loans: loans} = context do
+        [loan | _rest] = loans
+        page = unquote(page)
+        path = page_path(page, context)
+
+        session = visit(conn, path)
+
+        _transaction = Factory.lend(loan)
+
+        new_balance = account |> Loans.list_active_loans() |> expected_balance()
+
+        assert_has(session, heading(), text: "#{new_balance}")
+      end
+    end
+  end
+
   defp create_funds(%{account: account}) do
     funds =
       for _i <- 1..5 do
@@ -46,10 +79,21 @@ defmodule FreedomAccountWeb.AccountBalanceTest do
     %{funds: funds}
   end
 
+  defp create_loans(%{account: account}) do
+    loans =
+      for _i <- 1..5 do
+        account |> Factory.loan() |> Factory.with_loan_balance()
+      end
+
+    %{loans: loans}
+  end
+
   defp page_path(:fund_list, _context), do: ~p"/funds"
   defp page_path(:fund_show, %{funds: [fund | _rest]} = _context), do: ~p"/funds/#{fund}"
+  defp page_path(:loan_list, _context), do: ~p"/loans"
+  defp page_path(:loan_show, %{loans: [loan | _rest]} = _context), do: ~p"/loans/#{loan}"
 
-  defp expected_balance(funds) do
-    funds |> Enum.map(& &1.current_balance) |> MoneyUtils.sum()
+  defp expected_balance(items) do
+    items |> Enum.map(& &1.current_balance) |> MoneyUtils.sum()
   end
 end
