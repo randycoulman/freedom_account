@@ -14,7 +14,7 @@ defmodule FreedomAccount.Transactions do
       FreedomAccount.PubSub,
       FreedomAccount.Repo
     ],
-    exports: [LoanTransaction, Transaction]
+    exports: [AccountTransaction, LoanTransaction, Transaction]
 
   import Ecto.Query, only: [from: 1, subquery: 1, union: 2]
 

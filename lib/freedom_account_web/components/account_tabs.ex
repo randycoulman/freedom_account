@@ -10,7 +10,7 @@ defmodule FreedomAccountWeb.AccountTabs do
   # specified and checked at compile time by `attr` and `slot`, and they all
   # return a HEEx template, so no spec is necessary here.
 
-  attr :active, :atom, required: true, values: [:funds, :loans]
+  attr :active, :atom, required: true, values: [:funds, :loans, :transactions]
 
   def account_tabs(assigns) do
     ~H"""
@@ -20,6 +20,9 @@ defmodule FreedomAccountWeb.AccountTabs do
       </:tab>
       <:tab active={@active == :loans}>
         <.link navigate={~p"/loans"}>Loans</.link>
+      </:tab>
+      <:tab active={@active == :transactions}>
+        <.link navigate={~p"/transactions"}>Transactions</.link>
       </:tab>
     </.tab_bar>
     """

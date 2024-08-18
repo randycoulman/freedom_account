@@ -36,7 +36,6 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
     |> assign(assigns)
     |> assign(:paging, paging)
     |> assign(:transactions, transactions)
-    |> stream(:transactions, transactions, reset: true)
     |> ok()
   end
 
@@ -129,7 +128,6 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
     |> noreply()
   end
 
-  @impl LiveComponent
   def handle_event("prev-page", _params, socket) do
     %{fund: fund, paging: paging} = socket.assigns
 

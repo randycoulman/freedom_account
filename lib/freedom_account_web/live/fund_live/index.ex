@@ -82,7 +82,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
       action={@live_action}
       balance={@account_balance}
       funds={@funds}
-      return_path={~p"/funds"}
+      return_path={@return_path}
       settings_path={~p"/funds/account"}
     />
     <.account_tabs active={:funds} />

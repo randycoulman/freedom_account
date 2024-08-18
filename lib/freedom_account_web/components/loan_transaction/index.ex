@@ -36,7 +36,6 @@ defmodule FreedomAccountWeb.LoanTransaction.Index do
     |> assign(assigns)
     |> assign(:paging, paging)
     |> assign(:transactions, transactions)
-    |> stream(:transactions, transactions, reset: true)
     |> ok()
   end
 
