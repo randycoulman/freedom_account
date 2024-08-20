@@ -17,12 +17,12 @@ services:
   db:
     env_file:
       - ./config/db_secret.env
-    image: postgres:15.1
+    image: postgres:16.4
     ports:
       - "5432:5432"
     restart: unless-stopped
     volumes:
-      - dbdata:/var/lib/postgresql/data
+      - dbdata-16:/var/lib/postgresql/data
 
   db_setup:
     command: "/app/bin/migrate"
@@ -37,4 +37,4 @@ services:
       - prod
 
 volumes:
-  dbdata:
+  dbdata-16:
