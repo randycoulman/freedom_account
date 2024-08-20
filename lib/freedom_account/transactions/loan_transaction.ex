@@ -14,6 +14,7 @@ defmodule FreedomAccount.Transactions.LoanTransaction do
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Loans.Loan
   alias FreedomAccount.MoneyUtils
+  alias Money.Ecto.Composite.Type, as: MoneyEctoType
 
   @type attrs :: %{
           optional(:amount) => Money.t(),
@@ -25,12 +26,12 @@ defmodule FreedomAccount.Transactions.LoanTransaction do
 
   typed_schema "loan_transactions" do
     field :account_id, :integer
-    field(:amount, Money.Ecto.Composite.Type) :: Money.t()
+    field(:amount, MoneyEctoType) :: Money.t()
     field :date, :date
     field :loan_id, :integer
     field :memo, :string
 
-    field(:running_balance, Money.Ecto.Composite.Type, virtual: true) :: Money.t()
+    field(:running_balance, MoneyEctoType, virtual: true) :: Money.t()
 
     timestamps()
   end

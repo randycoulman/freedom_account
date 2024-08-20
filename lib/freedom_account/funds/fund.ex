@@ -13,6 +13,7 @@ defmodule FreedomAccount.Funds.Fund do
   alias Ecto.Schema
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Transactions.LineItem
+  alias Money.Ecto.Composite.Type, as: MoneyEctoType
 
   @type activation_attrs :: %{
           optional(:active) => boolean()
@@ -36,15 +37,15 @@ defmodule FreedomAccount.Funds.Fund do
     belongs_to :account, Account
 
     field :active, :boolean, null: false, read_after_writes: true
-    field(:budget, Money.Ecto.Composite.Type) :: Money.t()
+    field(:budget, MoneyEctoType) :: Money.t()
     field :icon, :string, null: false
     field :name, :string, null: false
     field :times_per_year, :float
 
     has_many :line_items, LineItem
 
-    field(:current_balance, Money.Ecto.Composite.Type, virtual: true) :: Money.t() | nil
-    field(:regular_deposit_amount, Money.Ecto.Composite.Type, virtual: true) :: Money.t()
+    field(:current_balance, MoneyEctoType, virtual: true) :: Money.t() | nil
+    field(:regular_deposit_amount, MoneyEctoType, virtual: true) :: Money.t()
 
     timestamps()
   end

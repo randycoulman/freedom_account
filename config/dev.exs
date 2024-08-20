@@ -2,13 +2,13 @@ import Config
 
 # Configure your database
 config :freedom_account, FreedomAccount.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
   database: "freedom_account_dev",
-  stacktrace: true,
+  hostname: "localhost",
+  password: "postgres",
+  pool_size: 10,
   show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+  stacktrace: true,
+  username: "postgres"
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
@@ -19,10 +19,10 @@ config :freedom_account, FreedomAccount.Repo,
 config :freedom_account, FreedomAccountWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}, port: 4000],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
+  http: [ip: {127, 0, 0, 1}, port: 4000],
   secret_key_base: "+dElIq5C0x20jjfhPai0HyJOod0VbrtqhfA9H3MjSCdDHP/zHTlvQcrID72sOXlo",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:freedom_account, ~w(--sourcemap=inline --watch)]},
@@ -68,18 +68,18 @@ config :freedom_account, dev_routes: true
 
 config :logger, :console,
   format: {FreedomAccount.DevLogFormatter, :format},
-  metadata: :all,
-  level: :info
+  level: :info,
+  metadata: :all
 
 config :mix_test_interactive,
   clear: true
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
+config :phoenix, :plug_init_mode, :runtime
 config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
-config :phoenix, :plug_init_mode, :runtime
 
 # Include HEEx debug annotations as HTML comments in rendered markup
 config :phoenix_live_view, :debug_heex_annotations, true

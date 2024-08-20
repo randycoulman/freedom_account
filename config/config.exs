@@ -7,44 +7,32 @@
 # General application configuration
 import Config
 
-config :ex_money,
-  default_cldr_backend: FreedomAccount.Cldr
-
-config :freedom_account,
-  ecto_repos: [FreedomAccount.Repo],
-  generators: [timestamp_type: :utc_datetime]
-
-# Configures the endpoint
-config :freedom_account, FreedomAccountWeb.Endpoint,
-  url: [host: "localhost"],
-  adapter: Bandit.PhoenixAdapter,
-  render_errors: [
-    formats: [html: FreedomAccountWeb.ErrorHTML, json: FreedomAccountWeb.ErrorJSON],
-    layout: false
-  ],
-  pubsub_server: FreedomAccount.PubSub,
-  live_view: [signing_salt: "RD+3ZR5v"]
-
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.17.11",
   freedom_account: [
     args: ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
-  ]
+  ],
+  version: "0.17.11"
 
-# Configure tailwind (the version is required)
-config :tailwind,
-  version: "3.4.3",
-  freedom_account: [
-    args: ~w(
-      --config=tailwind.config.js
-      --input=css/app.css
-      --output=../priv/static/assets/app.css
-    ),
-    cd: Path.expand("../assets", __DIR__)
-  ]
+config :ex_money,
+  default_cldr_backend: FreedomAccount.Cldr
+
+# Configures the endpoint
+config :freedom_account, FreedomAccountWeb.Endpoint,
+  adapter: Bandit.PhoenixAdapter,
+  live_view: [signing_salt: "RD+3ZR5v"],
+  pubsub_server: FreedomAccount.PubSub,
+  render_errors: [
+    formats: [html: FreedomAccountWeb.ErrorHTML, json: FreedomAccountWeb.ErrorJSON],
+    layout: false
+  ],
+  url: [host: "localhost"]
+
+config :freedom_account,
+  ecto_repos: [FreedomAccount.Repo],
+  generators: [timestamp_type: :utc_datetime]
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -60,6 +48,19 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-# Import environment specific config. This must remain at the bottom
-# of this file so it overrides the configuration defined above.
+# Configure tailwind (the version is required)
+config :tailwind,
+  freedom_account: [
+    args: ~w(
+    --config=tailwind.config.js
+    --input=css/app.css
+    --output=../priv/static/assets/app.css
+    ),
+
+    # Import environment specific config. This must remain at the bottom
+    # of this file so it overrides the configuration defined above.
+    cd: Path.expand("../assets", __DIR__)
+  ],
+  version: "3.4.3"
+
 import_config "#{config_env()}.exs"
