@@ -1,7 +1,5 @@
 defmodule FreedomAccountWeb.LoanTransactionTest do
-  # Started hitting a flickering test failure when this was async: true.
-  # Doing this for now, but will fix later.
-  use FreedomAccountWeb.ConnCase, async: false
+  use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
   alias FreedomAccount.MoneyUtils
