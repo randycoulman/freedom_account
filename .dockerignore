@@ -33,7 +33,7 @@
 .circleci
 .tool-versions
 .vscode
-docker-compose-*.yml
+compose-*.yml
 
 # Mix artifacts
 /_build/
