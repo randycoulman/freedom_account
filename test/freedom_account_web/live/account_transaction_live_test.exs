@@ -138,18 +138,27 @@ defmodule FreedomAccountWeb.AccountTransactionTest do
     #   |> assert_has(role("deposit"), text: "#{new_amount1}")
     # end
 
-    # test "deletes transaction in listing", %{conn: conn, fund: fund} do
-    #   deposit = Factory.deposit(fund)
-    #   [line_item] = deposit.line_items
+    test "deletes fund transaction in listing", %{conn: conn, fund: fund} do
+      deposit = Factory.deposit(fund)
 
-    #   conn
-    #   |> visit(~p"/funds/#{fund}")
-    #   |> click_link(action_link("#txn-#{line_item.id}"), "Delete")
-    #   |> assert_has(heading(), text: Safe.to_iodata(fund))
-    #   |> assert_has(heading(), text: "$0.00")
-    #   |> assert_has(sidebar_fund_balance(), text: "$0.00")
-    #   |> refute_has("#txn-#{line_item.id}")
-    # end
+      conn
+      |> visit(~p"/transactions")
+      |> click_link(action_link("#txn-#{deposit.id}"), "Delete")
+      |> assert_has(heading(), text: "Transactions")
+      |> assert_has(heading(), text: "$0.00")
+      |> refute_has("#txn-#{deposit.id}")
+    end
+
+    test "deletes loan transaction in listing", %{conn: conn, loan: loan} do
+      lend = Factory.lend(loan)
+
+      conn
+      |> visit(~p"/transactions")
+      |> click_link(action_link("#txn-#{lend.id}"), "Delete")
+      |> assert_has(heading(), text: "Transactions")
+      |> assert_has(heading(), text: "$0.00")
+      |> refute_has("#txn-#{lend.id}")
+    end
 
     defp assert_has_all_transactions(session, transactions) do
       Enum.reduce(transactions, session, fn txn, session ->

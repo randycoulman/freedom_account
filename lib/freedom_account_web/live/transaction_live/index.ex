@@ -19,12 +19,10 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
 
   @impl LiveView
   def handle_params(params, _url, socket) do
-    %{account: account, live_action: action} = socket.assigns
-    {transactions, %Paging{} = paging} = Transactions.list_account_transactions(account, per_page: @page_size)
+    %{live_action: action} = socket.assigns
 
     socket
-    |> assign(:paging, paging)
-    |> assign(:transactions, transactions)
+    |> load_transactions()
     |> apply_action(action, params)
     |> noreply()
   end
@@ -69,6 +67,17 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
       <:col :let={transaction} align={:right} label="Balance">
         <%= transaction.running_balance %>
       </:col>
+      <:action :let={transaction}>
+        <.link
+          data-confirm="Are you sure?"
+          phx-click={
+            JS.push("delete", value: %{id: transaction.id, type: transaction.type})
+            |> hide("#txn-#{transaction.id}")
+          }
+        >
+          <.icon name="hero-trash-micro" /> Delete
+        </.link>
+      </:action>
       <:empty_state>
         <div id="no-transactions">
           This account has no transactions yet.
@@ -111,6 +120,30 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
   end
 
   @impl LiveView
+  def handle_event("delete", %{"id" => id, "type" => "fund"}, socket) do
+    with {:ok, transaction} <- Transactions.fetch_transaction(id),
+         :ok <- Transactions.delete_transaction(transaction) do
+      noreply(socket)
+    else
+      {:error, error} ->
+        socket
+        |> put_flash(:error, Exception.message(error))
+        |> noreply()
+    end
+  end
+
+  def handle_event("delete", %{"id" => id, "type" => "loan"}, socket) do
+    with {:ok, transaction} <- Transactions.fetch_loan_transaction(id),
+         :ok <- Transactions.delete_loan_transaction(transaction) do
+      noreply(socket)
+    else
+      {:error, error} ->
+        socket
+        |> put_flash(:error, Exception.message(error))
+        |> noreply()
+    end
+  end
+
   def handle_event("next-page", _params, socket) do
     %{account: account, paging: paging} = socket.assigns
 
@@ -133,5 +166,31 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
     |> assign(:paging, next_paging)
     |> assign(:transactions, transactions)
     |> noreply()
+  end
+
+  @impl LiveView
+  def handle_info({event, _transaction}, socket)
+      when event in [
+             :loan_transaction_created,
+             :loan_transaction_deleted,
+             :loan_transaction_updated,
+             :transaction_created,
+             :transaction_deleted,
+             :transaction_updated
+           ] do
+    socket
+    |> load_transactions()
+    |> noreply()
+  end
+
+  def handle_info(_event, socket), do: noreply(socket)
+
+  defp load_transactions(socket) do
+    %{account: account} = socket.assigns
+    {transactions, %Paging{} = paging} = Transactions.list_account_transactions(account, per_page: @page_size)
+
+    socket
+    |> assign(:paging, paging)
+    |> assign(:transactions, transactions)
   end
 end
