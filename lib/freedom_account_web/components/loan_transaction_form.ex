@@ -14,9 +14,11 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
   alias Phoenix.LiveView
   alias Phoenix.LiveView.Socket
 
+  # For a new transaction, loan is required, but for an existing transaction it
+  # isn't.
   attr :account, Account, required: true
   attr :action, :string, required: true
-  attr :loan, Loan, required: true
+  attr :loan, Loan, default: nil
   attr :return_path, :string, required: true
   attr :transaction, LoanTransaction, required: true
 

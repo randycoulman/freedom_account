@@ -4,11 +4,16 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
 
   import FreedomAccountWeb.AccountBar.Show, only: [account_bar: 1]
   import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
+  import FreedomAccountWeb.LoanTransactionForm, only: [loan_transaction_form: 1]
+  import FreedomAccountWeb.TransactionForm, only: [transaction_form: 1]
 
+  alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.MoneyUtils
   alias FreedomAccount.Paging
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.AccountTransaction
+  alias FreedomAccount.Transactions.LoanTransaction
+  alias FreedomAccount.Transactions.Transaction
   alias Phoenix.LiveView
 
   @page_size 10
@@ -23,12 +28,42 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
 
     socket
     |> load_transactions()
+    |> assign(:return_path, ~p"/transactions")
+    |> assign(:transaction, nil)
     |> apply_action(action, params)
     |> noreply()
   end
 
   defp apply_action(socket, :edit_account, _params) do
     assign(socket, :page_title, "Edit Account Settings")
+  end
+
+  defp apply_action(socket, :edit_transaction, %{"type" => "fund"} = params) do
+    id = String.to_integer(params["id"])
+
+    case Transactions.fetch_transaction(id) do
+      {:ok, %Transaction{} = transaction} ->
+        socket
+        |> assign(:page_title, "Edit Transaction")
+        |> assign(:transaction, transaction)
+
+      {:error, %NotFoundError{}} ->
+        put_flash(socket, :error, "Transaction is no longer present")
+    end
+  end
+
+  defp apply_action(socket, :edit_transaction, %{"type" => "loan"} = params) do
+    id = String.to_integer(params["id"])
+
+    case Transactions.fetch_loan_transaction(id) do
+      {:ok, %LoanTransaction{} = transaction} ->
+        socket
+        |> assign(:page_title, "Edit Loan Transaction")
+        |> assign(:transaction, transaction)
+
+      {:error, %NotFoundError{}} ->
+        put_flash(socket, :error, "Transaction is no longer present")
+    end
   end
 
   defp apply_action(socket, _action, _params) do
@@ -43,7 +78,7 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
       action={@live_action}
       balance={@account_balance}
       funds={@funds}
-      return_path={~p"/transactions"}
+      return_path={@return_path}
       settings_path={~p"/transactions/account"}
     />
     <.account_tabs active={:transactions} />
@@ -67,6 +102,11 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
       <:col :let={transaction} align={:right} label="Balance">
         <%= transaction.running_balance %>
       </:col>
+      <:action :let={transaction}>
+        <.link patch={~p"/transactions/#{transaction}/edit?#{%{type: transaction.type}}"}>
+          <.icon name="hero-pencil-square-micro" /> Edit
+        </.link>
+      </:action>
       <:action :let={transaction}>
         <.link
           data-confirm="Are you sure?"
@@ -100,6 +140,35 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
     >
       Next Page <.icon name="hero-arrow-right-circle-mini" />
     </.button>
+
+    <.modal
+      :if={@live_action == :edit_transaction && match?(%Transaction{}, @transaction)}
+      id="fund-transaction-modal"
+      show
+      on_cancel={JS.patch(@return_path)}
+    >
+      <.transaction_form
+        account={@account}
+        action={@live_action}
+        all_funds={@funds}
+        return_path={@return_path}
+        transaction={@transaction}
+      />
+    </.modal>
+
+    <.modal
+      :if={@live_action == :edit_transaction && match?(%LoanTransaction{}, @transaction)}
+      id="loan-transaction-modal"
+      show
+      on_cancel={JS.patch(@return_path)}
+    >
+      <.loan_transaction_form
+        account={@account}
+        action={@live_action}
+        return_path={@return_path}
+        transaction={@transaction}
+      />
+    </.modal>
     """
   end
 

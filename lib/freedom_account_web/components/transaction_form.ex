@@ -13,10 +13,12 @@ defmodule FreedomAccountWeb.TransactionForm do
   alias Phoenix.LiveView
   alias Phoenix.LiveView.Socket
 
+  # For a new transaction, initial_funds is required, but for an existing
+  # transaction it isn't.
   attr :account, Account, required: true
   attr :action, :string, required: true
   attr :all_funds, :list, required: true
-  attr :initial_funds, :list, required: true
+  attr :initial_funds, :list, default: []
   attr :return_path, :string, required: true
   attr :transaction, Transaction, required: true
 
