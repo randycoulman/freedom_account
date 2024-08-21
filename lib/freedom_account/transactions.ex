@@ -139,11 +139,13 @@ defmodule FreedomAccount.Transactions do
       account
       |> Transaction.by_account()
       |> Transaction.join_line_items()
+      |> LineItem.join_fund()
       |> AccountTransaction.select_from_fund_transaction()
 
     loan_transactions =
       account
       |> LoanTransaction.by_account()
+      |> LoanTransaction.join_loan()
       |> AccountTransaction.select_from_loan_transaction()
 
     all_transactions =

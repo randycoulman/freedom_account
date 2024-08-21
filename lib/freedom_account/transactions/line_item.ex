@@ -22,10 +22,10 @@ defmodule FreedomAccount.Transactions.LineItem do
         }
 
   typed_schema "line_items" do
-    field(:amount, Money.Ecto.Composite.Type) :: Money.t()
-    field :fund_id, :integer
-
+    belongs_to :fund, Fund
     belongs_to :transaction, Transaction
+
+    field(:amount, Money.Ecto.Composite.Type) :: Money.t()
 
     timestamps()
   end
@@ -68,6 +68,14 @@ defmodule FreedomAccount.Transactions.LineItem do
   def by_fund(query \\ base_query(), %Fund{} = fund) do
     from [line_item: l] in query,
       where: [fund_id: ^fund.id]
+  end
+
+  @spec join_fund :: Queryable.t()
+  @spec join_fund(Queryable.t()) :: Queryable.t()
+  def join_fund(query \\ base_query()) do
+    from [line_item: l] in query,
+      join: f in assoc(l, :fund),
+      as: :fund
   end
 
   @spec join_transaction :: Queryable.t()

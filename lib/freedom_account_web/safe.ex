@@ -1,13 +1,11 @@
-defimpl Phoenix.HTML.Safe, for: [FreedomAccount.Funds.Fund, FreedomAccount.Loans.Loan] do
+defimpl Phoenix.HTML.Safe,
+  for: [FreedomAccount.Funds.Fund, FreedomAccount.Loans.Loan, FreedomAccount.Transactions.AccountTransaction] do
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Loans.Loan
+  alias FreedomAccount.Transactions.AccountTransaction
 
-  @spec to_iodata(Fund.t() | Loan.t()) :: iodata()
-  def to_iodata(%Fund{} = fund) do
-    "#{fund.icon} #{fund.name}"
-  end
-
-  def to_iodata(%Loan{} = loan) do
-    "#{loan.icon} #{loan.name}"
+  @spec to_iodata(Fund.t() | Loan.t() | AccountTransaction.t()) :: iodata()
+  def to_iodata(%{icon: icon, name: name}) do
+    "#{icon} #{name}"
   end
 end

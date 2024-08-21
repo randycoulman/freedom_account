@@ -89,6 +89,7 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
       <:col :let={transaction} label="Type"><.icon name={type_icon(transaction)} /></:col>
       <:col :let={transaction} label="Date"><%= transaction.date %></:col>
       <:col :let={transaction} label="Memo"><%= transaction.memo %></:col>
+      <:col :let={transaction} label="Fund/Loan"><%= transaction %></:col>
       <:col :let={transaction} align={:right} label="Out">
         <span :if={Money.negative?(transaction.amount)} data-role="out">
           <%= MoneyUtils.negate(transaction.amount) %>

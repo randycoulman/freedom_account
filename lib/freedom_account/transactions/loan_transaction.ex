@@ -25,10 +25,11 @@ defmodule FreedomAccount.Transactions.LoanTransaction do
   @type id :: non_neg_integer()
 
   typed_schema "loan_transactions" do
+    belongs_to :loan, Loan
+
     field :account_id, :integer
     field(:amount, MoneyEctoType) :: Money.t()
     field :date, :date
-    field :loan_id, :integer
     field :memo, :string
 
     field(:running_balance, MoneyEctoType, virtual: true) :: Money.t()
@@ -73,6 +74,14 @@ defmodule FreedomAccount.Transactions.LoanTransaction do
   @spec cursor_fields :: list()
   def cursor_fields, do: [{:date, :desc}, {:inserted_at, :desc}, {:id, :desc}]
 
+  @spec join_loan :: Queryable.t()
+  @spec join_loan(Queryable.t()) :: Queryable.t()
+  def join_loan(query \\ base_query()) do
+    from [transaction: t] in query,
+      join: l in assoc(t, :loan),
+      as: :loan
+  end
+
   @spec loan_changeset(Changeset.t() | Schema.t(), attrs()) :: Changeset.t()
   def loan_changeset(transaction, attrs) do
     transaction
@@ -104,6 +113,6 @@ defmodule FreedomAccount.Transactions.LoanTransaction do
   end
 
   defp base_query do
-    from(__MODULE__)
+    from __MODULE__, as: :transaction
   end
 end

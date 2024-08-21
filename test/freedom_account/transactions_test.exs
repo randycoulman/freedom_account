@@ -276,25 +276,22 @@ defmodule FreedomAccount.TransactionsTest do
       assert {[], %Paging{}} = Transactions.list_account_transactions(account)
     end
 
-    test "returns a list of 'account transactions' ordered descending by date", %{
-      account: account,
-      transactions: transactions
-    } do
-      expected = expected_account_transactions(transactions)
+    test "returns a list of 'account transactions' ordered descending by date", %{account: account} = context do
+      expected = expected_account_transactions(context)
 
       assert {^expected, %Paging{}} = Transactions.list_account_transactions(account)
     end
 
-    test "respects page size limit when specified", %{account: account, transactions: transactions} do
+    test "respects page size limit when specified", %{account: account} = context do
       limit = 3
-      expected = transactions |> expected_account_transactions() |> Enum.take(limit)
+      expected = context |> expected_account_transactions() |> Enum.take(limit)
 
       assert {^expected, %Paging{}} = Transactions.list_account_transactions(account, per_page: limit)
     end
 
-    test "pages forward", %{account: account, transactions: transactions} do
+    test "pages forward", %{account: account} = context do
       limit = 2
-      [first, second, third] = transactions |> expected_account_transactions() |> Enum.chunk_every(limit)
+      [first, second, third] = context |> expected_account_transactions() |> Enum.chunk_every(limit)
 
       assert {^first, %Paging{next_cursor: next_cursor}} =
                Transactions.list_account_transactions(account, per_page: limit)
@@ -306,9 +303,9 @@ defmodule FreedomAccount.TransactionsTest do
                Transactions.list_account_transactions(account, next_cursor: next_cursor, per_page: limit)
     end
 
-    test "pages backward", %{account: account, transactions: transactions} do
+    test "pages backward", %{account: account} = context do
       limit = 2
-      [first, second, _third] = transactions |> expected_account_transactions() |> Enum.chunk_every(limit)
+      [first, second, _third] = context |> expected_account_transactions() |> Enum.chunk_every(limit)
 
       {_list, %Paging{next_cursor: next_cursor}} = Transactions.list_account_transactions(account, per_page: limit)
 
@@ -325,18 +322,29 @@ defmodule FreedomAccount.TransactionsTest do
                Transactions.list_account_transactions(account, per_page: limit, prev_cursor: prev_cursor)
     end
 
-    defp expected_account_transactions(transactions) do
+    defp expected_account_transactions(context) do
+      %{fund: fund, loan: loan, transactions: transactions} = context
+
       transactions
       |> Enum.map(fn
         %Transaction{} = transaction ->
-          amount = transaction.line_items |> Enum.map(& &1.amount) |> MoneyUtils.sum()
+          line_items = transaction.line_items
+          amount = line_items |> Enum.map(& &1.amount) |> MoneyUtils.sum()
+
+          {icon, name} =
+            case line_items do
+              [_line_item] -> {fund.icon, fund.name}
+              _line_items -> {"📁", "Multiple"}
+            end
 
           %AccountTransaction{
             amount: amount,
             date: transaction.date,
+            icon: icon,
             id: transaction.id,
             inserted_at: transaction.inserted_at,
             memo: transaction.memo,
+            name: name,
             running_balance: Money.zero(:usd),
             type: :fund
           }
@@ -345,9 +353,11 @@ defmodule FreedomAccount.TransactionsTest do
           %AccountTransaction{
             amount: loan_transaction.amount,
             date: loan_transaction.date,
+            icon: loan.icon,
             id: loan_transaction.id,
             inserted_at: loan_transaction.inserted_at,
             memo: loan_transaction.memo,
+            name: loan.name,
             running_balance: Money.zero(:usd),
             type: :loan
           }
