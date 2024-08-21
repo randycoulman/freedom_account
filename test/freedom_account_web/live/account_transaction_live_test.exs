@@ -149,6 +149,7 @@ defmodule FreedomAccountWeb.AccountTransactionTest do
       |> click_link(action_link("#txn-#{transaction.id}"), "Edit")
       |> assert_has(page_title(), text: "Edit Loan Transaction")
       |> assert_has(heading(), text: "Edit Loan Transaction")
+      |> assert_has(role("loan"), text: Safe.to_iodata(loan))
       |> assert_has(field_value("#loan_transaction_date", transaction.date))
       |> assert_has(field_value("#loan_transaction_memo", transaction.memo))
       |> assert_has(field_value("#loan_transaction_amount", transaction.amount))

@@ -28,6 +28,7 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
 
     socket
     |> load_transactions()
+    |> assign(:loan, nil)
     |> assign(:return_path, ~p"/transactions")
     |> assign(:transaction, nil)
     |> apply_action(action, params)
@@ -57,7 +58,10 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
 
     case Transactions.fetch_loan_transaction(id) do
       {:ok, %LoanTransaction{} = transaction} ->
+        loan = find_loan(socket.assigns.loans, transaction.loan_id)
+
         socket
+        |> assign(:loan, loan)
         |> assign(:page_title, "Edit Loan Transaction")
         |> assign(:transaction, transaction)
 
@@ -166,6 +170,7 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
       <.loan_transaction_form
         account={@account}
         action={@live_action}
+        loan={@loan}
         return_path={@return_path}
         transaction={@transaction}
       />
@@ -262,6 +267,10 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
   end
 
   def handle_info(_event, socket), do: noreply(socket)
+
+  defp find_loan(loans, loan_id) do
+    Enum.find(loans, &(&1.id == loan_id))
+  end
 
   defp load_transactions(socket) do
     %{account: account} = socket.assigns
