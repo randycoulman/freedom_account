@@ -173,6 +173,14 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
     """
   end
 
+  defp type_icon(%AccountTransaction{name: "Multiple", type: :fund} = transaction) do
+    if Money.negative?(transaction.amount) do
+      "hero-folder-minus"
+    else
+      "hero-folder-plus"
+    end
+  end
+
   defp type_icon(%AccountTransaction{type: :fund} = transaction) do
     if Money.negative?(transaction.amount) do
       "hero-minus-circle"
