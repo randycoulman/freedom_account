@@ -6,7 +6,7 @@ defmodule FreedomAccount.MixProject do
   # credo:disable-for-this-file Credo.Check.Warning.MixEnv
   # Reason: Use of Mix.env() is perfectly valid in this file.
 
-  @version "1.4.0"
+  @version "1.5.0"
 
   @spec project :: Keyword.t()
   def project do
