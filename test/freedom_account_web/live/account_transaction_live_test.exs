@@ -33,10 +33,10 @@ defmodule FreedomAccountWeb.AccountTransactionTest do
       |> assert_has(table_cell(), text: "#{withdrawal.date}")
       |> assert_has(table_cell(), text: withdrawal.memo)
       |> assert_has(table_cell(), count: 2, text: Safe.to_iodata(fund))
-      |> assert_has(role("out"), text: "#{MoneyUtils.negate(withdrawal_line_item.amount)}")
+      |> assert_has(role("out"), text: "#{Money.negate!(withdrawal_line_item.amount)}")
       |> assert_has(table_cell(), text: "#{lend.date}")
       |> assert_has(table_cell(), text: lend.memo)
-      |> assert_has(role("out"), text: "#{MoneyUtils.negate(lend.amount)}")
+      |> assert_has(role("out"), text: "#{Money.negate!(lend.amount)}")
       |> assert_has(table_cell(), text: "#{payment.date}")
       |> assert_has(table_cell(), text: payment.memo)
       |> assert_has(table_cell(), count: 2, text: Safe.to_iodata(loan))
@@ -142,7 +142,7 @@ defmodule FreedomAccountWeb.AccountTransactionTest do
       transaction = Factory.lend(loan)
       new_date = Factory.date()
       new_memo = Factory.memo()
-      new_amount = MoneyUtils.negate(Factory.money())
+      new_amount = Money.negate!(Factory.money())
 
       conn
       |> visit(~p"/transactions")
@@ -162,7 +162,7 @@ defmodule FreedomAccountWeb.AccountTransactionTest do
       |> assert_has(heading(), text: "#{new_amount}")
       |> assert_has(table_cell(), text: "#{new_date}")
       |> assert_has(table_cell(), text: new_memo)
-      |> assert_has(role("out"), text: "#{MoneyUtils.negate(new_amount)}")
+      |> assert_has(role("out"), text: "#{Money.negate!(new_amount)}")
     end
 
     test "deletes fund transaction in listing", %{conn: conn, fund: fund} do

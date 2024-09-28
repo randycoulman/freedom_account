@@ -2,7 +2,6 @@ defmodule FreedomAccountWeb.FundTransactionTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
-  alias FreedomAccount.MoneyUtils
   alias FreedomAccount.Transactions
   alias FreedomAccountWeb.FundTransaction
   alias Phoenix.HTML.Safe
@@ -30,7 +29,7 @@ defmodule FreedomAccountWeb.FundTransactionTest do
       |> assert_has(role("deposit"), text: "#{deposit_line_item.amount}")
       |> assert_has(table_cell(), text: "#{withdrawal.date}")
       |> assert_has(table_cell(), text: withdrawal.memo)
-      |> assert_has(role("withdrawal"), text: "#{MoneyUtils.negate(withdrawal_line_item.amount)}")
+      |> assert_has(role("withdrawal"), text: "#{Money.negate!(withdrawal_line_item.amount)}")
       |> assert_has(table_cell(), text: "#{balance}")
     end
 

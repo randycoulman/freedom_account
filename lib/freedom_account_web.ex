@@ -47,7 +47,8 @@ defmodule FreedomAccountWeb do
         formats: [:html, :json],
         layouts: [html: FreedomAccountWeb.Layouts]
 
-      import FreedomAccountWeb.Gettext
+      use Gettext, backend: FreedomAccountWeb.Gettext
+
       import Plug.Conn
 
       unquote(verified_routes())
@@ -94,8 +95,9 @@ defmodule FreedomAccountWeb do
     quote do
       # HTML escaping functionality
       # Core UI components and translation
+      use Gettext, backend: FreedomAccountWeb.Gettext
+
       import FreedomAccountWeb.CoreComponents
-      import FreedomAccountWeb.Gettext
       import Phoenix.HTML
 
       # Shortcut for generating JS commands

@@ -13,7 +13,6 @@ defmodule FreedomAccount.Transactions.LoanTransaction do
   alias Ecto.Schema
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Loans.Loan
-  alias FreedomAccount.MoneyUtils
   alias Money.Ecto.Composite.Type, as: MoneyEctoType
 
   @type attrs :: %{
@@ -86,7 +85,7 @@ defmodule FreedomAccount.Transactions.LoanTransaction do
   def loan_changeset(transaction, attrs) do
     transaction
     |> changeset(attrs)
-    |> update_change(:amount, &MoneyUtils.negate/1)
+    |> update_change(:amount, &Money.negate!/1)
   end
 
   @spec newest_first(Queryable.t()) :: Queryable.t()

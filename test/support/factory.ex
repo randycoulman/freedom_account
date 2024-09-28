@@ -9,7 +9,6 @@ defmodule FreedomAccount.Factory do
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Loans
   alias FreedomAccount.Loans.Loan
-  alias FreedomAccount.MoneyUtils
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.LineItem
   alias FreedomAccount.Transactions.LoanTransaction
@@ -352,7 +351,7 @@ defmodule FreedomAccount.Factory do
   @spec with_fund_balance(Fund.t()) :: Fund.t()
   @spec with_fund_balance(Fund.t(), Money.t()) :: Fund.t()
   def with_fund_balance(%Fund{} = fund, balance \\ money()) do
-    unless Money.zero?(balance) do
+    if !Money.zero?(balance) do
       deposit(fund, amount: balance)
     end
 
@@ -362,10 +361,10 @@ defmodule FreedomAccount.Factory do
   @spec with_loan_balance(Loan.t()) :: Loan.t()
   @spec with_loan_balance(Loan.t(), Money.t()) :: Loan.t()
   def with_loan_balance(%Loan{} = loan, balance \\ money()) do
-    unless Money.zero?(balance) do
+    if !Money.zero?(balance) do
       lend(loan, amount: balance)
     end
 
-    %{loan | current_balance: MoneyUtils.negate(balance)}
+    %{loan | current_balance: Money.negate!(balance)}
   end
 end

@@ -12,7 +12,6 @@ defmodule FreedomAccount.LoansTest do
   alias FreedomAccount.Factory
   alias FreedomAccount.Loans
   alias FreedomAccount.Loans.Loan
-  alias FreedomAccount.MoneyUtils
   alias FreedomAccount.PubSub
 
   @moduletag capture_log: true
@@ -169,7 +168,7 @@ defmodule FreedomAccount.LoansTest do
       account
       |> Loans.list_active_loans()
       |> Enum.each(fn loan ->
-        assert loan.current_balance == loan |> calculate_amount.() |> MoneyUtils.negate()
+        assert loan.current_balance == loan |> calculate_amount.() |> Money.negate!()
       end)
     end
 
@@ -211,7 +210,7 @@ defmodule FreedomAccount.LoansTest do
       account
       |> Loans.list_all_loans()
       |> Enum.each(fn loan ->
-        assert loan.current_balance == loan |> calculate_amount.() |> MoneyUtils.negate()
+        assert loan.current_balance == loan |> calculate_amount.() |> Money.negate!()
       end)
     end
   end
@@ -310,7 +309,7 @@ defmodule FreedomAccount.LoansTest do
       amount = Factory.money()
       Factory.lend(loan, amount: amount)
 
-      expected = MoneyUtils.negate(amount)
+      expected = Money.negate!(amount)
       assert {:ok, %Loan{current_balance: ^expected}} = Loans.with_updated_balance(loan)
     end
   end

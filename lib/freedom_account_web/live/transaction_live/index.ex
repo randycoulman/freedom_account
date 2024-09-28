@@ -8,7 +8,6 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
   import FreedomAccountWeb.TransactionForm, only: [transaction_form: 1]
 
   alias FreedomAccount.Error.NotFoundError
-  alias FreedomAccount.MoneyUtils
   alias FreedomAccount.Paging
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.AccountTransaction
@@ -96,7 +95,7 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
       <:col :let={transaction} label="Fund/Loan"><%= transaction %></:col>
       <:col :let={transaction} align={:right} label="Out">
         <span :if={Money.negative?(transaction.amount)} data-role="out">
-          <%= MoneyUtils.negate(transaction.amount) %>
+          <%= Money.negate!(transaction.amount) %>
         </span>
       </:col>
       <:col :let={transaction} align={:right} label="In">

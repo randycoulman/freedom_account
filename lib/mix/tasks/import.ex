@@ -135,7 +135,7 @@ defmodule Mix.Tasks.Import do
     |> Path.join("categoryTransactions.csv")
     |> File.stream!()
     |> CSV.parse_stream()
-    |> Stream.each(fn [fund_name, date, memo, amount] ->
+    |> Enum.each(fn [fund_name, date, memo, amount] ->
       date = Date.from_iso8601!(date)
       %Money{} = amount = Money.parse(amount)
       {:ok, fund} = find_fund(funds, fund_name)
@@ -165,7 +165,6 @@ defmodule Mix.Tasks.Import do
           })
         end
     end)
-    |> Stream.run()
   end
 
   defp update_default_fund(%Account{} = account, _funds, nil, _opts) do
@@ -240,7 +239,7 @@ defmodule Mix.Tasks.Import do
     |> Path.join("loanTransactions.csv")
     |> File.stream!()
     |> CSV.parse_stream()
-    |> Stream.each(fn [loan_name, date, memo, amount] ->
+    |> Enum.each(fn [loan_name, date, memo, amount] ->
       date = Date.from_iso8601!(date)
       %Money{} = amount = Money.parse(amount)
       {:ok, loan} = find_loan(loans, loan_name)
@@ -262,7 +261,6 @@ defmodule Mix.Tasks.Import do
           })
         end
     end)
-    |> Stream.run()
   end
 
   defp find_fund(funds, name) do

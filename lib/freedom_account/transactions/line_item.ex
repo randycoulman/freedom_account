@@ -13,7 +13,6 @@ defmodule FreedomAccount.Transactions.LineItem do
   alias Ecto.Queryable
   alias Ecto.Schema
   alias FreedomAccount.Funds.Fund
-  alias FreedomAccount.MoneyUtils
   alias FreedomAccount.Transactions.Transaction
 
   @type attrs :: %{
@@ -43,8 +42,8 @@ defmodule FreedomAccount.Transactions.LineItem do
     difference = Money.add!(fund.current_balance, amount)
 
     if Money.negative?(difference) do
-      updated_changeset = put_change(changeset, :amount, MoneyUtils.negate(fund.current_balance))
-      {updated_changeset, MoneyUtils.negate(difference)}
+      updated_changeset = put_change(changeset, :amount, Money.negate!(fund.current_balance))
+      {updated_changeset, Money.negate!(difference)}
     else
       {changeset, Money.zero(:usd)}
     end
@@ -59,7 +58,7 @@ defmodule FreedomAccount.Transactions.LineItem do
   def withdrawal_changeset(line_item, attrs) do
     line_item
     |> base_changeset(attrs)
-    |> update_change(:amount, &MoneyUtils.negate/1)
+    |> update_change(:amount, &Money.negate!/1)
     |> ignore_if_amount_missing()
   end
 

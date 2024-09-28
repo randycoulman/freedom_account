@@ -2,7 +2,6 @@ defmodule FreedomAccountWeb.LoanTransactionTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
-  alias FreedomAccount.MoneyUtils
   alias FreedomAccountWeb.LoanTransaction
   alias Phoenix.HTML.Safe
 
@@ -24,7 +23,7 @@ defmodule FreedomAccountWeb.LoanTransactionTest do
       |> visit(~p"/loans/#{loan}")
       |> assert_has(table_cell(), text: "#{lend.date}")
       |> assert_has(table_cell(), text: lend.memo)
-      |> assert_has(role("loan"), text: "#{MoneyUtils.negate(lend.amount)}")
+      |> assert_has(role("loan"), text: "#{Money.negate!(lend.amount)}")
       |> assert_has(table_cell(), text: "#{payment.date}")
       |> assert_has(table_cell(), text: payment.memo)
       |> assert_has(role("payment"), text: "#{payment.amount}")
@@ -66,7 +65,7 @@ defmodule FreedomAccountWeb.LoanTransactionTest do
       transaction = Factory.lend(loan)
       new_date = Factory.date()
       new_memo = Factory.memo()
-      new_amount = MoneyUtils.negate(Factory.money())
+      new_amount = Money.negate!(Factory.money())
 
       conn
       |> visit(~p"/loans/#{loan}")
@@ -87,7 +86,7 @@ defmodule FreedomAccountWeb.LoanTransactionTest do
       |> assert_has(sidebar_loan_balance(), text: "#{new_amount}")
       |> assert_has(table_cell(), text: "#{new_date}")
       |> assert_has(table_cell(), text: new_memo)
-      |> assert_has(role("loan"), text: "#{MoneyUtils.negate(new_amount)}")
+      |> assert_has(role("loan"), text: "#{Money.negate!(new_amount)}")
     end
 
     test "deletes transaction in listing", %{conn: conn, loan: loan} do

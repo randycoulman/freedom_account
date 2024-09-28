@@ -7,7 +7,6 @@ defmodule FreedomAccountWeb.LoanLiveTest do
 
   alias FreedomAccount.Factory
   alias FreedomAccount.Loans
-  alias FreedomAccount.MoneyUtils
   alias Phoenix.HTML.Safe
 
   describe "Index" do
@@ -148,7 +147,7 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       date = Factory.date()
       memo = Factory.memo()
       amount = Factory.money()
-      balance = MoneyUtils.negate(amount)
+      balance = Money.negate!(amount)
       account_balance = Money.sub!(fund.current_balance, amount)
 
       conn

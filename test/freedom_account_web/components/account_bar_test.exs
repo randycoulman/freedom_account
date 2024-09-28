@@ -87,7 +87,7 @@ defmodule FreedomAccountWeb.AccountBarTest do
 
       conn
       |> visit(~p"/funds/account")
-      |> select(default_fund.name, from: "Default fund")
+      |> select(Safe.to_iodata(default_fund), from: "Default fund")
       |> click_button("Save Account")
       |> assert_has(flash(:info), text: "Account updated successfully")
       |> click_link("Settings")

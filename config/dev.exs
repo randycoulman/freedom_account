@@ -71,9 +71,6 @@ config :logger, :console,
   level: :info,
   metadata: :all
 
-config :mix_test_interactive,
-  clear: true
-
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
 config :phoenix, :plug_init_mode, :runtime

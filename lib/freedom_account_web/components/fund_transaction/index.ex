@@ -5,7 +5,6 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
   import FreedomAccountWeb.CoreComponents
 
   alias FreedomAccount.Funds.Fund
-  alias FreedomAccount.MoneyUtils
   alias FreedomAccount.Paging
   alias FreedomAccount.Transactions
   alias Phoenix.LiveComponent
@@ -48,7 +47,7 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
         <:col :let={transaction} label="Memo"><%= transaction.memo %></:col>
         <:col :let={transaction} align={:right} label="Out">
           <span :if={Money.negative?(transaction.amount)} data-role="withdrawal">
-            <%= MoneyUtils.negate(transaction.amount) %>
+            <%= Money.negate!(transaction.amount) %>
           </span>
         </:col>
         <:col :let={transaction} align={:right} label="In">
