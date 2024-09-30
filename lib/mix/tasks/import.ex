@@ -1,7 +1,7 @@
 defmodule Mix.Tasks.Import do
   @shortdoc "Imports legacy data"
   @moduledoc "Imports data from original FreedomAccount application."
-  use Boundary, classify_to: FreedomAccount.Mix
+  use Boundary, classify_to: FreedomAccount
   use Mix.Task
 
   alias FreedomAccount.Accounts
