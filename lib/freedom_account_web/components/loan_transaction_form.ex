@@ -68,9 +68,9 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
     ~H"""
     <div>
       <.header>
-        <%= @heading %>
+        {@heading}
         <:subtitle>
-          <span data-role="loan"><%= @loan %></span>
+          <span data-role="loan">{@loan}</span>
         </:subtitle>
       </.header>
 
@@ -87,7 +87,7 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
         <.input field={@form[:loan_id]} type="hidden" />
         <:actions>
           <.button phx-disable-with="Saving..." type="submit">
-            <.icon name="hero-check-circle-mini" /> <%= @save %>
+            <.icon name="hero-check-circle-mini" /> {@save}
           </.button>
         </:actions>
       </.simple_form>

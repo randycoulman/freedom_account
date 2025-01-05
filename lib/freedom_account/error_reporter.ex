@@ -71,8 +71,8 @@ defmodule FreedomAccount.ErrorReporter do
     end
   end
 
-  defp filter_stacktrace([{Keyword, :put_new_lazy, _, _} | rest]), do: filter_stacktrace(rest)
-  defp filter_stacktrace([{Process, :info, _, _} | rest]), do: filter_stacktrace(rest)
-  defp filter_stacktrace([{__MODULE__, _, _, _} | rest]), do: filter_stacktrace(rest)
+  defp filter_stacktrace([{Keyword, :put_new_lazy, _arity_or_args, _location} | rest]), do: filter_stacktrace(rest)
+  defp filter_stacktrace([{Process, :info, _arity_or_args, _location} | rest]), do: filter_stacktrace(rest)
+  defp filter_stacktrace([{__MODULE__, _function_name, _arity_or_args, _location} | rest]), do: filter_stacktrace(rest)
   defp filter_stacktrace(stacktrace), do: stacktrace
 end

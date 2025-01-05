@@ -16,8 +16,8 @@ defmodule FreedomAccountWeb.Account do
   def account(assigns) do
     ~H"""
     <.header>
-      <.link navigate={~p"/funds"}><%= @account.name %></.link>
-      <span><%= @balance %></span>
+      <.link navigate={~p"/funds"}>{@account.name}</.link>
+      <span>{@balance}</span>
     </.header>
     """
   end

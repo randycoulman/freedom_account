@@ -43,20 +43,20 @@ defmodule FreedomAccountWeb.LoanTransaction.Index do
     ~H"""
     <div>
       <.table id="loan-transactions" row_id={&"txn-#{&1.id}"} rows={@transactions}>
-        <:col :let={transaction} label="Date"><%= transaction.date %></:col>
-        <:col :let={transaction} label="Memo"><%= transaction.memo %></:col>
+        <:col :let={transaction} label="Date">{transaction.date}</:col>
+        <:col :let={transaction} label="Memo">{transaction.memo}</:col>
         <:col :let={transaction} align={:right} label="Out">
           <span :if={Money.negative?(transaction.amount)} data-role="loan">
-            <%= Money.negate!(transaction.amount) %>
+            {Money.negate!(transaction.amount)}
           </span>
         </:col>
         <:col :let={transaction} align={:right} label="In">
           <span :if={Money.positive?(transaction.amount)} data-role="payment">
-            <%= transaction.amount %>
+            {transaction.amount}
           </span>
         </:col>
         <:col :let={transaction} align={:right} label="Balance">
-          <%= transaction.running_balance %>
+          {transaction.running_balance}
         </:col>
         <:action :let={transaction}>
           <.link patch={~p"/loans/#{@loan}/transactions/#{transaction}/edit"}>

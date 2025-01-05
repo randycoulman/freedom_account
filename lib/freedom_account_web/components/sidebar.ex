@@ -30,15 +30,15 @@ defmodule FreedomAccountWeb.Sidebar do
     <div class="p-2">
       <.header>
         <.link navigate={~p"/funds"}>Funds</.link>
-        <span><%= @balance %></span>
+        <span>{@balance}</span>
       </.header>
       <nav class="flex flex-col" id="fund-list">
         <div :for={fund <- @funds} class="flex flex-row justify-between" id={"fund-#{fund.id}"}>
           <.link navigate={~p"/funds/#{fund}"}>
-            <%= fund %>
+            {fund}
           </.link>
           <span class="text-right">
-            <%= fund.current_balance %>
+            {fund.current_balance}
           </span>
         </div>
       </nav>
@@ -54,15 +54,15 @@ defmodule FreedomAccountWeb.Sidebar do
     <div class="p-2">
       <.header>
         <.link navigate={~p"/loans"}>Loans</.link>
-        <span><%= @balance %></span>
+        <span>{@balance}</span>
       </.header>
       <nav class="flex flex-col" id="loan-list">
         <div :for={loan <- @loans} class="flex flex-row justify-between" id={"loan-#{loan.id}"}>
           <.link navigate={~p"/loans/#{loan}"}>
-            <%= loan %>
+            {loan}
           </.link>
           <span class="text-right">
-            <%= loan.current_balance %>
+            {loan.current_balance}
           </span>
         </div>
       </nav>

@@ -95,7 +95,7 @@ defmodule FreedomAccountWeb.TransactionForm do
     ~H"""
     <div>
       <.header>
-        <%= @heading %>
+        {@heading}
       </.header>
 
       <.simple_form
@@ -108,7 +108,7 @@ defmodule FreedomAccountWeb.TransactionForm do
         <.input field={@form[:date]} label="Date" phx-debounce="blur" type="date" />
         <.input field={@form[:memo]} label="Memo" phx-debounce="blur" type="text" />
         <div :if={@line_items_error && @multi_line?} id="line-items-error">
-          <.error><%= @line_items_error %></.error>
+          <.error>{@line_items_error}</.error>
         </div>
         <div class="grid grid-cols-3 gap-x-4 items-center mx-auto">
           <span />
@@ -116,7 +116,7 @@ defmodule FreedomAccountWeb.TransactionForm do
           <span />
           <.inputs_for :let={li} field={@form[:line_items]}>
             <.label>
-              <%= find_fund(@all_funds, li[:fund_id].value) %>
+              {find_fund(@all_funds, li[:fund_id].value)}
             </.label>
             <.input
               field={li[:amount]}
@@ -129,11 +129,11 @@ defmodule FreedomAccountWeb.TransactionForm do
           </.inputs_for>
         </div>
         <div :if={@multi_line?} id="transaction-total">
-          Total withdrawal: <%= @form[:total].value %>
+          Total withdrawal: {@form[:total].value}
         </div>
         <:actions>
           <.button phx-disable-with="Saving..." type="submit">
-            <.icon name="hero-check-circle-mini" /> <%= @save %>
+            <.icon name="hero-check-circle-mini" /> {@save}
           </.button>
         </:actions>
       </.simple_form>

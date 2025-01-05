@@ -90,13 +90,13 @@ defmodule FreedomAccountWeb.FundLive.Show do
       <main class="flex flex-col flex-1 overflow-y-auto pl-2">
         <.header>
           <div class="flex flex-row">
-            <span><%= @fund %></span>
-            <span><%= @fund.current_balance %></span>
+            <span>{@fund}</span>
+            <span>{@fund.current_balance}</span>
           </div>
           <:subtitle>
             <div class="flex flex-row" id="fund-subtitle">
               <span>
-                Deposit: <%= Funds.regular_deposit_amount(@fund, @account) %> (<%= @fund.budget %> @ <%= @fund.times_per_year %> times/year)
+                Deposit: {Funds.regular_deposit_amount(@fund, @account)} ({@fund.budget} @ {@fund.times_per_year} times/year)
               </span>
             </div>
           </:subtitle>

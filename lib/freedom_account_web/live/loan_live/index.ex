@@ -71,7 +71,7 @@ defmodule FreedomAccountWeb.LoanLive.Index do
     />
     <.account_tabs active={:loans} />
     <.header>
-      Loans <span><%= @loans_balance %></span>
+      Loans <span>{@loans_balance}</span>
       <:actions>
         <.link patch={~p"/loans/activate"} phx-click={JS.push_focus()}>
           <.button>
@@ -92,9 +92,9 @@ defmodule FreedomAccountWeb.LoanLive.Index do
       row_id={fn loan -> "loans-#{loan.id}" end}
       rows={@loans}
     >
-      <:col :let={loan} align={:center} label="Icon"><%= loan.icon %></:col>
-      <:col :let={loan} label="Name"><%= loan.name %></:col>
-      <:col :let={loan} align={:right} label="Current Balance"><%= loan.current_balance %></:col>
+      <:col :let={loan} align={:center} label="Icon">{loan.icon}</:col>
+      <:col :let={loan} label="Name">{loan.name}</:col>
+      <:col :let={loan} align={:right} label="Current Balance">{loan.current_balance}</:col>
       <:action :let={loan}>
         <div class="sr-only">
           <.link navigate={~p"/loans/#{loan}"}>Show</.link>

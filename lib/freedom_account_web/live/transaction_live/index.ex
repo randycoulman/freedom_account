@@ -90,21 +90,21 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
     </.header>
     <.table id="account-transactions" row_id={&"txn-#{&1.id}"} rows={@transactions}>
       <:col :let={transaction} label="Type"><.icon name={type_icon(transaction)} /></:col>
-      <:col :let={transaction} label="Date"><%= transaction.date %></:col>
-      <:col :let={transaction} label="Memo"><%= transaction.memo %></:col>
-      <:col :let={transaction} label="Fund/Loan"><%= transaction %></:col>
+      <:col :let={transaction} label="Date">{transaction.date}</:col>
+      <:col :let={transaction} label="Memo">{transaction.memo}</:col>
+      <:col :let={transaction} label="Fund/Loan">{transaction}</:col>
       <:col :let={transaction} align={:right} label="Out">
         <span :if={Money.negative?(transaction.amount)} data-role="out">
-          <%= Money.negate!(transaction.amount) %>
+          {Money.negate!(transaction.amount)}
         </span>
       </:col>
       <:col :let={transaction} align={:right} label="In">
         <span :if={Money.positive?(transaction.amount)} data-role="in">
-          <%= transaction.amount %>
+          {transaction.amount}
         </span>
       </:col>
       <:col :let={transaction} align={:right} label="Balance">
-        <%= transaction.running_balance %>
+        {transaction.running_balance}
       </:col>
       <:action :let={transaction}>
         <.link patch={~p"/transactions/#{transaction}/edit?#{%{type: transaction.type}}"}>

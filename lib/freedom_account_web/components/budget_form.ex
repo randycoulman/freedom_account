@@ -52,7 +52,7 @@ defmodule FreedomAccountWeb.BudgetForm do
             <.label>Times/Year</.label>
             <.label>Deposit Amount</.label>
             <.inputs_for :let={fund} field={@form[:funds]}>
-              <.label><%= fund.data %></.label>
+              <.label>{fund.data}</.label>
               <.input
                 field={fund[:budget]}
                 label={"Budget #{fund.index}"}
@@ -68,12 +68,12 @@ defmodule FreedomAccountWeb.BudgetForm do
                 type="text"
               />
               <span data-role={"deposit-amount-#{fund.index}"}>
-                <%= fund[:regular_deposit_amount].value %>
+                {fund[:regular_deposit_amount].value}
               </span>
             </.inputs_for>
           </div>
           <div id="deposit-total">
-            Total deposit amount: <%= @form[:total_deposit_amount].value %>
+            Total deposit amount: {@form[:total_deposit_amount].value}
           </div>
         </div>
         <:actions>

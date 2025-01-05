@@ -89,8 +89,8 @@ defmodule FreedomAccountWeb.LoanLive.Show do
       <main class="flex flex-col flex-1 overflow-y-auto pl-2">
         <.header>
           <div class="flex flex-row">
-            <span><%= @loan %></span>
-            <span><%= @loan.current_balance %></span>
+            <span>{@loan}</span>
+            <span>{@loan.current_balance}</span>
           </div>
           <:actions>
             <.link patch={~p"/loans/#{@loan}/show/edit"} phx-click={JS.push_focus()}>

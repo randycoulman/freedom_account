@@ -36,8 +36,8 @@ defmodule FreedomAccountWeb.AccountBar.Show do
     ~H"""
     <div>
       <.header>
-        <.link navigate={~p"/funds"}><%= @account.name %></.link>
-        <span><%= @balance %></span>
+        <.link navigate={~p"/funds"}>{@account.name}</.link>
+        <span>{@balance}</span>
         <:actions>
           <.link patch={@settings_path} phx-click={JS.push_focus()}>
             <.button>

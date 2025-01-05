@@ -43,20 +43,20 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
     ~H"""
     <div>
       <.table id="fund-transactions" row_id={&"txn-#{&1.line_item_id}"} rows={@transactions}>
-        <:col :let={transaction} label="Date"><%= transaction.date %></:col>
-        <:col :let={transaction} label="Memo"><%= transaction.memo %></:col>
+        <:col :let={transaction} label="Date">{transaction.date}</:col>
+        <:col :let={transaction} label="Memo">{transaction.memo}</:col>
         <:col :let={transaction} align={:right} label="Out">
           <span :if={Money.negative?(transaction.amount)} data-role="withdrawal">
-            <%= Money.negate!(transaction.amount) %>
+            {Money.negate!(transaction.amount)}
           </span>
         </:col>
         <:col :let={transaction} align={:right} label="In">
           <span :if={Money.positive?(transaction.amount)} data-role="deposit">
-            <%= transaction.amount %>
+            {transaction.amount}
           </span>
         </:col>
         <:col :let={transaction} align={:right} label="Balance">
-          <%= transaction.running_balance %>
+          {transaction.running_balance}
         </:col>
         <:action :let={transaction}>
           <.link patch={~p"/funds/#{@fund}/transactions/#{transaction}/edit"}>
