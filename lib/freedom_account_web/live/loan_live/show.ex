@@ -93,11 +93,6 @@ defmodule FreedomAccountWeb.LoanLive.Show do
             <span>{@loan.current_balance}</span>
           </div>
           <:actions>
-            <.link patch={~p"/loans/#{@loan}/show/edit"} phx-click={JS.push_focus()}>
-              <.button>
-                <.icon name="hero-pencil-square-mini" /> Edit Details
-              </.button>
-            </.link>
             <.link patch={~p"/loans/#{@loan}/loans/new"} phx-click={JS.push_focus()}>
               <.button>
                 <.icon name="hero-credit-card-mini" /> Lend
@@ -106,6 +101,11 @@ defmodule FreedomAccountWeb.LoanLive.Show do
             <.link patch={~p"/loans/#{@loan}/payments/new"} phx-click={JS.push_focus()}>
               <.button>
                 <.icon name="hero-banknotes-mini" /> Payment
+              </.button>
+            </.link>
+            <.link patch={~p"/loans/#{@loan}/show/edit"} phx-click={JS.push_focus()}>
+              <.button>
+                <.icon name="hero-pencil-square-mini" /> Edit Details
               </.button>
             </.link>
           </:actions>
