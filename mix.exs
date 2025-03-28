@@ -6,7 +6,7 @@ defmodule FreedomAccount.MixProject do
   # credo:disable-for-this-file Credo.Check.Warning.MixEnv
   # Reason: Use of Mix.env() is perfectly valid in this file.
 
-  @version "1.7.1"
+  @version "1.8.0"
 
   @spec project :: Keyword.t()
   def project do
@@ -77,19 +77,19 @@ defmodule FreedomAccount.MixProject do
       {:boundary, "~> 0.10.4"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:dns_cluster, "~> 0.1.1"},
+      {:dns_cluster, "~> 0.2.0"},
       {:ecto_sql, "~> 3.12"},
-      {:esbuild, "~> 0.8.1", runtime: Mix.env() == :dev},
+      {:esbuild, "~> 0.9.0", runtime: Mix.env() == :dev},
       {:ex_machina, "~> 2.8", only: :test},
-      {:ex_money, "~> 5.19", runtime: false},
+      {:ex_money, "~> 5.20", runtime: false},
       {:ex_money_sql, "~> 1.1"},
       {:faker, "~> 0.18.0", only: :test},
-      {:floki, ">= 0.35.3", only: :test},
+      {:floki, ">= 0.37.1", only: :test},
       {:gettext, "~> 0.26.1"},
       {:heroicons,
        github: "tailwindlabs/heroicons", tag: "v2.2.0", sparse: "optimized", app: false, compile: false, depth: 1},
       {:jason, "~> 1.2"},
-      {:mix_test_interactive, "~> 4.0", only: :dev, runtime: false},
+      {:mix_test_interactive, "~> 4.3", only: :dev, runtime: false},
       {:nimble_csv, "~> 1.2"},
       {:paginator, "~> 1.2"},
       {:phoenix_ecto, "~> 4.5"},
@@ -97,15 +97,15 @@ defmodule FreedomAccount.MixProject do
       {:phoenix_live_dashboard, "~> 0.8.4"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
       {:phoenix_live_view, "~> 1.0.0-rc.1", override: true},
-      {:phoenix_test, "~> 0.5.1", only: :test, runtime: false},
+      {:phoenix_test, "~> 0.6.0", only: :test, runtime: false},
       {:phoenix, "~> 1.7"},
       # This is here to resolve a conflict with paginator's dependencies
       {:plug_crypto, "~> 2.1", override: true},
       {:postgrex, ">= 0.0.0"},
       {:process_tree, "~> 0.2.0"},
-      {:styler, "~> 1.1", only: [:dev, :test], runtime: false},
-      {:tailwind, "~> 0.2.3", runtime: Mix.env() == :dev},
-      {:telemetry_metrics, "~> 1.0"},
+      {:styler, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:tailwind, "~> 0.3.1", runtime: Mix.env() == :dev},
+      {:telemetry_metrics, "~> 1.1"},
       {:telemetry_poller, "~> 1.1"},
       {:timex, "~> 3.7"},
       {:typed_ecto_schema, "~> 0.4.1"},
