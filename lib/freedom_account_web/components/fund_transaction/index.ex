@@ -13,12 +13,13 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
 
   @page_size 10
 
+  attr :id, :integer, required: true
   attr :fund, Fund, required: true
 
   @spec fund_transaction_list(Socket.assigns()) :: LiveView.Rendered.t()
   def fund_transaction_list(assigns) do
     ~H"""
-    <.live_component id={@fund.id} module={__MODULE__} {assigns} />
+    <.live_component module={__MODULE__} {assigns} />
     """
   end
 

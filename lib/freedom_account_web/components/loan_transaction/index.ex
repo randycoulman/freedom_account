@@ -13,12 +13,13 @@ defmodule FreedomAccountWeb.LoanTransaction.Index do
 
   @page_size 10
 
+  attr :id, :integer, required: true
   attr :loan, Loan, required: true
 
   @spec loan_transaction_list(Socket.assigns()) :: LiveView.Rendered.t()
   def loan_transaction_list(assigns) do
     ~H"""
-    <.live_component id={@loan.id} module={__MODULE__} {assigns} />
+    <.live_component module={__MODULE__} {assigns} />
     """
   end
 

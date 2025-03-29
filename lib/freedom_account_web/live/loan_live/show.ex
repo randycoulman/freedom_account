@@ -13,6 +13,7 @@ defmodule FreedomAccountWeb.LoanLive.Show do
   alias FreedomAccount.Loans.Loan
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.LoanTransaction
+  alias FreedomAccountWeb.LoanTransaction.Index, as: TransactionList
   alias Phoenix.HTML.Safe
   alias Phoenix.LiveView
 
@@ -110,7 +111,7 @@ defmodule FreedomAccountWeb.LoanLive.Show do
             </.link>
           </:actions>
         </.header>
-        <.loan_transaction_list loan={@loan} />
+        <.loan_transaction_list id={@loan.id} loan={@loan} />
 
         <.back navigate={~p"/loans"}>Back to Loans</.back>
       </main>
@@ -157,6 +158,16 @@ defmodule FreedomAccountWeb.LoanLive.Show do
       {:error, %NotFoundError{}} ->
         noreply(socket)
     end
+  end
+
+  def handle_info({:loan_transaction_updated, transaction}, socket) do
+    %{loan: loan} = socket.assigns
+
+    if transaction.loan_id == loan.id do
+      send_update(TransactionList, id: loan.id, loan: loan)
+    end
+
+    noreply(socket)
   end
 
   def handle_info(_message, socket), do: noreply(socket)

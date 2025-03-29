@@ -14,6 +14,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.Transaction
+  alias FreedomAccountWeb.FundTransaction
   alias Phoenix.HTML.Safe
   alias Phoenix.LiveView
 
@@ -126,7 +127,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
             </.link>
           </:actions>
         </.header>
-        <.fund_transaction_list fund={@fund} />
+        <.fund_transaction_list fund={@fund} id={@fund.id} />
 
         <.back navigate={~p"/funds"}>Back to Funds</.back>
       </main>
@@ -174,6 +175,16 @@ defmodule FreedomAccountWeb.FundLive.Show do
       {:error, %NotFoundError{}} ->
         noreply(socket)
     end
+  end
+
+  def handle_info({:transaction_updated, transaction}, socket) do
+    %{fund: fund} = socket.assigns
+
+    if Enum.any?(transaction.line_items, &(&1.fund_id == fund.id)) do
+      send_update(FundTransaction.Index, id: fund.id, fund: fund)
+    end
+
+    noreply(socket)
   end
 
   def handle_info(_message, socket), do: noreply(socket)
