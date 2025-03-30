@@ -1,16 +1,18 @@
-<header class="px-4 sm:px-6 lg:px-8 text-center">
-  <h1 class="text-xl font-semibold leading-8 text-zinc-800">
-    <.link href={~p"/"}>Freedom Account</.link>
-  </h1>
-</header>
-<main class="py-4">
-  <div class="mx-auto">
-    <.flash_group flash={@flash} />
-    {@inner_content}
-  </div>
-</main>
-<footer class="px-4 sm:px-6 lg:px-8 text-center">
-  <div class="text-sm text-zinc-800">
-    Version {Application.spec(:freedom_account, :vsn)}
-  </div>
-</footer>
+<div class="max-w-full lg:max-w-7xl mx-auto px-4">
+  <header class="py-4 text-center">
+    <h1 class="text-4xl font-semibold text-zinc-800">
+      <.link href={~p"/"}>Freedom Account</.link>
+    </h1>
+  </header>
+  <main>
+    <div>
+      <.flash_group flash={@flash} />
+      {@inner_content}
+    </div>
+  </main>
+  <footer class="py-4 text-center">
+    <div class="text-sm text-zinc-800">
+      Version {Application.spec(:freedom_account, :vsn)}
+    </div>
+  </footer>
+</div>
