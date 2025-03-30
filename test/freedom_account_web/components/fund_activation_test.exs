@@ -26,7 +26,7 @@ defmodule FreedomAccountWeb.FundActivationTest do
       |> click_button("Update Funds")
       |> assert_has(flash(:info), text: "Funds updated successfully")
       |> assert_has(page_title(), text: "Funds")
-      |> assert_has(heading(), text: "Funds")
+      |> assert_has(active_tab(), text: "Funds")
       |> assert_has(table_cell(), text: "Can Deactivate")
       |> assert_has(table_cell(), text: "Inactive")
       |> assert_has(table_cell(), text: "Has Non-Zero Balance")

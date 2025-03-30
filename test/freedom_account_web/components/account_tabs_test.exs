@@ -29,6 +29,13 @@ defmodule FreedomAccountWeb.AccountTabsTest do
       |> assert_has(inactive_tab(), text: "Loans")
     end
 
+    test "shows balances on funds and loans tabs", %{conn: conn} do
+      conn
+      |> visit(~p"/")
+      |> assert_has(active_tab(), text: "$0.00")
+      |> assert_has(inactive_tab(), text: "$0.00")
+    end
+
     test "can switch tabs", %{conn: conn} do
       conn
       |> visit(~p"/funds")

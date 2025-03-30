@@ -20,7 +20,7 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       conn
       |> visit(~p"/loans")
       |> assert_has(page_title(), text: "Loans")
-      |> assert_has(heading(), text: "Loans")
+      |> assert_has(active_tab(), text: "Loans")
       |> assert_has(table_cell(), text: loan.icon)
       |> assert_has(table_cell(), text: loan.name)
       |> assert_has(table_cell(), text: to_string(loan.current_balance))
@@ -29,7 +29,7 @@ defmodule FreedomAccountWeb.LoanLiveTest do
     test "shows prompt when list is empty", %{conn: conn} do
       conn
       |> visit(~p"/loans")
-      |> assert_has(heading(), text: "Loans")
+      |> assert_has(active_tab(), text: "Loans")
       |> assert_has("#no-loans", text: "This account has no active loans. Use the Add Loan button to add one.")
     end
 
@@ -39,7 +39,7 @@ defmodule FreedomAccountWeb.LoanLiveTest do
 
       conn
       |> visit(~p"/loans")
-      |> assert_has(heading(), text: "#{loan.current_balance}")
+      |> assert_has(active_tab(), text: "#{loan.current_balance}")
     end
 
     test "saves new loan", %{conn: conn} do
@@ -108,7 +108,7 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       |> assert_has(heading(), text: "$0.00")
       |> click_link("Back to Loans")
       |> assert_has(page_title(), text: "Loans")
-      |> assert_has(heading(), text: "Loans")
+      |> assert_has(active_tab(), text: "Loans")
     end
 
     test "displays loan", %{conn: conn, loan: loan} do

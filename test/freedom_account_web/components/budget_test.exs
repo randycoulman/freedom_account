@@ -50,7 +50,7 @@ defmodule FreedomAccountWeb.BudgetTest do
       |> click_button("Update Budget")
       |> assert_has(flash(:info), text: "Budget updated successfully")
       |> assert_has(page_title(), text: "Funds")
-      |> assert_has(heading(), text: "Funds")
+      |> assert_has(active_tab(), text: "Funds")
       |> assert_has(table_cell(), text: "#{attrs1[:budget]}")
       |> assert_has(table_cell(), text: "#{attrs2[:times_per_year]}")
     end

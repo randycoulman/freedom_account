@@ -26,7 +26,7 @@ defmodule FreedomAccountWeb.LoanActivationTest do
       |> click_button("Update Loans")
       |> assert_has(flash(:info), text: "Loans updated successfully")
       |> assert_has(page_title(), text: "Loans")
-      |> assert_has(heading(), text: "Loans")
+      |> assert_has(active_tab(), text: "Loans")
       |> assert_has(table_cell(), text: "Can Deactivate")
       |> assert_has(table_cell(), text: "Inactive")
       |> assert_has(table_cell(), text: "Has Non-Zero Balance")

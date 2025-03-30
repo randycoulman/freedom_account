@@ -22,7 +22,7 @@ defmodule FreedomAccountWeb.AccountBalanceTest do
 
         conn
         |> visit(path)
-        |> assert_has(heading(), text: "#{total_balance}")
+        |> assert_has(balance(page), text: "#{total_balance}")
       end
 
       test "updates balance when transaction is created", %{account: account, conn: conn, funds: funds} = context do
@@ -35,7 +35,7 @@ defmodule FreedomAccountWeb.AccountBalanceTest do
 
         new_balance = account |> Funds.list_active_funds() |> expected_balance()
 
-        assert_has(session, heading(), text: "#{new_balance}")
+        assert_has(session, balance(page), text: "#{new_balance}")
       end
     end
   end
@@ -51,7 +51,7 @@ defmodule FreedomAccountWeb.AccountBalanceTest do
 
         conn
         |> visit(path)
-        |> assert_has(heading(), text: "#{total_balance}")
+        |> assert_has(balance(page), text: "#{total_balance}")
       end
 
       test "updates balance when transaction is created", %{account: account, conn: conn, loans: loans} = context do
@@ -65,10 +65,13 @@ defmodule FreedomAccountWeb.AccountBalanceTest do
 
         new_balance = account |> Loans.list_active_loans() |> expected_balance()
 
-        assert_has(session, heading(), text: "#{new_balance}")
+        assert_has(session, balance(page), text: "#{new_balance}")
       end
     end
   end
+
+  defp balance(page) when page in [:fund_list, :loan_list], do: active_tab()
+  defp balance(page) when page in [:fund_show, :loan_show], do: heading()
 
   defp create_funds(%{account: account}) do
     funds =

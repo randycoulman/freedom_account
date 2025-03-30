@@ -45,7 +45,7 @@ defmodule FreedomAccountWeb.RegularWithdrawalTest do
       |> click_button("Make Withdrawal")
       |> assert_has(flash(:info), text: "Withdrawal successful")
       |> assert_has(page_title(), text: "Funds")
-      |> assert_has(heading(), text: "Funds")
+      |> assert_has(active_tab(), text: "Funds")
       |> assert_has(table_cell(), text: "#{balance1}")
       |> assert_has(table_cell(), text: "#{balance2}")
       |> assert_has(table_cell(), text: "#{balance3}")

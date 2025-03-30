@@ -36,7 +36,7 @@ defmodule FreedomAccountWeb.AccountBarTest do
       |> assert_has(flash(:info), text: "Account updated successfully")
       |> assert_has(page_title(), text: "Funds")
       |> assert_has(heading(), text: name)
-      |> assert_has(heading(), text: "Funds")
+      |> assert_has(active_tab(), text: "Funds")
     end
 
     test "updates account within modal on loan list view", %{conn: conn} do
@@ -57,7 +57,7 @@ defmodule FreedomAccountWeb.AccountBarTest do
       |> assert_has(flash(:info), text: "Account updated successfully")
       |> assert_has(page_title(), text: "Loans")
       |> assert_has(heading(), text: name)
-      |> assert_has(heading(), text: "Loans")
+      |> assert_has(active_tab(), text: "Loans")
     end
 
     test "updates account within modal on transaction list view", %{conn: conn} do
@@ -78,7 +78,7 @@ defmodule FreedomAccountWeb.AccountBarTest do
       |> assert_has(flash(:info), text: "Account updated successfully")
       |> assert_has(page_title(), text: "Transactions")
       |> assert_has(heading(), text: name)
-      |> assert_has(heading(), text: "Transactions")
+      |> assert_has(active_tab(), text: "Transactions")
     end
 
     test "selects default fund", %{account: account, conn: conn} do

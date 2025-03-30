@@ -96,7 +96,7 @@ defmodule FreedomAccountWeb.AccountTransactionTest do
       |> fill_in("Amount 0", with: new_amount)
       |> click_button("Save Transaction")
       |> assert_has(flash(:info), text: "Transaction updated successfully")
-      |> assert_has(heading(), text: "Transactions")
+      |> assert_has(active_tab(), text: "Transactions")
       |> assert_has(account_balance(), text: "#{new_amount}")
       |> assert_has(table_cell(), text: "#{new_date}")
       |> assert_has(table_cell(), text: new_memo)
@@ -158,7 +158,7 @@ defmodule FreedomAccountWeb.AccountTransactionTest do
       |> fill_in("Amount", with: new_amount)
       |> click_button("Save Transaction")
       |> assert_has(flash(:info), text: "Transaction updated successfully")
-      |> assert_has(heading(), text: "Transactions")
+      |> assert_has(active_tab(), text: "Transactions")
       |> assert_has(account_balance(), text: "#{new_amount}")
       |> assert_has(table_cell(), text: "#{new_date}")
       |> assert_has(table_cell(), text: new_memo)
@@ -171,7 +171,7 @@ defmodule FreedomAccountWeb.AccountTransactionTest do
       conn
       |> visit(~p"/transactions")
       |> click_link(action_link("#txn-#{deposit.id}"), "Delete")
-      |> assert_has(heading(), text: "Transactions")
+      |> assert_has(active_tab(), text: "Transactions")
       |> assert_has(account_balance(), text: "$0.00")
       |> refute_has("#txn-#{deposit.id}")
     end
@@ -182,7 +182,7 @@ defmodule FreedomAccountWeb.AccountTransactionTest do
       conn
       |> visit(~p"/transactions")
       |> click_link(action_link("#txn-#{lend.id}"), "Delete")
-      |> assert_has(heading(), text: "Transactions")
+      |> assert_has(active_tab(), text: "Transactions")
       |> assert_has(account_balance(), text: "$0.00")
       |> refute_has("#txn-#{lend.id}")
     end

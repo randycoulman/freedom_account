@@ -85,37 +85,34 @@ defmodule FreedomAccountWeb.FundLive.Index do
       return_path={@return_path}
       settings_path={~p"/funds/account"}
     />
-    <.account_tabs active={:funds} />
-    <.header>
-      Funds <span>{@funds_balance}</span>
-      <:actions>
-        <.link patch={~p"/funds/regular_deposit"} phx-click={JS.push_focus()}>
-          <.button>
-            <.icon name="hero-folder-plus-mini" /> Regular Deposit
-          </.button>
-        </.link>
-        <.link patch={~p"/funds/regular_withdrawal"} phx-click={JS.push_focus()}>
-          <.button>
-            <.icon name="hero-folder-minus-mini" /> Regular Withdrawal
-          </.button>
-        </.link>
-        <.link patch={~p"/funds/budget"} phx-click={JS.push_focus()}>
-          <.button>
-            <.icon name="hero-chart-pie-mini" /> Budget
-          </.button>
-        </.link>
-        <.link patch={~p"/funds/activate"} phx-click={JS.push_focus()}>
-          <.button>
-            <.icon name="hero-archive-box-mini" /> Activate/Deactivate
-          </.button>
-        </.link>
-        <.link patch={~p"/funds/new"}>
-          <.button>
-            <.icon name="hero-plus-circle-mini" /> Add Fund
-          </.button>
-        </.link>
-      </:actions>
-    </.header>
+    <.account_tabs active={:funds} funds_balance={@funds_balance} loans_balance={@loans_balance} />
+    <div class="flex flex-row gap-2 justify-end pt-4">
+      <.link patch={~p"/funds/regular_deposit"} phx-click={JS.push_focus()}>
+        <.button>
+          <.icon name="hero-folder-plus-mini" /> Regular Deposit
+        </.button>
+      </.link>
+      <.link patch={~p"/funds/regular_withdrawal"} phx-click={JS.push_focus()}>
+        <.button>
+          <.icon name="hero-folder-minus-mini" /> Regular Withdrawal
+        </.button>
+      </.link>
+      <.link patch={~p"/funds/budget"} phx-click={JS.push_focus()}>
+        <.button>
+          <.icon name="hero-chart-pie-mini" /> Budget
+        </.button>
+      </.link>
+      <.link patch={~p"/funds/activate"} phx-click={JS.push_focus()}>
+        <.button>
+          <.icon name="hero-archive-box-mini" /> Activate/Deactivate
+        </.button>
+      </.link>
+      <.link patch={~p"/funds/new"}>
+        <.button>
+          <.icon name="hero-plus-circle-mini" /> Add Fund
+        </.button>
+      </.link>
+    </div>
 
     <.table
       id="funds"

@@ -84,10 +84,11 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
       return_path={@return_path}
       settings_path={~p"/transactions/account"}
     />
-    <.account_tabs active={:transactions} />
-    <.header>
-      Transactions
-    </.header>
+    <.account_tabs
+      active={:transactions}
+      funds_balance={@funds_balance}
+      loans_balance={@loans_balance}
+    />
     <.table id="account-transactions" row_id={&"txn-#{&1.id}"} rows={@transactions}>
       <:col :let={transaction} label="Type"><.icon name={type_icon(transaction)} /></:col>
       <:col :let={transaction} label="Date">{transaction.date}</:col>

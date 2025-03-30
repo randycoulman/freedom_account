@@ -69,22 +69,19 @@ defmodule FreedomAccountWeb.LoanLive.Index do
       return_path={~p"/loans"}
       settings_path={~p"/loans/account"}
     />
-    <.account_tabs active={:loans} />
-    <.header>
-      Loans <span>{@loans_balance}</span>
-      <:actions>
-        <.link patch={~p"/loans/activate"} phx-click={JS.push_focus()}>
-          <.button>
-            <.icon name="hero-archive-box-mini" /> Activate/Deactivate
-          </.button>
-        </.link>
-        <.link patch={~p"/loans/new"}>
-          <.button>
-            <.icon name="hero-plus-circle-mini" /> Add Loan
-          </.button>
-        </.link>
-      </:actions>
-    </.header>
+    <.account_tabs active={:loans} funds_balance={@funds_balance} loans_balance={@loans_balance} />
+    <div class="flex flex-row gap-2 justify-end pt-4">
+      <.link patch={~p"/loans/activate"} phx-click={JS.push_focus()}>
+        <.button>
+          <.icon name="hero-archive-box-mini" /> Activate/Deactivate
+        </.button>
+      </.link>
+      <.link patch={~p"/loans/new"}>
+        <.button>
+          <.icon name="hero-plus-circle-mini" /> Add Loan
+        </.button>
+      </.link>
+    </div>
 
     <.table
       id="loans"

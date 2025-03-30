@@ -20,7 +20,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
       conn
       |> visit(~p"/funds")
       |> assert_has(page_title(), text: "Funds")
-      |> assert_has(heading(), text: "Funds")
+      |> assert_has(active_tab(), text: "Funds")
       |> assert_has(table_cell(), text: fund.icon)
       |> assert_has(table_cell(), text: fund.name)
       |> assert_has(table_cell(), text: "#{fund.budget}")
@@ -31,7 +31,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
     test "shows prompt when list is empty", %{conn: conn} do
       conn
       |> visit(~p"/funds")
-      |> assert_has(heading(), text: "Funds")
+      |> assert_has(active_tab(), text: "Funds")
       |> assert_has("#no-funds", text: "This account has no funds yet. Use the Add Fund button to add one.")
     end
 
@@ -41,7 +41,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
       conn
       |> visit(~p"/funds")
-      |> assert_has(heading(), text: "#{fund.current_balance}")
+      |> assert_has(active_tab(), text: "#{fund.current_balance}")
     end
 
     test "saves new fund", %{conn: conn} do
@@ -123,7 +123,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> assert_has(fund_subtitle(), text: "#{per_deposit}")
       |> click_link("Back to Funds")
       |> assert_has(page_title(), text: "Funds")
-      |> assert_has(heading(), text: "Funds")
+      |> assert_has(active_tab(), text: "Funds")
     end
 
     test "displays fund", %{conn: conn, fund: fund} do
