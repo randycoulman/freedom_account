@@ -3,6 +3,9 @@ defmodule FreedomAccountWeb.ElementSelectors do
 
   @type selector :: String.t()
 
+  @spec account_balance :: selector()
+  def account_balance, do: testid("account-balance")
+
   @spec action_link(selector()) :: selector()
   def action_link(selector), do: "#{selector} a"
 
@@ -62,6 +65,9 @@ defmodule FreedomAccountWeb.ElementSelectors do
 
   @spec table_cell :: selector()
   def table_cell, do: "td"
+
+  @spec testid(String.t()) :: selector()
+  def testid(test_id), do: ~s'[data-testid="#{test_id}"]'
 
   @spec title :: selector()
   def title, do: "h1"

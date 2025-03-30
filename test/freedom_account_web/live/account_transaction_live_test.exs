@@ -97,7 +97,7 @@ defmodule FreedomAccountWeb.AccountTransactionTest do
       |> click_button("Save Transaction")
       |> assert_has(flash(:info), text: "Transaction updated successfully")
       |> assert_has(heading(), text: "Transactions")
-      |> assert_has(heading(), text: "#{new_amount}")
+      |> assert_has(account_balance(), text: "#{new_amount}")
       |> assert_has(table_cell(), text: "#{new_date}")
       |> assert_has(table_cell(), text: new_memo)
       |> assert_has(role("in"), text: "#{new_amount}")
@@ -159,7 +159,7 @@ defmodule FreedomAccountWeb.AccountTransactionTest do
       |> click_button("Save Transaction")
       |> assert_has(flash(:info), text: "Transaction updated successfully")
       |> assert_has(heading(), text: "Transactions")
-      |> assert_has(heading(), text: "#{new_amount}")
+      |> assert_has(account_balance(), text: "#{new_amount}")
       |> assert_has(table_cell(), text: "#{new_date}")
       |> assert_has(table_cell(), text: new_memo)
       |> assert_has(role("out"), text: "#{Money.negate!(new_amount)}")
@@ -172,7 +172,7 @@ defmodule FreedomAccountWeb.AccountTransactionTest do
       |> visit(~p"/transactions")
       |> click_link(action_link("#txn-#{deposit.id}"), "Delete")
       |> assert_has(heading(), text: "Transactions")
-      |> assert_has(heading(), text: "$0.00")
+      |> assert_has(account_balance(), text: "$0.00")
       |> refute_has("#txn-#{deposit.id}")
     end
 
@@ -183,7 +183,7 @@ defmodule FreedomAccountWeb.AccountTransactionTest do
       |> visit(~p"/transactions")
       |> click_link(action_link("#txn-#{lend.id}"), "Delete")
       |> assert_has(heading(), text: "Transactions")
-      |> assert_has(heading(), text: "$0.00")
+      |> assert_has(account_balance(), text: "$0.00")
       |> refute_has("#txn-#{lend.id}")
     end
 

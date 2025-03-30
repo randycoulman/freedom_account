@@ -35,17 +35,17 @@ defmodule FreedomAccountWeb.AccountBar.Show do
   def render(assigns) do
     ~H"""
     <div>
-      <.header>
-        <.link navigate={~p"/funds"}>{@account.name}</.link>
-        <span>{@balance}</span>
-        <:actions>
-          <.link patch={@settings_path} phx-click={JS.push_focus()}>
-            <.button>
-              <.icon name="hero-cog-8-tooth-mini" /> Settings
-            </.button>
-          </.link>
-        </:actions>
-      </.header>
+      <header class="flex items-center justify-between gap-6 py-4">
+        <div class="flex-1 flex flex-col items-center">
+          <h2 class="text-lg font-medium"><.link navigate={~p"/funds"}>{@account.name}</.link></h2>
+          <div class="text-2xl font-semibold" data-testid="account-balance">{@balance}</div>
+        </div>
+        <.link patch={@settings_path} phx-click={JS.push_focus()}>
+          <.button aria-label="Settings">
+            <.icon name="hero-cog-8-tooth-mini" /><span class="sr-only">Settings</span>
+          </.button>
+        </.link>
+      </header>
       <.modal
         :if={@action == :edit_account}
         id="account-modal"
