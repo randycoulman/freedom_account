@@ -1,1 +1,1 @@
-0 1 * * * /Users/randy/src/apps/freedom_account/scripts/backup_db.sh
+0 1 * * * /Users/randy/src/freedom_account/scripts/backup_db.sh
