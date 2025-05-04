@@ -6,6 +6,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
   import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
   import FreedomAccountWeb.BudgetForm, only: [budget_form: 1]
   import FreedomAccountWeb.FundActivationForm, only: [fund_activation_form: 1]
+  import FreedomAccountWeb.FundCard, only: [fund_card: 1]
   import FreedomAccountWeb.FundLive.Form, only: [settings_form: 1]
   import FreedomAccountWeb.RegularDepositForm, only: [regular_deposit_form: 1]
   import FreedomAccountWeb.TransactionForm, only: [transaction_form: 1]
@@ -114,41 +115,18 @@ defmodule FreedomAccountWeb.FundLive.Index do
       </.link>
     </div>
 
-    <.table
-      id="funds"
-      row_click={fn fund -> JS.navigate(~p"/funds/#{fund}") end}
-      row_id={fn fund -> "funds-#{fund.id}" end}
-      rows={@funds}
-    >
-      <:col :let={fund} align={:center} label="Icon">{fund.icon}</:col>
-      <:col :let={fund} label="Name">{fund.name}</:col>
-      <:col :let={fund} align={:right} label="Budget">{fund.budget}</:col>
-      <:col :let={fund} align={:right} label="Times/Year">{fund.times_per_year}</:col>
-      <:col :let={fund} align={:right} label="Current Balance">{fund.current_balance}</:col>
-      <:action :let={fund}>
-        <div class="sr-only">
-          <.link navigate={~p"/funds/#{fund}"}>Show</.link>
-        </div>
-      </:action>
-      <:action :let={fund}>
-        <.link patch={~p"/funds/#{fund}/edit"}>
-          <.icon name="hero-pencil-square-micro" /> Edit
-        </.link>
-      </:action>
-      <:action :let={fund}>
-        <.link
-          phx-click={JS.push("delete", value: %{id: fund.id}) |> hide("#funds-#{fund.id}")}
-          data-confirm="Are you sure?"
-        >
-          <.icon name="hero-trash-micro" /> Delete
-        </.link>
-      </:action>
-      <:empty_state>
-        <div id="no-funds">
-          This account has no funds yet. Use the Add Fund button to add one.
-        </div>
-      </:empty_state>
-    </.table>
+    <div class="flex flex-col">
+      <div :if={@funds == []} class="mx-auto p-4" id="no-funds">
+        This account has no funds yet. Use the Add Fund button to add one.
+      </div>
+      <.fund_card
+        :for={fund <- @funds}
+        class="hover:cursor-pointer"
+        id={"funds-#{fund.id}"}
+        fund={fund}
+        phx-click={JS.navigate(~p"/funds/#{fund}")}
+      />
+    </div>
 
     <.modal
       :if={@live_action == :activate}

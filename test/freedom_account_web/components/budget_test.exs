@@ -14,7 +14,7 @@ defmodule FreedomAccountWeb.BudgetTest do
     setup [:create_account, :create_funds]
 
     test "updates budget within modal on fund list view", %{account: account, conn: conn, funds: funds} do
-      [fund1, fund2, fund3] = Enum.map(funds, &Safe.to_iodata/1)
+      [fund0, fund1, fund2] = funds
       attrs = [attrs0, attrs1, attrs2] = Enum.map(funds, fn _fund -> Factory.fund_attrs() end)
 
       amounts =
@@ -30,9 +30,9 @@ defmodule FreedomAccountWeb.BudgetTest do
       |> click_link("Budget")
       |> assert_has(page_title(), text: "Update Budget")
       |> assert_has(heading(), text: "Update Budget")
-      |> assert_has("label", text: fund1)
-      |> assert_has("label", text: fund2)
-      |> assert_has("label", text: fund3)
+      |> assert_has("label", text: Safe.to_iodata(fund0))
+      |> assert_has("label", text: Safe.to_iodata(fund1))
+      |> assert_has("label", text: Safe.to_iodata(fund2))
       |> fill_in("Budget 1", with: "")
       |> fill_in("Times/Year 2", with: "")
       |> assert_has(field_error("#budget_funds_1_budget"), text: "can't be blank")
@@ -51,8 +51,8 @@ defmodule FreedomAccountWeb.BudgetTest do
       |> assert_has(flash(:info), text: "Budget updated successfully")
       |> assert_has(page_title(), text: "Funds")
       |> assert_has(active_tab(), text: "Funds")
-      |> assert_has(table_cell(), text: "#{attrs1[:budget]}")
-      |> assert_has(table_cell(), text: "#{attrs2[:times_per_year]}")
+      |> assert_has(fund_budget(fund1), text: "#{attrs1[:budget]}")
+      |> assert_has(fund_frequency(fund2), text: "#{attrs2[:times_per_year]}")
     end
   end
 

@@ -1,5 +1,6 @@
 defmodule FreedomAccountWeb.ElementSelectors do
   @moduledoc false
+  alias FreedomAccount.Funds.Fund
 
   @type selector :: String.t()
 
@@ -26,6 +27,41 @@ defmodule FreedomAccountWeb.ElementSelectors do
 
   @spec flash(atom()) :: selector()
   def flash(level), do: "#flash-#{level}"
+
+  @spec fund_action(Fund.t()) :: selector()
+  def fund_action(%Fund{} = fund) do
+    fund |> fund_card() |> action_link()
+  end
+
+  @spec fund_balance(Fund.t() | :any_card) :: selector()
+  def fund_balance(fund \\ :any_card) do
+    fund_field(fund, "balance")
+  end
+
+  @spec fund_budget(Fund.t() | :any_card) :: selector()
+  def fund_budget(fund \\ :any_card) do
+    fund_field(fund, "budget")
+  end
+
+  @spec fund_card(Fund.t() | :any_card) :: selector()
+  def fund_card(:any_card), do: testid("fund-card")
+  def fund_card(%Fund{} = fund), do: "#funds-#{fund.id}"
+
+  @spec fund_frequency(Fund.t() | :any_card) :: selector()
+  def fund_frequency(fund \\ :any_card) do
+    fund_budget(fund)
+  end
+
+  @spec fund_icon(Fund.t() | :any_card) :: selector()
+  def fund_icon(fund \\ :any_card) do
+    fund_field(fund, "icon")
+  end
+
+  @spec fund_name :: selector()
+  @spec fund_name(Fund.t() | :any_card) :: selector()
+  def fund_name(fund \\ :any_card) do
+    fund_field(fund, "name")
+  end
 
   @spec fund_subtitle :: selector()
   def fund_subtitle, do: "#fund-subtitle"
@@ -71,4 +107,8 @@ defmodule FreedomAccountWeb.ElementSelectors do
 
   @spec title :: selector()
   def title, do: "h1"
+
+  defp fund_field(fund_or_any, testid) do
+    "#{fund_card(fund_or_any)} #{testid(testid)}"
+  end
 end

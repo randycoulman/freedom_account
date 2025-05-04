@@ -8,7 +8,7 @@ defmodule FreedomAccountWeb.RegularWithdrawalTest do
     setup [:create_account, :create_funds]
 
     test "makes regular withdrawal within modal on fund list view", %{conn: conn, funds: funds} do
-      [fund1, fund2, fund3] = Enum.map(funds, &Safe.to_iodata/1)
+      [fund1, fund2, fund3] = funds
 
       [{amount1, balance1}, {amount2, balance2}, {amount3, balance3}] =
         for fund <- funds do
@@ -27,9 +27,9 @@ defmodule FreedomAccountWeb.RegularWithdrawalTest do
       |> assert_has(page_title(), text: "Regular Withdrawal")
       |> assert_has(heading(), text: "Regular Withdrawal")
       |> assert_has("#transaction-total", text: "#{Money.zero(:usd)}")
-      |> assert_has("label", text: fund1)
-      |> assert_has("label", text: fund2)
-      |> assert_has("label", text: fund3)
+      |> assert_has("label", text: Safe.to_iodata(fund1))
+      |> assert_has("label", text: Safe.to_iodata(fund2))
+      |> assert_has("label", text: Safe.to_iodata(fund3))
       |> fill_in("Date", with: "")
       |> assert_has(field_error("#transaction_date"), text: "can't be blank")
       |> fill_in("Date", with: Factory.date())
@@ -46,9 +46,9 @@ defmodule FreedomAccountWeb.RegularWithdrawalTest do
       |> assert_has(flash(:info), text: "Withdrawal successful")
       |> assert_has(page_title(), text: "Funds")
       |> assert_has(active_tab(), text: "Funds")
-      |> assert_has(table_cell(), text: "#{balance1}")
-      |> assert_has(table_cell(), text: "#{balance2}")
-      |> assert_has(table_cell(), text: "#{balance3}")
+      |> assert_has(fund_balance(fund1), text: "#{balance1}")
+      |> assert_has(fund_balance(fund2), text: "#{balance2}")
+      |> assert_has(fund_balance(fund3), text: "#{balance3}")
     end
   end
 

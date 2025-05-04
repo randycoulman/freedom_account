@@ -21,11 +21,11 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> visit(~p"/funds")
       |> assert_has(page_title(), text: "Funds")
       |> assert_has(active_tab(), text: "Funds")
-      |> assert_has(table_cell(), text: fund.icon)
-      |> assert_has(table_cell(), text: fund.name)
-      |> assert_has(table_cell(), text: "#{fund.budget}")
-      |> assert_has(table_cell(), text: "#{fund.times_per_year}")
-      |> assert_has(table_cell(), text: to_string(fund.current_balance))
+      |> assert_has(fund_icon(fund), text: fund.icon)
+      |> assert_has(fund_name(fund), text: fund.name)
+      |> assert_has(fund_budget(fund), text: "#{fund.budget}")
+      |> assert_has(fund_frequency(fund), text: "#{fund.times_per_year}")
+      |> assert_has(fund_balance(fund), text: to_string(fund.current_balance))
     end
 
     test "shows prompt when list is empty", %{conn: conn} do
@@ -63,11 +63,11 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> fill_in("Times/Year", with: times_per_year)
       |> click_button("Save Fund")
       |> assert_has(flash(:info), text: "Fund created successfully")
-      |> assert_has(table_cell(), text: icon)
-      |> assert_has(table_cell(), text: name)
-      |> assert_has(table_cell(), text: "#{budget}")
-      |> assert_has(table_cell(), text: "#{times_per_year}")
-      |> assert_has(table_cell(), text: "$0.00")
+      |> assert_has(fund_icon(), text: icon)
+      |> assert_has(fund_name(), text: name)
+      |> assert_has(fund_budget(), text: "#{budget}")
+      |> assert_has(fund_frequency(), text: "#{times_per_year}")
+      |> assert_has(fund_balance(), text: "$0.00")
     end
 
     test "edits fund in listing", %{account: account, conn: conn} do
@@ -76,7 +76,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
       conn
       |> visit(~p"/funds")
-      |> click_link(action_link("#funds-#{fund.id}"), "Edit")
+      |> click_link(fund_action(fund), "Edit")
       |> assert_has(page_title(), text: "Edit Fund")
       |> assert_has(heading(), text: "Edit Fund")
       |> fill_in("Icon", with: "")
@@ -89,11 +89,11 @@ defmodule FreedomAccountWeb.FundLiveTest do
       |> fill_in("Times/Year", with: times_per_year)
       |> click_button("Save Fund")
       |> assert_has(flash(:info), text: "Fund updated successfully")
-      |> assert_has(table_cell(), text: icon)
-      |> assert_has(table_cell(), text: name)
-      |> assert_has(table_cell(), text: "#{budget}")
-      |> assert_has(table_cell(), text: "#{times_per_year}")
-      |> assert_has(table_cell(), text: "#{fund.current_balance}")
+      |> assert_has(fund_icon(fund), text: icon)
+      |> assert_has(fund_name(fund), text: name)
+      |> assert_has(fund_budget(fund), text: "#{budget}")
+      |> assert_has(fund_frequency(fund), text: "#{times_per_year}")
+      |> assert_has(fund_balance(fund), text: "#{fund.current_balance}")
     end
 
     test "deletes fund in listing", %{account: account, conn: conn} do
@@ -114,7 +114,7 @@ defmodule FreedomAccountWeb.FundLiveTest do
 
       conn
       |> visit(~p"/funds")
-      |> click_link("td", fund.name)
+      |> click_link(fund_card(fund), fund.name)
       |> assert_has(page_title(), text: Safe.to_iodata(fund))
       |> assert_has(heading(), text: Safe.to_iodata(fund))
       |> assert_has(heading(), text: "$0.00")

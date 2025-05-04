@@ -10,6 +10,7 @@ defmodule FreedomAccountWeb.RegularDepositTest do
     setup [:create_account, :create_funds]
 
     test "makes regular deposit within modal on fund list view", %{account: account, conn: conn, funds: funds} do
+      [fund1, fund2, fund3] = funds
       [balance1, balance2, balance3] = Enum.map(funds, &expected_balance(&1, account))
 
       conn
@@ -25,9 +26,9 @@ defmodule FreedomAccountWeb.RegularDepositTest do
       |> assert_has(flash(:info), text: "Regular deposit successful")
       |> assert_has(page_title(), text: "Funds")
       |> assert_has(active_tab(), text: "Funds")
-      |> assert_has(table_cell(), text: "#{balance1}")
-      |> assert_has(table_cell(), text: "#{balance2}")
-      |> assert_has(table_cell(), text: "#{balance3}")
+      |> assert_has(fund_balance(fund1), text: "#{balance1}")
+      |> assert_has(fund_balance(fund2), text: "#{balance2}")
+      |> assert_has(fund_balance(fund3), text: "#{balance3}")
     end
   end
 
