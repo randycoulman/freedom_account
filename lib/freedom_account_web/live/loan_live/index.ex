@@ -5,6 +5,7 @@ defmodule FreedomAccountWeb.LoanLive.Index do
   import FreedomAccountWeb.AccountBar.Show, only: [account_bar: 1]
   import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
   import FreedomAccountWeb.LoanActivationForm, only: [loan_activation_form: 1]
+  import FreedomAccountWeb.LoanCard, only: [loan_card: 1]
   import FreedomAccountWeb.LoanLive.Form, only: [settings_form: 1]
 
   alias FreedomAccount.Error
@@ -70,7 +71,7 @@ defmodule FreedomAccountWeb.LoanLive.Index do
       settings_path={~p"/loans/account"}
     />
     <.account_tabs active={:loans} funds_balance={@funds_balance} loans_balance={@loans_balance} />
-    <div class="flex flex-row gap-2 justify-end pt-4">
+    <div class="flex flex-row gap-2 justify-end py-4">
       <.link patch={~p"/loans/activate"} phx-click={JS.push_focus()}>
         <.button>
           <.icon name="hero-archive-box-mini" /> Activate/Deactivate
@@ -83,39 +84,18 @@ defmodule FreedomAccountWeb.LoanLive.Index do
       </.link>
     </div>
 
-    <.table
-      id="loans"
-      row_click={fn loan -> JS.navigate(~p"/loans/#{loan}") end}
-      row_id={fn loan -> "loans-#{loan.id}" end}
-      rows={@loans}
-    >
-      <:col :let={loan} align={:center} label="Icon">{loan.icon}</:col>
-      <:col :let={loan} label="Name">{loan.name}</:col>
-      <:col :let={loan} align={:right} label="Current Balance">{loan.current_balance}</:col>
-      <:action :let={loan}>
-        <div class="sr-only">
-          <.link navigate={~p"/loans/#{loan}"}>Show</.link>
-        </div>
-      </:action>
-      <:action :let={loan}>
-        <.link patch={~p"/loans/#{loan}/edit"}>
-          <.icon name="hero-pencil-square-micro" /> Edit
-        </.link>
-      </:action>
-      <:action :let={loan}>
-        <.link
-          phx-click={JS.push("delete", value: %{id: loan.id}) |> hide("#loans-#{loan.id}")}
-          data-confirm="Are you sure?"
-        >
-          <.icon name="hero-trash-micro" /> Delete
-        </.link>
-      </:action>
-      <:empty_state>
-        <div id="no-loans">
-          This account has no active loans. Use the Add Loan button to add one.
-        </div>
-      </:empty_state>
-    </.table>
+    <div class="flex flex-col">
+      <div :if={@loans == []} class="mx-auto p-4" id="no-loans">
+        This account has no active loans. Use the Add Loan button to add one.
+      </div>
+      <.loan_card
+        :for={loan <- @loans}
+        class="hover:cursor-pointer"
+        id={"loans-#{loan.id}"}
+        loan={loan}
+        phx-click={JS.navigate(~p"/loans/#{loan}")}
+      />
+    </div>
 
     <.modal
       :if={@live_action == :activate}

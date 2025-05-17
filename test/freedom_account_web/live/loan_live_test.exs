@@ -21,9 +21,9 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       |> visit(~p"/loans")
       |> assert_has(page_title(), text: "Loans")
       |> assert_has(active_tab(), text: "Loans")
-      |> assert_has(table_cell(), text: loan.icon)
-      |> assert_has(table_cell(), text: loan.name)
-      |> assert_has(table_cell(), text: to_string(loan.current_balance))
+      |> assert_has(loan_icon(loan), text: loan.icon)
+      |> assert_has(loan_name(loan), text: loan.name)
+      |> assert_has(loan_balance(loan), text: to_string(loan.current_balance))
     end
 
     test "shows prompt when list is empty", %{conn: conn} do
@@ -59,9 +59,9 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       |> fill_in("Name", with: name)
       |> click_button("Save Loan")
       |> assert_has(flash(:info), text: "Loan created successfully")
-      |> assert_has(table_cell(), text: icon)
-      |> assert_has(table_cell(), text: name)
-      |> assert_has(table_cell(), text: "$0.00")
+      |> assert_has(loan_icon(), text: icon)
+      |> assert_has(loan_name(), text: name)
+      |> assert_has(loan_balance(), text: "$0.00")
     end
 
     test "edits loan in listing", %{account: account, conn: conn} do
@@ -81,9 +81,9 @@ defmodule FreedomAccountWeb.LoanLiveTest do
       |> fill_in("Name", with: name)
       |> click_button("Save Loan")
       |> assert_has(flash(:info), text: "Loan updated successfully")
-      |> assert_has(table_cell(), text: icon)
-      |> assert_has(table_cell(), text: name)
-      |> assert_has(table_cell(), text: "#{loan.current_balance}")
+      |> assert_has(loan_icon(loan), text: icon)
+      |> assert_has(loan_name(loan), text: name)
+      |> assert_has(loan_balance(loan), text: "#{loan.current_balance}")
     end
 
     test "deletes loan in listing", %{account: account, conn: conn} do
@@ -102,7 +102,7 @@ defmodule FreedomAccountWeb.LoanLiveTest do
     test "drills down to individual loan and back", %{conn: conn, loan: loan} do
       conn
       |> visit(~p"/loans")
-      |> click_link("td", loan.name)
+      |> click_link(loan_card(loan), loan.name)
       |> assert_has(page_title(), text: Safe.to_iodata(loan))
       |> assert_has(heading(), text: Safe.to_iodata(loan))
       |> assert_has(heading(), text: "$0.00")

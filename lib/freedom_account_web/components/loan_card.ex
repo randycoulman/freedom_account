@@ -1,4 +1,4 @@
-defmodule FreedomAccountWeb.FundCard do
+defmodule FreedomAccountWeb.LoanCard do
   @moduledoc false
   use FreedomAccountWeb, :verified_routes
   use Phoenix.Component
@@ -6,7 +6,7 @@ defmodule FreedomAccountWeb.FundCard do
   import FreedomAccountWeb.Card, only: [card: 1]
   import FreedomAccountWeb.CoreComponents
 
-  alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.Loans.Loan
   alias Phoenix.LiveView.JS
 
   # credo:disable-for-this-file Credo.Check.Readability.Specs
@@ -15,38 +15,33 @@ defmodule FreedomAccountWeb.FundCard do
   # return a HEEx template, so no spec is necessary here.
 
   attr :class, :string
-  attr :fund, Fund, required: true
+  attr :loan, Loan, required: true
   attr :rest, :global
 
-  def fund_card(assigns) do
+  def loan_card(assigns) do
     ~H"""
     <.card
-      balance={@fund.current_balance}
+      balance={@loan.current_balance}
       class={@class}
-      data-testid="fund-card"
-      icon={@fund.icon}
-      name={@fund.name}
+      data-testid="loan-card"
+      icon={@loan.icon}
+      name={@loan.name}
       {@rest}
     >
       <:actions>
-        <.link class="sr-only" navigate={~p"/funds/#{@fund}"}>Show</.link>
-        <.link class="text-gray-400 hover:text-gray-600" patch={~p"/funds/#{@fund}/edit"} title="Edit">
+        <.link class="sr-only" navigate={~p"/loans/#{@loan}"}>Show</.link>
+        <.link class="text-gray-400 hover:text-gray-600" patch={~p"/loans/#{@loan}/edit"} title="Edit">
           <.icon name="hero-pencil-square-micro" /> Edit
         </.link>
         <.link
           class="text-gray-400 hover:text-gray-600"
           data-confirm="Are you sure?"
-          phx-click={JS.push("delete", value: %{id: @fund.id}) |> hide("#funds-#{@fund.id}")}
+          phx-click={JS.push("delete", value: %{id: @loan.id}) |> hide("#loans-#{@loan.id}")}
           title="Delete"
         >
           <.icon name="hero-trash-micro" /> Delete
         </.link>
       </:actions>
-      <:details>
-        <div class="ml-12 mt-1 text-sm text-gray-500" data-testid="budget">
-          {"#{@fund.budget} @ #{@fund.times_per_year} times/year"}
-        </div>
-      </:details>
     </.card>
     """
   end

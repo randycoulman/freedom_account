@@ -87,7 +87,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
       settings_path={~p"/funds/account"}
     />
     <.account_tabs active={:funds} funds_balance={@funds_balance} loans_balance={@loans_balance} />
-    <div class="flex flex-row gap-2 justify-end pt-4">
+    <div class="flex flex-row gap-2 justify-end py-4">
       <.link patch={~p"/funds/regular_deposit"} phx-click={JS.push_focus()}>
         <.button>
           <.icon name="hero-folder-plus-mini" /> Regular Deposit

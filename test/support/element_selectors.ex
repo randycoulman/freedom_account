@@ -1,6 +1,7 @@
 defmodule FreedomAccountWeb.ElementSelectors do
   @moduledoc false
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.Loans.Loan
 
   @type selector :: String.t()
 
@@ -78,6 +79,31 @@ defmodule FreedomAccountWeb.ElementSelectors do
   @spec link :: selector()
   def link, do: "a"
 
+  @spec loan_action(Loan.t()) :: selector()
+  def loan_action(%Loan{} = loan) do
+    loan |> loan_card() |> action_link()
+  end
+
+  @spec loan_balance(Loan.t() | :any_card) :: selector()
+  def loan_balance(loan \\ :any_card) do
+    loan_field(loan, "balance")
+  end
+
+  @spec loan_card(Loan.t() | :any_card) :: selector()
+  def loan_card(:any_card), do: testid("loan-card")
+  def loan_card(%Loan{} = loan), do: "#loans-#{loan.id}"
+
+  @spec loan_icon(Loan.t() | :any_card) :: selector()
+  def loan_icon(loan \\ :any_card) do
+    loan_field(loan, "icon")
+  end
+
+  @spec loan_name :: selector()
+  @spec loan_name(Loan.t() | :any_card) :: selector()
+  def loan_name(loan \\ :any_card) do
+    loan_field(loan, "name")
+  end
+
   @spec page_title :: selector()
   def page_title, do: "title"
 
@@ -110,5 +136,9 @@ defmodule FreedomAccountWeb.ElementSelectors do
 
   defp fund_field(fund_or_any, testid) do
     "#{fund_card(fund_or_any)} #{testid(testid)}"
+  end
+
+  defp loan_field(loan_or_any, testid) do
+    "#{loan_card(loan_or_any)} #{testid(testid)}"
   end
 end
