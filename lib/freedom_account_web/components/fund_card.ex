@@ -21,7 +21,7 @@ defmodule FreedomAccountWeb.FundCard do
     ~H"""
     <div
       class={[
-        " bg-white flex group items-center justify-between max-w-lg mx-auto p-4 rounded-xl shadow w-full",
+        " bg-white flex group items-center justify-between max-w-screen-md mx-auto p-4 rounded-xl shadow w-full",
         @class
       ]}
       data-testid="fund-card"
@@ -44,7 +44,7 @@ defmodule FreedomAccountWeb.FundCard do
         </div>
       </div>
       <div class="flex flex-col items-end">
-        <div class="text-2xl font-semibold text-gray-900 tabular-nums" data-testid="balance">
+        <div class="text-xl font-semibold text-gray-900 tabular-nums" data-testid="balance">
           {@fund.current_balance}
         </div>
       </div>
