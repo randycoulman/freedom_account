@@ -28,20 +28,23 @@ defmodule FreedomAccountWeb.FundCard do
       name={@fund.name}
       {@rest}
     >
-      <:actions>
+      <:action>
         <.link class="sr-only" navigate={~p"/funds/#{@fund}"}>Show</.link>
-        <.link class="text-gray-400 hover:text-gray-600" patch={~p"/funds/#{@fund}/edit"} title="Edit">
+      </:action>
+      <:action>
+        <.link patch={~p"/funds/#{@fund}/edit"} title="Edit">
           <.icon name="hero-pencil-square-micro" /> Edit
         </.link>
+      </:action>
+      <:action>
         <.link
-          class="text-gray-400 hover:text-gray-600"
           data-confirm="Are you sure?"
           phx-click={JS.push("delete", value: %{id: @fund.id}) |> hide("#funds-#{@fund.id}")}
           title="Delete"
         >
           <.icon name="hero-trash-micro" /> Delete
         </.link>
-      </:actions>
+      </:action>
       <:details>
         <div class="ml-12 mt-1 text-sm text-gray-500" data-testid="budget">
           {"#{@fund.budget} @ #{@fund.times_per_year} times/year"}

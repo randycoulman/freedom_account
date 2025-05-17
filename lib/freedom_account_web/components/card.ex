@@ -13,7 +13,7 @@ defmodule FreedomAccountWeb.Card do
   attr :name, :string, required: true
   attr :rest, :global
 
-  slot :actions
+  slot :action
   slot :details
 
   def card(assigns) do
@@ -34,8 +34,10 @@ defmodule FreedomAccountWeb.Card do
             <div class="text-lg font-semibold text-gray-900" data-testid="name">
               {@name}
             </div>
-            <div :if={@actions} class="hidden group-hover:flex gap-1 text-md">
-              {render_slot(@actions)}
+            <div class="hidden group-hover:flex gap-1 text-md">
+              <span :for={action <- @action} class="text-gray-400 hover:text-gray-600">
+                {render_slot(action)}
+              </span>
             </div>
           </div>
         </div>

@@ -28,20 +28,23 @@ defmodule FreedomAccountWeb.LoanCard do
       name={@loan.name}
       {@rest}
     >
-      <:actions>
+      <:action>
         <.link class="sr-only" navigate={~p"/loans/#{@loan}"}>Show</.link>
-        <.link class="text-gray-400 hover:text-gray-600" patch={~p"/loans/#{@loan}/edit"} title="Edit">
+      </:action>
+      <:action>
+        <.link patch={~p"/loans/#{@loan}/edit"} title="Edit">
           <.icon name="hero-pencil-square-micro" /> Edit
         </.link>
+      </:action>
+      <:action>
         <.link
-          class="text-gray-400 hover:text-gray-600"
           data-confirm="Are you sure?"
           phx-click={JS.push("delete", value: %{id: @loan.id}) |> hide("#loans-#{@loan.id}")}
           title="Delete"
         >
           <.icon name="hero-trash-micro" /> Delete
         </.link>
-      </:actions>
+      </:action>
     </.card>
     """
   end
