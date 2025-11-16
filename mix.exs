@@ -93,7 +93,7 @@ defmodule FreedomAccount.MixProject do
       {:heroicons,
        github: "tailwindlabs/heroicons", tag: "v2.2.0", sparse: "optimized", app: false, compile: false, depth: 1},
       {:jason, "~> 1.2"},
-      {:mix_test_interactive, "~> 4.3", only: :dev, runtime: false},
+      {:mix_test_interactive, "~> 5.0", only: :dev, runtime: false},
       {:nimble_csv, "~> 1.2"},
       {:paginator, "~> 1.2"},
       {:phoenix_ecto, "~> 4.5"},
