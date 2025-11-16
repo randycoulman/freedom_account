@@ -24,7 +24,6 @@ defmodule FreedomAccount.MixProject do
       elixir: "~> 1.14",
       elixirc_options: elixirc_options(Mix.env()),
       elixirc_paths: elixirc_paths(Mix.env()),
-      preferred_cli_env: [validate: :test],
       start_permanent: Mix.env() == :prod,
       version: @version
     ]
@@ -39,6 +38,11 @@ defmodule FreedomAccount.MixProject do
       mod: {FreedomAccount.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
+  end
+
+  @spec cli :: Keyword.t()
+  def cli do
+    [preferred_envs: [validate: :test]]
   end
 
   defp elixirc_options(:dev) do
