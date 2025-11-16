@@ -111,7 +111,7 @@ defmodule FreedomAccountWeb.ElementSelectors do
   def role(role), do: "[data-role=#{role}]"
 
   @spec selected_option(selector()) :: selector()
-  def selected_option(selector), do: "#{selector} option[selected='selected']"
+  def selected_option(selector), do: "#{selector} option[selected]"
 
   @spec sidebar_fund_balance :: selector()
   def sidebar_fund_balance, do: "#{sidebar_fund_name()} ~ span"
