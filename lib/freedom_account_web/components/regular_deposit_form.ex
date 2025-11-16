@@ -16,7 +16,7 @@ defmodule FreedomAccountWeb.RegularDepositForm do
     @moduledoc false
     use TypedEctoSchema
 
-    import Ecto.Changeset
+    import Changeset
 
     alias Ecto.Schema
 

@@ -76,7 +76,7 @@ defmodule FreedomAccount.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:assertions, "~> 0.20.0", only: [:test]},
+      {:assertions, "~> 0.22.0", only: [:test]},
       {:bandit, "~> 1.5"},
       {:boundary, "~> 0.10.4"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
@@ -107,7 +107,7 @@ defmodule FreedomAccount.MixProject do
       {:plug_crypto, "~> 2.1", override: true},
       {:postgrex, ">= 0.0.0"},
       {:process_tree, "~> 0.2.0"},
-      {:styler, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:styler, "~> 1.9", only: [:dev, :test], runtime: false},
       {:tailwind, "~> 0.3.1", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 1.1"},
       {:telemetry_poller, "~> 1.1"},
