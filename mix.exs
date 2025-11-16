@@ -82,7 +82,7 @@ defmodule FreedomAccount.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:dns_cluster, "~> 0.2.0"},
-      {:ecto_sql, "~> 3.12"},
+      {:ecto_sql, "~> 3.13"},
       {:esbuild, "~> 0.9.0", runtime: Mix.env() == :dev},
       {:ex_machina, "~> 2.8", only: :test},
       {:ex_money, "~> 5.20", runtime: false},
@@ -112,7 +112,7 @@ defmodule FreedomAccount.MixProject do
       {:telemetry_metrics, "~> 1.1"},
       {:telemetry_poller, "~> 1.1"},
       {:timex, "~> 3.7"},
-      {:typed_ecto_schema, "~> 0.4.1"},
+      {:typed_ecto_schema, "~> 0.4.3"},
       {:typed_struct, "~> 0.3.0"}
     ]
   end
