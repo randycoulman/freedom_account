@@ -7,6 +7,7 @@ defmodule FreedomAccountWeb.RegularDepositForm do
   alias Ecto.Changeset
   alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Error.InvariantError
+  alias FreedomAccount.LocalTime
   alias FreedomAccount.Transactions
   alias Phoenix.LiveComponent
   alias Phoenix.LiveView
@@ -47,7 +48,7 @@ defmodule FreedomAccountWeb.RegularDepositForm do
 
   @impl LiveComponent
   def update(assigns, socket) do
-    inputs = %Inputs{date: Timex.today(:local)}
+    inputs = %Inputs{date: LocalTime.today()}
     changeset = Inputs.changeset(inputs, %{})
 
     socket

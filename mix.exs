@@ -113,7 +113,6 @@ defmodule FreedomAccount.MixProject do
       {:tailwind, "~> 0.4.1", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 1.1"},
       {:telemetry_poller, "~> 1.3"},
-      {:timex, "~> 3.7"},
       {:typed_ecto_schema, "~> 0.4.3"},
       {:typed_struct, "~> 0.3.0"}
     ]

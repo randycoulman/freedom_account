@@ -2,6 +2,7 @@ defmodule FreedomAccountWeb.AccountTransactionTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
+  alias FreedomAccount.LocalTime
   alias FreedomAccount.MoneyUtils
   alias FreedomAccount.Transactions
   alias FreedomAccountWeb.TransactionLive
@@ -50,7 +51,7 @@ defmodule FreedomAccountWeb.AccountTransactionTest do
 
       transactions =
         for i <- 1..count do
-          Factory.deposit(fund, date: :local |> Timex.today() |> Timex.shift(days: i * -1))
+          Factory.deposit(fund, date: Date.shift(LocalTime.today(), day: i * -1))
         end
 
       [page1, page2, page3] = Enum.chunk_every(transactions, page_size)

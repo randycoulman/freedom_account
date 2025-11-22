@@ -9,6 +9,7 @@ defmodule FreedomAccount.TransactionsTest do
   alias FreedomAccount.Factory
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.LocalTime
   alias FreedomAccount.MoneyUtils
   alias FreedomAccount.Paging
   alias FreedomAccount.PubSub
@@ -541,7 +542,7 @@ defmodule FreedomAccount.TransactionsTest do
     test "defaults the date to today if no previous date", %{loan: loan} do
       %Changeset{} = changeset = Transactions.new_loan_transaction(loan)
 
-      assert Changeset.get_field(changeset, :date) == Timex.today(:local)
+      assert Changeset.get_field(changeset, :date) == LocalTime.today()
     end
 
     test "includes a line item for each fund", %{loan: loan} do
@@ -566,7 +567,7 @@ defmodule FreedomAccount.TransactionsTest do
     test "defaults the date to today if no previous date", %{funds: funds} do
       %Changeset{} = changeset = Transactions.new_transaction(funds)
 
-      assert Changeset.get_field(changeset, :date) == Timex.today(:local)
+      assert Changeset.get_field(changeset, :date) == LocalTime.today()
     end
 
     test "includes a line item for each fund", %{funds: funds} do

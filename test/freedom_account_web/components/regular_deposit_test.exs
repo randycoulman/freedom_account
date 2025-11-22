@@ -5,6 +5,7 @@ defmodule FreedomAccountWeb.RegularDepositTest do
   alias FreedomAccount.Factory
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
+  alias FreedomAccount.LocalTime
 
   describe "Show" do
     setup [:create_account, :create_funds]
@@ -18,7 +19,7 @@ defmodule FreedomAccountWeb.RegularDepositTest do
       |> click_link("Regular Deposit")
       |> assert_has(page_title(), text: "Regular Deposit")
       |> assert_has(heading(), text: "Regular Deposit")
-      |> assert_has(field_value("#inputs_date", "#{Timex.today(:local)}"))
+      |> assert_has(field_value("#inputs_date", "#{LocalTime.today()}"))
       |> fill_in("Date", with: "")
       |> assert_has(field_error("#inputs_date"), text: "can't be blank")
       |> fill_in("Date", with: Factory.date())

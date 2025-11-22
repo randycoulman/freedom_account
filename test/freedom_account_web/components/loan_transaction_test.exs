@@ -2,6 +2,7 @@ defmodule FreedomAccountWeb.LoanTransactionTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
+  alias FreedomAccount.LocalTime
   alias FreedomAccountWeb.LoanTransaction
   alias Phoenix.HTML.Safe
 
@@ -36,7 +37,7 @@ defmodule FreedomAccountWeb.LoanTransactionTest do
 
       transactions =
         for i <- 1..count do
-          Factory.lend(loan, date: :local |> Timex.today() |> Timex.shift(days: i * -1))
+          Factory.lend(loan, date: Date.shift(LocalTime.today(), day: i * -1))
         end
 
       [page1, page2, page3] = Enum.chunk_every(transactions, page_size)

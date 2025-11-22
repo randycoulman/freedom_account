@@ -3,6 +3,7 @@ defmodule FreedomAccount.Transactions.DateCache do
   use Agent
 
   alias FreedomAccount.Accounts.Account
+  alias FreedomAccount.LocalTime
 
   @type opt :: {:name, Agent.name()}
 
@@ -15,7 +16,7 @@ defmodule FreedomAccount.Transactions.DateCache do
 
   @spec last_date(GenServer.name(), Account.id()) :: Date.t()
   @spec last_date(GenServer.name(), Account.id(), Date.t()) :: Date.t()
-  def last_date(cache, account_id, %Date{} = default \\ Timex.today(:local)) do
+  def last_date(cache, account_id, %Date{} = default \\ LocalTime.today()) do
     Agent.get(cache, &Map.get(&1, account_id, default))
   end
 

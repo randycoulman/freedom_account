@@ -9,6 +9,7 @@ defmodule FreedomAccount.Transactions do
       FreedomAccount.ErrorReporter,
       FreedomAccount.Funds,
       FreedomAccount.Loans,
+      FreedomAccount.LocalTime,
       FreedomAccount.MoneyUtils,
       FreedomAccount.Paging,
       FreedomAccount.PubSub,
@@ -27,6 +28,7 @@ defmodule FreedomAccount.Transactions do
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Loans.Loan
+  alias FreedomAccount.LocalTime
   alias FreedomAccount.Paging
   alias FreedomAccount.PubSub
   alias FreedomAccount.Repo
@@ -324,6 +326,6 @@ defmodule FreedomAccount.Transactions do
 
   defp default_date(account_id) do
     cache = ProcessTree.get(:date_cache, default: DateCache)
-    DateCache.last_date(cache, account_id, Timex.today(:local))
+    DateCache.last_date(cache, account_id, LocalTime.today())
   end
 end
