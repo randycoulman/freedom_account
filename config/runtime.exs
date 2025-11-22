@@ -41,9 +41,11 @@ if config_env() == :prod do
   port = String.to_integer(System.get_env("PORT") || "4000")
 
   config :freedom_account, FreedomAccount.Repo,
-    # ssl: true,
+    # For machines with several cores, consider starting multiple pools of `pool_size`
+    # pool_count: 4,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
     socket_options: maybe_ipv6,
+    # ssl: true,
     url: database_url
 
   # The secret key base is used to sign/encrypt cookies and other secrets.

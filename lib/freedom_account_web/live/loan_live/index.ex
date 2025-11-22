@@ -12,6 +12,7 @@ defmodule FreedomAccountWeb.LoanLive.Index do
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Loans
   alias FreedomAccount.Loans.Loan
+  alias FreedomAccountWeb.Layouts
   alias Phoenix.LiveView
 
   @impl LiveView
@@ -62,59 +63,66 @@ defmodule FreedomAccountWeb.LoanLive.Index do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <.account_bar
-      account={@account}
-      action={@live_action}
-      balance={@account_balance}
-      funds={@funds}
-      return_path={~p"/loans"}
-      settings_path={~p"/loans/account"}
-    />
-    <.account_tabs active={:loans} funds_balance={@funds_balance} loans_balance={@loans_balance} />
-    <div class="flex flex-row gap-2 justify-end py-4">
-      <.link patch={~p"/loans/activate"} phx-click={JS.push_focus()}>
-        <.button>
-          <.icon name="hero-archive-box-mini" /> Activate/Deactivate
-        </.button>
-      </.link>
-      <.link patch={~p"/loans/new"}>
-        <.button>
-          <.icon name="hero-plus-circle-mini" /> Add Loan
-        </.button>
-      </.link>
-    </div>
-
-    <div class="flex flex-col">
-      <div :if={@loans == []} class="mx-auto p-4" id="no-loans">
-        This account has no active loans. Use the Add Loan button to add one.
-      </div>
-      <.loan_card
-        :for={loan <- @loans}
-        class="hover:cursor-pointer"
-        id={"loans-#{loan.id}"}
-        loan={loan}
-        phx-click={JS.navigate(~p"/loans/#{loan}")}
-      />
-    </div>
-
-    <.modal
-      :if={@live_action == :activate}
-      id="activate-modal"
-      show
-      on_cancel={JS.patch(@return_path)}
-    >
-      <.loan_activation_form account={@account} return_path={@return_path} />
-    </.modal>
-
-    <.modal :if={@live_action in [:edit, :new]} id="loan-modal" show on_cancel={JS.patch(~p"/loans")}>
-      <.settings_form
+    <Layouts.app flash={@flash}>
+      <.account_bar
         account={@account}
         action={@live_action}
-        loan={@loan}
+        balance={@account_balance}
+        funds={@funds}
         return_path={~p"/loans"}
-        title={@page_title}
+        settings_path={~p"/loans/account"}
       />
-    </.modal>
+      <.account_tabs active={:loans} funds_balance={@funds_balance} loans_balance={@loans_balance} />
+      <div class="flex flex-row gap-2 justify-end py-4">
+        <.link patch={~p"/loans/activate"} phx-click={JS.push_focus()}>
+          <.button>
+            <.icon name="hero-archive-box-mini" /> Activate/Deactivate
+          </.button>
+        </.link>
+        <.link patch={~p"/loans/new"}>
+          <.button>
+            <.icon name="hero-plus-circle-mini" /> Add Loan
+          </.button>
+        </.link>
+      </div>
+
+      <div class="flex flex-col">
+        <div :if={@loans == []} class="mx-auto p-4" id="no-loans">
+          This account has no active loans. Use the Add Loan button to add one.
+        </div>
+        <.loan_card
+          :for={loan <- @loans}
+          class="hover:cursor-pointer"
+          id={"loans-#{loan.id}"}
+          loan={loan}
+          phx-click={JS.navigate(~p"/loans/#{loan}")}
+        />
+      </div>
+
+      <.modal
+        :if={@live_action == :activate}
+        id="activate-modal"
+        show
+        on_cancel={JS.patch(@return_path)}
+      >
+        <.loan_activation_form account={@account} return_path={@return_path} />
+      </.modal>
+
+      <.modal
+        :if={@live_action in [:edit, :new]}
+        id="loan-modal"
+        show
+        on_cancel={JS.patch(~p"/loans")}
+      >
+        <.settings_form
+          account={@account}
+          action={@live_action}
+          loan={@loan}
+          return_path={~p"/loans"}
+          title={@page_title}
+        />
+      </.modal>
+    </Layouts.app>
     """
   end
 

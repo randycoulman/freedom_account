@@ -16,6 +16,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Transactions.Transaction
+  alias FreedomAccountWeb.Layouts
   alias Phoenix.LiveView
 
   @impl LiveView
@@ -78,108 +79,115 @@ defmodule FreedomAccountWeb.FundLive.Index do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <.account_bar
-      account={@account}
-      action={@live_action}
-      balance={@account_balance}
-      funds={@funds}
-      return_path={@return_path}
-      settings_path={~p"/funds/account"}
-    />
-    <.account_tabs active={:funds} funds_balance={@funds_balance} loans_balance={@loans_balance} />
-    <div class="flex flex-row gap-2 justify-end py-4">
-      <.link patch={~p"/funds/regular_deposit"} phx-click={JS.push_focus()}>
-        <.button>
-          <.icon name="hero-folder-plus-mini" /> Regular Deposit
-        </.button>
-      </.link>
-      <.link patch={~p"/funds/regular_withdrawal"} phx-click={JS.push_focus()}>
-        <.button>
-          <.icon name="hero-folder-minus-mini" /> Regular Withdrawal
-        </.button>
-      </.link>
-      <.link patch={~p"/funds/budget"} phx-click={JS.push_focus()}>
-        <.button>
-          <.icon name="hero-chart-pie-mini" /> Budget
-        </.button>
-      </.link>
-      <.link patch={~p"/funds/activate"} phx-click={JS.push_focus()}>
-        <.button>
-          <.icon name="hero-archive-box-mini" /> Activate/Deactivate
-        </.button>
-      </.link>
-      <.link patch={~p"/funds/new"}>
-        <.button>
-          <.icon name="hero-plus-circle-mini" /> Add Fund
-        </.button>
-      </.link>
-    </div>
-
-    <div class="flex flex-col">
-      <div :if={@funds == []} class="mx-auto p-4" id="no-funds">
-        This account has no funds yet. Use the Add Fund button to add one.
-      </div>
-      <.fund_card
-        :for={fund <- @funds}
-        class="hover:cursor-pointer"
-        id={"funds-#{fund.id}"}
-        fund={fund}
-        phx-click={JS.navigate(~p"/funds/#{fund}")}
-      />
-    </div>
-
-    <.modal
-      :if={@live_action == :activate}
-      id="activate-modal"
-      show
-      on_cancel={JS.patch(@return_path)}
-    >
-      <.fund_activation_form account={@account} return_path={@return_path} />
-    </.modal>
-
-    <.modal :if={@live_action in [:edit, :new]} id="fund-modal" show on_cancel={JS.patch(~p"/funds")}>
-      <.settings_form
+    <Layouts.app flash={@flash}>
+      <.account_bar
         account={@account}
         action={@live_action}
-        fund={@fund}
-        return_path={~p"/funds"}
-        title={@page_title}
-      />
-    </.modal>
-
-    <.modal
-      :if={@live_action == :edit_budget}
-      id="budget-modal"
-      show
-      on_cancel={JS.patch(@return_path)}
-    >
-      <.budget_form account={@account} funds={@funds} return_path={@return_path} />
-    </.modal>
-
-    <.modal
-      :if={@live_action == :regular_deposit}
-      id="regular-deposit-modal"
-      show
-      on_cancel={JS.patch(@return_path)}
-    >
-      <.regular_deposit_form account={@account} funds={@funds} return_path={@return_path} />
-    </.modal>
-
-    <.modal
-      :if={@live_action == :regular_withdrawal}
-      id="regular-withdrawal-modal"
-      show
-      on_cancel={JS.patch(@return_path)}
-    >
-      <.transaction_form
-        account={@account}
-        action={@live_action}
-        all_funds={@funds}
-        initial_funds={@funds}
+        balance={@account_balance}
+        funds={@funds}
         return_path={@return_path}
-        transaction={%Transaction{}}
+        settings_path={~p"/funds/account"}
       />
-    </.modal>
+      <.account_tabs active={:funds} funds_balance={@funds_balance} loans_balance={@loans_balance} />
+      <div class="flex flex-row gap-2 justify-end py-4">
+        <.link patch={~p"/funds/regular_deposit"} phx-click={JS.push_focus()}>
+          <.button>
+            <.icon name="hero-folder-plus-mini" /> Regular Deposit
+          </.button>
+        </.link>
+        <.link patch={~p"/funds/regular_withdrawal"} phx-click={JS.push_focus()}>
+          <.button>
+            <.icon name="hero-folder-minus-mini" /> Regular Withdrawal
+          </.button>
+        </.link>
+        <.link patch={~p"/funds/budget"} phx-click={JS.push_focus()}>
+          <.button>
+            <.icon name="hero-chart-pie-mini" /> Budget
+          </.button>
+        </.link>
+        <.link patch={~p"/funds/activate"} phx-click={JS.push_focus()}>
+          <.button>
+            <.icon name="hero-archive-box-mini" /> Activate/Deactivate
+          </.button>
+        </.link>
+        <.link patch={~p"/funds/new"}>
+          <.button>
+            <.icon name="hero-plus-circle-mini" /> Add Fund
+          </.button>
+        </.link>
+      </div>
+
+      <div class="flex flex-col">
+        <div :if={@funds == []} class="mx-auto p-4" id="no-funds">
+          This account has no funds yet. Use the Add Fund button to add one.
+        </div>
+        <.fund_card
+          :for={fund <- @funds}
+          class="hover:cursor-pointer"
+          id={"funds-#{fund.id}"}
+          fund={fund}
+          phx-click={JS.navigate(~p"/funds/#{fund}")}
+        />
+      </div>
+
+      <.modal
+        :if={@live_action == :activate}
+        id="activate-modal"
+        show
+        on_cancel={JS.patch(@return_path)}
+      >
+        <.fund_activation_form account={@account} return_path={@return_path} />
+      </.modal>
+
+      <.modal
+        :if={@live_action in [:edit, :new]}
+        id="fund-modal"
+        show
+        on_cancel={JS.patch(~p"/funds")}
+      >
+        <.settings_form
+          account={@account}
+          action={@live_action}
+          fund={@fund}
+          return_path={~p"/funds"}
+          title={@page_title}
+        />
+      </.modal>
+
+      <.modal
+        :if={@live_action == :edit_budget}
+        id="budget-modal"
+        show
+        on_cancel={JS.patch(@return_path)}
+      >
+        <.budget_form account={@account} funds={@funds} return_path={@return_path} />
+      </.modal>
+
+      <.modal
+        :if={@live_action == :regular_deposit}
+        id="regular-deposit-modal"
+        show
+        on_cancel={JS.patch(@return_path)}
+      >
+        <.regular_deposit_form account={@account} funds={@funds} return_path={@return_path} />
+      </.modal>
+
+      <.modal
+        :if={@live_action == :regular_withdrawal}
+        id="regular-withdrawal-modal"
+        show
+        on_cancel={JS.patch(@return_path)}
+      >
+        <.transaction_form
+          account={@account}
+          action={@live_action}
+          all_funds={@funds}
+          initial_funds={@funds}
+          return_path={@return_path}
+          transaction={%Transaction{}}
+        />
+      </.modal>
+    </Layouts.app>
     """
   end
 

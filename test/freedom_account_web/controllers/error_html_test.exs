@@ -4,7 +4,7 @@ defmodule FreedomAccountWeb.ErrorHTMLTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   # Bring render_to_string/4 for testing custom views
-  import Phoenix.Template
+  import Phoenix.Template, only: [render_to_string: 4]
 
   alias FreedomAccountWeb.ErrorHTML
 

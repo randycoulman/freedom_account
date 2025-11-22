@@ -21,9 +21,10 @@ defmodule FreedomAccount.MixProject do
         plt_add_apps: [:ex_unit, :mix],
         plt_local_path: "priv/plts"
       ],
-      elixir: "~> 1.14",
+      elixir: "~> 1.15",
       elixirc_options: elixirc_options(Mix.env()),
       elixirc_paths: elixirc_paths(Mix.env()),
+      listeners: [Phoenix.CodeReloader],
       start_permanent: Mix.env() == :prod,
       version: @version
     ]
@@ -42,7 +43,7 @@ defmodule FreedomAccount.MixProject do
 
   @spec cli :: Keyword.t()
   def cli do
-    [preferred_envs: [validate: :test]]
+    [preferred_envs: [precommit: :test, validate: :test]]
   end
 
   defp elixirc_options(:dev) do
@@ -93,7 +94,7 @@ defmodule FreedomAccount.MixProject do
       {:heroicons,
        github: "tailwindlabs/heroicons", tag: "v2.2.0", sparse: "optimized", app: false, compile: false, depth: 1},
       {:jason, "~> 1.2"},
-      {:lazy_html, ">= 0.0.0", only: :test},
+      {:lazy_html, ">= 0.1.0", only: :test},
       {:mix_test_interactive, "~> 5.0", only: :dev, runtime: false},
       {:nimble_csv, "~> 1.3"},
       {:paginator, "~> 1.2"},
@@ -103,7 +104,7 @@ defmodule FreedomAccount.MixProject do
       {:phoenix_live_reload, "~> 1.6", only: :dev},
       {:phoenix_live_view, "~> 1.1"},
       {:phoenix_test, "~> 0.9.1", only: :test, runtime: false},
-      {:phoenix, "~> 1.7"},
+      {:phoenix, "~> 1.8"},
       # This is here to resolve a conflict with paginator's dependencies
       {:plug_crypto, "~> 2.1", override: true},
       {:postgrex, ">= 0.0.0"},
@@ -126,7 +127,7 @@ defmodule FreedomAccount.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      "assets.build": ["tailwind freedom_account", "esbuild freedom_account"],
+      "assets.build": ["compile", "tailwind freedom_account", "esbuild freedom_account"],
       "assets.deploy": [
         "tailwind freedom_account --minify",
         "esbuild freedom_account --minify",
@@ -137,6 +138,7 @@ defmodule FreedomAccount.MixProject do
       dev: ["cmd docker compose up --build -d"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+      precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "credo", "dialyzer", "test"],
       prod: ["cmd docker compose up -d app"],
       "prod.debug": ["cmd docker compose up app"],
       s: ["phx.server"],

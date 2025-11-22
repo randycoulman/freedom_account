@@ -13,6 +13,7 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
   alias FreedomAccount.Transactions.AccountTransaction
   alias FreedomAccount.Transactions.LoanTransaction
   alias FreedomAccount.Transactions.Transaction
+  alias FreedomAccountWeb.Layouts
   alias Phoenix.LiveView
 
   @page_size 10
@@ -76,105 +77,107 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <.account_bar
-      account={@account}
-      action={@live_action}
-      balance={@account_balance}
-      funds={@funds}
-      return_path={@return_path}
-      settings_path={~p"/transactions/account"}
-    />
-    <.account_tabs
-      active={:transactions}
-      funds_balance={@funds_balance}
-      loans_balance={@loans_balance}
-    />
-    <.table id="account-transactions" row_id={&"txn-#{&1.id}"} rows={@transactions}>
-      <:col :let={transaction} label="Type"><.icon name={type_icon(transaction)} /></:col>
-      <:col :let={transaction} label="Date">{transaction.date}</:col>
-      <:col :let={transaction} label="Memo">{transaction.memo}</:col>
-      <:col :let={transaction} label="Fund/Loan">{transaction}</:col>
-      <:col :let={transaction} align={:right} label="Out">
-        <span :if={Money.negative?(transaction.amount)} data-role="out">
-          {Money.negate!(transaction.amount)}
-        </span>
-      </:col>
-      <:col :let={transaction} align={:right} label="In">
-        <span :if={Money.positive?(transaction.amount)} data-role="in">
-          {transaction.amount}
-        </span>
-      </:col>
-      <:col :let={transaction} align={:right} label="Balance">
-        {transaction.running_balance}
-      </:col>
-      <:action :let={transaction}>
-        <.link patch={~p"/transactions/#{transaction}/edit?#{%{type: transaction.type}}"}>
-          <.icon name="hero-pencil-square-micro" /> Edit
-        </.link>
-      </:action>
-      <:action :let={transaction}>
-        <.link
-          data-confirm="Are you sure?"
-          phx-click={
-            JS.push("delete", value: %{id: transaction.id, type: transaction.type})
-            |> hide("#txn-#{transaction.id}")
-          }
-        >
-          <.icon name="hero-trash-micro" /> Delete
-        </.link>
-      </:action>
-      <:empty_state>
-        <div id="no-transactions">
-          This account has no transactions yet.
-        </div>
-      </:empty_state>
-    </.table>
-    <.button
-      disabled={is_nil(@paging.prev_cursor)}
-      phx-click="prev-page"
-      phx-disable-with="Loading..."
-      type="button"
-    >
-      <.icon name="hero-arrow-left-circle-mini" /> Previous Page
-    </.button>
-    <.button
-      disabled={is_nil(@paging.next_cursor)}
-      phx-click="next-page"
-      phx-disable-with="Loading..."
-      type="button"
-    >
-      Next Page <.icon name="hero-arrow-right-circle-mini" />
-    </.button>
-
-    <.modal
-      :if={@live_action == :edit_transaction && match?(%Transaction{}, @transaction)}
-      id="fund-transaction-modal"
-      show
-      on_cancel={JS.patch(@return_path)}
-    >
-      <.transaction_form
+    <Layouts.app flash={@flash}>
+      <.account_bar
         account={@account}
         action={@live_action}
-        all_funds={@funds}
+        balance={@account_balance}
+        funds={@funds}
         return_path={@return_path}
-        transaction={@transaction}
+        settings_path={~p"/transactions/account"}
       />
-    </.modal>
+      <.account_tabs
+        active={:transactions}
+        funds_balance={@funds_balance}
+        loans_balance={@loans_balance}
+      />
+      <.table id="account-transactions" row_id={&"txn-#{&1.id}"} rows={@transactions}>
+        <:col :let={transaction} label="Type"><.icon name={type_icon(transaction)} /></:col>
+        <:col :let={transaction} label="Date">{transaction.date}</:col>
+        <:col :let={transaction} label="Memo">{transaction.memo}</:col>
+        <:col :let={transaction} label="Fund/Loan">{transaction}</:col>
+        <:col :let={transaction} align={:right} label="Out">
+          <span :if={Money.negative?(transaction.amount)} data-role="out">
+            {Money.negate!(transaction.amount)}
+          </span>
+        </:col>
+        <:col :let={transaction} align={:right} label="In">
+          <span :if={Money.positive?(transaction.amount)} data-role="in">
+            {transaction.amount}
+          </span>
+        </:col>
+        <:col :let={transaction} align={:right} label="Balance">
+          {transaction.running_balance}
+        </:col>
+        <:action :let={transaction}>
+          <.link patch={~p"/transactions/#{transaction}/edit?#{%{type: transaction.type}}"}>
+            <.icon name="hero-pencil-square-micro" /> Edit
+          </.link>
+        </:action>
+        <:action :let={transaction}>
+          <.link
+            data-confirm="Are you sure?"
+            phx-click={
+              JS.push("delete", value: %{id: transaction.id, type: transaction.type})
+              |> hide("#txn-#{transaction.id}")
+            }
+          >
+            <.icon name="hero-trash-micro" /> Delete
+          </.link>
+        </:action>
+        <:empty_state>
+          <div id="no-transactions">
+            This account has no transactions yet.
+          </div>
+        </:empty_state>
+      </.table>
+      <.button
+        disabled={is_nil(@paging.prev_cursor)}
+        phx-click="prev-page"
+        phx-disable-with="Loading..."
+        type="button"
+      >
+        <.icon name="hero-arrow-left-circle-mini" /> Previous Page
+      </.button>
+      <.button
+        disabled={is_nil(@paging.next_cursor)}
+        phx-click="next-page"
+        phx-disable-with="Loading..."
+        type="button"
+      >
+        Next Page <.icon name="hero-arrow-right-circle-mini" />
+      </.button>
 
-    <.modal
-      :if={@live_action == :edit_transaction && match?(%LoanTransaction{}, @transaction)}
-      id="loan-transaction-modal"
-      show
-      on_cancel={JS.patch(@return_path)}
-    >
-      <.loan_transaction_form
-        account={@account}
-        action={@live_action}
-        loan={@loan}
-        return_path={@return_path}
-        transaction={@transaction}
-      />
-    </.modal>
+      <.modal
+        :if={@live_action == :edit_transaction && match?(%Transaction{}, @transaction)}
+        id="fund-transaction-modal"
+        show
+        on_cancel={JS.patch(@return_path)}
+      >
+        <.transaction_form
+          account={@account}
+          action={@live_action}
+          all_funds={@funds}
+          return_path={@return_path}
+          transaction={@transaction}
+        />
+      </.modal>
+
+      <.modal
+        :if={@live_action == :edit_transaction && match?(%LoanTransaction{}, @transaction)}
+        id="loan-transaction-modal"
+        show
+        on_cancel={JS.patch(@return_path)}
+      >
+        <.loan_transaction_form
+          account={@account}
+          action={@live_action}
+          loan={@loan}
+          return_path={@return_path}
+          transaction={@transaction}
+        />
+      </.modal>
+    </Layouts.app>
     """
   end
 

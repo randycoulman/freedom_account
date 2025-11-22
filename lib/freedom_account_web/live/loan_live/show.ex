@@ -13,6 +13,7 @@ defmodule FreedomAccountWeb.LoanLive.Show do
   alias FreedomAccount.Loans.Loan
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.LoanTransaction
+  alias FreedomAccountWeb.Layouts
   alias FreedomAccountWeb.LoanTransaction.Index, as: TransactionList
   alias Phoenix.HTML.Safe
   alias Phoenix.LiveView
@@ -77,70 +78,77 @@ defmodule FreedomAccountWeb.LoanLive.Show do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <.account account={@account} balance={@account_balance} />
-    <div class="flex h-screen">
-      <aside class="hidden md:flex flex-col w-56 bg-slate-100">
-        <.sidebar
-          funds={@funds}
-          funds_balance={@funds_balance}
-          loans={@loans}
-          loans_balance={@loans_balance}
+    <Layouts.app flash={@flash}>
+      <.account account={@account} balance={@account_balance} />
+      <div class="flex h-screen">
+        <aside class="hidden md:flex flex-col w-56 bg-slate-100">
+          <.sidebar
+            funds={@funds}
+            funds_balance={@funds_balance}
+            loans={@loans}
+            loans_balance={@loans_balance}
+          />
+        </aside>
+        <main class="flex flex-col flex-1 overflow-y-auto pl-2">
+          <.header>
+            <div class="flex flex-row">
+              <span>{@loan}</span>
+              <span>{@loan.current_balance}</span>
+            </div>
+            <:actions>
+              <.link patch={~p"/loans/#{@loan}/loans/new"} phx-click={JS.push_focus()}>
+                <.button>
+                  <.icon name="hero-credit-card-mini" /> Lend
+                </.button>
+              </.link>
+              <.link patch={~p"/loans/#{@loan}/payments/new"} phx-click={JS.push_focus()}>
+                <.button>
+                  <.icon name="hero-banknotes-mini" /> Payment
+                </.button>
+              </.link>
+              <.link patch={~p"/loans/#{@loan}/show/edit"} phx-click={JS.push_focus()}>
+                <.button>
+                  <.icon name="hero-pencil-square-mini" /> Edit Details
+                </.button>
+              </.link>
+            </:actions>
+          </.header>
+          <.loan_transaction_list id={@loan.id} loan={@loan} />
+
+          <.back navigate={~p"/loans"}>Back to Loans</.back>
+        </main>
+      </div>
+
+      <.modal
+        :if={@live_action == :edit}
+        id="loan-modal"
+        show
+        on_cancel={JS.patch(~p"/loans/#{@loan}")}
+      >
+        <.settings_form
+          account={@account}
+          action={@live_action}
+          loan={@loan}
+          return_path={~p"/loans/#{@loan}"}
+          title={@page_title}
         />
-      </aside>
-      <main class="flex flex-col flex-1 overflow-y-auto pl-2">
-        <.header>
-          <div class="flex flex-row">
-            <span>{@loan}</span>
-            <span>{@loan.current_balance}</span>
-          </div>
-          <:actions>
-            <.link patch={~p"/loans/#{@loan}/loans/new"} phx-click={JS.push_focus()}>
-              <.button>
-                <.icon name="hero-credit-card-mini" /> Lend
-              </.button>
-            </.link>
-            <.link patch={~p"/loans/#{@loan}/payments/new"} phx-click={JS.push_focus()}>
-              <.button>
-                <.icon name="hero-banknotes-mini" /> Payment
-              </.button>
-            </.link>
-            <.link patch={~p"/loans/#{@loan}/show/edit"} phx-click={JS.push_focus()}>
-              <.button>
-                <.icon name="hero-pencil-square-mini" /> Edit Details
-              </.button>
-            </.link>
-          </:actions>
-        </.header>
-        <.loan_transaction_list id={@loan.id} loan={@loan} />
+      </.modal>
 
-        <.back navigate={~p"/loans"}>Back to Loans</.back>
-      </main>
-    </div>
-
-    <.modal :if={@live_action == :edit} id="loan-modal" show on_cancel={JS.patch(~p"/loans/#{@loan}")}>
-      <.settings_form
-        account={@account}
-        action={@live_action}
-        loan={@loan}
-        return_path={~p"/loans/#{@loan}"}
-        title={@page_title}
-      />
-    </.modal>
-
-    <.modal
-      :if={@live_action in [:edit_transaction, :lend, :payment]}
-      id="loan-transaction-modal"
-      show
-      on_cancel={JS.patch(~p"/loans/#{@loan}")}
-    >
-      <.loan_transaction_form
-        account={@account}
-        action={@live_action}
-        loan={@loan}
-        return_path={~p"/loans/#{@loan}"}
-        transaction={@transaction}
-      />
-    </.modal>
+      <.modal
+        :if={@live_action in [:edit_transaction, :lend, :payment]}
+        id="loan-transaction-modal"
+        show
+        on_cancel={JS.patch(~p"/loans/#{@loan}")}
+      >
+        <.loan_transaction_form
+          account={@account}
+          action={@live_action}
+          loan={@loan}
+          return_path={~p"/loans/#{@loan}"}
+          transaction={@transaction}
+        />
+      </.modal>
+    </Layouts.app>
     """
   end
 

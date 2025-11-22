@@ -44,8 +44,7 @@ defmodule FreedomAccountWeb do
   def controller do
     quote do
       use Phoenix.Controller,
-        formats: [:html, :json],
-        layouts: [html: FreedomAccountWeb.Layouts]
+        formats: [:html, :json]
 
       use Gettext, backend: FreedomAccountWeb.Gettext
 
@@ -58,7 +57,7 @@ defmodule FreedomAccountWeb do
   @spec live_view :: Macro.t()
   def live_view do
     quote do
-      use Phoenix.LiveView, layout: {FreedomAccountWeb.Layouts, :app}
+      use Phoenix.LiveView
 
       import FreedomAccountWeb.SocketHelpers
 
@@ -100,7 +99,8 @@ defmodule FreedomAccountWeb do
       import FreedomAccountWeb.CoreComponents
       import Phoenix.HTML
 
-      # Shortcut for generating JS commands
+      # Common modules used in templates
+      alias FreedomAccountWeb.Layouts
       alias Phoenix.LiveView.JS
 
       # Routes generation with the ~p sigil

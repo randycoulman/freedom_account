@@ -20,7 +20,7 @@ defmodule FreedomAccountWeb.Card do
     ~H"""
     <div
       class={[
-        " bg-white flex group items-center justify-between max-w-screen-md mx-auto p-4 rounded-xl shadow w-full",
+        " bg-white flex group items-center justify-between max-w-screen-md mx-auto p-4 rounded-xl shadow-sm w-full",
         @class
       ]}
       {@rest}

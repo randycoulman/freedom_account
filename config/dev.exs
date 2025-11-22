@@ -22,7 +22,7 @@ config :freedom_account, FreedomAccountWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  http: [ip: {127, 0, 0, 1}, port: 4000],
+  http: [ip: {127, 0, 0, 1}, port: String.to_integer(System.get_env("PORT") || "4000")],
   secret_key_base: "+dElIq5C0x20jjfhPai0HyJOod0VbrtqhfA9H3MjSCdDHP/zHTlvQcrID72sOXlo",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:freedom_account, ~w(--sourcemap=inline --watch)]},
@@ -58,7 +58,7 @@ config :freedom_account, FreedomAccountWeb.Endpoint,
     patterns: [
       ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/freedom_account_web/(controllers|live|components)/.*(ex|heex)$"
+      ~r"lib/freedom_account_web/(?:controllers|live|components|router)/.*\.(ex|heex)$"
     ],
     web_console_logger: true
   ]
@@ -66,7 +66,7 @@ config :freedom_account, FreedomAccountWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :freedom_account, dev_routes: true
 
-config :logger, :console,
+config :logger, :default_formatter,
   format: {FreedomAccount.DevLogFormatter, :format},
   level: :info,
   metadata: :all
@@ -78,7 +78,10 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 
-# Include HEEx debug annotations as HTML comments in rendered markup
+# Include debug annotations and locations in rendered markup.
+# Changing this configuration will require mix clean and a full recompile.
 config :phoenix_live_view,
   debug_attributes: true,
-  debug_heex_annotations: true
+  debug_heex_annotations: true,
+  # Enable helpful, but potentially expensive runtime checks
+  enable_expensive_runtime_checks: true

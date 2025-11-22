@@ -15,6 +15,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.Transaction
   alias FreedomAccountWeb.FundTransaction
+  alias FreedomAccountWeb.Layouts
   alias Phoenix.HTML.Safe
   alias Phoenix.LiveView
 
@@ -78,86 +79,93 @@ defmodule FreedomAccountWeb.FundLive.Show do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <.account account={@account} balance={@account_balance} />
-    <div class="flex h-screen">
-      <aside class="hidden md:flex flex-col w-56 bg-slate-100">
-        <.sidebar
-          funds={@funds}
-          funds_balance={@funds_balance}
-          loans={@loans}
-          loans_balance={@loans_balance}
-        />
-      </aside>
-      <main class="flex flex-col flex-1 overflow-y-auto pl-2">
-        <.header>
-          <div class="flex flex-row">
-            <span>{@fund}</span>
-            <span>{@fund.current_balance}</span>
-          </div>
-          <:subtitle>
-            <div class="flex flex-row" id="fund-subtitle">
-              <span>
-                Deposit: {Funds.regular_deposit_amount(@fund, @account)} ({@fund.budget} @ {@fund.times_per_year} times/year)
-              </span>
+    <Layouts.app flash={@flash}>
+      <.account account={@account} balance={@account_balance} />
+      <div class="flex h-screen">
+        <aside class="hidden md:flex flex-col w-56 bg-slate-100">
+          <.sidebar
+            funds={@funds}
+            funds_balance={@funds_balance}
+            loans={@loans}
+            loans_balance={@loans_balance}
+          />
+        </aside>
+        <main class="flex flex-col flex-1 overflow-y-auto pl-2">
+          <.header>
+            <div class="flex flex-row">
+              <span>{@fund}</span>
+              <span>{@fund.current_balance}</span>
             </div>
-          </:subtitle>
-          <:actions>
-            <.link
-              id="single-fund-deposit"
-              patch={~p"/funds/#{@fund}/deposits/new"}
-              phx-click={JS.push_focus()}
-            >
-              <.button>
-                <.icon name="hero-plus-circle-mini" /> Deposit
-              </.button>
-            </.link>
-            <.link
-              id="single-fund-withdrawal"
-              patch={~p"/funds/#{@fund}/withdrawals/new"}
-              phx-click={JS.push_focus()}
-            >
-              <.button>
-                <.icon name="hero-minus-circle-mini" /> Withdraw
-              </.button>
-            </.link>
-            <.link patch={~p"/funds/#{@fund}/show/edit"} phx-click={JS.push_focus()}>
-              <.button>
-                <.icon name="hero-pencil-square-mini" /> Edit Details
-              </.button>
-            </.link>
-          </:actions>
-        </.header>
-        <.fund_transaction_list fund={@fund} id={@fund.id} />
+            <:subtitle>
+              <div class="flex flex-row" id="fund-subtitle">
+                <span>
+                  Deposit: {Funds.regular_deposit_amount(@fund, @account)} ({@fund.budget} @ {@fund.times_per_year} times/year)
+                </span>
+              </div>
+            </:subtitle>
+            <:actions>
+              <.link
+                id="single-fund-deposit"
+                patch={~p"/funds/#{@fund}/deposits/new"}
+                phx-click={JS.push_focus()}
+              >
+                <.button>
+                  <.icon name="hero-plus-circle-mini" /> Deposit
+                </.button>
+              </.link>
+              <.link
+                id="single-fund-withdrawal"
+                patch={~p"/funds/#{@fund}/withdrawals/new"}
+                phx-click={JS.push_focus()}
+              >
+                <.button>
+                  <.icon name="hero-minus-circle-mini" /> Withdraw
+                </.button>
+              </.link>
+              <.link patch={~p"/funds/#{@fund}/show/edit"} phx-click={JS.push_focus()}>
+                <.button>
+                  <.icon name="hero-pencil-square-mini" /> Edit Details
+                </.button>
+              </.link>
+            </:actions>
+          </.header>
+          <.fund_transaction_list fund={@fund} id={@fund.id} />
 
-        <.back navigate={~p"/funds"}>Back to Funds</.back>
-      </main>
-    </div>
+          <.back navigate={~p"/funds"}>Back to Funds</.back>
+        </main>
+      </div>
 
-    <.modal :if={@live_action == :edit} id="fund-modal" show on_cancel={JS.patch(~p"/funds/#{@fund}")}>
-      <.settings_form
-        account={@account}
-        action={@live_action}
-        fund={@fund}
-        return_path={~p"/funds/#{@fund}"}
-        title={@page_title}
-      />
-    </.modal>
+      <.modal
+        :if={@live_action == :edit}
+        id="fund-modal"
+        show
+        on_cancel={JS.patch(~p"/funds/#{@fund}")}
+      >
+        <.settings_form
+          account={@account}
+          action={@live_action}
+          fund={@fund}
+          return_path={~p"/funds/#{@fund}"}
+          title={@page_title}
+        />
+      </.modal>
 
-    <.modal
-      :if={@live_action in [:deposit, :edit_transaction, :withdrawal]}
-      id="transaction-modal"
-      show
-      on_cancel={JS.patch(~p"/funds/#{@fund}")}
-    >
-      <.transaction_form
-        account={@account}
-        action={@live_action}
-        all_funds={@funds}
-        initial_funds={[@fund]}
-        return_path={~p"/funds/#{@fund}"}
-        transaction={@transaction}
-      />
-    </.modal>
+      <.modal
+        :if={@live_action in [:deposit, :edit_transaction, :withdrawal]}
+        id="transaction-modal"
+        show
+        on_cancel={JS.patch(~p"/funds/#{@fund}")}
+      >
+        <.transaction_form
+          account={@account}
+          action={@live_action}
+          all_funds={@funds}
+          initial_funds={[@fund]}
+          return_path={~p"/funds/#{@fund}"}
+          transaction={@transaction}
+        />
+      </.modal>
+    </Layouts.app>
     """
   end
 
