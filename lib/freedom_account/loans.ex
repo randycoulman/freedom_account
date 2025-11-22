@@ -116,7 +116,7 @@ defmodule FreedomAccount.Loans do
     |> Enum.reduce(Multi.new(), fn {changeset, index}, multi ->
       Multi.update(multi, {:loan, index}, changeset)
     end)
-    |> Repo.transaction()
+    |> Repo.transact()
     |> case do
       {:ok, changes} ->
         PubSub.broadcast({:ok, Map.values(changes)}, pubsub_topic(), :loan_activation_updated)

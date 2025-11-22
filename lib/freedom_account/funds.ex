@@ -124,7 +124,7 @@ defmodule FreedomAccount.Funds do
     |> Enum.reduce(Multi.new(), fn {changeset, index}, multi ->
       Multi.update(multi, {:fund, index}, changeset)
     end)
-    |> Repo.transaction()
+    |> Repo.transact()
     |> case do
       {:ok, changes} ->
         PubSub.broadcast({:ok, Map.values(changes)}, pubsub_topic(), :fund_activation_updated)
@@ -144,7 +144,7 @@ defmodule FreedomAccount.Funds do
     |> Enum.reduce(Multi.new(), fn {changeset, index}, multi ->
       Multi.update(multi, {:fund, index}, changeset)
     end)
-    |> Repo.transaction()
+    |> Repo.transact()
     |> case do
       {:ok, changes} ->
         PubSub.broadcast({:ok, Map.values(changes)}, pubsub_topic(), :budget_updated)
