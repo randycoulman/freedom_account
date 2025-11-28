@@ -1,6 +1,8 @@
 defmodule FreedomAccountWeb.ErrorHTML do
   @moduledoc """
-  Define error pages for HTML routes.
+  This module is invoked by your endpoint in case of errors on HTML requests.
+
+  See config/config.exs.
   """
 
   use FreedomAccountWeb, :html

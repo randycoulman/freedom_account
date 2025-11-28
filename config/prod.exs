@@ -7,6 +7,11 @@ import Config
 # before starting your production server.
 config :freedom_account, FreedomAccountWeb.Endpoint, cache_static_manifest: "priv/static/cache_manifest.json"
 
+# Force using SSL in production. This also sets the "strict-security-transport" header,
+# also known as HSTS. `:force_ssl` is required to be set at compile-time.
+# RC: Commented out, since we currently only run the prod release on our local machine
+# config :freedom_account, FreedomAccountWeb.Endpoint, force_ssl: [rewrite_on: [:x_forwarded_proto]]
+
 # Do not print debug messages in production
 config :logger, level: :info
 

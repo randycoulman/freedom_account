@@ -92,11 +92,12 @@ defmodule FreedomAccountWeb do
 
   defp html_helpers do
     quote do
-      # HTML escaping functionality
-      # Core UI components and translation
+      # Translation
       use Gettext, backend: FreedomAccountWeb.Gettext
 
+      # Core UI components
       import FreedomAccountWeb.CoreComponents
+      # HTML escaping functionality
       import Phoenix.HTML
 
       # Common modules used in templates
@@ -119,7 +120,7 @@ defmodule FreedomAccountWeb do
   end
 
   @doc """
-  When used, dispatch to the appropriate controller/view/etc.
+  When used, dispatch to the appropriate controller/live_view/etc.
   """
   defmacro __using__(which) when is_atom(which) do
     apply(__MODULE__, which, [])

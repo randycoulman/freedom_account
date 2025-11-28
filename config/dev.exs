@@ -75,12 +75,11 @@ config :logger, :default_formatter,
   level: :info,
   metadata: :all
 
+# Initialize plugs at runtime for faster development compilation
+config :phoenix, :plug_init_mode, :runtime
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
-config :phoenix, :plug_init_mode, :runtime
 config :phoenix, :stacktrace_depth, 20
-
-# Initialize plugs at runtime for faster development compilation
 
 # Include debug annotations and locations in rendered markup.
 # Changing this configuration will require mix clean and a full recompile.

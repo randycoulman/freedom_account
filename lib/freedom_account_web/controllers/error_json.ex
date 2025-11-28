@@ -1,6 +1,8 @@
 defmodule FreedomAccountWeb.ErrorJSON do
   @moduledoc """
-  Define error responses for JSON routes.
+  This module is invoked by your endpoint in case of errors on JSON requests.
+
+  See config/config.exs.
   """
 
   # If you want to customize a particular status code,
