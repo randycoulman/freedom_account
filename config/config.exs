@@ -20,7 +20,7 @@ config :esbuild,
 config :ex_money,
   default_cldr_backend: FreedomAccount.Cldr
 
-# Configures the endpoint
+# Configure the endpoint
 config :freedom_account, FreedomAccountWeb.Endpoint,
   adapter: Bandit.PhoenixAdapter,
   live_view: [signing_salt: "RD+3ZR5v"],
@@ -35,7 +35,7 @@ config :freedom_account,
   ecto_repos: [FreedomAccount.Repo],
   generators: [timestamp_type: :utc_datetime]
 
-# Configures Elixir's Logger
+# Configure Elixir's Logger
 config :logger, :default_formatter,
   format: "$time $metadata[$level] $message\n",
   metadata: [
@@ -61,6 +61,6 @@ config :tailwind,
     # of this file so it overrides the configuration defined above.
     cd: Path.expand("..", __DIR__)
   ],
-  version: "4.1.7"
+  version: "4.1.12"
 
 import_config "#{config_env()}.exs"

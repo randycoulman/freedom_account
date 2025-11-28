@@ -22,7 +22,7 @@ config :freedom_account, FreedomAccountWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  http: [ip: {127, 0, 0, 1}, port: String.to_integer(System.get_env("PORT") || "4000")],
+  http: [ip: {127, 0, 0, 1}],
   secret_key_base: "+dElIq5C0x20jjfhPai0HyJOod0VbrtqhfA9H3MjSCdDHP/zHTlvQcrID72sOXlo",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:freedom_account, ~w(--sourcemap=inline --watch)]},
@@ -52,13 +52,17 @@ config :freedom_account, FreedomAccountWeb.Endpoint,
 # configured to run both http and https servers on
 # different ports.
 
-# Watch static and templates for browser reloading.
+# Reload browser tabs when matching files change.
 config :freedom_account, FreedomAccountWeb.Endpoint,
   live_reload: [
     patterns: [
-      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"priv/gettext/.*(po)$",
-      ~r"lib/freedom_account_web/(?:controllers|live|components|router)/.*\.(ex|heex)$"
+      # Static assets, except user uploads
+      ~r"priv/static/(?!uploads/).*\.(js|css|png|jpeg|jpg|gif|svg)$"E,
+      # Gettext translations
+      ~r"priv/gettext/.*\.po$"E,
+      # Router, Controllers, LiveViews, and LiveComponents
+      ~r"lib/freedom_account_web/router\.ex$"E,
+      ~r"lib/freedom_account_web/(controllers|live|components)/.*\.(ex|heex)$"E
     ],
     web_console_logger: true
   ]

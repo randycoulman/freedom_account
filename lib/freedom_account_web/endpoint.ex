@@ -25,7 +25,8 @@ defmodule FreedomAccountWeb.Endpoint do
     at: "/",
     from: :freedom_account,
     gzip: not code_reloading?,
-    only: FreedomAccountWeb.static_paths()
+    only: FreedomAccountWeb.static_paths(),
+    raise_on_missing_only: code_reloading?
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
