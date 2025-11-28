@@ -43,7 +43,7 @@ defmodule FreedomAccount.MixProject do
 
   @spec cli :: Keyword.t()
   def cli do
-    [preferred_envs: [precommit: :test, validate: :test]]
+    [preferred_envs: [precommit: :test]]
   end
 
   defp elixirc_options(:dev) do
@@ -89,8 +89,7 @@ defmodule FreedomAccount.MixProject do
       {:ex_money, "~> 5.23", runtime: false},
       {:ex_money_sql, "~> 1.11"},
       {:faker, "~> 0.18.0", only: :test},
-      # Overriding to resolve conflict with timex' dependencies
-      {:gettext, "~> 1.0", override: true},
+      {:gettext, "~> 1.0"},
       {:heroicons,
        github: "tailwindlabs/heroicons", tag: "v2.2.0", sparse: "optimized", app: false, compile: false, depth: 1},
       {:jason, "~> 1.2"},
@@ -143,13 +142,7 @@ defmodule FreedomAccount.MixProject do
       s: ["phx.server"],
       setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
       stop: ["cmd docker compose --profile prod down"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      validate: [
-        "format --check-formatted",
-        "credo",
-        "dialyzer",
-        "test"
-      ]
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
     ]
   end
 end

@@ -23,7 +23,7 @@ scratchpad to remind myself how to do things:
 - Initial dev setup: `mix setup`
 - Run the development server: `mix s`
 - Format the code: `mix format`
-- Run all tests and checks: `mix validate`
+- Run all tests and checks: `mix precommit`
 - Run tests: `mix test`
 - Run tests, watching for changes: `mix test.interactive --stale`
 - Run lint checks: `mix credo`
