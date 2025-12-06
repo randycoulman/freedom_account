@@ -2,7 +2,7 @@ defmodule FreedomAccountWeb.LoanLive.Index do
   @moduledoc false
   use FreedomAccountWeb, :live_view
 
-  import FreedomAccountWeb.AccountBar.Show, only: [account_bar: 1]
+  import FreedomAccountWeb.AccountBar, only: [account_bar: 1]
   import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
   import FreedomAccountWeb.LoanActivationForm, only: [loan_activation_form: 1]
   import FreedomAccountWeb.LoanCard, only: [loan_card: 1]
@@ -44,10 +44,6 @@ defmodule FreedomAccountWeb.LoanLive.Index do
     end
   end
 
-  defp apply_action(socket, :edit_account, _params) do
-    assign(socket, :page_title, "Edit Account Settings")
-  end
-
   defp apply_action(socket, :new, _params) do
     socket
     |> assign(:page_title, "Add Loan")
@@ -64,14 +60,7 @@ defmodule FreedomAccountWeb.LoanLive.Index do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
-      <.account_bar
-        account={@account}
-        action={@live_action}
-        balance={@account_balance}
-        funds={@funds}
-        return_path={~p"/loans"}
-        settings_path={~p"/loans/account"}
-      />
+      <.account_bar account={@account} balance={@account_balance} return_to="loans" />
       <.account_tabs active={:loans} funds_balance={@funds_balance} loans_balance={@loans_balance} />
       <div class="flex flex-row gap-2 justify-end py-4">
         <.link patch={~p"/loans/activate"} phx-click={JS.push_focus()}>

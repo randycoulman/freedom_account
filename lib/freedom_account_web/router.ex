@@ -22,10 +22,11 @@ defmodule FreedomAccountWeb.Router do
     get "/", HomeController, :redirect_to_fund_list
 
     live_session :default, on_mount: Hooks.LoadInitialData do
+      live "/account/edit", AccountLive.Form, :edit
+
       live "/funds", FundLive.Index, :index
       live "/funds/new", FundLive.Index, :new
       live "/funds/:id/edit", FundLive.Index, :edit
-      live "/funds/account", FundLive.Index, :edit_account
       live "/funds/activate", FundLive.Index, :activate
       live "/funds/budget", FundLive.Index, :edit_budget
       live "/funds/regular_deposit", FundLive.Index, :regular_deposit
@@ -40,7 +41,6 @@ defmodule FreedomAccountWeb.Router do
       live "/loans", LoanLive.Index, :index
       live "/loans/new", LoanLive.Index, :new
       live "/loans/:id/edit", LoanLive.Index, :edit
-      live "/loans/account", LoanLive.Index, :edit_account
       live "/loans/activate", LoanLive.Index, :activate
 
       live "/loans/:id", LoanLive.Show, :show
@@ -50,7 +50,6 @@ defmodule FreedomAccountWeb.Router do
       live "/loans/:id/transactions/:transaction_id/edit", LoanLive.Show, :edit_transaction
 
       live "/transactions", TransactionLive.Index, :index
-      live "/transactions/account", TransactionLive.Index, :edit_account
       live "/transactions/:id/edit", TransactionLive.Index, :edit_transaction
     end
   end

@@ -2,7 +2,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
   @moduledoc false
   use FreedomAccountWeb, :live_view
 
-  import FreedomAccountWeb.AccountBar.Show, only: [account_bar: 1]
+  import FreedomAccountWeb.AccountBar, only: [account_bar: 1]
   import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
   import FreedomAccountWeb.BudgetForm, only: [budget_form: 1]
   import FreedomAccountWeb.FundActivationForm, only: [fund_activation_form: 1]
@@ -48,10 +48,6 @@ defmodule FreedomAccountWeb.FundLive.Index do
     end
   end
 
-  defp apply_action(socket, :edit_account, _params) do
-    assign(socket, :page_title, "Edit Account Settings")
-  end
-
   defp apply_action(socket, :edit_budget, _params) do
     assign(socket, :page_title, "Update Budget")
   end
@@ -80,14 +76,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
-      <.account_bar
-        account={@account}
-        action={@live_action}
-        balance={@account_balance}
-        funds={@funds}
-        return_path={@return_path}
-        settings_path={~p"/funds/account"}
-      />
+      <.account_bar account={@account} balance={@account_balance} return_to="funds" />
       <.account_tabs active={:funds} funds_balance={@funds_balance} loans_balance={@loans_balance} />
       <div class="flex flex-row gap-2 justify-end py-4">
         <.link patch={~p"/funds/regular_deposit"} phx-click={JS.push_focus()}>

@@ -2,7 +2,7 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
   @moduledoc false
   use FreedomAccountWeb, :live_view
 
-  import FreedomAccountWeb.AccountBar.Show, only: [account_bar: 1]
+  import FreedomAccountWeb.AccountBar, only: [account_bar: 1]
   import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
   import FreedomAccountWeb.LoanTransactionForm, only: [loan_transaction_form: 1]
   import FreedomAccountWeb.TransactionForm, only: [transaction_form: 1]
@@ -33,10 +33,6 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
     |> assign(:transaction, nil)
     |> apply_action(action, params)
     |> noreply()
-  end
-
-  defp apply_action(socket, :edit_account, _params) do
-    assign(socket, :page_title, "Edit Account Settings")
   end
 
   defp apply_action(socket, :edit_transaction, %{"type" => "fund"} = params) do
@@ -78,14 +74,7 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
-      <.account_bar
-        account={@account}
-        action={@live_action}
-        balance={@account_balance}
-        funds={@funds}
-        return_path={@return_path}
-        settings_path={~p"/transactions/account"}
-      />
+      <.account_bar account={@account} balance={@account_balance} return_to="transactions" />
       <.account_tabs
         active={:transactions}
         funds_balance={@funds_balance}
