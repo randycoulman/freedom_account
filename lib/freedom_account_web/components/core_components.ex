@@ -484,6 +484,44 @@ defmodule FreedomAccountWeb.CoreComponents do
   end
 
   @doc """
+  Renders a standard form.
+
+  ## Examples
+
+      <.standard_form for={@form} phx-change="validate" phx-submit="save">
+        <.input field={@form[:email]} label="Email"/>
+        <.input field={@form[:username]} label="Username" />
+        <:actions>
+          <.button>Save</.button>
+        </:actions>
+      </.standard_form>
+  """
+  attr :as, :any, default: nil
+  attr :class, :any, default: nil
+  attr :for, :any, required: true
+  attr :rest, :global, include: ~w(autocomplete name rel action enctype method novalidate target multipart)
+  attr :title, :string, default: nil
+
+  slot :inner_block, required: true
+  slot :actions
+
+  def standard_form(assigns) do
+    ~H"""
+    <div class={["flex flex-col items-center mx-auto", @class]}>
+      <.header :if={@title}>{@title}</.header>
+      <.form :let={f} class="w-full" for={@for} as={@as} {@rest}>
+        {render_slot(@inner_block, f)}
+        <footer class="flex gap-4 justify-center mt-6">
+          <div :for={action <- @actions}>
+            {render_slot(action, f)}
+          </div>
+        </footer>
+      </.form>
+    </div>
+    """
+  end
+
+  @doc """
   Renders a table with generic styling.
 
   ## Examples

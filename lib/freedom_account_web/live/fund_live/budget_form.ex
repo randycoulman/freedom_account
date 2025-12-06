@@ -35,54 +35,54 @@ defmodule FreedomAccountWeb.FundLive.BudgetForm do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
-      <div class="flex flex-col items-center max-w-3xl mx-auto">
-        <.header>Update Budget</.header>
-        <.form
-          class="w-full"
-          for={@form}
-          id="budget-form"
-          phx-change="validate"
-          phx-submit="save"
-        >
-          <div>
-            <div class="grid grid-cols-4 gap-x-4 items-center mx-auto">
-              <span />
-              <label>Budget</label>
-              <label>Times/Year</label>
-              <label>Deposit Amount</label>
-              <.inputs_for :let={fund} field={@form[:funds]}>
-                <label>{fund.data}</label>
-                <.input
-                  field={fund[:budget]}
-                  label={"Budget #{fund.index}"}
-                  label_class="sr-only"
-                  phx-debounce="blur"
-                  type="text"
-                />
-                <.input
-                  field={fund[:times_per_year]}
-                  label={"Times/Year #{fund.index}"}
-                  label_class="sr-only"
-                  phx-debounce="blur"
-                  type="text"
-                />
-                <span data-role={"deposit-amount-#{fund.index}"}>
-                  {fund[:regular_deposit_amount].value}
-                </span>
-              </.inputs_for>
-              <div class="col-span-4 font-semibold mt-4 text-center" id="deposit-total">
-                Total deposit amount: {@form[:total_deposit_amount].value}
-              </div>
+      <.standard_form
+        class="max-w-3xl"
+        for={@form}
+        id="budget-form"
+        phx-change="validate"
+        phx-submit="save"
+        title="Update Budget"
+      >
+        <div>
+          <div class="grid grid-cols-4 gap-x-4 items-center mx-auto">
+            <span />
+            <label>Budget</label>
+            <label>Times/Year</label>
+            <label>Deposit Amount</label>
+            <.inputs_for :let={fund} field={@form[:funds]}>
+              <label>{fund.data}</label>
+              <.input
+                field={fund[:budget]}
+                label={"Budget #{fund.index}"}
+                label_class="sr-only"
+                phx-debounce="blur"
+                type="text"
+              />
+              <.input
+                field={fund[:times_per_year]}
+                label={"Times/Year #{fund.index}"}
+                label_class="sr-only"
+                phx-debounce="blur"
+                type="text"
+              />
+              <span data-role={"deposit-amount-#{fund.index}"}>
+                {fund[:regular_deposit_amount].value}
+              </span>
+            </.inputs_for>
+            <div class="col-span-4 font-semibold mt-4 text-center" id="deposit-total">
+              Total deposit amount: {@form[:total_deposit_amount].value}
             </div>
           </div>
-          <footer class="flex gap-4 justify-center mt-6">
-            <.button phx-disable-with="Updating..." type="submit" variant="primary">
-              <.icon name="hero-check-circle-mini" /> Update Budget
-            </.button>
-            <.button navigate={~p"/funds"}>Cancel</.button>
-          </footer>
-        </.form>
-      </div>
+        </div>
+        <:actions>
+          <.button phx-disable-with="Updating..." type="submit" variant="primary">
+            <.icon name="hero-check-circle-mini" /> Update Budget
+          </.button>
+        </:actions>
+        <:actions>
+          <.button navigate={~p"/funds"}>Cancel</.button>
+        </:actions>
+      </.standard_form>
     </Layouts.app>
     """
   end

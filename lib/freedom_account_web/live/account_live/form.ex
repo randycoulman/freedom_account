@@ -29,38 +29,38 @@ defmodule FreedomAccountWeb.AccountLive.Form do
 
     ~H"""
     <Layouts.app flash={@flash}>
-      <div class="flex flex-col items-center max-w-lg mx-auto">
-        <.header>Edit Account Settings</.header>
-        <.form
-          class="w-full"
-          for={@form}
-          id="account-form"
-          phx-change="validate"
-          phx-submit="save"
-        >
-          <.input field={@form[:name]} label="Name" phx-debounce="blur" type="text" />
-          <.input
-            field={@form[:deposits_per_year]}
-            label="Deposits / year"
-            phx-debounce="blur"
-            type="number"
-          />
-          <.input
-            field={@form[:default_fund_id]}
-            id="default-fund"
-            label="Default fund"
-            options={@options}
-            phx-debounce="blur"
-            type="select"
-          />
-          <footer class="flex gap-4 justify-center mt-6">
-            <.button phx-disable-with="Saving..." type="submit" variant="primary">
-              <.icon name="hero-check-circle-mini" /> Save Account
-            </.button>
-            <.button navigate={return_path(@return_to)}>Cancel</.button>
-          </footer>
-        </.form>
-      </div>
+      <.standard_form
+        class="max-w-lg"
+        for={@form}
+        id="account-form"
+        phx-change="validate"
+        phx-submit="save"
+        title="Edit Account Settings"
+      >
+        <.input field={@form[:name]} label="Name" phx-debounce="blur" type="text" />
+        <.input
+          field={@form[:deposits_per_year]}
+          label="Deposits / year"
+          phx-debounce="blur"
+          type="number"
+        />
+        <.input
+          field={@form[:default_fund_id]}
+          id="default-fund"
+          label="Default fund"
+          options={@options}
+          phx-debounce="blur"
+          type="select"
+        />
+        <:actions>
+          <.button phx-disable-with="Saving..." type="submit" variant="primary">
+            <.icon name="hero-check-circle-mini" /> Save Account
+          </.button>
+        </:actions>
+        <:actions>
+          <.button navigate={return_path(@return_to)}>Cancel</.button>
+        </:actions>
+      </.standard_form>
     </Layouts.app>
     """
   end
