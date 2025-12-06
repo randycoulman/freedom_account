@@ -38,7 +38,7 @@ defmodule FreedomAccountWeb.BudgetForm do
     ~H"""
     <div>
       <.header>Update Budget</.header>
-      <.simple_form
+      <.form
         for={@form}
         id="budget-form"
         phx-target={@myself}
@@ -48,11 +48,11 @@ defmodule FreedomAccountWeb.BudgetForm do
         <div>
           <div class="grid grid-cols-4 gap-x-4 items-center mx-auto">
             <span />
-            <.label>Budget</.label>
-            <.label>Times/Year</.label>
-            <.label>Deposit Amount</.label>
+            <label>Budget</label>
+            <label>Times/Year</label>
+            <label>Deposit Amount</label>
             <.inputs_for :let={fund} field={@form[:funds]}>
-              <.label>{fund.data}</.label>
+              <label>{fund.data}</label>
               <.input
                 field={fund[:budget]}
                 label={"Budget #{fund.index}"}
@@ -76,12 +76,12 @@ defmodule FreedomAccountWeb.BudgetForm do
             Total deposit amount: {@form[:total_deposit_amount].value}
           </div>
         </div>
-        <:actions>
-          <.button phx-disable-with="Updating..." type="submit">
+        <footer>
+          <.button phx-disable-with="Updating..." type="submit" variant="primary">
             <.icon name="hero-check-circle-mini" /> Update Budget
           </.button>
-        </:actions>
-      </.simple_form>
+        </footer>
+      </.form>
     </div>
     """
   end

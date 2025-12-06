@@ -35,7 +35,7 @@ defmodule FreedomAccountWeb.LoanActivationForm do
     ~H"""
     <div>
       <.header>Activate/Deactivate Loans</.header>
-      <.simple_form
+      <.form
         for={@form}
         id="activation-form"
         phx-target={@myself}
@@ -45,12 +45,12 @@ defmodule FreedomAccountWeb.LoanActivationForm do
         <.inputs_for :let={loan} field={@form[:loans]}>
           <.input field={loan[:active]} label={loan.data} type="checkbox" />
         </.inputs_for>
-        <:actions>
-          <.button phx-disable-with="Updating..." type="submit">
+        <footer>
+          <.button phx-disable-with="Updating..." type="submit" variant="primary">
             <.icon name="hero-check-circle-mini" /> Update Loans
           </.button>
-        </:actions>
-      </.simple_form>
+        </footer>
+      </.form>
     </div>
     """
   end

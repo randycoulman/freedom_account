@@ -43,7 +43,7 @@ defmodule FreedomAccountWeb.LoanLive.Form do
         {@title}
       </.header>
 
-      <.simple_form
+      <.form
         for={@form}
         id="loan-form"
         phx-target={@myself}
@@ -52,12 +52,12 @@ defmodule FreedomAccountWeb.LoanLive.Form do
       >
         <.input field={@form[:icon]} label="Icon" phx-debounce="blur" type="text" />
         <.input field={@form[:name]} label="Name" phx-debounce="blur" type="text" />
-        <:actions>
-          <.button phx-disable-with="Saving..." type="submit">
+        <footer>
+          <.button phx-disable-with="Saving..." type="submit" variant="primary">
             <.icon name="hero-check-circle-mini" /> Save Loan
           </.button>
-        </:actions>
-      </.simple_form>
+        </footer>
+      </.form>
     </div>
     """
   end

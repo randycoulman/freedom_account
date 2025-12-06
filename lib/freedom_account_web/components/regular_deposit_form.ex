@@ -63,7 +63,7 @@ defmodule FreedomAccountWeb.RegularDepositForm do
     ~H"""
     <div>
       <.header>Regular Deposit</.header>
-      <.simple_form
+      <.form
         for={@form}
         id="regular-deposit-form"
         phx-target={@myself}
@@ -71,12 +71,12 @@ defmodule FreedomAccountWeb.RegularDepositForm do
         phx-submit="save"
       >
         <.input field={@form[:date]} label="Date" phx-debounce="blur" type="date" />
-        <:actions>
-          <.button phx-disable-with="Saving..." type="submit">
+        <footer>
+          <.button phx-disable-with="Saving..." type="submit" variant="primary">
             <.icon name="hero-check-folder-mini" /> Make Deposit
           </.button>
-        </:actions>
-      </.simple_form>
+        </footer>
+      </.form>
     </div>
     """
   end

@@ -98,7 +98,7 @@ defmodule FreedomAccountWeb.TransactionForm do
         {@heading}
       </.header>
 
-      <.simple_form
+      <.form
         for={@form}
         id="transaction-form"
         phx-target={@myself}
@@ -110,14 +110,13 @@ defmodule FreedomAccountWeb.TransactionForm do
         <div :if={@line_items_error && @multi_line?} id="line-items-error">
           <.error>{@line_items_error}</.error>
         </div>
-        <div class="grid grid-cols-3 gap-x-4 items-center mx-auto">
+        <div class="grid grid-cols-2 gap-x-4 items-center mx-auto">
           <span />
-          <.label>Amount</.label>
-          <span />
+          <label>Amount</label>
           <.inputs_for :let={li} field={@form[:line_items]}>
-            <.label>
+            <label>
               {find_fund(@all_funds, li[:fund_id].value)}
-            </.label>
+            </label>
             <.input
               field={li[:amount]}
               label={"Amount #{li.index}"}
@@ -131,12 +130,12 @@ defmodule FreedomAccountWeb.TransactionForm do
         <div :if={@multi_line?} id="transaction-total">
           Total withdrawal: {@form[:total].value}
         </div>
-        <:actions>
-          <.button phx-disable-with="Saving..." type="submit">
+        <footer>
+          <.button phx-disable-with="Saving..." type="submit" variant="primary">
             <.icon name="hero-check-circle-mini" /> {@save}
           </.button>
-        </:actions>
-      </.simple_form>
+        </footer>
+      </.form>
     </div>
     """
   end

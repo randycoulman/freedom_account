@@ -35,7 +35,7 @@ defmodule FreedomAccountWeb.FundActivationForm do
     ~H"""
     <div>
       <.header>Activate/Deactivate Funds</.header>
-      <.simple_form
+      <.form
         for={@form}
         id="activation-form"
         phx-target={@myself}
@@ -45,12 +45,12 @@ defmodule FreedomAccountWeb.FundActivationForm do
         <.inputs_for :let={fund} field={@form[:funds]}>
           <.input field={fund[:active]} label={fund.data} type="checkbox" />
         </.inputs_for>
-        <:actions>
-          <.button phx-disable-with="Updating..." type="submit">
+        <footer>
+          <.button phx-disable-with="Updating..." type="submit" variant="primary">
             <.icon name="hero-check-circle-mini" /> Update Funds
           </.button>
-        </:actions>
-      </.simple_form>
+        </footer>
+      </.form>
     </div>
     """
   end

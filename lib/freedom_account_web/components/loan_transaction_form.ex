@@ -74,7 +74,7 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
         </:subtitle>
       </.header>
 
-      <.simple_form
+      <.form
         for={@form}
         id="loan-transaction-form"
         phx-target={@myself}
@@ -85,12 +85,12 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
         <.input field={@form[:memo]} label="Memo" phx-debounce="blur" type="text" />
         <.input field={@form[:amount]} label="Amount" phx-debounce="blur" type="text" />
         <.input field={@form[:loan_id]} type="hidden" />
-        <:actions>
-          <.button phx-disable-with="Saving..." type="submit">
+        <footer>
+          <.button phx-disable-with="Saving..." type="submit" variant="primary">
             <.icon name="hero-check-circle-mini" /> {@save}
           </.button>
-        </:actions>
-      </.simple_form>
+        </footer>
+      </.form>
     </div>
     """
   end

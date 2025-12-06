@@ -3,8 +3,6 @@ defmodule FreedomAccountWeb.AccountTabs do
   use FreedomAccountWeb, :verified_routes
   use Phoenix.Component
 
-  import FreedomAccountWeb.CoreComponents
-
   # credo:disable-for-this-file Credo.Check.Readability.Specs
   # Reason: All component functions take a map of assigns that is fully
   # specified and checked at compile time by `attr` and `slot`, and they all
@@ -16,23 +14,21 @@ defmodule FreedomAccountWeb.AccountTabs do
 
   def account_tabs(assigns) do
     ~H"""
-    <.tab_bar>
-      <:tab active={@active == :funds}>
-        <.link navigate={~p"/funds"}>
-          <.tab_label balance={@funds_balance} title="Funds" />
-        </.link>
-      </:tab>
-      <:tab active={@active == :loans}>
-        <.link navigate={~p"/loans"}>
-          <.tab_label balance={@loans_balance} title="Loans" />
-        </.link>
-      </:tab>
-      <:tab active={@active == :transactions}>
-        <.link navigate={~p"/transactions"}>
-          <.tab_label title="Transactions" />
-        </.link>
-      </:tab>
-    </.tab_bar>
+    <div class="tabs tabs-lift" role="tablist">
+      <.link class={["tab", @active == :funds && "tab-active"]} navigate={~p"/funds"} role="tab">
+        <.tab_label balance={@funds_balance} title="Funds" />
+      </.link>
+      <.link class={["tab", @active == :loans && "tab-active"]} navigate={~p"/loans"} role="tab">
+        <.tab_label balance={@loans_balance} title="Loans" />
+      </.link>
+      <.link
+        class={["tab", @active == :transactions && "tab-active"]}
+        navigate={~p"/transactions"}
+        role="tab"
+      >
+        <.tab_label title="Transactions" />
+      </.link>
+    </div>
     """
   end
 

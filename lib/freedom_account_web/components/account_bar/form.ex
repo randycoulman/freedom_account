@@ -50,7 +50,7 @@ defmodule FreedomAccountWeb.AccountBar.Form do
         Edit Account Settings
       </.header>
 
-      <.simple_form
+      <.form
         for={@form}
         id="account-form"
         phx-target={@myself}
@@ -72,12 +72,12 @@ defmodule FreedomAccountWeb.AccountBar.Form do
           phx-debounce="blur"
           type="select"
         />
-        <:actions>
-          <.button phx-disable-with="Saving..." type="submit">
+        <footer>
+          <.button phx-disable-with="Saving..." type="submit" variant="primary">
             <.icon name="hero-check-circle-mini" /> Save Account
           </.button>
-        </:actions>
-      </.simple_form>
+        </footer>
+      </.form>
     </div>
     """
   end

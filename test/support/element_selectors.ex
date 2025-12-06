@@ -12,7 +12,7 @@ defmodule FreedomAccountWeb.ElementSelectors do
   def action_link(selector), do: "#{selector} a"
 
   @spec active_tab :: selector()
-  def active_tab, do: "li[data-active=true]"
+  def active_tab, do: ".tab-active"
 
   @spec disabled(selector()) :: selector()
   def disabled(selector), do: "#{selector}[disabled]"
@@ -21,7 +21,7 @@ defmodule FreedomAccountWeb.ElementSelectors do
   def enabled(selector), do: "#{selector}:not([disabled])"
 
   @spec field_error(selector()) :: selector()
-  def field_error(selector), do: "#{selector} ~ [name='error']"
+  def field_error(selector), do: "label:has(#{selector}) ~ .text-error"
 
   @spec field_value(selector(), String.t()) :: selector()
   def field_value(selector, value), do: "#{selector}[value='#{value}']"
@@ -74,7 +74,7 @@ defmodule FreedomAccountWeb.ElementSelectors do
   def heading_link, do: "#{heading()} #{link()}"
 
   @spec inactive_tab :: selector()
-  def inactive_tab, do: "li[data-active=false]"
+  def inactive_tab, do: ".tab:not(.tab-active)"
 
   @spec link :: selector()
   def link, do: "a"

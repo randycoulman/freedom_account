@@ -43,7 +43,7 @@ defmodule FreedomAccountWeb.FundLive.Form do
         {@title}
       </.header>
 
-      <.simple_form
+      <.form
         for={@form}
         id="fund-form"
         phx-target={@myself}
@@ -54,12 +54,12 @@ defmodule FreedomAccountWeb.FundLive.Form do
         <.input field={@form[:name]} label="Name" phx-debounce="blur" type="text" />
         <.input field={@form[:budget]} label="Budget" phx-debounce="blur" type="text" />
         <.input field={@form[:times_per_year]} label="Times/Year" phx-debounce="blur" type="text" />
-        <:actions>
-          <.button phx-disable-with="Saving..." type="submit">
+        <footer>
+          <.button phx-disable-with="Saving..." type="submit" variant="primary">
             <.icon name="hero-check-circle-mini" /> Save Fund
           </.button>
-        </:actions>
-      </.simple_form>
+        </footer>
+      </.form>
     </div>
     """
   end
