@@ -29,12 +29,10 @@ defmodule FreedomAccountWeb.AccountLive.Form do
 
     ~H"""
     <Layouts.app flash={@flash}>
-      <div class="max-w-lg mx-auto">
-        <.header>
-          Edit Account Settings
-        </.header>
-
+      <div class="flex flex-col items-center max-w-lg mx-auto">
+        <.header>Edit Account Settings</.header>
         <.form
+          class="w-full"
           for={@form}
           id="account-form"
           phx-change="validate"
@@ -55,7 +53,7 @@ defmodule FreedomAccountWeb.AccountLive.Form do
             phx-debounce="blur"
             type="select"
           />
-          <footer>
+          <footer class="flex gap-4 justify-center mt-6">
             <.button phx-disable-with="Saving..." type="submit" variant="primary">
               <.icon name="hero-check-circle-mini" /> Save Account
             </.button>
