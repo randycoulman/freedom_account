@@ -27,10 +27,10 @@ defmodule FreedomAccountWeb.Router do
       live "/funds", FundLive.Index, :index
       live "/funds/new", FundLive.Index, :new
       live "/funds/:id/edit", FundLive.Index, :edit
-      live "/funds/activate", FundLive.Index, :activate
       live "/funds/regular_deposit", FundLive.Index, :regular_deposit
       live "/funds/regular_withdrawal", FundLive.Index, :regular_withdrawal
 
+      live "/funds/activate", FundLive.ActivationForm, :activate
       live "/funds/budget", FundLive.BudgetForm, :edit
 
       live "/funds/:id", FundLive.Show, :show

@@ -1,4 +1,4 @@
-defmodule FreedomAccountWeb.FundLive.BudgetTest do
+defmodule FreedomAccountWeb.FundLive.BudgetFormTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Accounts.Account

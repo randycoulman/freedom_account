@@ -102,6 +102,17 @@ defmodule FreedomAccountWeb.FundLive.IndexTest do
       |> refute_has("#funds-#{fund.id}")
     end
 
+    test "allows activating/deactivating funds from listing", %{account: account, conn: conn} do
+      _fund = Factory.fund(account)
+
+      conn
+      |> visit(~p"/funds")
+      |> click_link("Activate/Deactivate")
+      |> assert_path(~p"/funds/activate")
+      |> click_link("Cancel")
+      |> assert_has(active_tab(), text: "Funds")
+    end
+
     test "allows updating budget from listing", %{account: account, conn: conn} do
       _fund = Factory.fund(account)
 

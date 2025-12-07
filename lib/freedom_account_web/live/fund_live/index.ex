@@ -4,7 +4,6 @@ defmodule FreedomAccountWeb.FundLive.Index do
 
   import FreedomAccountWeb.AccountBar, only: [account_bar: 1]
   import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
-  import FreedomAccountWeb.FundActivationForm, only: [fund_activation_form: 1]
   import FreedomAccountWeb.FundCard, only: [fund_card: 1]
   import FreedomAccountWeb.FundLive.Form, only: [settings_form: 1]
   import FreedomAccountWeb.RegularDepositForm, only: [regular_deposit_form: 1]
@@ -27,10 +26,6 @@ defmodule FreedomAccountWeb.FundLive.Index do
     |> assign(:return_path, ~p"/funds")
     |> apply_action(action, params)
     |> noreply()
-  end
-
-  defp apply_action(socket, :activate, _params) do
-    assign(socket, :page_title, "Activate/Deactivate")
   end
 
   defp apply_action(socket, :edit, params) do
@@ -87,11 +82,9 @@ defmodule FreedomAccountWeb.FundLive.Index do
         <.button navigate={~p"/funds/budget"}>
           <.icon name="hero-chart-pie-mini" /> Budget
         </.button>
-        <.link patch={~p"/funds/activate"} phx-click={JS.push_focus()}>
-          <.button>
-            <.icon name="hero-archive-box-mini" /> Activate/Deactivate
-          </.button>
-        </.link>
+        <.button navigate={~p"/funds/activate"}>
+          <.icon name="hero-archive-box-mini" /> Activate/Deactivate
+        </.button>
         <.link patch={~p"/funds/new"}>
           <.button>
             <.icon name="hero-plus-circle-mini" /> Add Fund
@@ -111,15 +104,6 @@ defmodule FreedomAccountWeb.FundLive.Index do
           phx-click={JS.navigate(~p"/funds/#{fund}")}
         />
       </div>
-
-      <.modal
-        :if={@live_action == :activate}
-        id="activate-modal"
-        show
-        on_cancel={JS.patch(@return_path)}
-      >
-        <.fund_activation_form account={@account} return_path={@return_path} />
-      </.modal>
 
       <.modal
         :if={@live_action in [:edit, :new]}

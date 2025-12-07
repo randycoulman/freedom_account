@@ -5,21 +5,8 @@ defmodule FreedomAccountWeb.FundLive.BudgetForm do
   use FreedomAccountWeb, :live_view
 
   alias Ecto.Changeset
-  alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Funds
   alias Phoenix.LiveView
-  alias Phoenix.LiveView.Socket
-
-  attr :account, Account, required: true
-  attr :funds, :list, required: true
-  attr :return_path, :string, required: true
-
-  @spec budget_form(Socket.assigns()) :: LiveView.Rendered.t()
-  def budget_form(assigns) do
-    ~H"""
-    <.live_component id={@account.id} module={__MODULE__} {assigns} />
-    """
-  end
 
   @impl LiveView
   def mount(_params, _session, socket) do
