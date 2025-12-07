@@ -91,5 +91,16 @@ defmodule FreedomAccountWeb.LoanLive.IndexTest do
       |> click_link(action_link("#loans-#{loan.id}"), "Delete")
       |> refute_has("#loans-#{loan.id}")
     end
+
+    test "allows activating/deactivating loans from listing", %{account: account, conn: conn} do
+      _loan = Factory.loan(account)
+
+      conn
+      |> visit(~p"/loans")
+      |> click_link("Activate/Deactivate")
+      |> assert_path(~p"/loans/activate")
+      |> click_link("Cancel")
+      |> assert_has(active_tab(), text: "Loans")
+    end
   end
 end

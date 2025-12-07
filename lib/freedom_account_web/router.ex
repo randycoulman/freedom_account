@@ -42,7 +42,8 @@ defmodule FreedomAccountWeb.Router do
       live "/loans", LoanLive.Index, :index
       live "/loans/new", LoanLive.Index, :new
       live "/loans/:id/edit", LoanLive.Index, :edit
-      live "/loans/activate", LoanLive.Index, :activate
+
+      live "/loans/activate", LoanLive.ActivationForm, :activate
 
       live "/loans/:id", LoanLive.Show, :show
       live "/loans/:id/show/edit", LoanLive.Show, :edit

@@ -36,12 +36,7 @@ defmodule FreedomAccountWeb.FundLive.ActivationFormTest do
 
       conn
       |> visit(~p"/funds/activate")
-      |> assert_has(page_title(), text: "Activate/Deactivate Funds")
       |> assert_has(heading(), text: "Activate/Deactivate Funds")
-      |> assert_has("label", text: Safe.to_iodata(can_deactivate))
-      |> assert_has("label", text: Safe.to_iodata(inactive))
-      |> assert_has("label", text: Safe.to_iodata(to_deactivate))
-      |> refute_has("label", text: Safe.to_iodata(non_zero_balance))
       |> uncheck(Safe.to_iodata(to_deactivate))
       |> check(Safe.to_iodata(inactive))
       |> click_link("Cancel")

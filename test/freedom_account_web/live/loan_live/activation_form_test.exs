@@ -1,4 +1,4 @@
-defmodule FreedomAccountWeb.LoanActivationTest do
+defmodule FreedomAccountWeb.LoanLive.ActivationFormTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   import Money.Sigil
@@ -6,17 +6,16 @@ defmodule FreedomAccountWeb.LoanActivationTest do
   alias FreedomAccount.Factory
   alias Phoenix.HTML.Safe
 
-  describe "Show" do
+  describe "activating/deactivating loans" do
     setup [:create_account, :create_loans]
 
-    test "activates/deactivates loans within modal on loan list view", %{conn: conn, loans: loans} do
+    test "activates/deactivates loans", %{conn: conn, loans: loans} do
       [can_deactivate, inactive, non_zero_balance, to_deactivate] = loans
 
       conn
-      |> visit(~p"/loans")
-      |> click_link("Activate/Deactivate")
-      |> assert_has(page_title(), text: "Activate/Deactivate")
-      |> assert_has(heading(), text: "Activate/Deactivate")
+      |> visit(~p"/loans/activate")
+      |> assert_has(page_title(), text: "Activate/Deactivate Loans")
+      |> assert_has(heading(), text: "Activate/Deactivate Loans")
       |> assert_has("label", text: Safe.to_iodata(can_deactivate))
       |> assert_has("label", text: Safe.to_iodata(inactive))
       |> assert_has("label", text: Safe.to_iodata(to_deactivate))
@@ -25,12 +24,27 @@ defmodule FreedomAccountWeb.LoanActivationTest do
       |> check(Safe.to_iodata(inactive))
       |> click_button("Update Loans")
       |> assert_has(flash(:info), text: "Loans updated successfully")
-      |> assert_has(page_title(), text: "Loans")
       |> assert_has(active_tab(), text: "Loans")
       |> assert_has(loan_card(can_deactivate))
       |> assert_has(loan_card(inactive))
       |> assert_has(loan_card(non_zero_balance))
       |> refute_has(loan_card(to_deactivate))
+    end
+
+    test "does not activate/deactivate loans on cancel", %{conn: conn, loans: loans} do
+      [can_deactivate, inactive, non_zero_balance, to_deactivate] = loans
+
+      conn
+      |> visit(~p"/loans/activate")
+      |> assert_has(heading(), text: "Activate/Deactivate Loans")
+      |> uncheck(Safe.to_iodata(to_deactivate))
+      |> check(Safe.to_iodata(inactive))
+      |> click_link("Cancel")
+      |> assert_has(active_tab(), text: "Loans")
+      |> assert_has(loan_card(can_deactivate))
+      |> refute_has(loan_card(inactive))
+      |> assert_has(loan_card(non_zero_balance))
+      |> assert_has(loan_card(to_deactivate))
     end
   end
 

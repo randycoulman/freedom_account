@@ -4,7 +4,6 @@ defmodule FreedomAccountWeb.LoanLive.Index do
 
   import FreedomAccountWeb.AccountBar, only: [account_bar: 1]
   import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
-  import FreedomAccountWeb.LoanActivationForm, only: [loan_activation_form: 1]
   import FreedomAccountWeb.LoanCard, only: [loan_card: 1]
   import FreedomAccountWeb.LoanLive.Form, only: [settings_form: 1]
 
@@ -21,13 +20,8 @@ defmodule FreedomAccountWeb.LoanLive.Index do
 
     socket
     |> assign(:loan, nil)
-    |> assign(:return_path, ~p"/loans")
     |> apply_action(action, params)
     |> noreply()
-  end
-
-  defp apply_action(socket, :activate, _params) do
-    assign(socket, :page_title, "Activate/Deactivate")
   end
 
   defp apply_action(socket, :edit, params) do
@@ -63,11 +57,9 @@ defmodule FreedomAccountWeb.LoanLive.Index do
       <.account_bar account={@account} balance={@account_balance} return_to="loans" />
       <.account_tabs active={:loans} funds_balance={@funds_balance} loans_balance={@loans_balance} />
       <div class="flex flex-row gap-2 justify-end py-4">
-        <.link patch={~p"/loans/activate"} phx-click={JS.push_focus()}>
-          <.button>
-            <.icon name="hero-archive-box-mini" /> Activate/Deactivate
-          </.button>
-        </.link>
+        <.button navigate={~p"/loans/activate"}>
+          <.icon name="hero-archive-box-mini" /> Activate/Deactivate
+        </.button>
         <.link patch={~p"/loans/new"}>
           <.button>
             <.icon name="hero-plus-circle-mini" /> Add Loan
@@ -87,15 +79,6 @@ defmodule FreedomAccountWeb.LoanLive.Index do
           phx-click={JS.navigate(~p"/loans/#{loan}")}
         />
       </div>
-
-      <.modal
-        :if={@live_action == :activate}
-        id="activate-modal"
-        show
-        on_cancel={JS.patch(@return_path)}
-      >
-        <.loan_activation_form account={@account} return_path={@return_path} />
-      </.modal>
 
       <.modal
         :if={@live_action in [:edit, :new]}
