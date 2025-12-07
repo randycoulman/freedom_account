@@ -122,6 +122,17 @@ defmodule FreedomAccountWeb.FundLive.IndexTest do
       |> assert_has(active_tab(), text: "Funds")
     end
 
+    test "allows making a regular withdrawal from listing", %{account: account, conn: conn} do
+      _fund = Factory.fund(account)
+
+      conn
+      |> visit(~p"/funds")
+      |> click_link("Regular Withdrawal")
+      |> assert_path(~p"/funds/regular_withdrawal")
+      |> click_link("Cancel")
+      |> assert_has(active_tab(), text: "Funds")
+    end
+
     test "allows updating budget from listing", %{account: account, conn: conn} do
       _fund = Factory.fund(account)
 

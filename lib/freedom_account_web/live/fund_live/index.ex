@@ -6,13 +6,11 @@ defmodule FreedomAccountWeb.FundLive.Index do
   import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
   import FreedomAccountWeb.FundCard, only: [fund_card: 1]
   import FreedomAccountWeb.FundLive.Form, only: [settings_form: 1]
-  import FreedomAccountWeb.TransactionForm, only: [transaction_form: 1]
 
   alias FreedomAccount.Error
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
-  alias FreedomAccount.Transactions.Transaction
   alias FreedomAccountWeb.Layouts
   alias Phoenix.LiveView
 
@@ -22,7 +20,6 @@ defmodule FreedomAccountWeb.FundLive.Index do
 
     socket
     |> assign(:fund, nil)
-    |> assign(:return_path, ~p"/funds")
     |> apply_action(action, params)
     |> noreply()
   end
@@ -47,10 +44,6 @@ defmodule FreedomAccountWeb.FundLive.Index do
     |> assign(:fund, %Fund{})
   end
 
-  defp apply_action(socket, :regular_withdrawal, _params) do
-    assign(socket, :page_title, "Regular Withdrawal")
-  end
-
   defp apply_action(socket, _action, _params) do
     socket
     |> assign(:page_title, "Funds")
@@ -67,11 +60,9 @@ defmodule FreedomAccountWeb.FundLive.Index do
         <.button navigate={~p"/funds/regular_deposit"}>
           <.icon name="hero-folder-plus-mini" /> Regular Deposit
         </.button>
-        <.link patch={~p"/funds/regular_withdrawal"} phx-click={JS.push_focus()}>
-          <.button>
-            <.icon name="hero-folder-minus-mini" /> Regular Withdrawal
-          </.button>
-        </.link>
+        <.button navigate={~p"/funds/regular_withdrawal"}>
+          <.icon name="hero-folder-minus-mini" /> Regular Withdrawal
+        </.button>
         <.button navigate={~p"/funds/budget"}>
           <.icon name="hero-chart-pie-mini" /> Budget
         </.button>
@@ -110,22 +101,6 @@ defmodule FreedomAccountWeb.FundLive.Index do
           fund={@fund}
           return_path={~p"/funds"}
           title={@page_title}
-        />
-      </.modal>
-
-      <.modal
-        :if={@live_action == :regular_withdrawal}
-        id="regular-withdrawal-modal"
-        show
-        on_cancel={JS.patch(@return_path)}
-      >
-        <.transaction_form
-          account={@account}
-          action={@live_action}
-          all_funds={@funds}
-          initial_funds={@funds}
-          return_path={@return_path}
-          transaction={%Transaction{}}
         />
       </.modal>
     </Layouts.app>

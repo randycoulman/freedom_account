@@ -1,4 +1,4 @@
-defmodule FreedomAccountWeb.TransactionForm do
+defmodule FreedomAccountWeb.FundTransactionForm do
   @moduledoc """
   For making a transaction for a single fund.
   """
@@ -16,14 +16,14 @@ defmodule FreedomAccountWeb.TransactionForm do
   # For a new transaction, initial_funds is required, but for an existing
   # transaction it isn't.
   attr :account, Account, required: true
-  attr :action, :string, required: true
+  attr :action, :atom, required: true
   attr :all_funds, :list, required: true
   attr :initial_funds, :list, default: []
   attr :return_path, :string, required: true
   attr :transaction, Transaction, required: true
 
-  @spec transaction_form(Socket.assigns()) :: LiveView.Rendered.t()
-  def transaction_form(assigns) do
+  @spec fund_transaction_form(Socket.assigns()) :: LiveView.Rendered.t()
+  def fund_transaction_form(assigns) do
     ~H"""
     <.live_component id={@transaction.id || :new} module={__MODULE__} {assigns} />
     """
@@ -31,37 +31,43 @@ defmodule FreedomAccountWeb.TransactionForm do
 
   @impl LiveComponent
   def update(assigns, socket) do
-    %{action: action, initial_funds: initial_funds, transaction: transaction} = assigns
+    %{transaction: transaction} = assigns
 
     changeset =
       if is_nil(transaction.id) do
-        Transactions.new_transaction(initial_funds)
+        Transactions.new_transaction(assigns.initial_funds)
       else
         Transactions.change_transaction(transaction)
       end
 
     socket
     |> assign(assigns)
-    |> apply_action(action)
-    |> assign_form(changeset)
+    |> apply_action(assigns.action)
+    |> assign(:form, to_form(changeset))
     |> ok()
   end
 
   defp apply_action(socket, :deposit) do
     socket
-    |> assign(:heading, "Deposit")
+    |> assign(:title, "Deposit")
     |> assign(:save, "Make Deposit")
   end
 
   defp apply_action(socket, :edit_transaction) do
     socket
-    |> assign(:heading, "Edit Transaction")
+    |> assign(:title, "Edit Transaction")
     |> assign(:save, "Save Transaction")
+  end
+
+  defp apply_action(socket, :regular_withdrawal) do
+    socket
+    |> assign(:title, "Regular Withdrawal")
+    |> assign(:save, "Make Withdrawal")
   end
 
   defp apply_action(socket, :withdrawal) do
     socket
-    |> assign(:heading, "Withdraw")
+    |> assign(:title, "Withdraw")
     |> assign(:save, "Make Withdrawal")
   end
 
@@ -88,16 +94,14 @@ defmodule FreedomAccountWeb.TransactionForm do
 
     ~H"""
     <div>
-      <.header>
-        {@heading}
-      </.header>
-
-      <.form
+      <.standard_form
+        class="max-w-md"
         for={@form}
         id="transaction-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
+        title={@title}
       >
         <.input field={@form[:date]} label="Date" phx-debounce="blur" type="date" />
         <.input field={@form[:memo]} label="Memo" phx-debounce="blur" type="text" />
@@ -120,16 +124,21 @@ defmodule FreedomAccountWeb.TransactionForm do
             />
             <.input field={li[:fund_id]} type="hidden" />
           </.inputs_for>
+          <div
+            :if={@multi_line?}
+            class="col-span-2 font-semibold mt-4 text-center"
+            id="transaction-total"
+          >
+            Total withdrawal: {@form[:total].value}
+          </div>
         </div>
-        <div :if={@multi_line?} id="transaction-total">
-          Total withdrawal: {@form[:total].value}
-        </div>
-        <footer>
+        <:actions>
           <.button phx-disable-with="Saving..." type="submit" variant="primary">
             <.icon name="hero-check-circle-mini" /> {@save}
           </.button>
-        </footer>
-      </.form>
+          <.button navigate={@return_path}>Cancel</.button>
+        </:actions>
+      </.standard_form>
     </div>
     """
   end
@@ -145,78 +154,62 @@ defmodule FreedomAccountWeb.TransactionForm do
   @impl LiveComponent
   def handle_event("validate", params, socket) do
     %{"transaction" => transaction_params} = params
-
     transaction = socket.assigns[:transaction] || %Transaction{}
-
-    changeset =
-      transaction
-      |> Transactions.change_transaction(transaction_params)
-      |> Map.put(:action, :validate)
+    changeset = Transactions.change_transaction(transaction, transaction_params)
 
     socket
-    |> assign_form(changeset)
+    |> assign(:form, to_form(changeset, action: :validate))
     |> noreply()
   end
 
   def handle_event("save", params, socket) do
     %{"transaction" => transaction_params} = params
-    %{action: action} = socket.assigns
 
-    save_transaction(socket, action, Params.atomize_keys(transaction_params))
+    save_transaction(socket, socket.assigns.action, Params.atomize_keys(transaction_params))
   end
 
   defp save_transaction(socket, :deposit, params) do
-    %{account: account, return_path: return_path} = socket.assigns
-
-    case Transactions.deposit(account, params) do
+    case Transactions.deposit(socket.assigns.account, params) do
       {:ok, _transaction} ->
         socket
         |> put_flash(:info, "Deposit successful")
-        |> push_patch(to: return_path)
+        |> push_navigate(to: socket.assigns.return_path)
         |> noreply()
 
       {:error, %Changeset{} = changeset} ->
         socket
-        |> assign_form(changeset)
+        |> assign(:form, to_form(changeset))
         |> noreply()
     end
   end
 
   defp save_transaction(socket, :edit_transaction, params) do
-    %{return_path: return_path, transaction: transaction} = socket.assigns
-
-    case Transactions.update_transaction(transaction, params) do
+    case Transactions.update_transaction(socket.assigns.transaction, params) do
       {:ok, _transaction} ->
         socket
         |> put_flash(:info, "Transaction updated successfully")
-        |> push_patch(to: return_path)
+        |> push_navigate(to: socket.assigns.return_path)
         |> noreply()
 
       {:error, %Changeset{} = changeset} ->
         socket
-        |> assign_form(changeset)
+        |> assign(:form, to_form(changeset))
         |> noreply()
     end
   end
 
-  defp save_transaction(socket, action, params) when action in [:withdrawal] do
-    %{account: account, return_path: return_path} = socket.assigns
-
-    case Transactions.withdraw(account, params) do
+  defp save_transaction(socket, action, params) when action in [:regular_withdrawal, :withdrawal] do
+    case Transactions.withdraw(socket.assigns.account, params) do
       {:ok, _transaction} ->
         socket
         |> put_flash(:info, "Withdrawal successful")
-        |> push_patch(to: return_path)
+        |> push_navigate(to: socket.assigns.return_path)
         |> noreply()
 
       {:error, %Changeset{} = changeset} ->
         socket
-        |> assign_form(changeset)
+        |> assign(:form, to_form(changeset))
         |> noreply()
     end
-  end
-
-  defp assign_form(socket, %Changeset{} = changeset) do
-    assign(socket, :form, to_form(changeset))
   end
 end

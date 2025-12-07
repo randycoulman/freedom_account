@@ -49,6 +49,7 @@ defmodule FreedomAccountWeb.FundLive.RegularDepositForm do
     ~H"""
     <Layouts.app flash={@flash}>
       <.standard_form
+        class="max-w-sm"
         for={@form}
         id="regular-deposit-form"
         phx-change="validate"
@@ -58,7 +59,7 @@ defmodule FreedomAccountWeb.FundLive.RegularDepositForm do
         <.input field={@form[:date]} label="Date" phx-debounce="blur" type="date" />
         <:actions>
           <.button phx-disable-with="Saving..." type="submit" variant="primary">
-            <.icon name="hero-check-folder-mini" /> Make Deposit
+            <.icon name="hero-check-circle-mini" /> Make Deposit
           </.button>
         </:actions>
         <:actions>
