@@ -6,7 +6,6 @@ defmodule FreedomAccountWeb.FundLive.Index do
   import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
   import FreedomAccountWeb.FundCard, only: [fund_card: 1]
   import FreedomAccountWeb.FundLive.Form, only: [settings_form: 1]
-  import FreedomAccountWeb.RegularDepositForm, only: [regular_deposit_form: 1]
   import FreedomAccountWeb.TransactionForm, only: [transaction_form: 1]
 
   alias FreedomAccount.Error
@@ -48,10 +47,6 @@ defmodule FreedomAccountWeb.FundLive.Index do
     |> assign(:fund, %Fund{})
   end
 
-  defp apply_action(socket, :regular_deposit, _params) do
-    assign(socket, :page_title, "Regular Deposit")
-  end
-
   defp apply_action(socket, :regular_withdrawal, _params) do
     assign(socket, :page_title, "Regular Withdrawal")
   end
@@ -69,11 +64,9 @@ defmodule FreedomAccountWeb.FundLive.Index do
       <.account_bar account={@account} balance={@account_balance} return_to="funds" />
       <.account_tabs active={:funds} funds_balance={@funds_balance} loans_balance={@loans_balance} />
       <div class="flex flex-row gap-2 justify-end py-4">
-        <.link patch={~p"/funds/regular_deposit"} phx-click={JS.push_focus()}>
-          <.button>
-            <.icon name="hero-folder-plus-mini" /> Regular Deposit
-          </.button>
-        </.link>
+        <.button navigate={~p"/funds/regular_deposit"}>
+          <.icon name="hero-folder-plus-mini" /> Regular Deposit
+        </.button>
         <.link patch={~p"/funds/regular_withdrawal"} phx-click={JS.push_focus()}>
           <.button>
             <.icon name="hero-folder-minus-mini" /> Regular Withdrawal
@@ -118,15 +111,6 @@ defmodule FreedomAccountWeb.FundLive.Index do
           return_path={~p"/funds"}
           title={@page_title}
         />
-      </.modal>
-
-      <.modal
-        :if={@live_action == :regular_deposit}
-        id="regular-deposit-modal"
-        show
-        on_cancel={JS.patch(@return_path)}
-      >
-        <.regular_deposit_form account={@account} funds={@funds} return_path={@return_path} />
       </.modal>
 
       <.modal

@@ -1,4 +1,4 @@
-defmodule FreedomAccountWeb.RegularDepositTest do
+defmodule FreedomAccountWeb.FundLive.RegularDepositFormTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Accounts.Account
@@ -7,16 +7,15 @@ defmodule FreedomAccountWeb.RegularDepositTest do
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.LocalTime
 
-  describe "Show" do
+  describe "making a regular deposit" do
     setup [:create_account, :create_funds]
 
-    test "makes regular deposit within modal on fund list view", %{account: account, conn: conn, funds: funds} do
+    test "makes regular deposit", %{account: account, conn: conn, funds: funds} do
       [fund1, fund2, fund3] = funds
       [balance1, balance2, balance3] = Enum.map(funds, &expected_balance(&1, account))
 
       conn
-      |> visit(~p"/funds")
-      |> click_link("Regular Deposit")
+      |> visit(~p"/funds/regular_deposit")
       |> assert_has(page_title(), text: "Regular Deposit")
       |> assert_has(heading(), text: "Regular Deposit")
       |> assert_has(field_value("#inputs_date", "#{LocalTime.today()}"))
@@ -25,11 +24,23 @@ defmodule FreedomAccountWeb.RegularDepositTest do
       |> fill_in("Date", with: Factory.date())
       |> click_button("Make Deposit")
       |> assert_has(flash(:info), text: "Regular deposit successful")
-      |> assert_has(page_title(), text: "Funds")
       |> assert_has(active_tab(), text: "Funds")
       |> assert_has(fund_balance(fund1), text: "#{balance1}")
       |> assert_has(fund_balance(fund2), text: "#{balance2}")
       |> assert_has(fund_balance(fund3), text: "#{balance3}")
+    end
+
+    test "does not make deposit on cancel", %{conn: conn, funds: funds} do
+      [fund1, fund2, fund3] = funds
+
+      conn
+      |> visit(~p"/funds/regular_deposit")
+      |> fill_in("Date", with: Factory.date())
+      |> click_link("Cancel")
+      |> assert_has(active_tab(), text: "Funds")
+      |> assert_has(fund_balance(fund1), text: "#{fund1.current_balance}")
+      |> assert_has(fund_balance(fund2), text: "#{fund2.current_balance}")
+      |> assert_has(fund_balance(fund3), text: "#{fund3.current_balance}")
     end
   end
 

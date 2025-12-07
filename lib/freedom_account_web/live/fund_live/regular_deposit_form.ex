@@ -1,17 +1,14 @@
-defmodule FreedomAccountWeb.RegularDepositForm do
+defmodule FreedomAccountWeb.FundLive.RegularDepositForm do
   @moduledoc """
   For making a regular deposit on a given date.
   """
-  use FreedomAccountWeb, :live_component
+  use FreedomAccountWeb, :live_view
 
   alias Ecto.Changeset
-  alias FreedomAccount.Accounts.Account
   alias FreedomAccount.Error.InvariantError
   alias FreedomAccount.LocalTime
   alias FreedomAccount.Transactions
-  alias Phoenix.LiveComponent
   alias Phoenix.LiveView
-  alias Phoenix.LiveView.Socket
 
   defmodule Inputs do
     @moduledoc false
@@ -35,83 +32,68 @@ defmodule FreedomAccountWeb.RegularDepositForm do
     end
   end
 
-  attr :account, Account, required: true
-  attr :funds, :list, required: true
-  attr :return_path, :string, required: true
-
-  @spec regular_deposit_form(Socket.assigns()) :: LiveView.Rendered.t()
-  def regular_deposit_form(assigns) do
-    ~H"""
-    <.live_component id={@account.id} module={__MODULE__} {assigns} />
-    """
-  end
-
-  @impl LiveComponent
-  def update(assigns, socket) do
+  @impl LiveView
+  def mount(_params, _session, socket) do
     inputs = %Inputs{date: LocalTime.today()}
     changeset = Inputs.changeset(inputs, %{})
 
     socket
-    |> assign(assigns)
+    |> assign(:page_title, "Regular Deposit")
     |> assign(:inputs, inputs)
-    |> assign_form(changeset)
+    |> assign(:form, to_form(changeset))
     |> ok()
   end
 
-  @impl LiveComponent
+  @impl LiveView
   def render(assigns) do
     ~H"""
-    <div>
-      <.header>Regular Deposit</.header>
-      <.form
+    <Layouts.app flash={@flash}>
+      <.standard_form
         for={@form}
         id="regular-deposit-form"
-        phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
+        title="Regular Deposit"
       >
         <.input field={@form[:date]} label="Date" phx-debounce="blur" type="date" />
-        <footer>
+        <:actions>
           <.button phx-disable-with="Saving..." type="submit" variant="primary">
             <.icon name="hero-check-folder-mini" /> Make Deposit
           </.button>
-        </footer>
-      </.form>
-    </div>
+        </:actions>
+        <:actions>
+          <.button navigate={~p"/funds"}>Cancel</.button>
+        </:actions>
+      </.standard_form>
+    </Layouts.app>
     """
   end
 
-  @impl LiveComponent
+  @impl LiveView
   def handle_event("validate", params, socket) do
     %{"inputs" => input_params} = params
-    %{inputs: inputs} = socket.assigns
-
-    changeset =
-      inputs
-      |> Inputs.changeset(input_params)
-      |> Map.put(:action, :validate)
+    changeset = Inputs.changeset(socket.assigns.inputs, input_params)
 
     socket
-    |> assign_form(changeset)
+    |> assign(:form, to_form(changeset, action: :validate))
     |> noreply()
   end
 
   def handle_event("save", params, socket) do
     %{"inputs" => input_params} = params
-    %{account: account, funds: funds, inputs: inputs, return_path: return_path} = socket.assigns
-
-    changeset = Inputs.changeset(inputs, input_params)
+    changeset = Inputs.changeset(socket.assigns.inputs, input_params)
 
     with {:ok, updated_inputs} <- Changeset.apply_action(changeset, :save),
-         {:ok, _transaction} <- Transactions.regular_deposit(account, updated_inputs.date, funds) do
+         {:ok, _transaction} <-
+           Transactions.regular_deposit(socket.assigns.account, updated_inputs.date, socket.assigns.funds) do
       socket
       |> put_flash(:info, "Regular deposit successful")
-      |> push_patch(to: return_path)
+      |> push_navigate(to: ~p"/funds")
       |> noreply()
     else
       {:error, %Changeset{} = changeset} ->
         socket
-        |> assign_form(changeset)
+        |> assign(:form, to_form(changeset))
         |> noreply()
 
       {:error, %InvariantError{} = error} ->
@@ -119,9 +101,5 @@ defmodule FreedomAccountWeb.RegularDepositForm do
         |> put_flash(:error, Exception.message(error))
         |> noreply()
     end
-  end
-
-  defp assign_form(socket, %Changeset{} = changeset) do
-    assign(socket, :form, to_form(changeset))
   end
 end
