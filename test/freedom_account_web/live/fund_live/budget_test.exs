@@ -11,7 +11,7 @@ defmodule FreedomAccountWeb.FundLive.BudgetTest do
   describe "updating the budget" do
     setup :create_account
 
-    test "updates budget from listing", %{account: account, conn: conn} do
+    test "updates budget", %{account: account, conn: conn} do
       funds =
         1..3
         |> Enum.map(fn _i -> Factory.fund(account) end)
@@ -29,8 +29,7 @@ defmodule FreedomAccountWeb.FundLive.BudgetTest do
       total = MoneyUtils.sum(amounts)
 
       conn
-      |> visit(~p"/funds")
-      |> click_link("Budget")
+      |> visit(~p"/funds/budget")
       |> assert_has(page_title(), text: "Update Budget")
       |> assert_has(heading(), text: "Update Budget")
       |> assert_has("label", text: Safe.to_iodata(fund0))
@@ -52,7 +51,6 @@ defmodule FreedomAccountWeb.FundLive.BudgetTest do
       |> assert_has("#deposit-total", with: "#{total}")
       |> click_button("Update Budget")
       |> assert_has(flash(:info), text: "Budget updated successfully")
-      |> assert_has(page_title(), text: "Funds")
       |> assert_has(active_tab(), text: "Funds")
       |> assert_has(fund_budget(fund1), text: "#{attrs1[:budget]}")
       |> assert_has(fund_frequency(fund2), text: "#{attrs2[:times_per_year]}")
@@ -61,14 +59,11 @@ defmodule FreedomAccountWeb.FundLive.BudgetTest do
     test "does not update budget on cancel", %{account: account, conn: conn} do
       fund = Factory.fund(account)
       attrs = Factory.fund_attrs()
-      amount = regular_deposit_amount({fund, attrs}, account)
 
       conn
-      |> visit(~p"/funds")
-      |> click_link("Budget")
+      |> visit(~p"/funds/budget")
       |> fill_in("Budget 0", with: attrs[:budget])
       |> fill_in("Times/Year 0", with: attrs[:times_per_year])
-      |> assert_has(role("deposit-amount-0"), with: "#{amount}")
       |> click_link("Cancel")
       |> assert_has(active_tab(), text: "Funds")
       |> assert_has(fund_budget(fund), text: "#{fund.budget}")
