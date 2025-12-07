@@ -10,7 +10,7 @@ defmodule FreedomAccountWeb.AccountTransactionTest do
 
   setup [:create_account, :create_fund, :create_loan]
 
-  describe "Index" do
+  describe "listing account transactions" do
     test "shows message when account has no transactions", %{conn: conn} do
       conn
       |> visit(~p"/transactions")

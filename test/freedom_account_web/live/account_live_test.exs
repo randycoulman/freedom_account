@@ -4,7 +4,7 @@ defmodule FreedomAccountWeb.AccountLiveTest do
   alias FreedomAccount.Factory
   alias Phoenix.HTML.Safe
 
-  describe "Edit" do
+  describe "updating account settings" do
     setup :create_account
 
     test "updates account settings", %{conn: conn} do
