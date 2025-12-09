@@ -30,14 +30,15 @@ defmodule FreedomAccountWeb.Router do
 
       live "/funds/activate", FundLive.ActivationForm, :activate
       live "/funds/budget", FundLive.BudgetForm, :edit
-      live "/funds/regular_deposit", FundLive.RegularDepositForm, :regular_deposit
-      live "/funds/regular_withdrawal", FundLive.RegularWithdrawalForm, :regular_withdrawal
+      live "/funds/regular_deposit", FundLive.RegularDepositForm, :new
+      live "/funds/regular_withdrawal", FundLive.RegularWithdrawalForm, :new
 
       live "/funds/:id", FundLive.Show, :show
       live "/funds/:id/show/edit", FundLive.Show, :edit
-      live "/funds/:id/deposits/new", FundLive.Show, :deposit
       live "/funds/:id/withdrawals/new", FundLive.Show, :withdrawal
       live "/funds/:id/transactions/:transaction_id/edit", FundLive.Show, :edit_transaction
+
+      live "/funds/:id/deposits/new", FundLive.DepositForm, :new
 
       live "/loans", LoanLive.Index, :index
       live "/loans/new", LoanLive.Index, :new

@@ -47,12 +47,6 @@ defmodule FreedomAccountWeb.TransactionForm do
     |> ok()
   end
 
-  defp apply_action(socket, :deposit) do
-    socket
-    |> assign(:heading, "Deposit")
-    |> assign(:save, "Make Deposit")
-  end
-
   defp apply_action(socket, :edit_transaction) do
     socket
     |> assign(:heading, "Edit Transaction")
@@ -163,23 +157,6 @@ defmodule FreedomAccountWeb.TransactionForm do
     %{action: action} = socket.assigns
 
     save_transaction(socket, action, Params.atomize_keys(transaction_params))
-  end
-
-  defp save_transaction(socket, :deposit, params) do
-    %{account: account, return_path: return_path} = socket.assigns
-
-    case Transactions.deposit(account, params) do
-      {:ok, _transaction} ->
-        socket
-        |> put_flash(:info, "Deposit successful")
-        |> push_patch(to: return_path)
-        |> noreply()
-
-      {:error, %Changeset{} = changeset} ->
-        socket
-        |> assign_form(changeset)
-        |> noreply()
-    end
   end
 
   defp save_transaction(socket, :edit_transaction, params) do

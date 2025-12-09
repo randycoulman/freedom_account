@@ -1,6 +1,6 @@
 defmodule FreedomAccountWeb.FundLive.RegularWithdrawalForm do
   @moduledoc """
-  For making a transaction for a single fund.
+  For making a regular withdrawal transaction.
   """
   use FreedomAccountWeb, :live_view
 
