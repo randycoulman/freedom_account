@@ -4,14 +4,14 @@ defmodule FreedomAccountWeb.FundLive.Show do
 
   import FreedomAccountWeb.Account, only: [account: 1]
   import FreedomAccountWeb.FundLive.Form, only: [settings_form: 1]
-  import FreedomAccountWeb.FundTransaction.Index, only: [fund_transaction_list: 1]
+  import FreedomAccountWeb.FundTransactionList, only: [fund_transaction_list: 1]
   import FreedomAccountWeb.Sidebar, only: [sidebar: 1]
 
   alias FreedomAccount.Error
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
-  alias FreedomAccountWeb.FundTransaction
+  alias FreedomAccountWeb.FundTransactionList
   alias FreedomAccountWeb.Layouts
   alias Phoenix.HTML.Safe
   alias Phoenix.LiveView
@@ -121,7 +121,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
     %{fund: fund} = socket.assigns
 
     if Enum.any?(transaction.line_items, &(&1.fund_id == fund.id)) do
-      send_update(FundTransaction.Index, id: fund.id, fund: fund)
+      send_update(FundTransactionList, id: fund.id, fund: fund)
     end
 
     noreply(socket)

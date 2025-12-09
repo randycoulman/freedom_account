@@ -1,9 +1,9 @@
-defmodule FreedomAccountWeb.LoanTransactionTest do
+defmodule FreedomAccountWeb.LoanTransactionListTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
   alias FreedomAccount.LocalTime
-  alias FreedomAccountWeb.LoanTransaction
+  alias FreedomAccountWeb.LoanTransactionList
   alias Phoenix.HTML.Safe
 
   setup [:create_account, :create_loan]
@@ -32,7 +32,7 @@ defmodule FreedomAccountWeb.LoanTransactionTest do
     end
 
     test "paginates transactions", %{conn: conn, loan: loan} do
-      page_size = LoanTransaction.Index.page_size()
+      page_size = LoanTransactionList.page_size()
       count = round(page_size * 2.5)
 
       transactions =

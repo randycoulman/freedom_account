@@ -1,9 +1,9 @@
-defmodule FreedomAccountWeb.FundTransactionTest do
+defmodule FreedomAccountWeb.FundTransactionListTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
   alias FreedomAccount.LocalTime
-  alias FreedomAccountWeb.FundTransaction
+  alias FreedomAccountWeb.FundTransactionList
   alias Phoenix.HTML.Safe
 
   setup [:create_account, :create_fund]
@@ -34,7 +34,7 @@ defmodule FreedomAccountWeb.FundTransactionTest do
     end
 
     test "paginates transactions", %{conn: conn, fund: fund} do
-      page_size = FundTransaction.Index.page_size()
+      page_size = FundTransactionList.page_size()
       count = round(page_size * 2.5)
 
       transactions =

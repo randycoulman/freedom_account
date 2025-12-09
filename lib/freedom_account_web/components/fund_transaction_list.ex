@@ -1,4 +1,4 @@
-defmodule FreedomAccountWeb.FundTransaction.Index do
+defmodule FreedomAccountWeb.FundTransactionList do
   @moduledoc false
   use FreedomAccountWeb, :live_component
 

@@ -4,8 +4,8 @@ defmodule FreedomAccountWeb.LoanLive.Show do
 
   import FreedomAccountWeb.Account, only: [account: 1]
   import FreedomAccountWeb.LoanLive.Form, only: [settings_form: 1]
-  import FreedomAccountWeb.LoanTransaction.Index, only: [loan_transaction_list: 1]
   import FreedomAccountWeb.LoanTransactionForm, only: [loan_transaction_form: 1]
+  import FreedomAccountWeb.LoanTransactionList, only: [loan_transaction_list: 1]
   import FreedomAccountWeb.Sidebar, only: [sidebar: 1]
 
   alias FreedomAccount.Error
@@ -14,7 +14,7 @@ defmodule FreedomAccountWeb.LoanLive.Show do
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.LoanTransaction
   alias FreedomAccountWeb.Layouts
-  alias FreedomAccountWeb.LoanTransaction.Index, as: TransactionList
+  alias FreedomAccountWeb.LoanTransactionList
   alias Phoenix.HTML.Safe
   alias Phoenix.LiveView
 
@@ -172,7 +172,7 @@ defmodule FreedomAccountWeb.LoanLive.Show do
     %{loan: loan} = socket.assigns
 
     if transaction.loan_id == loan.id do
-      send_update(TransactionList, id: loan.id, loan: loan)
+      send_update(LoanTransactionList, id: loan.id, loan: loan)
     end
 
     noreply(socket)
