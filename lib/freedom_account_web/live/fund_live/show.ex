@@ -6,14 +6,11 @@ defmodule FreedomAccountWeb.FundLive.Show do
   import FreedomAccountWeb.FundLive.Form, only: [settings_form: 1]
   import FreedomAccountWeb.FundTransaction.Index, only: [fund_transaction_list: 1]
   import FreedomAccountWeb.Sidebar, only: [sidebar: 1]
-  import FreedomAccountWeb.TransactionForm, only: [transaction_form: 1]
 
   alias FreedomAccount.Error
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
-  alias FreedomAccount.Transactions
-  alias FreedomAccount.Transactions.Transaction
   alias FreedomAccountWeb.FundTransaction
   alias FreedomAccountWeb.Layouts
   alias Phoenix.HTML.Safe
@@ -31,20 +28,6 @@ defmodule FreedomAccountWeb.FundLive.Show do
 
   defp apply_action(socket, :edit, _params) do
     assign(socket, :page_title, "Edit Fund")
-  end
-
-  defp apply_action(socket, :edit_transaction, params) do
-    transaction_id = String.to_integer(params["transaction_id"])
-
-    case Transactions.fetch_transaction(transaction_id) do
-      {:ok, %Transaction{} = transaction} ->
-        socket
-        |> assign(:page_title, "Edit Transaction")
-        |> assign(:transaction, transaction)
-
-      {:error, %NotFoundError{}} ->
-        put_flash(socket, :error, "Transaction is no longer present")
-    end
   end
 
   defp apply_action(socket, _action, _params) do
@@ -124,22 +107,6 @@ defmodule FreedomAccountWeb.FundLive.Show do
           fund={@fund}
           return_path={~p"/funds/#{@fund}"}
           title={@page_title}
-        />
-      </.modal>
-
-      <.modal
-        :if={@live_action in [:edit_transaction]}
-        id="transaction-modal"
-        show
-        on_cancel={JS.patch(~p"/funds/#{@fund}")}
-      >
-        <.transaction_form
-          account={@account}
-          action={@live_action}
-          all_funds={@funds}
-          initial_funds={[@fund]}
-          return_path={~p"/funds/#{@fund}"}
-          transaction={@transaction}
         />
       </.modal>
     </Layouts.app>
