@@ -53,12 +53,6 @@ defmodule FreedomAccountWeb.TransactionForm do
     |> assign(:save, "Save Transaction")
   end
 
-  defp apply_action(socket, :withdrawal) do
-    socket
-    |> assign(:heading, "Withdraw")
-    |> assign(:save, "Make Withdrawal")
-  end
-
   @impl LiveComponent
   def render(assigns) do
     %{form: form} = assigns
@@ -166,23 +160,6 @@ defmodule FreedomAccountWeb.TransactionForm do
       {:ok, _transaction} ->
         socket
         |> put_flash(:info, "Transaction updated successfully")
-        |> push_patch(to: return_path)
-        |> noreply()
-
-      {:error, %Changeset{} = changeset} ->
-        socket
-        |> assign_form(changeset)
-        |> noreply()
-    end
-  end
-
-  defp save_transaction(socket, action, params) when action in [:withdrawal] do
-    %{account: account, return_path: return_path} = socket.assigns
-
-    case Transactions.withdraw(account, params) do
-      {:ok, _transaction} ->
-        socket
-        |> put_flash(:info, "Withdrawal successful")
         |> push_patch(to: return_path)
         |> noreply()
 
