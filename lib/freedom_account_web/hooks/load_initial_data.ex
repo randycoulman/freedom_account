@@ -2,9 +2,7 @@ defmodule FreedomAccountWeb.Hooks.LoadInitialData do
   @moduledoc """
   Ensures that the account is available to all LiveViews using this hook.
   """
-  import FreedomAccountWeb.SocketHelpers
-  import Phoenix.Component, only: [assign: 3, update: 3]
-  import Phoenix.LiveView, only: [attach_hook: 4, connected?: 1, put_flash: 3]
+  use FreedomAccountWeb, :hook
 
   alias FreedomAccount.Accounts
   alias FreedomAccount.Accounts.Account

@@ -76,6 +76,17 @@ defmodule FreedomAccountWeb do
     end
   end
 
+  @spec hook :: Macro.t()
+  def hook do
+    quote do
+      import FreedomAccountWeb.SocketHelpers, only: [cont: 1, halt: 1]
+      import Phoenix.Component, only: [assign: 3, update: 3]
+      import Phoenix.LiveView, only: [attach_hook: 4, connected?: 1, push_navigate: 2, put_flash: 3]
+
+      unquote(verified_routes())
+    end
+  end
+
   @spec html :: Macro.t()
   def html do
     quote do

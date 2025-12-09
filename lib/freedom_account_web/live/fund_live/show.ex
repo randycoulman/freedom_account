@@ -19,25 +19,14 @@ defmodule FreedomAccountWeb.FundLive.Show do
   alias Phoenix.HTML.Safe
   alias Phoenix.LiveView
 
+  on_mount FreedomAccountWeb.FundLive.FetchFund
+
   @impl LiveView
   def handle_params(params, _url, socket) do
-    id = String.to_integer(params["id"])
-    %{funds: funds, live_action: action} = socket.assigns
-
-    case fetch_fund(funds, id) do
-      {:ok, %Fund{} = fund} ->
-        socket
-        |> assign(:fund, fund)
-        |> assign(:transaction, nil)
-        |> apply_action(action, params)
-        |> noreply()
-
-      {:error, %NotFoundError{}} ->
-        socket
-        |> put_flash(:error, "Fund not found")
-        |> push_navigate(to: ~p"/funds")
-        |> noreply()
-    end
+    socket
+    |> assign(:transaction, nil)
+    |> apply_action(socket.assigns.live_action, params)
+    |> noreply()
   end
 
   defp apply_action(socket, :edit, _params) do

@@ -6,27 +6,16 @@ defmodule FreedomAccountWeb.FundLive.DepositForm do
 
   import FreedomAccountWeb.FundTransactionForm, only: [fund_transaction_form: 1]
 
-  alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Transactions.Transaction
   alias Phoenix.LiveView
 
+  on_mount FreedomAccountWeb.FundLive.FetchFund
+
   @impl LiveView
-  def mount(params, _session, socket) do
-    id = String.to_integer(params["id"])
-
-    case Enum.find(socket.assigns.funds, :not_found, &(&1.id == id)) do
-      %Fund{} = fund ->
-        socket
-        |> assign(:page_title, "Deposit")
-        |> assign(:fund, fund)
-        |> ok()
-
-      :not_found ->
-        socket
-        |> put_flash(:error, "Fund not found")
-        |> push_navigate(~p"/funds")
-        |> noreply()
-    end
+  def mount(_params, _session, socket) do
+    socket
+    |> assign(:page_title, "Deposit")
+    |> ok()
   end
 
   @impl LiveView
