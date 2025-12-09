@@ -3,6 +3,8 @@ defmodule FreedomAccountWeb.FundLive.ShowTest do
 
   use FreedomAccountWeb.ConnCase, async: true
 
+  import Money.Sigil
+
   alias FreedomAccount.Factory
   alias FreedomAccount.Funds
   alias Phoenix.HTML.Safe
@@ -56,6 +58,27 @@ defmodule FreedomAccountWeb.FundLive.ShowTest do
       |> assert_has(heading(), text: "#{fund.current_balance}")
       |> assert_has(sidebar_fund_name(), text: "#{icon} #{name}")
       |> assert_has(sidebar_fund_balance(), text: "#{fund.current_balance}")
+    end
+
+    test "allows depositing money to a fund", %{conn: conn, fund: fund} do
+      conn
+      |> visit(~p"/funds/#{fund}")
+      |> click_link("Deposit")
+      |> assert_path(~p"/funds/#{fund}/deposits/new")
+      |> click_link("Cancel")
+      |> assert_has(heading(), text: Safe.to_iodata(fund))
+    end
+
+    test "allows withdrawing money from a fund", %{conn: conn, fund: fund} do
+      Factory.deposit(fund, amount: ~M[5000]usd)
+
+      conn
+      |> visit(~p"/funds/#{fund}")
+      |> click_link("Withdraw")
+      |> refute_has(flash(:error))
+      |> assert_path(~p"/funds/#{fund}/withdrawals/new")
+      |> click_link("Cancel")
+      |> assert_has(heading(), text: Safe.to_iodata(fund))
     end
   end
 end

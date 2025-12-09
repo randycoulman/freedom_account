@@ -64,24 +64,12 @@ defmodule FreedomAccountWeb.FundLive.Show do
               </div>
             </:subtitle>
             <:actions>
-              <.link
-                id="single-fund-deposit"
-                patch={~p"/funds/#{@fund}/deposits/new"}
-                phx-click={JS.push_focus()}
-              >
-                <.button>
-                  <.icon name="hero-plus-circle-mini" /> Deposit
-                </.button>
-              </.link>
-              <.link
-                id="single-fund-withdrawal"
-                patch={~p"/funds/#{@fund}/withdrawals/new"}
-                phx-click={JS.push_focus()}
-              >
-                <.button>
-                  <.icon name="hero-minus-circle-mini" /> Withdraw
-                </.button>
-              </.link>
+              <.button navigate={~p"/funds/#{@fund}/deposits/new"}>
+                <.icon name="hero-plus-circle-mini" /> Deposit
+              </.button>
+              <.button navigate={~p"/funds/#{@fund}/withdrawals/new"}>
+                <.icon name="hero-minus-circle-mini" /> Withdraw
+              </.button>
               <.link patch={~p"/funds/#{@fund}/show/edit"} phx-click={JS.push_focus()}>
                 <.button>
                   <.icon name="hero-pencil-square-mini" /> Edit Details

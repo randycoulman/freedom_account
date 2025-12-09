@@ -60,7 +60,7 @@ defmodule FreedomAccountWeb.FundTransaction.Index do
           {transaction.running_balance}
         </:col>
         <:action :let={transaction}>
-          <.link patch={~p"/funds/#{@fund}/transactions/#{transaction}/edit"}>
+          <.link navigate={~p"/funds/#{@fund}/transactions/#{transaction}/edit"}>
             <.icon name="hero-pencil-square-micro" /> Edit
           </.link>
         </:action>

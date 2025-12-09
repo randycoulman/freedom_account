@@ -64,6 +64,18 @@ defmodule FreedomAccountWeb.FundTransactionTest do
       |> assert_has(enabled("button"), text: "Next Page")
     end
 
+    test "allows editing transaction in listing", %{conn: conn, fund: fund} do
+      deposit = Factory.deposit(fund)
+      [line_item] = deposit.line_items
+
+      conn
+      |> visit(~p"/funds/#{fund}")
+      |> click_link(action_link("#txn-#{line_item.id}"), "Edit")
+      |> assert_path(~p"/funds/#{fund}/transactions/#{deposit}/edit")
+      |> click_link("Cancel")
+      |> assert_has(heading(), text: Safe.to_iodata(fund))
+    end
+
     test "deletes transaction in listing", %{conn: conn, fund: fund} do
       deposit = Factory.deposit(fund)
       [line_item] = deposit.line_items
