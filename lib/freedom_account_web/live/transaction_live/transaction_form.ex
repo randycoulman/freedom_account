@@ -1,6 +1,6 @@
-defmodule FreedomAccountWeb.FundLive.TransactionForm do
+defmodule FreedomAccountWeb.TransactionLive.TransactionForm do
   @moduledoc """
-  For editing a single- or multi-fund transaction.
+  For editing a fund or loan transaction.
   """
   use FreedomAccountWeb, :live_view
 
@@ -11,11 +11,9 @@ defmodule FreedomAccountWeb.FundLive.TransactionForm do
   alias FreedomAccount.Transactions.Transaction
   alias Phoenix.LiveView
 
-  on_mount FreedomAccountWeb.FundLive.FetchFund
-
   @impl LiveView
   def mount(params, _session, socket) do
-    transaction_id = String.to_integer(params["transaction_id"])
+    transaction_id = String.to_integer(params["id"])
 
     case Transactions.fetch_transaction(transaction_id) do
       {:ok, %Transaction{} = transaction} ->
@@ -27,7 +25,7 @@ defmodule FreedomAccountWeb.FundLive.TransactionForm do
       {:error, %NotFoundError{}} ->
         socket
         |> put_flash(:error, "Transaction is no longer present")
-        |> push_navigate(to: ~p"/funds/#{socket.assigns.fund}")
+        |> push_navigate(to: ~p"/transactions")
         |> ok()
     end
   end
@@ -39,8 +37,7 @@ defmodule FreedomAccountWeb.FundLive.TransactionForm do
       account={@account}
       action={:edit_transaction}
       all_funds={@funds}
-      initial_funds={[@fund]}
-      return_path={~p"/funds/#{@fund}"}
+      return_path={~p"/transactions"}
       transaction={@transaction}
     />
     """

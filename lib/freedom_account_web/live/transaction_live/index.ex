@@ -5,14 +5,12 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
   import FreedomAccountWeb.AccountBar, only: [account_bar: 1]
   import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
   import FreedomAccountWeb.LoanTransactionForm, only: [loan_transaction_form: 1]
-  import FreedomAccountWeb.TransactionForm, only: [transaction_form: 1]
 
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Paging
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.AccountTransaction
   alias FreedomAccount.Transactions.LoanTransaction
-  alias FreedomAccount.Transactions.Transaction
   alias FreedomAccountWeb.Layouts
   alias Phoenix.LiveView
 
@@ -33,20 +31,6 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
     |> assign(:transaction, nil)
     |> apply_action(action, params)
     |> noreply()
-  end
-
-  defp apply_action(socket, :edit_transaction, %{"type" => "fund"} = params) do
-    id = String.to_integer(params["id"])
-
-    case Transactions.fetch_transaction(id) do
-      {:ok, %Transaction{} = transaction} ->
-        socket
-        |> assign(:page_title, "Edit Transaction")
-        |> assign(:transaction, transaction)
-
-      {:error, %NotFoundError{}} ->
-        put_flash(socket, :error, "Transaction is no longer present")
-    end
   end
 
   defp apply_action(socket, :edit_transaction, %{"type" => "loan"} = params) do
@@ -99,7 +83,16 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
           {transaction.running_balance}
         </:col>
         <:action :let={transaction}>
-          <.link patch={~p"/transactions/#{transaction}/edit?#{%{type: transaction.type}}"}>
+          <.link
+            :if={transaction.type == :fund}
+            navigate={~p"/transactions/#{transaction}/edit?#{%{type: transaction.type}}"}
+          >
+            <.icon name="hero-pencil-square-micro" /> Edit
+          </.link>
+          <.link
+            :if={transaction.type == :loan}
+            patch={~p"/transactions/#{transaction}/edit_loan?#{%{type: transaction.type}}"}
+          >
             <.icon name="hero-pencil-square-micro" /> Edit
           </.link>
         </:action>
@@ -136,21 +129,6 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
       >
         Next Page <.icon name="hero-arrow-right-circle-mini" />
       </.button>
-
-      <.modal
-        :if={@live_action == :edit_transaction && match?(%Transaction{}, @transaction)}
-        id="fund-transaction-modal"
-        show
-        on_cancel={JS.patch(@return_path)}
-      >
-        <.transaction_form
-          account={@account}
-          action={@live_action}
-          all_funds={@funds}
-          return_path={@return_path}
-          transaction={@transaction}
-        />
-      </.modal>
 
       <.modal
         :if={@live_action == :edit_transaction && match?(%LoanTransaction{}, @transaction)}
