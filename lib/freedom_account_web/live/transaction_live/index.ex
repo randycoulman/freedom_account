@@ -4,13 +4,10 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
 
   import FreedomAccountWeb.AccountBar, only: [account_bar: 1]
   import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
-  import FreedomAccountWeb.LoanTransactionForm, only: [loan_transaction_form: 1]
 
-  alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Paging
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.AccountTransaction
-  alias FreedomAccount.Transactions.LoanTransaction
   alias FreedomAccountWeb.Layouts
   alias Phoenix.LiveView
 
@@ -21,37 +18,11 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
   def page_size, do: @page_size
 
   @impl LiveView
-  def handle_params(params, _url, socket) do
-    %{live_action: action} = socket.assigns
-
+  def handle_params(_params, _url, socket) do
     socket
+    |> assign(:page_title, "Transactions")
     |> load_transactions()
-    |> assign(:loan, nil)
-    |> assign(:return_path, ~p"/transactions")
-    |> assign(:transaction, nil)
-    |> apply_action(action, params)
     |> noreply()
-  end
-
-  defp apply_action(socket, :edit_transaction, %{"type" => "loan"} = params) do
-    id = String.to_integer(params["id"])
-
-    case Transactions.fetch_loan_transaction(id) do
-      {:ok, %LoanTransaction{} = transaction} ->
-        loan = find_loan(socket.assigns.loans, transaction.loan_id)
-
-        socket
-        |> assign(:loan, loan)
-        |> assign(:page_title, "Edit Loan Transaction")
-        |> assign(:transaction, transaction)
-
-      {:error, %NotFoundError{}} ->
-        put_flash(socket, :error, "Transaction is no longer present")
-    end
-  end
-
-  defp apply_action(socket, _action, _params) do
-    assign(socket, :page_title, "Transactions")
   end
 
   @impl LiveView
@@ -83,16 +54,7 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
           {transaction.running_balance}
         </:col>
         <:action :let={transaction}>
-          <.link
-            :if={transaction.type == :fund}
-            navigate={~p"/transactions/#{transaction}/edit?#{%{type: transaction.type}}"}
-          >
-            <.icon name="hero-pencil-square-micro" /> Edit
-          </.link>
-          <.link
-            :if={transaction.type == :loan}
-            patch={~p"/transactions/#{transaction}/edit_loan?#{%{type: transaction.type}}"}
-          >
+          <.link navigate={~p"/transactions/#{transaction}/edit?#{%{type: transaction.type}}"}>
             <.icon name="hero-pencil-square-micro" /> Edit
           </.link>
         </:action>
@@ -129,21 +91,6 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
       >
         Next Page <.icon name="hero-arrow-right-circle-mini" />
       </.button>
-
-      <.modal
-        :if={@live_action == :edit_transaction && match?(%LoanTransaction{}, @transaction)}
-        id="loan-transaction-modal"
-        show
-        on_cancel={JS.patch(@return_path)}
-      >
-        <.loan_transaction_form
-          account={@account}
-          action={@live_action}
-          loan={@loan}
-          return_path={@return_path}
-          transaction={@transaction}
-        />
-      </.modal>
     </Layouts.app>
     """
   end
@@ -237,10 +184,6 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
   end
 
   def handle_info(_event, socket), do: noreply(socket)
-
-  defp find_loan(loans, loan_id) do
-    Enum.find(loans, &(&1.id == loan_id))
-  end
 
   defp load_transactions(socket) do
     %{account: account} = socket.assigns

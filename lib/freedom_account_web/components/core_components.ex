@@ -161,13 +161,14 @@ defmodule FreedomAccountWeb.CoreComponents do
   @doc """
   Renders a header with title.
   """
+  attr :class, :any, default: nil
   slot :inner_block, required: true
   slot :subtitle
   slot :actions
 
   def header(assigns) do
     ~H"""
-    <header class={[@actions != [] && "flex items-center justify-between gap-6", "pb-4"]}>
+    <header class={[@actions != [] && "flex items-center justify-between gap-6", "pb-4", @class]}>
       <div>
         <h2 class="text-lg font-semibold leading-8">
           {render_slot(@inner_block)}
@@ -502,13 +503,17 @@ defmodule FreedomAccountWeb.CoreComponents do
   attr :rest, :global, include: ~w(autocomplete name rel action enctype method novalidate target multipart)
   attr :title, :string, default: nil
 
-  slot :inner_block, required: true
   slot :actions
+  slot :inner_block, required: true
+  slot :subtitle
 
   def standard_form(assigns) do
     ~H"""
     <div class={["flex flex-col items-center mx-auto", @class]}>
-      <.header :if={@title}>{@title}</.header>
+      <.header :if={@title} class="text-center">
+        {@title}
+        <:subtitle>{render_slot(@subtitle)}</:subtitle>
+      </.header>
       <.form :let={f} class="w-full" for={@for} as={@as} {@rest}>
         {render_slot(@inner_block, f)}
         <footer class="flex gap-4 justify-center mt-6">

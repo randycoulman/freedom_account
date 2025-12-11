@@ -49,26 +49,26 @@ defmodule FreedomAccountWeb.FundTransactionForm do
 
   defp apply_action(socket, :deposit) do
     socket
-    |> assign(:title, "Deposit")
     |> assign(:save, "Make Deposit")
+    |> assign(:title, "Deposit")
   end
 
   defp apply_action(socket, :edit_transaction) do
     socket
-    |> assign(:title, "Edit Transaction")
     |> assign(:save, "Save Transaction")
+    |> assign(:title, "Edit Transaction")
   end
 
   defp apply_action(socket, :regular_withdrawal) do
     socket
-    |> assign(:title, "Regular Withdrawal")
     |> assign(:save, "Make Withdrawal")
+    |> assign(:title, "Regular Withdrawal")
   end
 
   defp apply_action(socket, :withdrawal) do
     socket
-    |> assign(:title, "Withdraw")
     |> assign(:save, "Make Withdrawal")
+    |> assign(:title, "Withdraw")
   end
 
   @impl LiveComponent
@@ -136,19 +136,13 @@ defmodule FreedomAccountWeb.FundTransactionForm do
           <.button phx-disable-with="Saving..." type="submit" variant="primary">
             <.icon name="hero-check-circle-mini" /> {@save}
           </.button>
+        </:actions>
+        <:actions>
           <.button navigate={@return_path}>Cancel</.button>
         </:actions>
       </.standard_form>
     </div>
     """
-  end
-
-  defp find_fund(funds, fund_id) when is_binary(fund_id) do
-    find_fund(funds, String.to_integer(fund_id))
-  end
-
-  defp find_fund(funds, fund_id) do
-    Enum.find(funds, &(&1.id == fund_id))
   end
 
   @impl LiveComponent
@@ -211,5 +205,13 @@ defmodule FreedomAccountWeb.FundTransactionForm do
         |> assign(:form, to_form(changeset))
         |> noreply()
     end
+  end
+
+  defp find_fund(funds, fund_id) when is_binary(fund_id) do
+    find_fund(funds, String.to_integer(fund_id))
+  end
+
+  defp find_fund(funds, fund_id) do
+    Enum.find(funds, &(&1.id == fund_id))
   end
 end

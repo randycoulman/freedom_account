@@ -86,31 +86,15 @@ defmodule FreedomAccountWeb.TransactionLive.IndexTest do
       |> assert_has(active_tab(), text: "Transactions")
     end
 
-    test "edits loan transaction in listing", %{conn: conn, loan: loan} do
+    test "allows editing loan transaction in listing", %{conn: conn, loan: loan} do
       transaction = Factory.lend(loan)
-      new_date = Factory.date()
-      new_memo = Factory.memo()
-      new_amount = Money.negate!(Factory.money())
 
       conn
       |> visit(~p"/transactions")
       |> click_link(action_link("#txn-#{transaction.id}"), "Edit")
-      |> assert_has(page_title(), text: "Edit Loan Transaction")
-      |> assert_has(heading(), text: "Edit Loan Transaction")
-      |> assert_has(role("loan"), text: Safe.to_iodata(loan))
-      |> assert_has(field_value("#loan_transaction_date", transaction.date))
-      |> assert_has(field_value("#loan_transaction_memo", transaction.memo))
-      |> assert_has(field_value("#loan_transaction_amount", transaction.amount))
-      |> fill_in("Date", with: new_date)
-      |> fill_in("Memo", with: new_memo)
-      |> fill_in("Amount", with: new_amount)
-      |> click_button("Save Transaction")
-      |> assert_has(flash(:info), text: "Transaction updated successfully")
+      |> assert_path(~p"/transactions/#{transaction}/edit", query_params: %{"type" => "loan"})
+      |> click_link("Cancel")
       |> assert_has(active_tab(), text: "Transactions")
-      |> assert_has(account_balance(), text: "#{new_amount}")
-      |> assert_has(table_cell(), text: "#{new_date}")
-      |> assert_has(table_cell(), text: new_memo)
-      |> assert_has(role("out"), text: "#{Money.negate!(new_amount)}")
     end
 
     test "deletes fund transaction in listing", %{conn: conn, fund: fund} do
