@@ -11,7 +11,6 @@ defmodule FreedomAccountWeb.LoanLive.Show do
   alias FreedomAccount.Error
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Loans.Loan
-  alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.LoanTransaction
   alias FreedomAccountWeb.Layouts
   alias FreedomAccountWeb.LoanTransactionList
@@ -41,20 +40,6 @@ defmodule FreedomAccountWeb.LoanLive.Show do
 
   defp apply_action(socket, :edit, _params) do
     assign(socket, :page_title, "Edit Loan")
-  end
-
-  defp apply_action(socket, :edit_transaction, params) do
-    transaction_id = String.to_integer(params["transaction_id"])
-
-    case Transactions.fetch_loan_transaction(transaction_id) do
-      {:ok, %LoanTransaction{} = transaction} ->
-        socket
-        |> assign(:page_title, "Edit Loan Transaction")
-        |> assign(:transaction, transaction)
-
-      {:error, %NotFoundError{}} ->
-        put_flash(socket, :error, "Transaction is no longer present")
-    end
   end
 
   defp apply_action(socket, :lend, _params) do
@@ -135,7 +120,7 @@ defmodule FreedomAccountWeb.LoanLive.Show do
       </.modal>
 
       <.modal
-        :if={@live_action in [:edit_transaction, :lend, :payment]}
+        :if={@live_action in [:lend, :payment]}
         id="loan-transaction-modal"
         show
         on_cancel={JS.patch(~p"/loans/#{@loan}")}

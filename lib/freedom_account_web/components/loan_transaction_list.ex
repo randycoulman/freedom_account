@@ -60,7 +60,7 @@ defmodule FreedomAccountWeb.LoanTransactionList do
           {transaction.running_balance}
         </:col>
         <:action :let={transaction}>
-          <.link patch={~p"/loans/#{@loan}/transactions/#{transaction}/edit"}>
+          <.link navigate={~p"/loans/#{@loan}/transactions/#{transaction}/edit"}>
             <.icon name="hero-pencil-square-micro" /> Edit
           </.link>
         </:action>
