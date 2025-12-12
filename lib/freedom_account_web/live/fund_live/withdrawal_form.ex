@@ -6,7 +6,6 @@ defmodule FreedomAccountWeb.FundLive.WithdrawalForm do
 
   import FreedomAccountWeb.FundTransactionForm, only: [fund_transaction_form: 1]
 
-  alias FreedomAccount.Transactions.Transaction
   alias Phoenix.LiveView
 
   on_mount FreedomAccountWeb.FundLive.FetchFund
@@ -25,9 +24,8 @@ defmodule FreedomAccountWeb.FundLive.WithdrawalForm do
       account={@account}
       action={:withdrawal}
       all_funds={@funds}
-      initial_funds={[@fund]}
+      fund={@fund}
       return_path={~p"/funds/#{@fund}"}
-      transaction={%Transaction{}}
     />
     """
   end

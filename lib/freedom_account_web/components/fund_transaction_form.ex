@@ -6,6 +6,7 @@ defmodule FreedomAccountWeb.FundTransactionForm do
 
   alias Ecto.Changeset
   alias FreedomAccount.Accounts.Account
+  alias FreedomAccount.Funds.Fund
   alias FreedomAccount.Transactions
   alias FreedomAccount.Transactions.Transaction
   alias FreedomAccountWeb.Params
@@ -18,32 +19,38 @@ defmodule FreedomAccountWeb.FundTransactionForm do
   attr :account, Account, required: true
   attr :action, :atom, required: true
   attr :all_funds, :list, required: true
-  attr :initial_funds, :list, default: []
+  attr :fund, Fund, default: nil
   attr :return_path, :string, required: true
-  attr :transaction, Transaction, required: true
+  attr :transaction, Transaction, default: nil
 
   @spec fund_transaction_form(Socket.assigns()) :: LiveView.Rendered.t()
   def fund_transaction_form(assigns) do
     ~H"""
-    <.live_component id={@transaction.id || :new} module={__MODULE__} {assigns} />
+    <.live_component
+      id={if @transaction, do: @transaction.id, else: :new}
+      module={__MODULE__}
+      {assigns}
+    />
     """
   end
 
   @impl LiveComponent
   def update(assigns, socket) do
-    %{transaction: transaction} = assigns
+    transaction = assigns.transaction || %Transaction{}
 
     changeset =
       if is_nil(transaction.id) do
-        Transactions.new_transaction(assigns.initial_funds)
+        initial_funds = List.wrap(assigns[:fund] || assigns.all_funds)
+        Transactions.new_transaction(initial_funds)
       else
         Transactions.change_transaction(transaction)
       end
 
     socket
     |> assign(assigns)
-    |> apply_action(assigns.action)
     |> assign(:form, to_form(changeset))
+    |> assign(:transaction, transaction)
+    |> apply_action(assigns.action)
     |> ok()
   end
 
@@ -148,8 +155,7 @@ defmodule FreedomAccountWeb.FundTransactionForm do
   @impl LiveComponent
   def handle_event("validate", params, socket) do
     %{"transaction" => transaction_params} = params
-    transaction = socket.assigns[:transaction] || %Transaction{}
-    changeset = Transactions.change_transaction(transaction, transaction_params)
+    changeset = Transactions.change_transaction(socket.assigns.transaction, transaction_params)
 
     socket
     |> assign(:form, to_form(changeset, action: :validate))

@@ -6,7 +6,6 @@ defmodule FreedomAccountWeb.LoanLive.PaymentForm do
 
   import FreedomAccountWeb.LoanTransactionForm, only: [loan_transaction_form: 1]
 
-  alias FreedomAccount.Transactions.LoanTransaction
   alias Phoenix.LiveView
 
   on_mount FreedomAccountWeb.LoanLive.FetchLoan
@@ -26,7 +25,6 @@ defmodule FreedomAccountWeb.LoanLive.PaymentForm do
       action={:payment}
       loan={@loan}
       return_path={~p"/loans/#{@loan}"}
-      transaction={%LoanTransaction{}}
     />
     """
   end

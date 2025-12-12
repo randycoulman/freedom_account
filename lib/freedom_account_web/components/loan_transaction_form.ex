@@ -18,18 +18,22 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
   attr :action, :atom, required: true
   attr :loan, Loan, required: true
   attr :return_path, :string, required: true
-  attr :transaction, LoanTransaction, required: true
+  attr :transaction, LoanTransaction, default: nil
 
   @spec loan_transaction_form(Socket.assigns()) :: LiveView.Rendered.t()
   def loan_transaction_form(assigns) do
     ~H"""
-    <.live_component id={@transaction.id || :new} module={__MODULE__} {assigns} />
+    <.live_component
+      id={if @transaction, do: @transaction.id, else: :new}
+      module={__MODULE__}
+      {assigns}
+    />
     """
   end
 
   @impl LiveComponent
   def update(assigns, socket) do
-    %{transaction: transaction} = assigns
+    transaction = assigns.transaction || %LoanTransaction{}
 
     changeset =
       if is_nil(transaction.id) do
@@ -40,8 +44,9 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
 
     socket
     |> assign(assigns)
-    |> apply_action(assigns.action)
     |> assign(:form, to_form(changeset))
+    |> assign(:transaction, transaction)
+    |> apply_action(assigns.action)
     |> ok()
   end
 
@@ -99,8 +104,7 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
   @impl LiveComponent
   def handle_event("validate", params, socket) do
     %{"loan_transaction" => transaction_params} = params
-    transaction = socket.assigns[:transaction] || %LoanTransaction{}
-    changeset = Transactions.change_loan_transaction(transaction, transaction_params)
+    changeset = Transactions.change_loan_transaction(socket.assigns.transaction, transaction_params)
 
     socket
     |> assign(:form, to_form(changeset, action: :validate))

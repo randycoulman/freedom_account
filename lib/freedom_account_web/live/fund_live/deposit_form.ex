@@ -6,7 +6,6 @@ defmodule FreedomAccountWeb.FundLive.DepositForm do
 
   import FreedomAccountWeb.FundTransactionForm, only: [fund_transaction_form: 1]
 
-  alias FreedomAccount.Transactions.Transaction
   alias Phoenix.LiveView
 
   on_mount FreedomAccountWeb.FundLive.FetchFund
@@ -25,9 +24,8 @@ defmodule FreedomAccountWeb.FundLive.DepositForm do
       account={@account}
       action={:deposit}
       all_funds={@funds}
-      initial_funds={[@fund]}
+      fund={@fund}
       return_path={~p"/funds/#{@fund}"}
-      transaction={%Transaction{}}
     />
     """
   end

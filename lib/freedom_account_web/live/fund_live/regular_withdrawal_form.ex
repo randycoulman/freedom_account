@@ -6,7 +6,6 @@ defmodule FreedomAccountWeb.FundLive.RegularWithdrawalForm do
 
   import FreedomAccountWeb.FundTransactionForm, only: [fund_transaction_form: 1]
 
-  alias FreedomAccount.Transactions.Transaction
   alias Phoenix.LiveView
 
   @impl LiveView
@@ -23,9 +22,7 @@ defmodule FreedomAccountWeb.FundLive.RegularWithdrawalForm do
       account={@account}
       action={:regular_withdrawal}
       all_funds={@funds}
-      initial_funds={@funds}
       return_path={~p"/funds"}
-      transaction={%Transaction{}}
     />
     """
   end
