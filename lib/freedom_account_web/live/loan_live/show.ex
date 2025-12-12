@@ -4,14 +4,12 @@ defmodule FreedomAccountWeb.LoanLive.Show do
 
   import FreedomAccountWeb.Account, only: [account: 1]
   import FreedomAccountWeb.LoanLive.Form, only: [settings_form: 1]
-  import FreedomAccountWeb.LoanTransactionForm, only: [loan_transaction_form: 1]
   import FreedomAccountWeb.LoanTransactionList, only: [loan_transaction_list: 1]
   import FreedomAccountWeb.Sidebar, only: [sidebar: 1]
 
   alias FreedomAccount.Error
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Loans.Loan
-  alias FreedomAccount.Transactions.LoanTransaction
   alias FreedomAccountWeb.Layouts
   alias FreedomAccountWeb.LoanTransactionList
   alias Phoenix.HTML.Safe
@@ -40,12 +38,6 @@ defmodule FreedomAccountWeb.LoanLive.Show do
 
   defp apply_action(socket, :edit, _params) do
     assign(socket, :page_title, "Edit Loan")
-  end
-
-  defp apply_action(socket, :payment, _params) do
-    socket
-    |> assign(:page_title, "Payment")
-    |> assign(:transaction, %LoanTransaction{})
   end
 
   defp apply_action(socket, _action, _params) do
@@ -78,11 +70,9 @@ defmodule FreedomAccountWeb.LoanLive.Show do
               <.button navigate={~p"/loans/#{@loan}/loans/new"}>
                 <.icon name="hero-credit-card-mini" /> Lend
               </.button>
-              <.link patch={~p"/loans/#{@loan}/payments/new"} phx-click={JS.push_focus()}>
-                <.button>
-                  <.icon name="hero-banknotes-mini" /> Payment
-                </.button>
-              </.link>
+              <.button navigate={~p"/loans/#{@loan}/payments/new"}>
+                <.icon name="hero-banknotes-mini" /> Payment
+              </.button>
               <.link patch={~p"/loans/#{@loan}/show/edit"} phx-click={JS.push_focus()}>
                 <.button>
                   <.icon name="hero-pencil-square-mini" /> Edit Details
@@ -108,21 +98,6 @@ defmodule FreedomAccountWeb.LoanLive.Show do
           loan={@loan}
           return_path={~p"/loans/#{@loan}"}
           title={@page_title}
-        />
-      </.modal>
-
-      <.modal
-        :if={@live_action in [:payment]}
-        id="loan-transaction-modal"
-        show
-        on_cancel={JS.patch(~p"/loans/#{@loan}")}
-      >
-        <.loan_transaction_form
-          account={@account}
-          action={@live_action}
-          loan={@loan}
-          return_path={~p"/loans/#{@loan}"}
-          transaction={@transaction}
         />
       </.modal>
     </Layouts.app>
