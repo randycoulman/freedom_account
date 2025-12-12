@@ -6,27 +6,16 @@ defmodule FreedomAccountWeb.LoanLive.PaymentForm do
 
   import FreedomAccountWeb.LoanTransactionForm, only: [loan_transaction_form: 1]
 
-  alias FreedomAccount.Loans.Loan
   alias FreedomAccount.Transactions.LoanTransaction
   alias Phoenix.LiveView
 
+  on_mount FreedomAccountWeb.LoanLive.FetchLoan
+
   @impl LiveView
-  def mount(params, _session, socket) do
-    id = String.to_integer(params["id"])
-
-    case Enum.find(socket.assigns.loans, :not_found, &(&1.id == id)) do
-      %Loan{} = loan ->
-        socket
-        |> assign(:loan, loan)
-        |> assign(:page_title, "Payment")
-        |> ok()
-
-      :not_found ->
-        socket
-        |> put_flash(:error, "Loan not found")
-        |> push_navigate(to: ~p"/loans")
-        |> ok()
-    end
+  def mount(_params, _session, socket) do
+    socket
+    |> assign(:page_title, "Payment")
+    |> ok()
   end
 
   @impl LiveView

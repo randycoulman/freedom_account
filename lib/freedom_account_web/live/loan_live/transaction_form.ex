@@ -11,16 +11,15 @@ defmodule FreedomAccountWeb.LoanLive.TransactionForm do
   alias FreedomAccount.Transactions.LoanTransaction
   alias Phoenix.LiveView
 
+  on_mount FreedomAccountWeb.LoanLive.FetchLoan
+
   @impl LiveView
   def mount(params, _session, socket) do
-    id = String.to_integer(params["id"])
     transaction_id = String.to_integer(params["transaction_id"])
-    loan = find_loan(socket.assigns.loans, id)
 
     case Transactions.fetch_loan_transaction(transaction_id) do
       {:ok, %LoanTransaction{} = transaction} ->
         socket
-        |> assign(:loan, loan)
         |> assign(:page_title, "Edit Loan Transaction")
         |> assign(:transaction, transaction)
         |> ok()
@@ -28,7 +27,7 @@ defmodule FreedomAccountWeb.LoanLive.TransactionForm do
       {:error, %NotFoundError{}} ->
         socket
         |> put_flash(:error, "Transaction is no longer present")
-        |> push_navigate(to: ~p"/loans/#{loan}")
+        |> push_navigate(to: ~p"/loans/#{socket.assigns.loan}")
         |> ok()
     end
   end
@@ -44,9 +43,5 @@ defmodule FreedomAccountWeb.LoanLive.TransactionForm do
       transaction={@transaction}
     />
     """
-  end
-
-  defp find_loan(loans, loan_id) do
-    Enum.find(loans, &(&1.id == loan_id))
   end
 end
