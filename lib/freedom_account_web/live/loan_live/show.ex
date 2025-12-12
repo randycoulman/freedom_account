@@ -42,12 +42,6 @@ defmodule FreedomAccountWeb.LoanLive.Show do
     assign(socket, :page_title, "Edit Loan")
   end
 
-  defp apply_action(socket, :lend, _params) do
-    socket
-    |> assign(:page_title, "Lend")
-    |> assign(:transaction, %LoanTransaction{})
-  end
-
   defp apply_action(socket, :payment, _params) do
     socket
     |> assign(:page_title, "Payment")
@@ -81,11 +75,9 @@ defmodule FreedomAccountWeb.LoanLive.Show do
               <span>{@loan.current_balance}</span>
             </div>
             <:actions>
-              <.link patch={~p"/loans/#{@loan}/loans/new"} phx-click={JS.push_focus()}>
-                <.button>
-                  <.icon name="hero-credit-card-mini" /> Lend
-                </.button>
-              </.link>
+              <.button navigate={~p"/loans/#{@loan}/loans/new"}>
+                <.icon name="hero-credit-card-mini" /> Lend
+              </.button>
               <.link patch={~p"/loans/#{@loan}/payments/new"} phx-click={JS.push_focus()}>
                 <.button>
                   <.icon name="hero-banknotes-mini" /> Payment
@@ -120,7 +112,7 @@ defmodule FreedomAccountWeb.LoanLive.Show do
       </.modal>
 
       <.modal
-        :if={@live_action in [:lend, :payment]}
+        :if={@live_action in [:payment]}
         id="loan-transaction-modal"
         show
         on_cancel={JS.patch(~p"/loans/#{@loan}")}
