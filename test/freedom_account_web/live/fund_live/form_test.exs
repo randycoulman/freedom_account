@@ -1,4 +1,4 @@
-defmodule FreedomAccountWeb.FundLive.SettingsFormTest do
+defmodule FreedomAccountWeb.FundLive.FormTest do
   @moduledoc false
 
   use FreedomAccountWeb.ConnCase, async: true

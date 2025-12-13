@@ -1,4 +1,4 @@
-defmodule FreedomAccountWeb.FundLive.SettingsForm do
+defmodule FreedomAccountWeb.FundLive.Form do
   @moduledoc false
   use FreedomAccountWeb, :live_view
 

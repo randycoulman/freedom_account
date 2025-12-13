@@ -25,7 +25,7 @@ defmodule FreedomAccountWeb.Router do
       live "/account/edit", AccountLive.Form, :edit
 
       live "/funds", FundLive.Index, :index
-      live "/funds/new", FundLive.SettingsForm, :new
+      live "/funds/new", FundLive.Form, :new
 
       live "/funds/activate", FundLive.ActivationForm, :activate
       live "/funds/budget", FundLive.BudgetForm, :edit
@@ -33,7 +33,7 @@ defmodule FreedomAccountWeb.Router do
       live "/funds/regular_withdrawal", FundLive.RegularWithdrawalForm, :new
 
       live "/funds/:id", FundLive.Show, :show
-      live "/funds/:id/edit", FundLive.SettingsForm, :edit
+      live "/funds/:id/edit", FundLive.Form, :edit
 
       live "/funds/:id/deposits/new", FundLive.DepositForm, :new
       live "/funds/:id/transactions/:transaction_id/edit", FundLive.TransactionForm, :edit
