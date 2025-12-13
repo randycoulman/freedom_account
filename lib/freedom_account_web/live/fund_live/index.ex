@@ -38,12 +38,6 @@ defmodule FreedomAccountWeb.FundLive.Index do
     end
   end
 
-  defp apply_action(socket, :new, _params) do
-    socket
-    |> assign(:page_title, "Add Fund")
-    |> assign(:fund, %Fund{})
-  end
-
   defp apply_action(socket, _action, _params) do
     socket
     |> assign(:page_title, "Funds")
@@ -69,11 +63,9 @@ defmodule FreedomAccountWeb.FundLive.Index do
         <.button navigate={~p"/funds/activate"}>
           <.icon name="hero-archive-box-mini" /> Activate/Deactivate
         </.button>
-        <.link patch={~p"/funds/new"}>
-          <.button>
-            <.icon name="hero-plus-circle-mini" /> Add Fund
-          </.button>
-        </.link>
+        <.button navigate={~p"/funds/new"}>
+          <.icon name="hero-plus-circle-mini" /> Add Fund
+        </.button>
       </div>
 
       <div class="flex flex-col">
@@ -90,7 +82,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
       </div>
 
       <.modal
-        :if={@live_action in [:edit, :new]}
+        :if={@live_action in [:edit]}
         id="fund-modal"
         show
         on_cancel={JS.patch(~p"/funds")}

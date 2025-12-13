@@ -36,16 +36,16 @@ defmodule FreedomAccount.Funds.Fund do
   typed_schema "funds" do
     belongs_to :account, Account
 
-    field :active, :boolean, null: false, read_after_writes: true
-    field(:budget, MoneyEctoType) :: Money.t()
-    field :icon, :string, null: false
-    field :name, :string, null: false
+    field :active, :boolean, read_after_writes: true
+    field(:budget, MoneyEctoType) :: Money.t() | nil
+    field :icon, :string
+    field :name, :string
     field :times_per_year, :float
 
     has_many :line_items, LineItem
 
     field(:current_balance, MoneyEctoType, virtual: true) :: Money.t() | nil
-    field(:regular_deposit_amount, MoneyEctoType, virtual: true) :: Money.t()
+    field(:regular_deposit_amount, MoneyEctoType, virtual: true) :: Money.t() | nil
 
     timestamps()
   end

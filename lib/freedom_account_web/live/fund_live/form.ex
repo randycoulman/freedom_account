@@ -103,23 +103,6 @@ defmodule FreedomAccountWeb.FundLive.Form do
     end
   end
 
-  defp save_fund(socket, :new, fund_params) do
-    %{account: account, return_path: return_path} = socket.assigns
-
-    case Funds.create_fund(account, fund_params) do
-      {:ok, _fund} ->
-        socket
-        |> put_flash(:info, "Fund created successfully")
-        |> push_patch(to: return_path)
-        |> noreply()
-
-      {:error, %Changeset{} = changeset} ->
-        socket
-        |> assign_form(changeset)
-        |> noreply()
-    end
-  end
-
   defp assign_form(socket, %Changeset{} = changeset) do
     assign(socket, :form, to_form(changeset))
   end
