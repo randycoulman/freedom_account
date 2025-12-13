@@ -23,9 +23,10 @@ defmodule FreedomAccountWeb.Router do
 
     live_session :default, on_mount: Hooks.LoadInitialData do
       live "/account/edit", AccountLive.Form, :edit
-      live "/funds/new", FundLive.SettingsForm, :new
 
       live "/funds", FundLive.Index, :index
+      live "/funds/new", FundLive.SettingsForm, :new
+
       live "/funds/activate", FundLive.ActivationForm, :activate
       live "/funds/budget", FundLive.BudgetForm, :edit
       live "/funds/regular_deposit", FundLive.RegularDepositForm, :new
@@ -33,7 +34,6 @@ defmodule FreedomAccountWeb.Router do
 
       live "/funds/:id", FundLive.Show, :show
       live "/funds/:id/edit", FundLive.SettingsForm, :edit
-      live "/funds/:id/show/edit", FundLive.Show, :edit
 
       live "/funds/:id/deposits/new", FundLive.DepositForm, :new
       live "/funds/:id/transactions/:transaction_id/edit", FundLive.TransactionForm, :edit

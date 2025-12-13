@@ -35,29 +35,13 @@ defmodule FreedomAccountWeb.FundLive.ShowTest do
       |> assert_has(heading(), text: Safe.to_iodata(fund))
     end
 
-    test "updates fund within modal", %{conn: conn, fund: fund} do
-      %{icon: icon, name: name} = Factory.fund_attrs()
-      Factory.deposit(fund)
-      {:ok, fund} = Funds.with_updated_balance(fund)
-
+    test "allows editing fund", %{conn: conn, fund: fund} do
       conn
       |> visit(~p"/funds/#{fund}")
       |> click_link("Edit Details")
-      |> assert_has(page_title(), text: "Edit Fund")
-      |> assert_has(heading(), text: "Edit Fund")
-      |> fill_in("Icon", with: "")
-      |> fill_in("Name", with: "")
-      |> assert_has(field_error("#fund_icon"), text: "can't be blank")
-      |> assert_has(field_error("#fund_name"), text: "can't be blank")
-      |> fill_in("Icon", with: icon)
-      |> fill_in("Name", with: name)
-      |> click_button("Save Fund")
-      |> assert_has(flash(:info), text: "Fund updated successfully")
-      |> assert_has(page_title(), text: "#{icon} #{name}")
-      |> assert_has(heading(), text: "#{icon} #{name}")
-      |> assert_has(heading(), text: "#{fund.current_balance}")
-      |> assert_has(sidebar_fund_name(), text: "#{icon} #{name}")
-      |> assert_has(sidebar_fund_balance(), text: "#{fund.current_balance}")
+      |> assert_path(~p"/funds/#{fund}/edit")
+      |> click_link("Cancel")
+      |> assert_has(heading(), text: Safe.to_iodata(fund))
     end
 
     test "allows depositing money to a fund", %{conn: conn, fund: fund} do

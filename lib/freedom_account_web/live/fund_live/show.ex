@@ -3,7 +3,6 @@ defmodule FreedomAccountWeb.FundLive.Show do
   use FreedomAccountWeb, :live_view
 
   import FreedomAccountWeb.Account, only: [account: 1]
-  import FreedomAccountWeb.FundLive.Form, only: [settings_form: 1]
   import FreedomAccountWeb.FundTransactionList, only: [fund_transaction_list: 1]
   import FreedomAccountWeb.Sidebar, only: [sidebar: 1]
 
@@ -19,21 +18,10 @@ defmodule FreedomAccountWeb.FundLive.Show do
   on_mount FreedomAccountWeb.FundLive.FetchFund
 
   @impl LiveView
-  def handle_params(params, _url, socket) do
+  def handle_params(_params, _url, socket) do
     socket
-    |> assign(:transaction, nil)
-    |> apply_action(socket.assigns.live_action, params)
+    |> assign_page_title()
     |> noreply()
-  end
-
-  defp apply_action(socket, :edit, _params) do
-    assign(socket, :page_title, "Edit Fund")
-  end
-
-  defp apply_action(socket, _action, _params) do
-    %{fund: fund} = socket.assigns
-
-    assign(socket, :page_title, Safe.to_iodata(fund))
   end
 
   @impl LiveView
@@ -70,11 +58,9 @@ defmodule FreedomAccountWeb.FundLive.Show do
               <.button navigate={~p"/funds/#{@fund}/withdrawals/new"}>
                 <.icon name="hero-minus-circle-mini" /> Withdraw
               </.button>
-              <.link patch={~p"/funds/#{@fund}/show/edit"} phx-click={JS.push_focus()}>
-                <.button>
-                  <.icon name="hero-pencil-square-mini" /> Edit Details
-                </.button>
-              </.link>
+              <.button navigate={~p"/funds/#{@fund}/edit?return_to=show"}>
+                <.icon name="hero-pencil-square-mini" /> Edit Details
+              </.button>
             </:actions>
           </.header>
           <.fund_transaction_list fund={@fund} id={@fund.id} />
@@ -82,34 +68,19 @@ defmodule FreedomAccountWeb.FundLive.Show do
           <.back navigate={~p"/funds"}>Back to Funds</.back>
         </main>
       </div>
-
-      <.modal
-        :if={@live_action == :edit}
-        id="fund-modal"
-        show
-        on_cancel={JS.patch(~p"/funds/#{@fund}")}
-      >
-        <.settings_form
-          account={@account}
-          action={@live_action}
-          fund={@fund}
-          return_path={~p"/funds/#{@fund}"}
-          title={@page_title}
-        />
-      </.modal>
     </Layouts.app>
     """
   end
 
   @impl LiveView
   def handle_info({:funds_updated, funds}, socket) do
-    %{fund: fund, live_action: action} = socket.assigns
+    %{fund: fund} = socket.assigns
 
     case fetch_fund(funds, fund.id) do
       {:ok, %Fund{} = fund} ->
         socket
         |> assign(:fund, fund)
-        |> apply_action(action, %{})
+        |> assign_page_title()
         |> noreply()
 
       {:error, %NotFoundError{}} ->
@@ -128,6 +99,10 @@ defmodule FreedomAccountWeb.FundLive.Show do
   end
 
   def handle_info(_message, socket), do: noreply(socket)
+
+  defp assign_page_title(socket) do
+    assign(socket, :page_title, Safe.to_iodata(socket.assigns.fund))
+  end
 
   defp fetch_fund(funds, id) do
     with %Fund{} = fund <- Enum.find(funds, {:error, Error.not_found(details: %{id: id}, entity: Fund)}, &(&1.id == id)) do

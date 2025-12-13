@@ -4,6 +4,7 @@ defmodule FreedomAccountWeb.FundLive.SettingsFormTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
+  alias Phoenix.HTML.Safe
 
   setup [:create_account]
 
@@ -48,7 +49,7 @@ defmodule FreedomAccountWeb.FundLive.SettingsFormTest do
   end
 
   describe "editing a fund" do
-    test "updates fund settings, returning to fund list by default", %{account: account, conn: conn} do
+    test "updates fund settings", %{account: account, conn: conn} do
       fund = account |> Factory.fund() |> Factory.with_fund_balance()
       %{budget: budget, icon: icon, name: name, times_per_year: times_per_year} = Factory.fund_attrs()
 
@@ -66,7 +67,6 @@ defmodule FreedomAccountWeb.FundLive.SettingsFormTest do
       |> fill_in("Times/Year", with: times_per_year)
       |> click_button("Save Fund")
       |> assert_has(flash(:info), text: "Fund updated successfully")
-      |> assert_has(active_tab(), text: "Funds")
       |> assert_has(fund_icon(fund), text: icon)
       |> assert_has(fund_name(fund), text: name)
       |> assert_has(fund_budget(fund), text: "#{budget}")
@@ -85,12 +85,57 @@ defmodule FreedomAccountWeb.FundLive.SettingsFormTest do
       |> fill_in("Budget", with: budget)
       |> fill_in("Times/Year", with: times_per_year)
       |> click_link("Cancel")
-      |> assert_has(active_tab(), text: "Funds")
       |> assert_has(fund_icon(fund), text: fund.icon)
       |> assert_has(fund_name(fund), text: fund.name)
       |> assert_has(fund_budget(fund), text: "#{fund.budget}")
       |> assert_has(fund_frequency(fund), text: "#{fund.times_per_year}")
       |> assert_has(fund_balance(fund), text: "#{fund.current_balance}")
+    end
+  end
+
+  describe "returning to calling view" do
+    setup :create_fund
+
+    test "returns to fund list by default on save", %{conn: conn, fund: fund} do
+      conn
+      |> visit(~p"/funds/#{fund}/edit")
+      |> click_button("Save Fund")
+      |> assert_has(active_tab(), text: "Funds")
+    end
+
+    test "returns to fund list by default on cancel", %{conn: conn, fund: fund} do
+      conn
+      |> visit(~p"/funds/#{fund}/edit")
+      |> click_link("Cancel")
+      |> assert_has(active_tab(), text: "Funds")
+    end
+
+    test "returns to fund list when specified on save", %{conn: conn, fund: fund} do
+      conn
+      |> visit(~p"/funds/#{fund}/edit?return_to=index")
+      |> click_button("Save Fund")
+      |> assert_has(active_tab(), text: "Funds")
+    end
+
+    test "returns to fund list when specified on cancel", %{conn: conn, fund: fund} do
+      conn
+      |> visit(~p"/funds/#{fund}/edit?return_to=index")
+      |> click_link("Cancel")
+      |> assert_has(active_tab(), text: "Funds")
+    end
+
+    test "returns to individual fund view when specified on save", %{conn: conn, fund: fund} do
+      conn
+      |> visit(~p"/funds/#{fund}/edit?return_to=show")
+      |> click_button("Save Fund")
+      |> assert_has(heading(), text: Safe.to_iodata(fund))
+    end
+
+    test "returns to individual fund view when specified on cancel", %{conn: conn, fund: fund} do
+      conn
+      |> visit(~p"/funds/#{fund}/edit?return_to=show")
+      |> click_link("Cancel")
+      |> assert_has(heading(), text: Safe.to_iodata(fund))
     end
   end
 end
