@@ -32,7 +32,7 @@ defmodule FreedomAccountWeb.FundCard do
         <.link class="sr-only" navigate={~p"/funds/#{@fund}"}>Show</.link>
       </:action>
       <:action>
-        <.link patch={~p"/funds/#{@fund}/edit"} title="Edit">
+        <.link navigate={~p"/funds/#{@fund}/edit"} title="Edit">
           <.icon name="hero-pencil-square-micro" /> Edit
         </.link>
       </:action>

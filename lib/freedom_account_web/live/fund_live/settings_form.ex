@@ -9,7 +9,32 @@ defmodule FreedomAccountWeb.FundLive.SettingsForm do
   alias Phoenix.LiveView
 
   @impl LiveView
-  def mount(_params, _session, socket) do
+  def mount(params, _session, socket) do
+    socket
+    |> apply_action(socket.assigns.live_action, params)
+    |> ok()
+  end
+
+  defp apply_action(socket, :edit, params) do
+    id = String.to_integer(params["id"])
+
+    case Enum.find(socket.assigns.funds, :not_found, &(&1.id == id)) do
+      %Fund{} = fund ->
+        changeset = Funds.change_fund(fund)
+
+        socket
+        |> assign(:form, to_form(changeset))
+        |> assign(:fund, fund)
+        |> assign(:page_title, "Edit Fund")
+
+      :not_found ->
+        socket
+        |> put_flash(:error, "Fund is no longer present")
+        |> push_navigate(to: ~p"/funds")
+    end
+  end
+
+  defp apply_action(socket, :new, _params) do
     fund = %Fund{}
     changeset = Funds.change_fund(fund)
 
@@ -17,7 +42,6 @@ defmodule FreedomAccountWeb.FundLive.SettingsForm do
     |> assign(:form, to_form(changeset))
     |> assign(:fund, fund)
     |> assign(:page_title, "Add Fund")
-    |> ok()
   end
 
   @impl LiveView
@@ -63,22 +87,20 @@ defmodule FreedomAccountWeb.FundLive.SettingsForm do
     save_fund(socket, socket.assigns.live_action, Params.atomize_keys(fund_params))
   end
 
-  # defp save_fund(socket, :edit, fund_params) do
-  #   %{fund: fund, return_path: return_path} = socket.assigns
+  defp save_fund(socket, :edit, fund_params) do
+    case Funds.update_fund(socket.assigns.fund, fund_params) do
+      {:ok, _fund} ->
+        socket
+        |> put_flash(:info, "Fund updated successfully")
+        |> push_navigate(to: ~p"/funds")
+        |> noreply()
 
-  #   case Funds.update_fund(fund, fund_params) do
-  #     {:ok, _fund} ->
-  #       socket
-  #       |> put_flash(:info, "Fund updated successfully")
-  #       |> push_patch(to: return_path)
-  #       |> noreply()
-
-  #     {:error, %Changeset{} = changeset} ->
-  #       socket
-  #       |> assign_form(changeset)
-  #       |> noreply()
-  #   end
-  # end
+      {:error, %Changeset{} = changeset} ->
+        socket
+        |> assign(:form, to_form(changeset))
+        |> noreply()
+    end
+  end
 
   defp save_fund(socket, :new, fund_params) do
     case Funds.create_fund(socket.assigns.account, fund_params) do

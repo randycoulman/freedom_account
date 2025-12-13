@@ -41,7 +41,7 @@ defmodule FreedomAccountWeb.FundLive.IndexTest do
       |> assert_has(active_tab(), text: "#{fund.current_balance}")
     end
 
-    test "allows creating a new fund", %{conn: conn} do
+    test "allows creating a new fund from the listing", %{conn: conn} do
       conn
       |> visit(~p"/funds")
       |> click_link("Add Fund")
@@ -50,30 +50,15 @@ defmodule FreedomAccountWeb.FundLive.IndexTest do
       |> assert_has(active_tab(), text: "Funds")
     end
 
-    test "edits fund in listing", %{account: account, conn: conn} do
+    test "allows editing a fund in listing", %{account: account, conn: conn} do
       fund = account |> Factory.fund() |> Factory.with_fund_balance()
-      %{budget: budget, icon: icon, name: name, times_per_year: times_per_year} = Factory.fund_attrs()
 
       conn
       |> visit(~p"/funds")
       |> click_link(fund_action(fund), "Edit")
-      |> assert_has(page_title(), text: "Edit Fund")
-      |> assert_has(heading(), text: "Edit Fund")
-      |> fill_in("Icon", with: "")
-      |> fill_in("Name", with: "")
-      |> assert_has(field_error("#fund_icon"), text: "can't be blank")
-      |> assert_has(field_error("#fund_name"), text: "can't be blank")
-      |> fill_in("Icon", with: icon)
-      |> fill_in("Name", with: name)
-      |> fill_in("Budget", with: budget)
-      |> fill_in("Times/Year", with: times_per_year)
-      |> click_button("Save Fund")
-      |> assert_has(flash(:info), text: "Fund updated successfully")
-      |> assert_has(fund_icon(fund), text: icon)
-      |> assert_has(fund_name(fund), text: name)
-      |> assert_has(fund_budget(fund), text: "#{budget}")
-      |> assert_has(fund_frequency(fund), text: "#{times_per_year}")
-      |> assert_has(fund_balance(fund), text: "#{fund.current_balance}")
+      |> assert_path(~p"/funds/#{fund}/edit")
+      |> click_link("Cancel")
+      |> assert_has(active_tab(), text: "Funds")
     end
 
     test "deletes fund in listing", %{account: account, conn: conn} do

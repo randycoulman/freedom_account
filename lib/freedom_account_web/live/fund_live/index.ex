@@ -5,43 +5,18 @@ defmodule FreedomAccountWeb.FundLive.Index do
   import FreedomAccountWeb.AccountBar, only: [account_bar: 1]
   import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
   import FreedomAccountWeb.FundCard, only: [fund_card: 1]
-  import FreedomAccountWeb.FundLive.Form, only: [settings_form: 1]
 
   alias FreedomAccount.Error
-  alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
   alias FreedomAccountWeb.Layouts
   alias Phoenix.LiveView
 
   @impl LiveView
-  def handle_params(params, _url, socket) do
-    %{live_action: action} = socket.assigns
-
-    socket
-    |> assign(:fund, nil)
-    |> apply_action(action, params)
-    |> noreply()
-  end
-
-  defp apply_action(socket, :edit, params) do
-    id = String.to_integer(params["id"])
-
-    case fetch_fund(socket, id) do
-      {:ok, %Fund{} = fund} ->
-        socket
-        |> assign(:page_title, "Edit Fund")
-        |> assign(:fund, fund)
-
-      {:error, %NotFoundError{}} ->
-        put_flash(socket, :error, "Fund is no longer present")
-    end
-  end
-
-  defp apply_action(socket, _action, _params) do
+  def handle_params(_params, _url, socket) do
     socket
     |> assign(:page_title, "Funds")
-    |> assign(:fund, nil)
+    |> noreply()
   end
 
   @impl LiveView
@@ -80,21 +55,6 @@ defmodule FreedomAccountWeb.FundLive.Index do
           phx-click={JS.navigate(~p"/funds/#{fund}")}
         />
       </div>
-
-      <.modal
-        :if={@live_action in [:edit]}
-        id="fund-modal"
-        show
-        on_cancel={JS.patch(~p"/funds")}
-      >
-        <.settings_form
-          account={@account}
-          action={@live_action}
-          fund={@fund}
-          return_path={~p"/funds"}
-          title={@page_title}
-        />
-      </.modal>
     </Layouts.app>
     """
   end
