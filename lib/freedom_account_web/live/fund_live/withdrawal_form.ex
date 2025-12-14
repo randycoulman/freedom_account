@@ -5,6 +5,7 @@ defmodule FreedomAccountWeb.FundLive.WithdrawalForm do
   use FreedomAccountWeb, :live_view
 
   import FreedomAccountWeb.FundTransactionForm, only: [fund_transaction_form: 1]
+  import FreedomAccountWeb.Sidebar, only: [sidebar: 1]
 
   alias Phoenix.LiveView
 
@@ -21,14 +22,26 @@ defmodule FreedomAccountWeb.FundLive.WithdrawalForm do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
-      <.fund_transaction_form
-        account={@account}
-        action={:withdrawal}
-        all_funds={@funds}
-        fund={@fund}
-        page_title={@page_title}
-        return_path={~p"/funds/#{@fund}"}
-      />
+      <div class="flex">
+        <aside class="hidden md:flex flex-col w-56 bg-slate-100">
+          <.sidebar
+            funds={@funds}
+            funds_balance={@funds_balance}
+            loans={@loans}
+            loans_balance={@loans_balance}
+          />
+        </aside>
+        <main class="flex-1 pl-2">
+          <.fund_transaction_form
+            account={@account}
+            action={:withdrawal}
+            all_funds={@funds}
+            fund={@fund}
+            page_title={@page_title}
+            return_path={~p"/funds/#{@fund}"}
+          />
+        </main>
+      </div>
     </Layouts.app>
     """
   end

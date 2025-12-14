@@ -6,6 +6,7 @@ defmodule FreedomAccountWeb.TransactionLive.TransactionForm do
 
   import FreedomAccountWeb.FundTransactionForm, only: [fund_transaction_form: 1]
   import FreedomAccountWeb.LoanTransactionForm, only: [loan_transaction_form: 1]
+  import FreedomAccountWeb.Sidebar, only: [sidebar: 1]
 
   alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Transactions
@@ -57,24 +58,36 @@ defmodule FreedomAccountWeb.TransactionLive.TransactionForm do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
-      <.fund_transaction_form
-        :if={is_struct(@transaction, Transaction)}
-        account={@account}
-        action={:edit_transaction}
-        all_funds={@funds}
-        page_title={@page_title}
-        return_path={~p"/transactions"}
-        transaction={@transaction}
-      />
-      <.loan_transaction_form
-        :if={is_struct(@transaction, LoanTransaction)}
-        account={@account}
-        action={:edit_transaction}
-        loan={@loan}
-        page_title={@page_title}
-        return_path={~p"/transactions"}
-        transaction={@transaction}
-      />
+      <div class="flex">
+        <aside class="hidden md:flex flex-col w-56 bg-slate-100">
+          <.sidebar
+            funds={@funds}
+            funds_balance={@funds_balance}
+            loans={@loans}
+            loans_balance={@loans_balance}
+          />
+        </aside>
+        <main class="flex-1 pl-2">
+          <.fund_transaction_form
+            :if={is_struct(@transaction, Transaction)}
+            account={@account}
+            action={:edit_transaction}
+            all_funds={@funds}
+            page_title={@page_title}
+            return_path={~p"/transactions"}
+            transaction={@transaction}
+          />
+          <.loan_transaction_form
+            :if={is_struct(@transaction, LoanTransaction)}
+            account={@account}
+            action={:edit_transaction}
+            loan={@loan}
+            page_title={@page_title}
+            return_path={~p"/transactions"}
+            transaction={@transaction}
+          />
+        </main>
+      </div>
     </Layouts.app>
     """
   end
