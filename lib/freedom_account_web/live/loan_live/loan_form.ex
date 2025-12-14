@@ -24,6 +24,7 @@ defmodule FreedomAccountWeb.LoanLive.LoanForm do
       account={@account}
       action={:lend}
       loan={@loan}
+      page_title={@page_title}
       return_path={~p"/loans/#{@loan}"}
     />
     """

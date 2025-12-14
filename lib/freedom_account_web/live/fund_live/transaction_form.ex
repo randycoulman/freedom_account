@@ -40,6 +40,7 @@ defmodule FreedomAccountWeb.FundLive.TransactionForm do
       action={:edit_transaction}
       all_funds={@funds}
       fund={@fund}
+      page_title={@page_title}
       return_path={~p"/funds/#{@fund}"}
       transaction={@transaction}
     />

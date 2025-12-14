@@ -26,7 +26,7 @@ defmodule FreedomAccountWeb.FundLive.ActivationForm do
         id="activation-form"
         phx-change="validate"
         phx-submit="save"
-        title="Activate/Deactivate Funds"
+        title={@page_title}
       >
         <div class="grid justify-center">
           <.inputs_for :let={fund} field={@form[:funds]}>

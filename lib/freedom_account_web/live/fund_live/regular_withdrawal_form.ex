@@ -22,6 +22,7 @@ defmodule FreedomAccountWeb.FundLive.RegularWithdrawalForm do
       account={@account}
       action={:regular_withdrawal}
       all_funds={@funds}
+      page_title={@page_title}
       return_path={~p"/funds"}
     />
     """

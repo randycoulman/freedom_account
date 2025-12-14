@@ -54,7 +54,7 @@ defmodule FreedomAccountWeb.FundLive.RegularDepositForm do
         id="regular-deposit-form"
         phx-change="validate"
         phx-submit="save"
-        title="Regular Deposit"
+        title={@page_title}
       >
         <.input field={@form[:date]} label="Date" phx-debounce="blur" type="date" />
         <:actions>

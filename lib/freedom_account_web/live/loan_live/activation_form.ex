@@ -27,7 +27,7 @@ defmodule FreedomAccountWeb.LoanLive.ActivationForm do
         id="activation-form"
         phx-change="validate"
         phx-submit="save"
-        title="Activate/Deactivate Loans"
+        title={@page_title}
       >
         <div class="grid justify-center">
           <.inputs_for :let={loan} field={@form[:loans]}>

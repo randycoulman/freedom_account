@@ -28,7 +28,7 @@ defmodule FreedomAccountWeb.FundLive.BudgetForm do
         id="budget-form"
         phx-change="validate"
         phx-submit="save"
-        title="Update Budget"
+        title={@page_title}
       >
         <div>
           <div class="grid grid-cols-4 gap-x-4 items-center mx-auto">

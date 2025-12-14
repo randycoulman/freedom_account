@@ -25,6 +25,7 @@ defmodule FreedomAccountWeb.FundLive.DepositForm do
       action={:deposit}
       all_funds={@funds}
       fund={@fund}
+      page_title={@page_title}
       return_path={~p"/funds/#{@fund}"}
     />
     """

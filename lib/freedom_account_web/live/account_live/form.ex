@@ -35,7 +35,7 @@ defmodule FreedomAccountWeb.AccountLive.Form do
         id="account-form"
         phx-change="validate"
         phx-submit="save"
-        title="Edit Account Settings"
+        title={@page_title}
       >
         <.input field={@form[:name]} label="Name" phx-debounce="blur" type="text" />
         <.input

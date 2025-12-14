@@ -39,6 +39,7 @@ defmodule FreedomAccountWeb.LoanLive.TransactionForm do
       account={@account}
       action={:edit_transaction}
       loan={@loan}
+      page_title={@page_title}
       return_path={~p"/loans/#{@loan}"}
       transaction={@transaction}
     />

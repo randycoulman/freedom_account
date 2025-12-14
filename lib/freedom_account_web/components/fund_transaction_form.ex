@@ -20,6 +20,7 @@ defmodule FreedomAccountWeb.FundTransactionForm do
   attr :action, :atom, required: true
   attr :all_funds, :list, required: true
   attr :fund, Fund, default: nil
+  attr :page_title, :string, required: true
   attr :return_path, :string, required: true
   attr :transaction, Transaction, default: nil
 
@@ -55,27 +56,19 @@ defmodule FreedomAccountWeb.FundTransactionForm do
   end
 
   defp apply_action(socket, :deposit) do
-    socket
-    |> assign(:save, "Make Deposit")
-    |> assign(:title, "Deposit")
+    assign(socket, :save, "Make Deposit")
   end
 
   defp apply_action(socket, :edit_transaction) do
-    socket
-    |> assign(:save, "Save Transaction")
-    |> assign(:title, "Edit Transaction")
+    assign(socket, :save, "Save Transaction")
   end
 
   defp apply_action(socket, :regular_withdrawal) do
-    socket
-    |> assign(:save, "Make Withdrawal")
-    |> assign(:title, "Regular Withdrawal")
+    assign(socket, :save, "Make Withdrawal")
   end
 
   defp apply_action(socket, :withdrawal) do
-    socket
-    |> assign(:save, "Make Withdrawal")
-    |> assign(:title, "Withdraw")
+    assign(socket, :save, "Make Withdrawal")
   end
 
   @impl LiveComponent
@@ -108,7 +101,7 @@ defmodule FreedomAccountWeb.FundTransactionForm do
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
-        title={@title}
+        title={@page_title}
       >
         <.input field={@form[:date]} label="Date" phx-debounce="blur" type="date" />
         <.input field={@form[:memo]} label="Memo" phx-debounce="blur" type="text" />

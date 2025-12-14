@@ -17,6 +17,7 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
   attr :account, Account, required: true
   attr :action, :atom, required: true
   attr :loan, Loan, required: true
+  attr :page_title, :string, required: true
   attr :return_path, :string, required: true
   attr :transaction, LoanTransaction, default: nil
 
@@ -51,21 +52,15 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
   end
 
   defp apply_action(socket, :edit_transaction) do
-    socket
-    |> assign(:save, "Save Transaction")
-    |> assign(:title, "Edit Loan Transaction")
+    assign(socket, :save, "Save Transaction")
   end
 
   defp apply_action(socket, :lend) do
-    socket
-    |> assign(:save, "Lend Money")
-    |> assign(:title, "Lend")
+    assign(socket, :save, "Lend Money")
   end
 
   defp apply_action(socket, :payment) do
-    socket
-    |> assign(:save, "Receive Payment")
-    |> assign(:title, "Payment")
+    assign(socket, :save, "Receive Payment")
   end
 
   @impl LiveComponent
@@ -79,7 +74,7 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
-        title={@title}
+        title={@page_title}
       >
         <:subtitle>
           <span data-role="loan">{@loan}</span>

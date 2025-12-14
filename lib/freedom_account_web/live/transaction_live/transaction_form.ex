@@ -61,6 +61,7 @@ defmodule FreedomAccountWeb.TransactionLive.TransactionForm do
       account={@account}
       action={:edit_transaction}
       all_funds={@funds}
+      page_title={@page_title}
       return_path={~p"/transactions"}
       transaction={@transaction}
     />
@@ -69,6 +70,7 @@ defmodule FreedomAccountWeb.TransactionLive.TransactionForm do
       account={@account}
       action={:edit_transaction}
       loan={@loan}
+      page_title={@page_title}
       return_path={~p"/transactions"}
       transaction={@transaction}
     />
