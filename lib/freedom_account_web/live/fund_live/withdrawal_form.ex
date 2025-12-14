@@ -23,7 +23,7 @@ defmodule FreedomAccountWeb.FundLive.WithdrawalForm do
     ~H"""
     <Layouts.app flash={@flash}>
       <div class="flex">
-        <aside class="hidden md:flex flex-col w-56 bg-slate-100">
+        <aside class="hidden md:flex flex-col w-56">
           <.sidebar
             funds={@funds}
             funds_balance={@funds_balance}

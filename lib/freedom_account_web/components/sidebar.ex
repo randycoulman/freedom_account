@@ -17,8 +17,10 @@ defmodule FreedomAccountWeb.Sidebar do
 
   def sidebar(assigns) do
     ~H"""
-    <.fund_list balance={@funds_balance} funds={@funds} />
-    <.loan_list balance={@loans_balance} loans={@loans} />
+    <div class="bg-base-300 text-base-content">
+      <.fund_list balance={@funds_balance} funds={@funds} />
+      <.loan_list balance={@loans_balance} loans={@loans} />
+    </div>
     """
   end
 

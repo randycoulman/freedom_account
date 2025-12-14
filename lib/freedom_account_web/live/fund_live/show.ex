@@ -30,7 +30,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
     <Layouts.app flash={@flash}>
       <.account account={@account} balance={@account_balance} />
       <div class="flex h-screen">
-        <aside class="hidden md:flex flex-col w-56 bg-slate-100">
+        <aside class="hidden md:flex flex-col w-56">
           <.sidebar
             funds={@funds}
             funds_balance={@funds_balance}
