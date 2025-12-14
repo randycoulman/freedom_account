@@ -19,25 +19,27 @@ defmodule FreedomAccountWeb.FundLive.Form do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <.standard_form
-      class="max-w-sm"
-      for={@form}
-      id="fund-form"
-      phx-change="validate"
-      phx-submit="save"
-      title={@page_title}
-    >
-      <.input field={@form[:icon]} label="Icon" phx-debounce="blur" type="text" />
-      <.input field={@form[:name]} label="Name" phx-debounce="blur" type="text" />
-      <.input field={@form[:budget]} label="Budget" phx-debounce="blur" type="text" />
-      <.input field={@form[:times_per_year]} label="Times/Year" phx-debounce="blur" type="text" />
-      <:actions>
-        <.button phx-disable-with="Saving..." type="submit" variant="primary">
-          <.icon name="hero-check-circle-mini" /> Save Fund
-        </.button>
-        <.button navigate={return_path(@return_to, @fund)}>Cancel</.button>
-      </:actions>
-    </.standard_form>
+    <Layouts.app flash={@flash}>
+      <.standard_form
+        class="max-w-sm"
+        for={@form}
+        id="fund-form"
+        phx-change="validate"
+        phx-submit="save"
+        title={@page_title}
+      >
+        <.input field={@form[:icon]} label="Icon" phx-debounce="blur" type="text" />
+        <.input field={@form[:name]} label="Name" phx-debounce="blur" type="text" />
+        <.input field={@form[:budget]} label="Budget" phx-debounce="blur" type="text" />
+        <.input field={@form[:times_per_year]} label="Times/Year" phx-debounce="blur" type="text" />
+        <:actions>
+          <.button phx-disable-with="Saving..." type="submit" variant="primary">
+            <.icon name="hero-check-circle-mini" /> Save Fund
+          </.button>
+          <.button navigate={return_path(@return_to, @fund)}>Cancel</.button>
+        </:actions>
+      </.standard_form>
+    </Layouts.app>
     """
   end
 

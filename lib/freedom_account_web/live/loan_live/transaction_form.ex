@@ -35,14 +35,16 @@ defmodule FreedomAccountWeb.LoanLive.TransactionForm do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <.loan_transaction_form
-      account={@account}
-      action={:edit_transaction}
-      loan={@loan}
-      page_title={@page_title}
-      return_path={~p"/loans/#{@loan}"}
-      transaction={@transaction}
-    />
+    <Layouts.app flash={@flash}>
+      <.loan_transaction_form
+        account={@account}
+        action={:edit_transaction}
+        loan={@loan}
+        page_title={@page_title}
+        return_path={~p"/loans/#{@loan}"}
+        transaction={@transaction}
+      />
+    </Layouts.app>
     """
   end
 end

@@ -56,24 +56,26 @@ defmodule FreedomAccountWeb.TransactionLive.TransactionForm do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <.fund_transaction_form
-      :if={is_struct(@transaction, Transaction)}
-      account={@account}
-      action={:edit_transaction}
-      all_funds={@funds}
-      page_title={@page_title}
-      return_path={~p"/transactions"}
-      transaction={@transaction}
-    />
-    <.loan_transaction_form
-      :if={is_struct(@transaction, LoanTransaction)}
-      account={@account}
-      action={:edit_transaction}
-      loan={@loan}
-      page_title={@page_title}
-      return_path={~p"/transactions"}
-      transaction={@transaction}
-    />
+    <Layouts.app flash={@flash}>
+      <.fund_transaction_form
+        :if={is_struct(@transaction, Transaction)}
+        account={@account}
+        action={:edit_transaction}
+        all_funds={@funds}
+        page_title={@page_title}
+        return_path={~p"/transactions"}
+        transaction={@transaction}
+      />
+      <.loan_transaction_form
+        :if={is_struct(@transaction, LoanTransaction)}
+        account={@account}
+        action={:edit_transaction}
+        loan={@loan}
+        page_title={@page_title}
+        return_path={~p"/transactions"}
+        transaction={@transaction}
+      />
+    </Layouts.app>
     """
   end
 

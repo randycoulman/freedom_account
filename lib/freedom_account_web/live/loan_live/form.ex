@@ -19,7 +19,7 @@ defmodule FreedomAccountWeb.LoanLive.Form do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <div>
+    <Layouts.app flash={@flash}>
       <.standard_form
         class="max-w-sm"
         for={@form}
@@ -37,7 +37,7 @@ defmodule FreedomAccountWeb.LoanLive.Form do
           <.button navigate={return_path(@return_to, @loan)}>Cancel</.button>
         </:actions>
       </.standard_form>
-    </div>
+    </Layouts.app>
     """
   end
 

@@ -20,14 +20,16 @@ defmodule FreedomAccountWeb.FundLive.DepositForm do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <.fund_transaction_form
-      account={@account}
-      action={:deposit}
-      all_funds={@funds}
-      fund={@fund}
-      page_title={@page_title}
-      return_path={~p"/funds/#{@fund}"}
-    />
+    <Layouts.app flash={@flash}>
+      <.fund_transaction_form
+        account={@account}
+        action={:deposit}
+        all_funds={@funds}
+        fund={@fund}
+        page_title={@page_title}
+        return_path={~p"/funds/#{@fund}"}
+      />
+    </Layouts.app>
     """
   end
 end

@@ -20,27 +20,28 @@ defmodule FreedomAccountWeb.LoanLive.ActivationForm do
   def render(assigns) do
     ~H"""
     <div>
-      <.header>Activate/Deactivate Loans</.header>
-      <.standard_form
-        class="max-w-lg"
-        for={@form}
-        id="activation-form"
-        phx-change="validate"
-        phx-submit="save"
-        title={@page_title}
-      >
-        <div class="grid justify-center">
-          <.inputs_for :let={loan} field={@form[:loans]}>
-            <.input field={loan[:active]} label={loan.data} type="checkbox" />
-          </.inputs_for>
-        </div>
-        <:actions>
-          <.button phx-disable-with="Updating..." type="submit" variant="primary">
-            <.icon name="hero-check-circle-mini" /> Update Loans
-          </.button>
-          <.button navigate={~p"/loans"}>Cancel</.button>
-        </:actions>
-      </.standard_form>
+      <Layouts.app flash={@flash}>
+        <.standard_form
+          class="max-w-lg"
+          for={@form}
+          id="activation-form"
+          phx-change="validate"
+          phx-submit="save"
+          title={@page_title}
+        >
+          <div class="grid justify-center">
+            <.inputs_for :let={loan} field={@form[:loans]}>
+              <.input field={loan[:active]} label={loan.data} type="checkbox" />
+            </.inputs_for>
+          </div>
+          <:actions>
+            <.button phx-disable-with="Updating..." type="submit" variant="primary">
+              <.icon name="hero-check-circle-mini" /> Update Loans
+            </.button>
+            <.button navigate={~p"/loans"}>Cancel</.button>
+          </:actions>
+        </.standard_form>
+      </Layouts.app>
     </div>
     """
   end

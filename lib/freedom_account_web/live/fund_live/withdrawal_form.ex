@@ -20,14 +20,16 @@ defmodule FreedomAccountWeb.FundLive.WithdrawalForm do
   @impl LiveView
   def render(assigns) do
     ~H"""
-    <.fund_transaction_form
-      account={@account}
-      action={:withdrawal}
-      all_funds={@funds}
-      fund={@fund}
-      page_title={@page_title}
-      return_path={~p"/funds/#{@fund}"}
-    />
+    <Layouts.app flash={@flash}>
+      <.fund_transaction_form
+        account={@account}
+        action={:withdrawal}
+        all_funds={@funds}
+        fund={@fund}
+        page_title={@page_title}
+        return_path={~p"/funds/#{@fund}"}
+      />
+    </Layouts.app>
     """
   end
 end
