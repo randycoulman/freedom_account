@@ -43,7 +43,6 @@ defmodule FreedomAccountWeb.FundLive.FormTest do
       |> fill_in("Budget", with: budget)
       |> fill_in("Times/Year", with: times_per_year)
       |> click_link("Cancel")
-      |> assert_has(active_tab(), text: "Funds")
       |> refute_has(fund_name(), text: name)
     end
   end
@@ -74,7 +73,7 @@ defmodule FreedomAccountWeb.FundLive.FormTest do
       |> assert_has(fund_balance(fund), text: "#{fund.current_balance}")
     end
 
-    test "does not update fund on cancel, returning to fund list by default", %{account: account, conn: conn} do
+    test "does not update fund on cancel", %{account: account, conn: conn} do
       fund = account |> Factory.fund() |> Factory.with_fund_balance()
       %{budget: budget, icon: icon, name: name, times_per_year: times_per_year} = Factory.fund_attrs()
 

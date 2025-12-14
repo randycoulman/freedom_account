@@ -5,49 +5,18 @@ defmodule FreedomAccountWeb.LoanLive.Index do
   import FreedomAccountWeb.AccountBar, only: [account_bar: 1]
   import FreedomAccountWeb.AccountTabs, only: [account_tabs: 1]
   import FreedomAccountWeb.LoanCard, only: [loan_card: 1]
-  import FreedomAccountWeb.LoanLive.Form, only: [settings_form: 1]
 
   alias FreedomAccount.Error
-  alias FreedomAccount.Error.NotFoundError
   alias FreedomAccount.Loans
   alias FreedomAccount.Loans.Loan
   alias FreedomAccountWeb.Layouts
   alias Phoenix.LiveView
 
   @impl LiveView
-  def handle_params(params, _url, socket) do
-    %{live_action: action} = socket.assigns
-
-    socket
-    |> assign(:loan, nil)
-    |> apply_action(action, params)
-    |> noreply()
-  end
-
-  defp apply_action(socket, :edit, params) do
-    id = String.to_integer(params["id"])
-
-    case fetch_loan(socket, id) do
-      {:ok, %Loan{} = loan} ->
-        socket
-        |> assign(:page_title, "Edit Loan")
-        |> assign(:loan, loan)
-
-      {:error, %NotFoundError{}} ->
-        put_flash(socket, :error, "Loan is no longer present")
-    end
-  end
-
-  defp apply_action(socket, :new, _params) do
-    socket
-    |> assign(:page_title, "Add Loan")
-    |> assign(:loan, %Loan{})
-  end
-
-  defp apply_action(socket, _action, _params) do
+  def handle_params(_params, _url, socket) do
     socket
     |> assign(:page_title, "Loans")
-    |> assign(:loan, nil)
+    |> noreply()
   end
 
   @impl LiveView
@@ -60,11 +29,9 @@ defmodule FreedomAccountWeb.LoanLive.Index do
         <.button navigate={~p"/loans/activate"}>
           <.icon name="hero-archive-box-mini" /> Activate/Deactivate
         </.button>
-        <.link patch={~p"/loans/new"}>
-          <.button>
-            <.icon name="hero-plus-circle-mini" /> Add Loan
-          </.button>
-        </.link>
+        <.button navigate={~p"/loans/new"}>
+          <.icon name="hero-plus-circle-mini" /> Add Loan
+        </.button>
       </div>
 
       <div class="flex flex-col">
@@ -79,21 +46,6 @@ defmodule FreedomAccountWeb.LoanLive.Index do
           phx-click={JS.navigate(~p"/loans/#{loan}")}
         />
       </div>
-
-      <.modal
-        :if={@live_action in [:edit, :new]}
-        id="loan-modal"
-        show
-        on_cancel={JS.patch(~p"/loans")}
-      >
-        <.settings_form
-          account={@account}
-          action={@live_action}
-          loan={@loan}
-          return_path={~p"/loans"}
-          title={@page_title}
-        />
-      </.modal>
     </Layouts.app>
     """
   end

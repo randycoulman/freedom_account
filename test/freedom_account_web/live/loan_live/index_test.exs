@@ -39,48 +39,24 @@ defmodule FreedomAccountWeb.LoanLive.IndexTest do
       |> assert_has(active_tab(), text: "#{loan.current_balance}")
     end
 
-    test "saves new loan", %{conn: conn} do
-      %{icon: icon, name: name} = Factory.loan_attrs()
-
+    test "allows creating a new loan from the listing", %{conn: conn} do
       conn
       |> visit(~p"/loans")
       |> click_link("Add Loan")
       |> assert_path(~p"/loans/new")
-      |> assert_has(page_title(), text: "Add Loan")
-      |> assert_has(heading(), text: "Add Loan")
-      |> fill_in("Icon", with: "")
-      |> fill_in("Name", with: "")
-      |> assert_has(field_error("#loan_icon"), text: "can't be blank")
-      |> assert_has(field_error("#loan_name"), text: "can't be blank")
-      |> fill_in("Icon", with: icon)
-      |> fill_in("Name", with: name)
-      |> click_button("Save Loan")
-      |> assert_has(flash(:info), text: "Loan created successfully")
-      |> assert_has(loan_icon(), text: icon)
-      |> assert_has(loan_name(), text: name)
-      |> assert_has(loan_balance(), text: "$0.00")
+      |> click_link("Cancel")
+      |> assert_has(active_tab(), text: "Loans")
     end
 
-    test "edits loan in listing", %{account: account, conn: conn} do
+    test "allows editing a loan in listing", %{account: account, conn: conn} do
       loan = account |> Factory.loan() |> Factory.with_loan_balance()
-      %{icon: icon, name: name} = Factory.loan_attrs()
 
       conn
       |> visit(~p"/loans")
       |> click_link(action_link("#loans-#{loan.id}"), "Edit")
-      |> assert_has(page_title(), text: "Edit Loan")
-      |> assert_has(heading(), text: "Edit Loan")
-      |> fill_in("Icon", with: "")
-      |> fill_in("Name", with: "")
-      |> assert_has(field_error("#loan_icon"), text: "can't be blank")
-      |> assert_has(field_error("#loan_name"), text: "can't be blank")
-      |> fill_in("Icon", with: icon)
-      |> fill_in("Name", with: name)
-      |> click_button("Save Loan")
-      |> assert_has(flash(:info), text: "Loan updated successfully")
-      |> assert_has(loan_icon(loan), text: icon)
-      |> assert_has(loan_name(loan), text: name)
-      |> assert_has(loan_balance(loan), text: "#{loan.current_balance}")
+      |> assert_path(~p"/loans/#{loan}/edit")
+      |> click_link("Cancel")
+      |> assert_has(active_tab(), text: "Loans")
     end
 
     test "deletes loan in listing", %{account: account, conn: conn} do

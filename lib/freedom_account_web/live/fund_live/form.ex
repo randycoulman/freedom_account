@@ -55,7 +55,6 @@ defmodule FreedomAccountWeb.FundLive.Form do
 
   def handle_event("save", params, socket) do
     %{"fund" => fund_params} = params
-
     save_fund(socket, socket.assigns.live_action, Params.atomize_keys(fund_params))
   end
 

@@ -40,13 +40,12 @@ defmodule FreedomAccountWeb.Router do
       live "/funds/:id/withdrawals/new", FundLive.WithdrawalForm, :new
 
       live "/loans", LoanLive.Index, :index
-      live "/loans/new", LoanLive.Index, :new
-      live "/loans/:id/edit", LoanLive.Index, :edit
+      live "/loans/new", LoanLive.Form, :new
 
       live "/loans/activate", LoanLive.ActivationForm, :activate
 
       live "/loans/:id", LoanLive.Show, :show
-      live "/loans/:id/show/edit", LoanLive.Show, :edit
+      live "/loans/:id/edit", LoanLive.Form, :edit
 
       live "/loans/:id/loans/new", LoanLive.LoanForm, :new
       live "/loans/:id/payments/new", LoanLive.PaymentForm, :new

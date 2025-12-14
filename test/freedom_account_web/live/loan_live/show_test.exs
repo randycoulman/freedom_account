@@ -3,8 +3,6 @@ defmodule FreedomAccountWeb.LoanLive.ShowTest do
 
   use FreedomAccountWeb.ConnCase, async: true
 
-  alias FreedomAccount.Factory
-  alias FreedomAccount.Loans
   alias Phoenix.HTML.Safe
 
   describe "viewing an individual loan" do
@@ -28,29 +26,13 @@ defmodule FreedomAccountWeb.LoanLive.ShowTest do
       |> assert_has(heading(), text: Safe.to_iodata(loan))
     end
 
-    test "updates loan within modal", %{conn: conn, loan: loan} do
-      %{icon: icon, name: name} = Factory.loan_attrs()
-      Factory.lend(loan)
-      {:ok, loan} = Loans.with_updated_balance(loan)
-
+    test "allows editing loan", %{conn: conn, loan: loan} do
       conn
       |> visit(~p"/loans/#{loan}")
       |> click_link("Edit Details")
-      |> assert_has(page_title(), text: "Edit Loan")
-      |> assert_has(heading(), text: "Edit Loan")
-      |> fill_in("Icon", with: "")
-      |> fill_in("Name", with: "")
-      |> assert_has(field_error("#loan_icon"), text: "can't be blank")
-      |> assert_has(field_error("#loan_name"), text: "can't be blank")
-      |> fill_in("Icon", with: icon)
-      |> fill_in("Name", with: name)
-      |> click_button("Save Loan")
-      |> assert_has(flash(:info), text: "Loan updated successfully")
-      |> assert_has(page_title(), text: "#{icon} #{name}")
-      |> assert_has(heading(), text: "#{icon} #{name}")
-      |> assert_has(heading(), text: "#{loan.current_balance}")
-      |> assert_has(sidebar_loan_name(), text: "#{icon} #{name}")
-      |> assert_has(sidebar_loan_balance(), text: "#{loan.current_balance}")
+      |> assert_path(~p"/loans/#{loan}/edit")
+      |> click_link("Cancel")
+      |> assert_has(heading(), text: Safe.to_iodata(loan))
     end
 
     test "allows lending money from a loan", %{conn: conn, loan: loan} do

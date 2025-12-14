@@ -3,7 +3,6 @@ defmodule FreedomAccountWeb.LoanLive.Show do
   use FreedomAccountWeb, :live_view
 
   import FreedomAccountWeb.Account, only: [account: 1]
-  import FreedomAccountWeb.LoanLive.Form, only: [settings_form: 1]
   import FreedomAccountWeb.LoanTransactionList, only: [loan_transaction_list: 1]
   import FreedomAccountWeb.Sidebar, only: [sidebar: 1]
 
@@ -15,35 +14,13 @@ defmodule FreedomAccountWeb.LoanLive.Show do
   alias Phoenix.HTML.Safe
   alias Phoenix.LiveView
 
+  on_mount FreedomAccountWeb.LoanLive.FetchLoan
+
   @impl LiveView
-  def handle_params(params, _url, socket) do
-    id = String.to_integer(params["id"])
-    %{loans: loans, live_action: action} = socket.assigns
-
-    case fetch_loan(loans, id) do
-      {:ok, %Loan{} = loan} ->
-        socket
-        |> assign(:loan, loan)
-        |> assign(:transaction, nil)
-        |> apply_action(action, params)
-        |> noreply()
-
-      {:error, %NotFoundError{}} ->
-        socket
-        |> put_flash(:error, "Loan not found")
-        |> push_navigate(to: ~p"/loans")
-        |> noreply()
-    end
-  end
-
-  defp apply_action(socket, :edit, _params) do
-    assign(socket, :page_title, "Edit Loan")
-  end
-
-  defp apply_action(socket, _action, _params) do
-    %{loan: loan} = socket.assigns
-
-    assign(socket, :page_title, Safe.to_iodata(loan))
+  def handle_params(_params, _url, socket) do
+    socket
+    |> assign_page_title()
+    |> noreply()
   end
 
   @impl LiveView
@@ -73,11 +50,9 @@ defmodule FreedomAccountWeb.LoanLive.Show do
               <.button navigate={~p"/loans/#{@loan}/payments/new"}>
                 <.icon name="hero-banknotes-mini" /> Payment
               </.button>
-              <.link patch={~p"/loans/#{@loan}/show/edit"} phx-click={JS.push_focus()}>
-                <.button>
-                  <.icon name="hero-pencil-square-mini" /> Edit Details
-                </.button>
-              </.link>
+              <.button navigate={~p"/loans/#{@loan}/edit?return_to=show"}>
+                <.icon name="hero-pencil-square-mini" /> Edit Details
+              </.button>
             </:actions>
           </.header>
           <.loan_transaction_list id={@loan.id} loan={@loan} />
@@ -85,34 +60,19 @@ defmodule FreedomAccountWeb.LoanLive.Show do
           <.back navigate={~p"/loans"}>Back to Loans</.back>
         </main>
       </div>
-
-      <.modal
-        :if={@live_action == :edit}
-        id="loan-modal"
-        show
-        on_cancel={JS.patch(~p"/loans/#{@loan}")}
-      >
-        <.settings_form
-          account={@account}
-          action={@live_action}
-          loan={@loan}
-          return_path={~p"/loans/#{@loan}"}
-          title={@page_title}
-        />
-      </.modal>
     </Layouts.app>
     """
   end
 
   @impl LiveView
   def handle_info({:loans_updated, loans}, socket) do
-    %{loan: loan, live_action: action} = socket.assigns
+    %{loan: loan} = socket.assigns
 
     case fetch_loan(loans, loan.id) do
       {:ok, %Loan{} = loan} ->
         socket
         |> assign(:loan, loan)
-        |> apply_action(action, %{})
+        |> assign_page_title()
         |> noreply()
 
       {:error, %NotFoundError{}} ->
@@ -131,6 +91,10 @@ defmodule FreedomAccountWeb.LoanLive.Show do
   end
 
   def handle_info(_message, socket), do: noreply(socket)
+
+  defp assign_page_title(socket) do
+    assign(socket, :page_title, Safe.to_iodata(socket.assigns.loan))
+  end
 
   defp fetch_loan(loans, id) do
     with %Loan{} = loan <- Enum.find(loans, {:error, Error.not_found(details: %{id: id}, entity: Loan)}, &(&1.id == id)) do

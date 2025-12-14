@@ -29,9 +29,9 @@ defmodule FreedomAccount.Loans.Loan do
   typed_schema "loans" do
     belongs_to :account, Account
 
-    field :active, :boolean, null: false, read_after_writes: true
-    field :icon, :string, null: false
-    field :name, :string, null: false
+    field :active, :boolean, read_after_writes: true
+    field :icon, :string
+    field :name, :string
 
     has_many :transactions, LoanTransaction
 

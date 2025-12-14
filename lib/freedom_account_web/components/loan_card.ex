@@ -32,7 +32,7 @@ defmodule FreedomAccountWeb.LoanCard do
         <.link class="sr-only" navigate={~p"/loans/#{@loan}"}>Show</.link>
       </:action>
       <:action>
-        <.link patch={~p"/loans/#{@loan}/edit"} title="Edit">
+        <.link navigate={~p"/loans/#{@loan}/edit"} title="Edit">
           <.icon name="hero-pencil-square-micro" /> Edit
         </.link>
       </:action>
