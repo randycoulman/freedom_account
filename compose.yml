@@ -1,13 +1,17 @@
+x-app-env-files: &app_env_files
+  - ./config/db_secret.env
+  - ./config/docker_prod.env
+  - ./config/docker_prod_secret.env
+
+x-app-image: &app_image freedom_account:1.11.0
+
 services:
   app:
     depends_on:
       - db
       - db_setup
-    env_file:
-      - ./config/db_secret.env
-      - ./config/docker_prod.env
-      - ./config/docker_prod_secret.env
-    image: freedom_account:1.10.0
+    env_file: *app_env_files
+    image: *app_image
     ports:
       - "8080:4000"
     profiles:
@@ -28,11 +32,8 @@ services:
     command: "/app/bin/migrate"
     depends_on:
       - db
-    env_file:
-      - ./config/db_secret.env
-      - ./config/docker_prod.env
-      - ./config/docker_prod_secret.env
-    image: freedom_account:1.10.0
+    env_file: *app_env_files
+    image: *app_image
     profiles:
       - prod
 
