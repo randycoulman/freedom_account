@@ -65,8 +65,6 @@ defmodule FreedomAccountWeb.FundLive.BudgetForm do
           <.button phx-disable-with="Updating..." type="submit" variant="primary">
             <.icon name="hero-check-circle-mini" /> Update Budget
           </.button>
-        </:actions>
-        <:actions>
           <.button navigate={~p"/funds"}>Cancel</.button>
         </:actions>
       </.standard_form>

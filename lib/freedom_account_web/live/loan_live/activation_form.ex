@@ -38,8 +38,6 @@ defmodule FreedomAccountWeb.LoanLive.ActivationForm do
           <.button phx-disable-with="Updating..." type="submit" variant="primary">
             <.icon name="hero-check-circle-mini" /> Update Loans
           </.button>
-        </:actions>
-        <:actions>
           <.button navigate={~p"/loans"}>Cancel</.button>
         </:actions>
       </.standard_form>

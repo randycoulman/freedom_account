@@ -446,10 +446,8 @@ defmodule FreedomAccountWeb.CoreComponents do
       </.header>
       <.form :let={f} class="w-full" for={@for} as={@as} phx-mounted={JS.focus_first()} {@rest}>
         {render_slot(@inner_block, f)}
-        <footer class="flex gap-4 justify-center mt-6">
-          <div :for={action <- @actions}>
-            {render_slot(action, f)}
-          </div>
+        <footer class="flex flex-row gap-2 justify-center mt-6">
+          {render_slot(@actions)}
         </footer>
       </.form>
     </div>

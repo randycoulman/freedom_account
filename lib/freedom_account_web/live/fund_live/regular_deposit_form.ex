@@ -61,8 +61,6 @@ defmodule FreedomAccountWeb.FundLive.RegularDepositForm do
           <.button phx-disable-with="Saving..." type="submit" variant="primary">
             <.icon name="hero-check-circle-mini" /> Make Deposit
           </.button>
-        </:actions>
-        <:actions>
           <.button navigate={~p"/funds"}>Cancel</.button>
         </:actions>
       </.standard_form>

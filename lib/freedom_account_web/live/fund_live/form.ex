@@ -35,8 +35,6 @@ defmodule FreedomAccountWeb.FundLive.Form do
         <.button phx-disable-with="Saving..." type="submit" variant="primary">
           <.icon name="hero-check-circle-mini" /> Save Fund
         </.button>
-      </:actions>
-      <:actions>
         <.button navigate={return_path(@return_to, @fund)}>Cancel</.button>
       </:actions>
     </.standard_form>

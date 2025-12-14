@@ -34,8 +34,6 @@ defmodule FreedomAccountWeb.LoanLive.Form do
           <.button phx-disable-with="Saving..." type="submit" variant="primary">
             <.icon name="hero-check-circle-mini" /> Save Loan
           </.button>
-        </:actions>
-        <:actions>
           <.button navigate={return_path(@return_to, @loan)}>Cancel</.button>
         </:actions>
       </.standard_form>

@@ -87,8 +87,6 @@ defmodule FreedomAccountWeb.LoanTransactionForm do
           <.button phx-disable-with="Saving..." type="submit" variant="primary">
             <.icon name="hero-check-circle-mini" /> {@save}
           </.button>
-        </:actions>
-        <:actions>
           <.button navigate={@return_path}>Cancel</.button>
         </:actions>
       </.standard_form>
