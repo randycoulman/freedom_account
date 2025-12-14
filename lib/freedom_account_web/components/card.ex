@@ -34,7 +34,7 @@ defmodule FreedomAccountWeb.Card do
             <div class="text-lg font-semibold" data-testid="name">
               {@name}
             </div>
-            <div class="hidden group-hover:flex gap-1 text-md">
+            <div class="hidden group-hover:flex gap-1 items-center text-md">
               <span :for={action <- @action} class="">
                 {render_slot(action)}
               </span>
