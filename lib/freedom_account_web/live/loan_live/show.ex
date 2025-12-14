@@ -44,6 +44,10 @@ defmodule FreedomAccountWeb.LoanLive.Show do
               <span>{@loan.current_balance}</span>
             </div>
             <:actions>
+              <.button navigate={~p"/loans"}>
+                <.icon name="hero-arrow-left" />
+                <span class="sr-only">Back to Loans</span>
+              </.button>
               <.button navigate={~p"/loans/#{@loan}/loans/new"}>
                 <.icon name="hero-credit-card-mini" /> Lend
               </.button>
@@ -56,8 +60,6 @@ defmodule FreedomAccountWeb.LoanLive.Show do
             </:actions>
           </.header>
           <.loan_transaction_list id={@loan.id} loan={@loan} />
-
-          <.back navigate={~p"/loans"}>Back to Loans</.back>
         </main>
       </div>
     </Layouts.app>

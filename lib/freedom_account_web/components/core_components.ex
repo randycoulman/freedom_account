@@ -39,27 +39,6 @@ defmodule FreedomAccountWeb.CoreComponents do
   # return a HEEx template, so no spec is necessary here.
 
   @doc """
-  Renders a back navigation link.
-
-  ## Examples
-
-      <.back navigate={~p"/posts"}>Back to posts</.back>
-  """
-  attr :navigate, :any, required: true
-  slot :inner_block, required: true
-
-  def back(assigns) do
-    ~H"""
-    <div class="mt-16">
-      <.link navigate={@navigate} class="mt-16">
-        <.icon name="hero-arrow-left-solid" class="size-3" />
-        {render_slot(@inner_block)}
-      </.link>
-    </div>
-    """
-  end
-
-  @doc """
   Renders a button with navigation support.
 
   ## Examples

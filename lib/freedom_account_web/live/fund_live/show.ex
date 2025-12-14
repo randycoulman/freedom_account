@@ -52,6 +52,10 @@ defmodule FreedomAccountWeb.FundLive.Show do
               </div>
             </:subtitle>
             <:actions>
+              <.button navigate={~p"/funds"}>
+                <.icon name="hero-arrow-left" />
+                <span class="sr-only">Back to Funds</span>
+              </.button>
               <.button navigate={~p"/funds/#{@fund}/deposits/new"}>
                 <.icon name="hero-plus-circle-mini" /> Deposit
               </.button>
@@ -64,8 +68,6 @@ defmodule FreedomAccountWeb.FundLive.Show do
             </:actions>
           </.header>
           <.fund_transaction_list fund={@fund} id={@fund.id} />
-
-          <.back navigate={~p"/funds"}>Back to Funds</.back>
         </main>
       </div>
     </Layouts.app>
