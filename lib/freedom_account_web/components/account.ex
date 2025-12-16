@@ -3,8 +3,6 @@ defmodule FreedomAccountWeb.Account do
   use FreedomAccountWeb, :verified_routes
   use Phoenix.Component
 
-  import FreedomAccountWeb.CoreComponents
-
   # credo:disable-for-this-file Credo.Check.Readability.Specs
   # Reason: All component functions take a map of assigns that is fully
   # specified and checked at compile time by `attr` and `slot`, and they all
@@ -15,10 +13,12 @@ defmodule FreedomAccountWeb.Account do
 
   def account(assigns) do
     ~H"""
-    <.header>
-      <.link navigate={~p"/funds"}>{@account.name}</.link>
-      <span>{@balance}</span>
-    </.header>
+    <header class="flex items-center justify-between gap-6 py-4">
+      <div class="flex-1 flex flex-col items-center">
+        <h2 class="text-lg font-medium"><.link navigate={~p"/funds"}>{@account.name}</.link></h2>
+        <div class="text-2xl font-semibold" data-testid="account-balance">{@balance}</div>
+      </div>
+    </header>
     """
   end
 end

@@ -33,7 +33,7 @@ defmodule FreedomAccountWeb.LoanLive.PaymentFormTest do
       |> assert_has(flash(:info), text: "Payment successful")
       |> assert_has(heading(), text: Safe.to_iodata(loan))
       |> assert_has(heading(), text: "#{balance}")
-      |> assert_has(heading(), text: "#{account_balance}")
+      |> assert_has(account_balance(), text: "#{account_balance}")
       |> assert_has(sidebar_loan_balance(), text: "#{balance}")
       |> assert_has(table_cell(), text: "#{date}")
       |> assert_has(table_cell(), text: memo)
@@ -59,7 +59,7 @@ defmodule FreedomAccountWeb.LoanLive.PaymentFormTest do
       |> click_link("Cancel")
       |> assert_has(heading(), text: Safe.to_iodata(loan))
       |> assert_has(heading(), text: "#{balance}")
-      |> assert_has(heading(), text: "#{account_balance}")
+      |> assert_has(account_balance(), text: "#{account_balance}")
       |> assert_has(sidebar_loan_balance(), text: "#{balance}")
     end
   end
