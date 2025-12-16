@@ -42,10 +42,13 @@ defmodule FreedomAccountWeb.Layouts do
   def app(assigns) do
     ~H"""
     <div class="max-w-full lg:max-w-7xl mx-auto px-4">
-      <header class="py-4">
+      <header class="flex gap-6 items-center justify-between py-4">
         <h1 class="text-4xl font-semibold">
           <.link href={~p"/"}>Freedom Account</.link>
         </h1>
+        <div>
+          <.theme_toggle />
+        </div>
       </header>
       <main>
         <div>

@@ -14,7 +14,7 @@
    curl -sLO https://github.com/saadeghi/daisyui/releases/latest/download/daisyui.js
    Make sure to look at the daisyUI changelog: https://daisyui.com/docs/changelog/ */
 @plugin "../vendor/daisyui" {
-  themes: light --default;
+  themes: light --default, dark --prefersdark;
 }
 
 /* Add variants based on LiveView classes */
