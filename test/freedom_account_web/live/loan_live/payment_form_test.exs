@@ -34,7 +34,7 @@ defmodule FreedomAccountWeb.LoanLive.PaymentFormTest do
       |> assert_has(heading(), text: Safe.to_iodata(loan))
       |> assert_has(heading(), text: "#{balance}")
       |> assert_has(account_balance(), text: "#{account_balance}")
-      |> assert_has(sidebar_loan_balance(), text: "#{balance}")
+      |> assert_has(sidebar_loan_balance(loan), text: "#{balance}")
       |> assert_has(table_cell(), text: "#{date}")
       |> assert_has(table_cell(), text: memo)
       |> assert_has(role("payment"), text: "#{amount}")
@@ -60,7 +60,7 @@ defmodule FreedomAccountWeb.LoanLive.PaymentFormTest do
       |> assert_has(heading(), text: Safe.to_iodata(loan))
       |> assert_has(heading(), text: "#{balance}")
       |> assert_has(account_balance(), text: "#{account_balance}")
-      |> assert_has(sidebar_loan_balance(), text: "#{balance}")
+      |> assert_has(sidebar_loan_balance(loan), text: "#{balance}")
     end
   end
 end

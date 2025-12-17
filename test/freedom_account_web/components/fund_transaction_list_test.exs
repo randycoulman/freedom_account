@@ -85,7 +85,7 @@ defmodule FreedomAccountWeb.FundTransactionListTest do
       |> click_link(action_link("#txn-#{line_item.id}"), "Delete")
       |> assert_has(heading(), text: Safe.to_iodata(fund))
       |> assert_has(heading(), text: "$0.00")
-      |> assert_has(sidebar_fund_balance(), text: "$0.00")
+      |> assert_has(sidebar_fund_balance(fund), text: "$0.00")
       |> refute_has("#txn-#{line_item.id}")
     end
 

@@ -113,17 +113,11 @@ defmodule FreedomAccountWeb.ElementSelectors do
   @spec selected_option(selector()) :: selector()
   def selected_option(selector), do: "#{selector} option[selected]"
 
-  @spec sidebar_fund_balance :: selector()
-  def sidebar_fund_balance, do: "#{sidebar_fund_name()} ~ span"
+  @spec sidebar_fund_balance(Fund.t()) :: selector()
+  def sidebar_fund_balance(%Fund{} = fund), do: "aside #funds-balance-#{fund.id}"
 
-  @spec sidebar_fund_name :: selector()
-  def sidebar_fund_name, do: "aside nav a"
-
-  @spec sidebar_loan_balance :: selector()
-  def sidebar_loan_balance, do: "#{sidebar_loan_name()} ~ span"
-
-  @spec sidebar_loan_name :: selector()
-  def sidebar_loan_name, do: "aside nav a"
+  @spec sidebar_loan_balance(Loan.t()) :: selector()
+  def sidebar_loan_balance(%Loan{} = loan), do: "aside #loans-balance-#{loan.id}"
 
   @spec table_cell :: selector()
   def table_cell, do: "td"

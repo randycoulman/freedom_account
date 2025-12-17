@@ -29,7 +29,7 @@ defmodule FreedomAccountWeb.LoanLive.LoanFormTest do
       |> assert_has(heading(), text: Safe.to_iodata(loan))
       |> assert_has(heading(), text: "#{balance}")
       |> assert_has(account_balance(), text: "#{account_balance}")
-      |> assert_has(sidebar_loan_balance(), text: "#{balance}")
+      |> assert_has(sidebar_loan_balance(loan), text: "#{balance}")
       |> assert_has(table_cell(), text: "#{date}")
       |> assert_has(table_cell(), text: memo)
       |> assert_has(role("loan"), text: "#{amount}")
@@ -50,7 +50,7 @@ defmodule FreedomAccountWeb.LoanLive.LoanFormTest do
       |> assert_has(heading(), text: Safe.to_iodata(loan))
       |> assert_has(heading(), text: "#{Money.zero(:usd)}")
       |> assert_has(heading(), text: "#{fund.current_balance}")
-      |> assert_has(sidebar_loan_balance(), text: "#{Money.zero(:usd)}")
+      |> assert_has(sidebar_loan_balance(loan), text: "#{Money.zero(:usd)}")
     end
   end
 end

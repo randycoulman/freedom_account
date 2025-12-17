@@ -30,7 +30,7 @@ defmodule FreedomAccountWeb.FundLive.TransactionFormTest do
       |> assert_has(flash(:info), text: "Transaction updated successfully")
       |> assert_has(heading(), text: Safe.to_iodata(fund))
       |> assert_has(heading(), text: "#{new_amount}")
-      |> assert_has(sidebar_fund_balance(), text: "#{new_amount}")
+      |> assert_has(sidebar_fund_balance(fund), text: "#{new_amount}")
       |> assert_has(table_cell(), text: "#{new_date}")
       |> assert_has(table_cell(), text: new_memo)
       |> assert_has(role("deposit"), text: "#{new_amount}")
@@ -84,7 +84,7 @@ defmodule FreedomAccountWeb.FundLive.TransactionFormTest do
       |> click_link("Cancel")
       |> assert_has(heading(), text: Safe.to_iodata(fund))
       |> assert_has(heading(), text: "#{line_item.amount}")
-      |> assert_has(sidebar_fund_balance(), text: "#{line_item.amount}")
+      |> assert_has(sidebar_fund_balance(fund), text: "#{line_item.amount}")
     end
   end
 end

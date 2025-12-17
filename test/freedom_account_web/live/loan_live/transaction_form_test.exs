@@ -28,7 +28,7 @@ defmodule FreedomAccountWeb.LoanLive.TransactionFormTest do
       |> assert_has(flash(:info), text: "Transaction updated successfully")
       |> assert_has(heading(), text: Safe.to_iodata(loan))
       |> assert_has(heading(), text: "#{new_amount}")
-      |> assert_has(sidebar_loan_balance(), text: "#{new_amount}")
+      |> assert_has(sidebar_loan_balance(loan), text: "#{new_amount}")
       |> assert_has(table_cell(), text: "#{new_date}")
       |> assert_has(table_cell(), text: new_memo)
       |> assert_has(role("loan"), text: "#{Money.negate!(new_amount)}")
@@ -48,7 +48,7 @@ defmodule FreedomAccountWeb.LoanLive.TransactionFormTest do
       |> click_link("Cancel")
       |> assert_has(heading(), text: Safe.to_iodata(loan))
       |> assert_has(heading(), text: "#{transaction.amount}")
-      |> assert_has(sidebar_loan_balance(), text: "#{transaction.amount}")
+      |> assert_has(sidebar_loan_balance(loan), text: "#{transaction.amount}")
     end
   end
 end

@@ -27,26 +27,14 @@ defmodule FreedomAccountWeb.Sidebar do
 
   defp fund_list(assigns) do
     ~H"""
-    <div class="p-2 text-xs/5">
-      <h2 class="flex flex-row font-semibold items-center justify-between mb-2 text-sm">
-        <.link navigate={~p"/funds"}>Funds</.link>
-        <span class="tabular-nums text-right">{@balance}</span>
-      </h2>
-      <nav class="flex flex-col" id="fund-list">
-        <div
-          :for={fund <- @funds}
-          class="flex flex-row gap-2 items-center justify-between"
-          id={"fund-#{fund.id}"}
-        >
-          <.link class="truncate" navigate={~p"/funds/#{fund}"}>
-            {fund}
-          </.link>
-          <span class="tabular-nums text-right">
-            {fund.current_balance}
-          </span>
-        </div>
-      </nav>
-    </div>
+    <.sidebar_list
+      balance={@balance}
+      id="fund-list"
+      item_path_fn={&~p"/funds/#{&1}"}
+      items={@funds}
+      title="Funds"
+      title_path={~p"/funds"}
+    />
     """
   end
 
@@ -55,25 +43,43 @@ defmodule FreedomAccountWeb.Sidebar do
 
   defp loan_list(assigns) do
     ~H"""
-    <div class="p-2 text-xs/5">
-      <h2 class="flex flex-row font-semibold items-center justify-between mb-2 text-sm">
-        <.link navigate={~p"/loans"}>Loans</.link>
+    <.sidebar_list
+      balance={@balance}
+      id="loan-list"
+      item_path_fn={&~p"/loans/#{&1}"}
+      items={@loans}
+      title="Loans"
+      title_path={~p"/loans"}
+    />
+    """
+  end
+
+  defp sidebar_list(assigns) do
+    ~H"""
+    <div class="p-2">
+      <h2 class="flex flex-row font-semibold items-center justify-between text-sm">
+        <.link navigate={@title_path}>{@title}</.link>
         <span class="tabular-nums text-right">{@balance}</span>
       </h2>
-      <nav class="flex flex-col" id="loan-list">
-        <div
-          :for={loan <- @loans}
-          class="flex flex-row gap-2 items-center justify-between"
-          id={"loan-#{loan.id}"}
-        >
-          <.link class="link link-hover truncate" navigate={~p"/loans/#{loan}"}>
-            {loan}
+      <ul class="menu menu-sm px-0 w-full" id={@id}>
+        <li :for={item <- @items} class="w-full">
+          <.link
+            class="flex flex-row gap-2 items-center justify-between px-0 w-full"
+            id={"#{String.downcase(@title)}-#{item.id}"}
+            navigate={@item_path_fn.(item)}
+          >
+            <span class="flex-1 min-w-0 !overflow-hidden truncate">
+              {item}
+            </span>
+            <span
+              class="shrink-0 tabular-nums text-right"
+              id={"#{String.downcase(@title)}-balance-#{item.id}"}
+            >
+              {item.current_balance}
+            </span>
           </.link>
-          <span class="tabular-nums text-right">
-            {loan.current_balance}
-          </span>
-        </div>
-      </nav>
+        </li>
+      </ul>
     </div>
     """
   end

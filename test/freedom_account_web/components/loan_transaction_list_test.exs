@@ -81,7 +81,7 @@ defmodule FreedomAccountWeb.LoanTransactionListTest do
       |> click_link(action_link("#txn-#{transaction.id}"), "Delete")
       |> assert_has(heading(), text: Safe.to_iodata(loan))
       |> assert_has(heading(), text: "$0.00")
-      |> assert_has(sidebar_loan_balance(), text: "$0.00")
+      |> assert_has(sidebar_loan_balance(loan), text: "$0.00")
       |> refute_has("#txn-#{transaction.id}")
     end
 

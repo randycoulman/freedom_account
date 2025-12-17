@@ -38,7 +38,7 @@ defmodule FreedomAccountWeb.FundLive.WithdrawalFormTest do
       |> assert_has(heading(), text: Safe.to_iodata(fund))
       |> assert_has(heading(), text: "#{balance}")
       |> assert_has(heading(), text: "#{account_balance}")
-      |> assert_has(sidebar_fund_balance(), text: "#{balance}")
+      |> assert_has(sidebar_fund_balance(fund), text: "#{balance}")
       |> assert_has(table_cell(), text: "#{date}")
       |> assert_has(table_cell(), text: memo)
       |> assert_has(role("withdrawal"), text: "#{amount}")
@@ -63,7 +63,7 @@ defmodule FreedomAccountWeb.FundLive.WithdrawalFormTest do
       |> assert_has(heading(), text: Safe.to_iodata(fund))
       |> assert_has(heading(), text: "#{deposit_amount}")
       |> assert_has(heading(), text: "#{account_balance}")
-      |> assert_has(sidebar_fund_balance(), text: "#{deposit_amount}")
+      |> assert_has(sidebar_fund_balance(fund), text: "#{deposit_amount}")
     end
   end
 end

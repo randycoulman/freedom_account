@@ -32,7 +32,7 @@ defmodule FreedomAccountWeb.FundLive.DepositFormTest do
       |> assert_has(heading(), text: Safe.to_iodata(fund))
       |> assert_has(heading(), text: "#{amount}")
       |> assert_has(heading(), text: "#{account_balance}")
-      |> assert_has(sidebar_fund_balance(), text: "#{amount}")
+      |> assert_has(sidebar_fund_balance(fund), text: "#{amount}")
       |> assert_has(table_cell(), text: "#{date}")
       |> assert_has(table_cell(), text: memo)
       |> assert_has(role("deposit"), text: "#{amount}")
