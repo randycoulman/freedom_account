@@ -30,7 +30,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
     <Layouts.app flash={@flash}>
       <.account account={@account} balance={@account_balance} />
       <div class="flex h-screen">
-        <aside class="hidden md:flex flex-col w-56">
+        <aside class="hidden md:flex flex-col mr-2 w-56">
           <.sidebar
             funds={@funds}
             funds_balance={@funds_balance}
@@ -38,31 +38,40 @@ defmodule FreedomAccountWeb.FundLive.Show do
             loans_balance={@loans_balance}
           />
         </aside>
-        <main class="flex flex-col flex-1 overflow-y-auto pl-2">
-          <.header>
-            <div class="flex flex-row">
+        <main class="flex flex-col flex-1 overflow-y-auto">
+          <.header class="bg-primary/15 px-4 py-2">
+            <div class="flex flex-row items-center justify-between w-full">
               <span>{@fund}</span>
               <span>{@fund.current_balance}</span>
             </div>
             <:subtitle>
-              <div class="flex flex-row" id="fund-subtitle">
+              <div class="flex flex-row text-base-content/75" id="fund-subtitle">
                 <span>
                   Deposit: {Funds.regular_deposit_amount(@fund, @account)} ({@fund.budget} @ {@fund.times_per_year} times/year)
                 </span>
               </div>
             </:subtitle>
             <:actions>
-              <.button navigate={~p"/funds"}>
+              <.button class="btn btn-outline btn-primary" navigate={~p"/funds"}>
                 <.icon name="hero-arrow-left" />
                 <span class="sr-only">Back to Funds</span>
               </.button>
-              <.button navigate={~p"/funds/#{@fund}/deposits/new"}>
+              <.button
+                class="btn btn-outline btn-primary"
+                navigate={~p"/funds/#{@fund}/deposits/new"}
+              >
                 <.icon name="hero-plus-circle-mini" /> Deposit
               </.button>
-              <.button navigate={~p"/funds/#{@fund}/withdrawals/new"}>
+              <.button
+                class="btn btn-outline btn-primary"
+                navigate={~p"/funds/#{@fund}/withdrawals/new"}
+              >
                 <.icon name="hero-minus-circle-mini" /> Withdraw
               </.button>
-              <.button navigate={~p"/funds/#{@fund}/edit?return_to=show"}>
+              <.button
+                class="btn btn-outline btn-primary"
+                navigate={~p"/funds/#{@fund}/edit?return_to=show"}
+              >
                 <.icon name="hero-pencil-square-mini" /> Edit Details
               </.button>
             </:actions>

@@ -29,7 +29,7 @@ defmodule FreedomAccountWeb.LoanLive.Show do
     <Layouts.app flash={@flash}>
       <.account account={@account} balance={@account_balance} />
       <div class="flex h-screen">
-        <aside class="hidden md:flex flex-col w-56">
+        <aside class="hidden md:flex flex-col mr-2 w-56">
           <.sidebar
             funds={@funds}
             funds_balance={@funds_balance}
@@ -37,24 +37,27 @@ defmodule FreedomAccountWeb.LoanLive.Show do
             loans_balance={@loans_balance}
           />
         </aside>
-        <main class="flex flex-col flex-1 overflow-y-auto pl-2">
-          <.header>
-            <div class="flex flex-row">
+        <main class="flex flex-col flex-1 overflow-y-auto">
+          <.header class="bg-primary/15 px-4 py-2">
+            <div class="flex flex-row items-center justify-between">
               <span>{@loan}</span>
               <span>{@loan.current_balance}</span>
             </div>
             <:actions>
-              <.button navigate={~p"/loans"}>
+              <.button class="btn btn-outline btn-primary" navigate={~p"/loans"}>
                 <.icon name="hero-arrow-left" />
                 <span class="sr-only">Back to Loans</span>
               </.button>
-              <.button navigate={~p"/loans/#{@loan}/loans/new"}>
+              <.button class="btn btn-outline btn-primary" navigate={~p"/loans/#{@loan}/loans/new"}>
                 <.icon name="hero-credit-card-mini" /> Lend
               </.button>
-              <.button navigate={~p"/loans/#{@loan}/payments/new"}>
+              <.button class="btn btn-outline btn-primary" navigate={~p"/loans/#{@loan}/payments/new"}>
                 <.icon name="hero-banknotes-mini" /> Payment
               </.button>
-              <.button navigate={~p"/loans/#{@loan}/edit?return_to=show"}>
+              <.button
+                class="btn btn-outline btn-primary"
+                navigate={~p"/loans/#{@loan}/edit?return_to=show"}
+              >
                 <.icon name="hero-pencil-square-mini" /> Edit Details
               </.button>
             </:actions>
