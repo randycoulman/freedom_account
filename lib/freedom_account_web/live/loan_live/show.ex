@@ -58,7 +58,7 @@ defmodule FreedomAccountWeb.LoanLive.Show do
                 class="btn btn-outline btn-primary"
                 navigate={~p"/loans/#{@loan}/edit?return_to=show"}
               >
-                <.icon name="hero-pencil-square-mini" /> Edit Details
+                <.icon name="hero-pencil-square-mini" /> <span class="sr-only">Edit Details</span>
               </.button>
             </:actions>
           </.header>
