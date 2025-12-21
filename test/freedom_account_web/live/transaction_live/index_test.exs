@@ -80,7 +80,7 @@ defmodule FreedomAccountWeb.TransactionLive.IndexTest do
 
       conn
       |> visit(~p"/transactions")
-      |> click_link(action_link("#txn-#{deposit.id}"), "Edit")
+      |> click_link(action_link("#txn-fund-#{deposit.id}"), "Edit")
       |> assert_path(~p"/transactions/#{deposit}/edit", query_params: %{"type" => "fund"})
       |> click_link("Cancel")
       |> assert_has(active_tab(), text: "Transactions")
@@ -91,7 +91,7 @@ defmodule FreedomAccountWeb.TransactionLive.IndexTest do
 
       conn
       |> visit(~p"/transactions")
-      |> click_link(action_link("#txn-#{transaction.id}"), "Edit")
+      |> click_link(action_link("#txn-loan-#{transaction.id}"), "Edit")
       |> assert_path(~p"/transactions/#{transaction}/edit", query_params: %{"type" => "loan"})
       |> click_link("Cancel")
       |> assert_has(active_tab(), text: "Transactions")
@@ -102,7 +102,7 @@ defmodule FreedomAccountWeb.TransactionLive.IndexTest do
 
       conn
       |> visit(~p"/transactions")
-      |> click_link(action_link("#txn-#{deposit.id}"), "Delete")
+      |> click_link(action_link("#txn-fund-#{deposit.id}"), "Delete")
       |> assert_has(active_tab(), text: "Transactions")
       |> assert_has(account_balance(), text: "$0.00")
       |> refute_has("#txn-#{deposit.id}")
@@ -113,7 +113,7 @@ defmodule FreedomAccountWeb.TransactionLive.IndexTest do
 
       conn
       |> visit(~p"/transactions")
-      |> click_link(action_link("#txn-#{lend.id}"), "Delete")
+      |> click_link(action_link("#txn-loan-#{lend.id}"), "Delete")
       |> assert_has(active_tab(), text: "Transactions")
       |> assert_has(account_balance(), text: "$0.00")
       |> refute_has("#txn-#{lend.id}")

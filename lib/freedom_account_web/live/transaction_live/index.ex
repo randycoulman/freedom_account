@@ -35,7 +35,7 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
         funds_balance={@funds_balance}
         loans_balance={@loans_balance}
       />
-      <.table id="account-transactions" row_id={&"txn-#{&1.id}"} rows={@transactions}>
+      <.table id="account-transactions" row_id={&"txn-#{&1.type}-#{&1.id}"} rows={@transactions}>
         <:col :let={transaction} label="Type"><.icon name={type_icon(transaction)} /></:col>
         <:col :let={transaction} label="Date">{transaction.date}</:col>
         <:col :let={transaction} label="Memo">{transaction.memo}</:col>
