@@ -54,19 +54,23 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
           {transaction.running_balance}
         </:col>
         <:action :let={transaction}>
-          <.link navigate={~p"/transactions/#{transaction}/edit?#{%{type: transaction.type}}"}>
-            <.icon name="hero-pencil-square-micro" /> Edit
+          <.link
+            class="link link-hover"
+            navigate={~p"/transactions/#{transaction}/edit?#{%{type: transaction.type}}"}
+          >
+            <.icon name="hero-pencil-square-micro" /> <span class="sr-only">Edit</span>
           </.link>
         </:action>
         <:action :let={transaction}>
           <.link
+            class="link link-hover"
             data-confirm="Are you sure?"
             phx-click={
               JS.push("delete", value: %{id: transaction.id, type: transaction.type})
               |> hide("#txn-#{transaction.id}")
             }
           >
-            <.icon name="hero-trash-micro" /> Delete
+            <.icon name="hero-trash-micro" /> <span class="sr-only">Delete</span>
           </.link>
         </:action>
         <:empty_state>

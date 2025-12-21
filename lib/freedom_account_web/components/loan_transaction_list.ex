@@ -60,19 +60,23 @@ defmodule FreedomAccountWeb.LoanTransactionList do
           {transaction.running_balance}
         </:col>
         <:action :let={transaction}>
-          <.link navigate={~p"/loans/#{@loan}/transactions/#{transaction}/edit"}>
-            <.icon name="hero-pencil-square-micro" /> Edit
+          <.link
+            class="link link-hover"
+            navigate={~p"/loans/#{@loan}/transactions/#{transaction}/edit"}
+          >
+            <.icon name="hero-pencil-square-micro" /> <span class="sr-only">Edit</span>
           </.link>
         </:action>
         <:action :let={transaction}>
           <.link
+            class="link link-hover"
             data-confirm="Are you sure?"
             phx-click={
               JS.push("delete", value: %{id: transaction.id}) |> hide("#txn-#{transaction.id}")
             }
             phx-target={@myself}
           >
-            <.icon name="hero-trash-micro" /> Delete
+            <.icon name="hero-trash-micro" /> <span class="sr-only">Delete</span>
           </.link>
         </:action>
         <:empty_state>
