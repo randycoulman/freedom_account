@@ -32,12 +32,13 @@ defmodule FreedomAccountWeb.FundCard do
         <.link class="sr-only" navigate={~p"/funds/#{@fund}"}>Show</.link>
       </:action>
       <:action>
-        <.link navigate={~p"/funds/#{@fund}/edit"} title="Edit">
+        <.link class="link link-hover" navigate={~p"/funds/#{@fund}/edit"} title="Edit">
           <.icon name="hero-pencil-square-micro" /> Edit
         </.link>
       </:action>
       <:action>
         <.link
+          class="link link-hover"
           data-confirm="Are you sure?"
           phx-click={JS.push("delete", value: %{id: @fund.id}) |> hide("#funds-#{@fund.id}")}
           title="Delete"

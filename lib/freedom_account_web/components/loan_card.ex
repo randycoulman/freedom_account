@@ -32,12 +32,13 @@ defmodule FreedomAccountWeb.LoanCard do
         <.link class="sr-only" navigate={~p"/loans/#{@loan}"}>Show</.link>
       </:action>
       <:action>
-        <.link navigate={~p"/loans/#{@loan}/edit"} title="Edit">
+        <.link class="link link-hover" navigate={~p"/loans/#{@loan}/edit"} title="Edit">
           <.icon name="hero-pencil-square-micro" /> Edit
         </.link>
       </:action>
       <:action>
         <.link
+          class="link link-hover"
           data-confirm="Are you sure?"
           phx-click={JS.push("delete", value: %{id: @loan.id}) |> hide("#loans-#{@loan.id}")}
           title="Delete"
