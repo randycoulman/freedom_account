@@ -43,7 +43,7 @@ defmodule FreedomAccountWeb.FundLive.Index do
         </.button>
       </div>
 
-      <div class="flex flex-col">
+      <div class="flex flex-col gap-2 items-center">
         <div :if={@funds == []} class="mx-auto p-4" id="no-funds">
           This account has no funds yet. Use the Add Fund button to add one.
         </div>

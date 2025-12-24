@@ -47,7 +47,7 @@ defmodule FreedomAccountWeb.FundCard do
         </.link>
       </:action>
       <:details>
-        <div class="ml-12 mt-1 text-sm" data-testid="budget">
+        <div class="ml-12 mt-1 text-base-content/60 text-sm" data-testid="budget">
           {"#{@fund.budget} @ #{@fund.times_per_year} times/year"}
         </div>
       </:details>

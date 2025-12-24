@@ -16,36 +16,39 @@ defmodule FreedomAccountWeb.Card do
   slot :action
   slot :details
 
+  # "bg-base-200 flex group items-center justify-between max-w-screen-md mx-auto p-4 rounded-xl shadow-sm w-full",
   def card(assigns) do
     ~H"""
     <div
       class={[
-        "bg-base-200 flex group items-center justify-between max-w-screen-md mx-auto p-4 rounded-xl shadow-sm w-full",
+        "bg-primary/10 border-neutral-content/20 card card-border max-w-screen-md shadow-md w-full",
         @class
       ]}
       {@rest}
     >
-      <div>
-        <div class="flex items-center">
-          <div class="w-10 flex justify-center text-2xl" data-testid="icon">
-            {@icon}
-          </div>
-          <div class="flex items-center ml-2 gap-2">
-            <div class="text-lg font-semibold" data-testid="name">
-              {@name}
+      <div class="card-body flex flex-row group items-center justify-between">
+        <div>
+          <div class="flex items-center">
+            <div class="w-10 flex justify-center text-2xl" data-testid="icon">
+              {@icon}
             </div>
-            <div class="hidden group-hover:flex gap-2 items-center text-md">
-              <span :for={action <- @action} class="text-primary/50">
-                {render_slot(action)}
-              </span>
+            <div class="flex items-center ml-2 gap-2">
+              <div class="text-lg font-semibold text-secondary" data-testid="name">
+                {@name}
+              </div>
+              <div class="hidden group-hover:flex gap-2 items-center text-md">
+                <span :for={action <- @action} class="text-primary/75">
+                  {render_slot(action)}
+                </span>
+              </div>
             </div>
           </div>
+          {render_slot(@details)}
         </div>
-        {render_slot(@details)}
-      </div>
-      <div class="flex flex-col items-end">
-        <div class="text-xl font-semibold tabular-nums" data-testid="balance">
-          {@balance}
+        <div class="flex flex-col items-end">
+          <div class="text-xl font-semibold tabular-nums" data-testid="balance">
+            {@balance}
+          </div>
         </div>
       </div>
     </div>

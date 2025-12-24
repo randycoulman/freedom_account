@@ -34,7 +34,7 @@ defmodule FreedomAccountWeb.LoanLive.Index do
         </.button>
       </div>
 
-      <div class="flex flex-col">
+      <div class="flex flex-col gap-2 items-center">
         <div :if={@loans == []} class="mx-auto p-4" id="no-loans">
           This account has no active loans. Use the Add Loan button to add one.
         </div>
