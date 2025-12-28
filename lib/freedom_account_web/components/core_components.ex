@@ -467,6 +467,7 @@ defmodule FreedomAccountWeb.CoreComponents do
 
   slot :col, required: true do
     attr :align, :atom, values: [:center, :left, :right]
+    attr :class, :any
     attr :label, :string
   end
 
@@ -483,7 +484,7 @@ defmodule FreedomAccountWeb.CoreComponents do
     <table class="table table-zebra">
       <thead>
         <tr>
-          <th :for={col <- @col} class={alignment(col)}>{col[:label]}</th>
+          <th :for={col <- @col} class={[alignment(col), col[:class]]}>{col[:label]}</th>
           <th :if={@action != []}>
             <span class="sr-only">{gettext("Actions")}</span>
           </th>
@@ -500,7 +501,7 @@ defmodule FreedomAccountWeb.CoreComponents do
           <td
             :for={col <- @col}
             phx-click={@row_click && @row_click.(row)}
-            class={[alignment(col), @row_click && "hover:cursor-pointer"]}
+            class={["tabular-nums", alignment(col), col[:class], @row_click && "hover:cursor-pointer"]}
           >
             {render_slot(col, @row_item.(row))}
           </td>

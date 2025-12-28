@@ -41,21 +41,23 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
         row_id={&"txn-#{&1.type}-#{&1.id}"}
         rows={@transactions}
       >
-        <:col :let={transaction} label="Type"><.icon name={type_icon(transaction)} /></:col>
-        <:col :let={transaction} label="Date">{transaction.date}</:col>
-        <:col :let={transaction} label="Memo">{transaction.memo}</:col>
-        <:col :let={transaction} label="Fund/Loan">{transaction}</:col>
-        <:col :let={transaction} align={:right} label="Out">
+        <:col :let={transaction} align={:center} class="w-10" label="Type">
+          <.icon name={type_icon(transaction)} />
+        </:col>
+        <:col :let={transaction} class="w-30" label="Date">{transaction.date}</:col>
+        <:col :let={transaction} class="w-auto" label="Memo">{transaction.memo}</:col>
+        <:col :let={transaction} class="w-50" label="Fund/Loan">{transaction}</:col>
+        <:col :let={transaction} align={:right} class="w-28" label="Out">
           <span :if={Money.negative?(transaction.amount)} data-role="out">
             {Money.negate!(transaction.amount)}
           </span>
         </:col>
-        <:col :let={transaction} align={:right} label="In">
+        <:col :let={transaction} align={:right} class="w-28" label="In">
           <span :if={Money.positive?(transaction.amount)} data-role="in">
             {transaction.amount}
           </span>
         </:col>
-        <:col :let={transaction} align={:right} label="Balance">
+        <:col :let={transaction} align={:right} class="w-32" label="Balance">
           {transaction.running_balance}
         </:col>
         <:action :let={transaction}>
