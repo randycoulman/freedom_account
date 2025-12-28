@@ -70,7 +70,7 @@ defmodule FreedomAccountWeb.FundTransactionListTest do
 
       conn
       |> visit(~p"/funds/#{fund}")
-      |> click_link(action_link("#txn-#{line_item.id}"), "Edit")
+      |> click_link("#txn-#{line_item.id} td", deposit.memo)
       |> assert_path(~p"/funds/#{fund}/transactions/#{deposit}/edit")
       |> click_link("Cancel")
       |> assert_has(heading(), text: Safe.to_iodata(fund))

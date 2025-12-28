@@ -67,7 +67,7 @@ defmodule FreedomAccountWeb.LoanTransactionListTest do
 
       conn
       |> visit(~p"/loans/#{loan}")
-      |> click_link(action_link("#txn-#{transaction.id}"), "Edit")
+      |> click_link("#txn-#{transaction.id} td", transaction.memo)
       |> assert_path(~p"/loans/#{loan}/transactions/#{transaction}/edit")
       |> click_link("Cancel")
       |> assert_has(heading(), text: Safe.to_iodata(loan))

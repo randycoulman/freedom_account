@@ -35,7 +35,12 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
         funds_balance={@funds_balance}
         loans_balance={@loans_balance}
       />
-      <.table id="account-transactions" row_id={&"txn-#{&1.type}-#{&1.id}"} rows={@transactions}>
+      <.table
+        id="account-transactions"
+        row_click={&JS.navigate(~p"/transactions/#{&1}/edit?#{%{type: &1.type}}")}
+        row_id={&"txn-#{&1.type}-#{&1.id}"}
+        rows={@transactions}
+      >
         <:col :let={transaction} label="Type"><.icon name={type_icon(transaction)} /></:col>
         <:col :let={transaction} label="Date">{transaction.date}</:col>
         <:col :let={transaction} label="Memo">{transaction.memo}</:col>
@@ -53,14 +58,6 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
         <:col :let={transaction} align={:right} label="Balance">
           {transaction.running_balance}
         </:col>
-        <:action :let={transaction}>
-          <.link
-            class="link link-hover"
-            navigate={~p"/transactions/#{transaction}/edit?#{%{type: transaction.type}}"}
-          >
-            <.icon name="hero-pencil-square-micro" /> <span class="sr-only">Edit</span>
-          </.link>
-        </:action>
         <:action :let={transaction}>
           <.link
             class="link link-hover"

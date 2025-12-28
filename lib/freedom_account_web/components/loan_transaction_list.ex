@@ -43,7 +43,12 @@ defmodule FreedomAccountWeb.LoanTransactionList do
   def render(assigns) do
     ~H"""
     <div>
-      <.table id="loan-transactions" row_id={&"txn-#{&1.id}"} rows={@transactions}>
+      <.table
+        id="loan-transactions"
+        row_click={&JS.navigate(~p"/loans/#{@loan}/transactions/#{&1}/edit")}
+        row_id={&"txn-#{&1.id}"}
+        rows={@transactions}
+      >
         <:col :let={transaction} label="Date">{transaction.date}</:col>
         <:col :let={transaction} label="Memo">{transaction.memo}</:col>
         <:col :let={transaction} align={:right} label="Out">
@@ -59,14 +64,6 @@ defmodule FreedomAccountWeb.LoanTransactionList do
         <:col :let={transaction} align={:right} label="Balance">
           {transaction.running_balance}
         </:col>
-        <:action :let={transaction}>
-          <.link
-            class="link link-hover"
-            navigate={~p"/loans/#{@loan}/transactions/#{transaction}/edit"}
-          >
-            <.icon name="hero-pencil-square-micro" /> <span class="sr-only">Edit</span>
-          </.link>
-        </:action>
         <:action :let={transaction}>
           <.link
             class="link link-hover"
