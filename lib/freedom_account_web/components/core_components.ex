@@ -292,7 +292,7 @@ defmodule FreedomAccountWeb.CoreComponents do
             name={@name}
             value="true"
             checked={@checked}
-            class={@class || "checkbox checkbox-sm"}
+            class={@class || "checkbox checkbox-sm #{input_focus_classes()}"}
             {@rest}
           />{@label}
         </span>
@@ -310,7 +310,10 @@ defmodule FreedomAccountWeb.CoreComponents do
         <select
           id={@id}
           name={@name}
-          class={[@class || "w-full select", @errors != [] && (@error_class || "select-error")]}
+          class={[
+            @class || "w-full select #{input_focus_classes()}",
+            @errors != [] && (@error_class || "select-error")
+          ]}
           multiple={@multiple}
           {@rest}
         >
@@ -332,7 +335,7 @@ defmodule FreedomAccountWeb.CoreComponents do
           id={@id}
           name={@name}
           class={[
-            @class || "w-full textarea",
+            @class || "w-full textarea #{input_focus_classes()}",
             @errors != [] && (@error_class || "textarea-error")
           ]}
           {@rest}
@@ -355,7 +358,7 @@ defmodule FreedomAccountWeb.CoreComponents do
           id={@id}
           value={Form.normalize_value(@type, @value)}
           class={[
-            @class || "w-full input",
+            @class || "w-full input #{input_focus_classes()}",
             @errors != [] && (@error_class || "input-error")
           ]}
           {@rest}
@@ -364,6 +367,16 @@ defmodule FreedomAccountWeb.CoreComponents do
       <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
+  end
+
+  defp input_focus_classes do
+    classes =
+      for state <- ~w(focus focus-within),
+          style <- ~w(border-primary outline-2 outline-offset-0 outline-primary outline-solid) do
+        "#{state}:#{style}"
+      end
+
+    Enum.join(classes, " ")
   end
 
   @doc """
