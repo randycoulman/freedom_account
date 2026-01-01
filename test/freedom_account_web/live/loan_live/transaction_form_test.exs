@@ -2,6 +2,7 @@ defmodule FreedomAccountWeb.LoanLive.TransactionFormTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
+  alias FreedomAccount.MoneyUtils
   alias Phoenix.HTML.Safe
 
   setup [:create_account, :create_loan]
@@ -27,11 +28,11 @@ defmodule FreedomAccountWeb.LoanLive.TransactionFormTest do
       |> click_button("Save Transaction")
       |> assert_has(flash(:info), text: "Transaction updated successfully")
       |> assert_has(heading(), text: Safe.to_iodata(loan))
-      |> assert_has(heading(), text: "#{new_amount}")
-      |> assert_has(sidebar_loan_balance(loan), text: "#{new_amount}")
+      |> assert_has(heading(), text: MoneyUtils.format(new_amount))
+      |> assert_has(sidebar_loan_balance(loan), text: MoneyUtils.format(new_amount))
       |> assert_has(table_cell(), text: "#{new_date}")
       |> assert_has(table_cell(), text: new_memo)
-      |> assert_has(role("loan"), text: "#{Money.negate!(new_amount)}")
+      |> assert_has(role("loan"), text: MoneyUtils.format(new_amount))
     end
 
     test "does not update transaction on cancel", %{conn: conn, loan: loan} do
@@ -47,8 +48,8 @@ defmodule FreedomAccountWeb.LoanLive.TransactionFormTest do
       |> fill_in("Amount", with: new_amount)
       |> click_link("Cancel")
       |> assert_has(heading(), text: Safe.to_iodata(loan))
-      |> assert_has(heading(), text: "#{transaction.amount}")
-      |> assert_has(sidebar_loan_balance(loan), text: "#{transaction.amount}")
+      |> assert_has(heading(), text: MoneyUtils.format(transaction.amount))
+      |> assert_has(sidebar_loan_balance(loan), text: MoneyUtils.format(transaction.amount))
     end
   end
 end

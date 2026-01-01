@@ -1,6 +1,6 @@
 defmodule FreedomAccountWeb.Sidebar do
   @moduledoc false
-  use FreedomAccountWeb, :verified_routes
+  use FreedomAccountWeb, :html
   use Phoenix.Component
 
   # credo:disable-for-this-file Credo.Check.Readability.Specs
@@ -59,7 +59,7 @@ defmodule FreedomAccountWeb.Sidebar do
     <div class="p-2">
       <h2 class="flex flex-row font-semibold items-center justify-between text-sm">
         <.link navigate={@title_path}>{@title}</.link>
-        <span class="tabular-nums text-right">{@balance}</span>
+        <.money class="tabular-nums text-right" value={@balance} />
       </h2>
       <ul class="menu menu-sm px-0 w-full" id={@id}>
         <li :for={item <- @items} class="w-full">
@@ -71,12 +71,11 @@ defmodule FreedomAccountWeb.Sidebar do
             <span class="flex-1 min-w-0 !overflow-hidden truncate">
               {item}
             </span>
-            <span
+            <.money
               class="shrink-0 tabular-nums text-right"
               id={"#{String.downcase(@title)}-balance-#{item.id}"}
-            >
-              {item.current_balance}
-            </span>
+              value={item.current_balance}
+            />
           </.link>
         </li>
       </ul>

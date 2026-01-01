@@ -5,6 +5,7 @@ defmodule FreedomAccountWeb.FundLive.IndexTest do
 
   alias FreedomAccount.Factory
   alias FreedomAccount.Funds
+  alias FreedomAccount.MoneyUtils
 
   describe "listing all funds" do
     setup [:create_account]
@@ -22,7 +23,7 @@ defmodule FreedomAccountWeb.FundLive.IndexTest do
       |> assert_has(fund_name(fund), text: fund.name)
       |> assert_has(fund_budget(fund), text: "#{fund.budget}")
       |> assert_has(fund_frequency(fund), text: "#{fund.times_per_year}")
-      |> assert_has(fund_balance(fund), text: to_string(fund.current_balance))
+      |> assert_has(fund_balance(fund), text: MoneyUtils.format(fund.current_balance))
     end
 
     test "shows prompt when list is empty", %{conn: conn} do
@@ -38,7 +39,7 @@ defmodule FreedomAccountWeb.FundLive.IndexTest do
 
       conn
       |> visit(~p"/funds")
-      |> assert_has(active_tab(), text: "#{fund.current_balance}")
+      |> assert_has(active_tab(), text: MoneyUtils.format(fund.current_balance))
     end
 
     test "allows creating a new fund from the listing", %{conn: conn} do

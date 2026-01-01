@@ -29,6 +29,7 @@ defmodule FreedomAccountWeb.CoreComponents do
   use Phoenix.Component
   use Gettext, backend: FreedomAccountWeb.Gettext
 
+  alias FreedomAccount.MoneyUtils
   alias Phoenix.HTML.Form
   alias Phoenix.HTML.FormField
   alias Phoenix.LiveView.JS
@@ -403,6 +404,17 @@ defmodule FreedomAccountWeb.CoreComponents do
         </div>
       </li>
     </ul>
+    """
+  end
+
+  attr :rest, :global
+  attr :value, Money, required: true
+
+  def money(assigns) do
+    ~H"""
+    <span class={[Money.negative?(@value) && "text-negative"]} {@rest}>
+      {MoneyUtils.format(@value)}
+    </span>
     """
   end
 

@@ -5,6 +5,7 @@ defmodule FreedomAccountWeb.LoanLive.IndexTest do
 
   alias FreedomAccount.Factory
   alias FreedomAccount.Loans
+  alias FreedomAccount.MoneyUtils
 
   describe "listing all loans" do
     setup [:create_account]
@@ -20,7 +21,7 @@ defmodule FreedomAccountWeb.LoanLive.IndexTest do
       |> assert_has(active_tab(), text: "Loans")
       |> assert_has(loan_icon(loan), text: loan.icon)
       |> assert_has(loan_name(loan), text: loan.name)
-      |> assert_has(loan_balance(loan), text: to_string(loan.current_balance))
+      |> assert_has(loan_balance(loan), text: MoneyUtils.format(loan.current_balance))
     end
 
     test "shows prompt when list is empty", %{conn: conn} do
@@ -36,7 +37,7 @@ defmodule FreedomAccountWeb.LoanLive.IndexTest do
 
       conn
       |> visit(~p"/loans")
-      |> assert_has(active_tab(), text: "#{loan.current_balance}")
+      |> assert_has(active_tab(), text: MoneyUtils.format(loan.current_balance))
     end
 
     test "allows creating a new loan from the listing", %{conn: conn} do

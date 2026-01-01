@@ -4,6 +4,7 @@ defmodule FreedomAccountWeb.LoanLive.FormTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
+  alias FreedomAccount.MoneyUtils
   alias Phoenix.HTML.Safe
 
   setup [:create_account]
@@ -60,7 +61,7 @@ defmodule FreedomAccountWeb.LoanLive.FormTest do
       |> assert_has(flash(:info), text: "Loan updated successfully")
       |> assert_has(loan_icon(loan), text: icon)
       |> assert_has(loan_name(loan), text: name)
-      |> assert_has(loan_balance(loan), text: "#{loan.current_balance}")
+      |> assert_has(loan_balance(loan), text: MoneyUtils.format(loan.current_balance))
     end
 
     test "does not update loan settings on cancel", %{account: account, conn: conn} do
@@ -74,7 +75,7 @@ defmodule FreedomAccountWeb.LoanLive.FormTest do
       |> click_link("Cancel")
       |> assert_has(loan_icon(loan), text: loan.icon)
       |> assert_has(loan_name(loan), text: loan.name)
-      |> assert_has(loan_balance(loan), text: "#{loan.current_balance}")
+      |> assert_has(loan_balance(loan), text: MoneyUtils.format(loan.current_balance))
     end
   end
 

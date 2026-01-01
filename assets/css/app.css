@@ -17,6 +17,9 @@
   themes: light --default, dark --prefersdark;
 }
 
+@theme {
+  --color-negative: oklch(0.55 0.22 25);
+}
 /* Add variants based on LiveView classes */
 @custom-variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);
 @custom-variant phx-submit-loading (.phx-submit-loading&, .phx-submit-loading &);

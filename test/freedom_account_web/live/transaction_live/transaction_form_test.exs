@@ -30,10 +30,10 @@ defmodule FreedomAccountWeb.TransactionLive.TransactionFormTest do
       |> click_button("Save Transaction")
       |> assert_has(flash(:info), text: "Transaction updated successfully")
       |> assert_has(active_tab(), text: "Transactions")
-      |> assert_has(account_balance(), text: "#{new_amount}")
+      |> assert_has(account_balance(), text: MoneyUtils.format(new_amount))
       |> assert_has(table_cell(), text: "#{new_date}")
       |> assert_has(table_cell(), text: new_memo)
-      |> assert_has(role("in"), text: "#{new_amount}")
+      |> assert_has(role("in"), text: MoneyUtils.format(new_amount))
     end
 
     test "edits multi-fund transaction", %{account: account, conn: conn, fund: fund1} do
@@ -67,7 +67,7 @@ defmodule FreedomAccountWeb.TransactionLive.TransactionFormTest do
       |> assert_has(flash(:info), text: "Transaction updated successfully")
       |> assert_has(table_cell(), text: "#{new_date}")
       |> assert_has(table_cell(), text: new_memo)
-      |> assert_has(role("in"), text: "#{net_amount}")
+      |> assert_has(role("in"), text: MoneyUtils.format(net_amount))
     end
 
     test "does not update fund transaction on cancel", %{conn: conn, fund: fund} do
@@ -84,7 +84,7 @@ defmodule FreedomAccountWeb.TransactionLive.TransactionFormTest do
       |> fill_in("Amount 0", with: new_amount)
       |> click_link("Cancel")
       |> assert_has(active_tab(), text: "Transactions")
-      |> assert_has(account_balance(), text: "#{line_item.amount}")
+      |> assert_has(account_balance(), text: MoneyUtils.format(line_item.amount))
     end
 
     test "edits loan transaction", %{conn: conn, loan: loan} do
@@ -107,10 +107,10 @@ defmodule FreedomAccountWeb.TransactionLive.TransactionFormTest do
       |> click_button("Save Transaction")
       |> assert_has(flash(:info), text: "Transaction updated successfully")
       |> assert_has(active_tab(), text: "Transactions")
-      |> assert_has(account_balance(), text: "#{new_amount}")
+      |> assert_has(account_balance(), text: MoneyUtils.format(new_amount))
       |> assert_has(table_cell(), text: "#{new_date}")
       |> assert_has(table_cell(), text: new_memo)
-      |> assert_has(role("out"), text: "#{Money.negate!(new_amount)}")
+      |> assert_has(role("out"), text: MoneyUtils.format(new_amount))
     end
 
     test "does not update loan transaction on cancel", %{conn: conn, loan: loan} do
@@ -126,7 +126,7 @@ defmodule FreedomAccountWeb.TransactionLive.TransactionFormTest do
       |> fill_in("Amount", with: new_amount)
       |> click_link("Cancel")
       |> assert_has(active_tab(), text: "Transactions")
-      |> assert_has(account_balance(), text: "#{transaction.amount}")
+      |> assert_has(account_balance(), text: MoneyUtils.format(transaction.amount))
     end
   end
 end

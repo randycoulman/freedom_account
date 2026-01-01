@@ -3,6 +3,7 @@ defmodule FreedomAccountWeb.LoanTransactionListTest do
 
   alias FreedomAccount.Factory
   alias FreedomAccount.LocalTime
+  alias FreedomAccount.MoneyUtils
   alias FreedomAccountWeb.LoanTransactionList
   alias Phoenix.HTML.Safe
 
@@ -24,11 +25,11 @@ defmodule FreedomAccountWeb.LoanTransactionListTest do
       |> visit(~p"/loans/#{loan}")
       |> assert_has(table_cell(), text: "#{lend.date}")
       |> assert_has(table_cell(), text: lend.memo)
-      |> assert_has(role("loan"), text: "#{Money.negate!(lend.amount)}")
+      |> assert_has(role("loan"), text: MoneyUtils.format(lend.amount))
       |> assert_has(table_cell(), text: "#{payment.date}")
       |> assert_has(table_cell(), text: payment.memo)
-      |> assert_has(role("payment"), text: "#{payment.amount}")
-      |> assert_has(table_cell(), text: "#{balance}")
+      |> assert_has(role("payment"), text: MoneyUtils.format(payment.amount))
+      |> assert_has(table_cell(), text: MoneyUtils.format(balance))
     end
 
     test "paginates transactions", %{conn: conn, loan: loan} do

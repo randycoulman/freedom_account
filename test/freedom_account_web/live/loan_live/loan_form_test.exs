@@ -4,6 +4,7 @@ defmodule FreedomAccountWeb.LoanLive.LoanFormTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
+  alias FreedomAccount.MoneyUtils
   alias Phoenix.HTML.Safe
 
   describe "lending money" do
@@ -27,12 +28,12 @@ defmodule FreedomAccountWeb.LoanLive.LoanFormTest do
       |> click_button("Lend Money")
       |> assert_has(flash(:info), text: "Money lent successfully")
       |> assert_has(heading(), text: Safe.to_iodata(loan))
-      |> assert_has(heading(), text: "#{balance}")
-      |> assert_has(account_balance(), text: "#{account_balance}")
-      |> assert_has(sidebar_loan_balance(loan), text: "#{balance}")
+      |> assert_has(heading(), text: MoneyUtils.format(balance))
+      |> assert_has(account_balance(), text: MoneyUtils.format(account_balance))
+      |> assert_has(sidebar_loan_balance(loan), text: MoneyUtils.format(balance))
       |> assert_has(table_cell(), text: "#{date}")
       |> assert_has(table_cell(), text: memo)
-      |> assert_has(role("loan"), text: "#{amount}")
+      |> assert_has(role("loan"), text: MoneyUtils.format(amount))
     end
 
     test "does not record loan on cancel", %{account: account, conn: conn, loan: loan} do
@@ -48,9 +49,9 @@ defmodule FreedomAccountWeb.LoanLive.LoanFormTest do
       |> fill_in("Amount", with: amount)
       |> click_link("Cancel")
       |> assert_has(heading(), text: Safe.to_iodata(loan))
-      |> assert_has(heading(), text: "#{Money.zero(:usd)}")
-      |> assert_has(heading(), text: "#{fund.current_balance}")
-      |> assert_has(sidebar_loan_balance(loan), text: "#{Money.zero(:usd)}")
+      |> assert_has(heading(), text: :usd |> Money.zero() |> MoneyUtils.format())
+      |> assert_has(heading(), text: MoneyUtils.format(fund.current_balance))
+      |> assert_has(sidebar_loan_balance(loan), text: :usd |> Money.zero() |> MoneyUtils.format())
     end
   end
 end

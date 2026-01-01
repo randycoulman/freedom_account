@@ -2,6 +2,7 @@ defmodule FreedomAccountWeb.FundLive.RegularWithdrawalFormTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
+  alias FreedomAccount.MoneyUtils
   alias Phoenix.HTML.Safe
 
   describe "making a regular withdrawal" do
@@ -25,7 +26,7 @@ defmodule FreedomAccountWeb.FundLive.RegularWithdrawalFormTest do
       |> visit(~p"/funds/regular_withdrawal")
       |> assert_has(page_title(), text: "Regular Withdrawal")
       |> assert_has(heading(), text: "Regular Withdrawal")
-      |> assert_has("#transaction-total", text: "#{Money.zero(:usd)}")
+      |> assert_has("#transaction-total", text: :usd |> Money.zero() |> MoneyUtils.format())
       |> assert_has("label", text: Safe.to_iodata(fund1))
       |> assert_has("label", text: Safe.to_iodata(fund2))
       |> assert_has("label", text: Safe.to_iodata(fund3))
@@ -36,17 +37,17 @@ defmodule FreedomAccountWeb.FundLive.RegularWithdrawalFormTest do
       |> click_button("Make Withdrawal")
       |> assert_has("#line-items-error", text: "Requires at least one line item with a non-zero amount")
       |> fill_in("Amount 0", with: "#{amount1}")
-      |> assert_has("#transaction-total", text: "#{total1}")
+      |> assert_has("#transaction-total", text: MoneyUtils.format(total1))
       |> fill_in("Amount 1", with: "#{amount2}")
-      |> assert_has("#transaction-total", text: "#{total2}")
+      |> assert_has("#transaction-total", text: MoneyUtils.format(total2))
       |> fill_in("Amount 2", with: "#{amount3}")
-      |> assert_has("#transaction-total", text: "#{total3}")
+      |> assert_has("#transaction-total", text: MoneyUtils.format(total3))
       |> click_button("Make Withdrawal")
       |> assert_has(flash(:info), text: "Withdrawal successful")
       |> assert_has(active_tab(), text: "Funds")
-      |> assert_has(fund_balance(fund1), text: "#{balance1}")
-      |> assert_has(fund_balance(fund2), text: "#{balance2}")
-      |> assert_has(fund_balance(fund3), text: "#{balance3}")
+      |> assert_has(fund_balance(fund1), text: MoneyUtils.format(balance1))
+      |> assert_has(fund_balance(fund2), text: MoneyUtils.format(balance2))
+      |> assert_has(fund_balance(fund3), text: MoneyUtils.format(balance3))
     end
 
     test "does not make withdrawal on cancel", %{conn: conn, funds: funds} do
@@ -60,7 +61,7 @@ defmodule FreedomAccountWeb.FundLive.RegularWithdrawalFormTest do
       |> fill_in("Amount 0", with: "#{amount}")
       |> click_link("Cancel")
       |> assert_has(active_tab(), text: "Funds")
-      |> assert_has(fund_balance(fund1), text: "#{fund1.current_balance}")
+      |> assert_has(fund_balance(fund1), text: MoneyUtils.format(fund1.current_balance))
     end
   end
 

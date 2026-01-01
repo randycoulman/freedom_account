@@ -3,6 +3,7 @@ defmodule FreedomAccountWeb.FundTransactionListTest do
 
   alias FreedomAccount.Factory
   alias FreedomAccount.LocalTime
+  alias FreedomAccount.MoneyUtils
   alias FreedomAccountWeb.FundTransactionList
   alias Phoenix.HTML.Safe
 
@@ -26,11 +27,11 @@ defmodule FreedomAccountWeb.FundTransactionListTest do
       |> visit(~p"/funds/#{fund}")
       |> assert_has(table_cell(), text: "#{deposit.date}")
       |> assert_has(table_cell(), text: deposit.memo)
-      |> assert_has(role("deposit"), text: "#{deposit_line_item.amount}")
+      |> assert_has(role("deposit"), text: MoneyUtils.format(deposit_line_item.amount))
       |> assert_has(table_cell(), text: "#{withdrawal.date}")
       |> assert_has(table_cell(), text: withdrawal.memo)
-      |> assert_has(role("withdrawal"), text: "#{Money.negate!(withdrawal_line_item.amount)}")
-      |> assert_has(table_cell(), text: "#{balance}")
+      |> assert_has(role("withdrawal"), text: MoneyUtils.format(withdrawal_line_item.amount))
+      |> assert_has(table_cell(), text: MoneyUtils.format(balance))
     end
 
     test "paginates transactions", %{conn: conn, fund: fund} do

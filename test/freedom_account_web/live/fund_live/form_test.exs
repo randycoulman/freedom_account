@@ -4,6 +4,7 @@ defmodule FreedomAccountWeb.FundLive.FormTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
+  alias FreedomAccount.MoneyUtils
   alias Phoenix.HTML.Safe
 
   setup [:create_account]
@@ -70,7 +71,7 @@ defmodule FreedomAccountWeb.FundLive.FormTest do
       |> assert_has(fund_name(fund), text: name)
       |> assert_has(fund_budget(fund), text: "#{budget}")
       |> assert_has(fund_frequency(fund), text: "#{times_per_year}")
-      |> assert_has(fund_balance(fund), text: "#{fund.current_balance}")
+      |> assert_has(fund_balance(fund), text: MoneyUtils.format(fund.current_balance))
     end
 
     test "does not update fund on cancel", %{account: account, conn: conn} do
@@ -88,7 +89,7 @@ defmodule FreedomAccountWeb.FundLive.FormTest do
       |> assert_has(fund_name(fund), text: fund.name)
       |> assert_has(fund_budget(fund), text: "#{fund.budget}")
       |> assert_has(fund_frequency(fund), text: "#{fund.times_per_year}")
-      |> assert_has(fund_balance(fund), text: "#{fund.current_balance}")
+      |> assert_has(fund_balance(fund), text: MoneyUtils.format(fund.current_balance))
     end
   end
 

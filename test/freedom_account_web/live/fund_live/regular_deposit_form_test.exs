@@ -6,6 +6,7 @@ defmodule FreedomAccountWeb.FundLive.RegularDepositFormTest do
   alias FreedomAccount.Funds
   alias FreedomAccount.Funds.Fund
   alias FreedomAccount.LocalTime
+  alias FreedomAccount.MoneyUtils
 
   describe "making a regular deposit" do
     setup [:create_account, :create_funds]
@@ -25,9 +26,9 @@ defmodule FreedomAccountWeb.FundLive.RegularDepositFormTest do
       |> click_button("Make Deposit")
       |> assert_has(flash(:info), text: "Regular deposit successful")
       |> assert_has(active_tab(), text: "Funds")
-      |> assert_has(fund_balance(fund1), text: "#{balance1}")
-      |> assert_has(fund_balance(fund2), text: "#{balance2}")
-      |> assert_has(fund_balance(fund3), text: "#{balance3}")
+      |> assert_has(fund_balance(fund1), text: MoneyUtils.format(balance1))
+      |> assert_has(fund_balance(fund2), text: MoneyUtils.format(balance2))
+      |> assert_has(fund_balance(fund3), text: MoneyUtils.format(balance3))
     end
 
     test "does not make deposit on cancel", %{conn: conn, funds: funds} do
@@ -38,9 +39,9 @@ defmodule FreedomAccountWeb.FundLive.RegularDepositFormTest do
       |> fill_in("Date", with: Factory.date())
       |> click_link("Cancel")
       |> assert_has(active_tab(), text: "Funds")
-      |> assert_has(fund_balance(fund1), text: "#{fund1.current_balance}")
-      |> assert_has(fund_balance(fund2), text: "#{fund2.current_balance}")
-      |> assert_has(fund_balance(fund3), text: "#{fund3.current_balance}")
+      |> assert_has(fund_balance(fund1), text: MoneyUtils.format(fund1.current_balance))
+      |> assert_has(fund_balance(fund2), text: MoneyUtils.format(fund2.current_balance))
+      |> assert_has(fund_balance(fund3), text: MoneyUtils.format(fund3.current_balance))
     end
   end
 

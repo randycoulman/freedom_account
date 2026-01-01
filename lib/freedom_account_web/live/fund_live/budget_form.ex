@@ -57,7 +57,7 @@ defmodule FreedomAccountWeb.FundLive.BudgetForm do
               </span>
             </.inputs_for>
             <div class="col-span-4 font-semibold mt-4 text-center" id="deposit-total">
-              Total deposit amount: {@form[:total_deposit_amount].value}
+              Total deposit amount: <.money value={@form[:total_deposit_amount].value} />
             </div>
           </div>
         </div>

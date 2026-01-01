@@ -4,6 +4,7 @@ defmodule FreedomAccountWeb.FundLive.DepositFormTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
+  alias FreedomAccount.MoneyUtils
   alias Phoenix.HTML.Safe
 
   describe "making a deposit" do
@@ -30,12 +31,12 @@ defmodule FreedomAccountWeb.FundLive.DepositFormTest do
       |> click_button("Make Deposit")
       |> assert_has(flash(:info), text: "Deposit successful")
       |> assert_has(heading(), text: Safe.to_iodata(fund))
-      |> assert_has(heading(), text: "#{amount}")
-      |> assert_has(heading(), text: "#{account_balance}")
-      |> assert_has(sidebar_fund_balance(fund), text: "#{amount}")
+      |> assert_has(heading(), text: MoneyUtils.format(amount))
+      |> assert_has(heading(), text: MoneyUtils.format(account_balance))
+      |> assert_has(sidebar_fund_balance(fund), text: MoneyUtils.format(amount))
       |> assert_has(table_cell(), text: "#{date}")
       |> assert_has(table_cell(), text: memo)
-      |> assert_has(role("deposit"), text: "#{amount}")
+      |> assert_has(role("deposit"), text: MoneyUtils.format(amount))
     end
 
     test "does not make deposit on cancel", %{account: account, conn: conn, fund: fund} do
@@ -51,8 +52,8 @@ defmodule FreedomAccountWeb.FundLive.DepositFormTest do
       |> fill_in("Amount 0", with: amount)
       |> click_link("Cancel")
       |> assert_has(heading(), text: Safe.to_iodata(fund))
-      |> assert_has(heading(), text: "#{Money.zero(:usd)}")
-      |> assert_has(heading(), text: "#{other_fund.current_balance}")
+      |> assert_has(heading(), text: :usd |> Money.zero() |> MoneyUtils.format())
+      |> assert_has(heading(), text: MoneyUtils.format(other_fund.current_balance))
     end
   end
 end

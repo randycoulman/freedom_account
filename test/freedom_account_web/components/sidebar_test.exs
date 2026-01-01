@@ -108,8 +108,8 @@ defmodule FreedomAccountWeb.SidebarTest do
 
       conn
       |> visit(~p"/funds/#{hd(funds)}")
-      |> assert_has(heading(), text: "#{funds_balance}")
-      |> assert_has(heading(), text: "#{loans_balance}")
+      |> assert_has(heading(), text: MoneyUtils.format(funds_balance))
+      |> assert_has(heading(), text: MoneyUtils.format(loans_balance))
     end
   end
 end

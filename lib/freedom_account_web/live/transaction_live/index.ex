@@ -48,17 +48,17 @@ defmodule FreedomAccountWeb.TransactionLive.Index do
         <:col :let={transaction} class="w-auto" label="Memo">{transaction.memo}</:col>
         <:col :let={transaction} class="w-50" label="Fund/Loan">{transaction}</:col>
         <:col :let={transaction} align={:right} class="w-28" label="Out">
-          <span :if={Money.negative?(transaction.amount)} data-role="out">
-            {Money.negate!(transaction.amount)}
-          </span>
+          <.money
+            :if={Money.negative?(transaction.amount)}
+            data-role="out"
+            value={transaction.amount}
+          />
         </:col>
         <:col :let={transaction} align={:right} class="w-28" label="In">
-          <span :if={Money.positive?(transaction.amount)} data-role="in">
-            {transaction.amount}
-          </span>
+          <.money :if={Money.positive?(transaction.amount)} data-role="in" value={transaction.amount} />
         </:col>
         <:col :let={transaction} align={:right} class="w-32" label="Balance">
-          {transaction.running_balance}
+          <.money value={transaction.running_balance} />
         </:col>
         <:action :let={transaction}>
           <.link

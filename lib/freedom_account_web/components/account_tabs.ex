@@ -1,6 +1,6 @@
 defmodule FreedomAccountWeb.AccountTabs do
   @moduledoc false
-  use FreedomAccountWeb, :verified_routes
+  use FreedomAccountWeb, :html
   use Phoenix.Component
 
   # credo:disable-for-this-file Credo.Check.Readability.Specs
@@ -39,7 +39,7 @@ defmodule FreedomAccountWeb.AccountTabs do
     ~H"""
     <div class="flex flex-row gap-4 justify-between">
       <h3>{@title}</h3>
-      <span :if={@balance}>{@balance}</span>
+      <.money :if={@balance} value={@balance} />
     </div>
     """
   end

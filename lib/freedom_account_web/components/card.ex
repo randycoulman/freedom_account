@@ -1,5 +1,6 @@
 defmodule FreedomAccountWeb.Card do
   @moduledoc false
+  use FreedomAccountWeb, :html
   use Phoenix.Component
 
   # credo:disable-for-this-file Credo.Check.Readability.Specs
@@ -47,7 +48,7 @@ defmodule FreedomAccountWeb.Card do
         </div>
         <div class="flex flex-col items-end">
           <div class="text-xl font-semibold tabular-nums" data-testid="balance">
-            {@balance}
+            <.money value={@balance} />
           </div>
         </div>
       </div>

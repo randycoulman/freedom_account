@@ -52,17 +52,21 @@ defmodule FreedomAccountWeb.LoanTransactionList do
         <:col :let={transaction} class="w-30" label="Date">{transaction.date}</:col>
         <:col :let={transaction} class="w-auto" label="Memo">{transaction.memo}</:col>
         <:col :let={transaction} align={:right} class="w-28" label="Out">
-          <span :if={Money.negative?(transaction.amount)} data-role="loan">
-            {Money.negate!(transaction.amount)}
-          </span>
+          <.money
+            :if={Money.negative?(transaction.amount)}
+            data-role="loan"
+            value={transaction.amount}
+          />
         </:col>
         <:col :let={transaction} align={:right} class="w-28" label="In">
-          <span :if={Money.positive?(transaction.amount)} data-role="payment">
-            {transaction.amount}
-          </span>
+          <.money
+            :if={Money.positive?(transaction.amount)}
+            data-role="payment"
+            value={transaction.amount}
+          />
         </:col>
         <:col :let={transaction} align={:right} class="w-32" label="Balance">
-          {transaction.running_balance}
+          <.money value={transaction.running_balance} />
         </:col>
         <:action :let={transaction}>
           <.link

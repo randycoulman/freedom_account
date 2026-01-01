@@ -51,7 +51,7 @@ defmodule FreedomAccountWeb.AccountBalanceTest do
 
         conn
         |> visit(path)
-        |> assert_has(balance(page), text: "#{total_balance}")
+        |> assert_has(balance(page), text: MoneyUtils.format(total_balance))
       end
 
       test "updates balance when transaction is created", %{account: account, conn: conn, loans: loans} = context do
@@ -65,7 +65,7 @@ defmodule FreedomAccountWeb.AccountBalanceTest do
 
         new_balance = account |> Loans.list_active_loans() |> expected_balance()
 
-        assert_has(session, balance(page), text: "#{new_balance}")
+        assert_has(session, balance(page), text: MoneyUtils.format(new_balance))
       end
     end
   end

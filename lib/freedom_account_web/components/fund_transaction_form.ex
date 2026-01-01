@@ -129,7 +129,7 @@ defmodule FreedomAccountWeb.FundTransactionForm do
             class="col-span-2 font-semibold mt-4 text-center"
             id="transaction-total"
           >
-            Total withdrawal: {@form[:total].value}
+            Total withdrawal: <.money value={@form[:total].value} />
           </div>
         </div>
         <:actions>

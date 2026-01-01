@@ -42,7 +42,7 @@ defmodule FreedomAccountWeb.FundLive.Show do
           <.header class="bg-primary/15 px-4 py-2">
             <div class="flex flex-row items-center justify-between w-full">
               <span>{@fund}</span>
-              <span>{@fund.current_balance}</span>
+              <.money value={@fund.current_balance} />
             </div>
             <:subtitle>
               <div class="flex flex-row text-base-content/75" id="fund-subtitle">

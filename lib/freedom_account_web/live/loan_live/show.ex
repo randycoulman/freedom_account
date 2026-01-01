@@ -41,7 +41,7 @@ defmodule FreedomAccountWeb.LoanLive.Show do
           <.header class="bg-primary/15 px-4 py-2">
             <div class="flex flex-row items-center justify-between">
               <span>{@loan}</span>
-              <span>{@loan.current_balance}</span>
+              <.money value={@loan.current_balance} />
             </div>
             <:actions>
               <.button class="btn btn-outline btn-primary" navigate={~p"/loans"}>

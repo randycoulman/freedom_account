@@ -2,6 +2,7 @@ defmodule FreedomAccountWeb.FundLive.TransactionFormTest do
   use FreedomAccountWeb.ConnCase, async: true
 
   alias FreedomAccount.Factory
+  alias FreedomAccount.MoneyUtils
   alias FreedomAccount.Transactions
   alias Phoenix.HTML.Safe
 
@@ -29,11 +30,11 @@ defmodule FreedomAccountWeb.FundLive.TransactionFormTest do
       |> click_button("Save Transaction")
       |> assert_has(flash(:info), text: "Transaction updated successfully")
       |> assert_has(heading(), text: Safe.to_iodata(fund))
-      |> assert_has(heading(), text: "#{new_amount}")
-      |> assert_has(sidebar_fund_balance(fund), text: "#{new_amount}")
+      |> assert_has(heading(), text: MoneyUtils.format(new_amount))
+      |> assert_has(sidebar_fund_balance(fund), text: MoneyUtils.format(new_amount))
       |> assert_has(table_cell(), text: "#{new_date}")
       |> assert_has(table_cell(), text: new_memo)
-      |> assert_has(role("deposit"), text: "#{new_amount}")
+      |> assert_has(role("deposit"), text: MoneyUtils.format(new_amount))
     end
 
     test "edits multi-fund transaction", %{account: account, conn: conn, fund: fund1} do
@@ -66,7 +67,7 @@ defmodule FreedomAccountWeb.FundLive.TransactionFormTest do
       |> assert_has(flash(:info), text: "Transaction updated successfully")
       |> assert_has(table_cell(), text: "#{new_date}")
       |> assert_has(table_cell(), text: new_memo)
-      |> assert_has(role("deposit"), text: "#{new_amount1}")
+      |> assert_has(role("deposit"), text: MoneyUtils.format(new_amount1))
     end
 
     test "does not update transaction on cancel", %{conn: conn, fund: fund} do
@@ -83,8 +84,8 @@ defmodule FreedomAccountWeb.FundLive.TransactionFormTest do
       |> fill_in("Amount 0", with: new_amount)
       |> click_link("Cancel")
       |> assert_has(heading(), text: Safe.to_iodata(fund))
-      |> assert_has(heading(), text: "#{line_item.amount}")
-      |> assert_has(sidebar_fund_balance(fund), text: "#{line_item.amount}")
+      |> assert_has(heading(), text: MoneyUtils.format(line_item.amount))
+      |> assert_has(sidebar_fund_balance(fund), text: MoneyUtils.format(line_item.amount))
     end
   end
 end

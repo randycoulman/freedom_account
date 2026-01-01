@@ -6,6 +6,7 @@ defmodule FreedomAccountWeb.LoanLive.PaymentFormTest do
   import Money.Sigil
 
   alias FreedomAccount.Factory
+  alias FreedomAccount.MoneyUtils
   alias Phoenix.HTML.Safe
 
   describe "accepting a payment on a loan" do
@@ -32,12 +33,12 @@ defmodule FreedomAccountWeb.LoanLive.PaymentFormTest do
       |> click_button("Receive Payment")
       |> assert_has(flash(:info), text: "Payment successful")
       |> assert_has(heading(), text: Safe.to_iodata(loan))
-      |> assert_has(heading(), text: "#{balance}")
-      |> assert_has(account_balance(), text: "#{account_balance}")
-      |> assert_has(sidebar_loan_balance(loan), text: "#{balance}")
+      |> assert_has(heading(), text: MoneyUtils.format(balance))
+      |> assert_has(account_balance(), text: MoneyUtils.format(account_balance))
+      |> assert_has(sidebar_loan_balance(loan), text: MoneyUtils.format(balance))
       |> assert_has(table_cell(), text: "#{date}")
       |> assert_has(table_cell(), text: memo)
-      |> assert_has(role("payment"), text: "#{amount}")
+      |> assert_has(role("payment"), text: MoneyUtils.format(amount))
     end
 
     test "does not receive a payment on cancel", %{account: account, conn: conn, loan: loan} do
@@ -58,9 +59,9 @@ defmodule FreedomAccountWeb.LoanLive.PaymentFormTest do
       |> fill_in("Amount", with: amount)
       |> click_link("Cancel")
       |> assert_has(heading(), text: Safe.to_iodata(loan))
-      |> assert_has(heading(), text: "#{balance}")
-      |> assert_has(account_balance(), text: "#{account_balance}")
-      |> assert_has(sidebar_loan_balance(loan), text: "#{balance}")
+      |> assert_has(heading(), text: MoneyUtils.format(balance))
+      |> assert_has(account_balance(), text: MoneyUtils.format(account_balance))
+      |> assert_has(sidebar_loan_balance(loan), text: MoneyUtils.format(balance))
     end
   end
 end
