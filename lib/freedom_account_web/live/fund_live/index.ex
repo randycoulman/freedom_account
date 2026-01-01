@@ -32,15 +32,28 @@ defmodule FreedomAccountWeb.FundLive.Index do
         <.button navigate={~p"/funds/regular_withdrawal"}>
           <.icon name="hero-folder-minus-mini" /> Regular Withdrawal
         </.button>
-        <.button navigate={~p"/funds/budget"}>
-          <.icon name="hero-chart-pie-mini" /> Budget
-        </.button>
-        <.button navigate={~p"/funds/activate"}>
-          <.icon name="hero-archive-box-mini" /> Activate/Deactivate
-        </.button>
-        <.button navigate={~p"/funds/new"}>
-          <.icon name="hero-plus-circle-mini" /> Add Fund
-        </.button>
+        <div class="dropdown dropdown-end dropdown-hover">
+          <.button>
+            <.icon name="hero-bars-3-mini" />
+          </.button>
+          <ul class="dropdown-content menu bg-base-100 rounded-box shadow-sm space-y-1 z-1">
+            <li>
+              <.button navigate={~p"/funds/activate"}>
+                <.icon name="hero-archive-box-mini" /> Activate/Deactivate
+              </.button>
+            </li>
+            <li>
+              <.button navigate={~p"/funds/new"}>
+                <.icon name="hero-plus-circle-mini" /> Add Fund
+              </.button>
+            </li>
+            <li>
+              <.button navigate={~p"/funds/budget"}>
+                <.icon name="hero-chart-pie-mini" /> Budget
+              </.button>
+            </li>
+          </ul>
+        </div>
       </div>
 
       <div class="flex flex-col gap-2 items-center">

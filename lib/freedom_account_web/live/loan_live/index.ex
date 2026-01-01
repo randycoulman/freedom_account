@@ -26,12 +26,23 @@ defmodule FreedomAccountWeb.LoanLive.Index do
       <.account_bar account={@account} balance={@account_balance} return_to="loans" />
       <.account_tabs active={:loans} funds_balance={@funds_balance} loans_balance={@loans_balance} />
       <div class="flex flex-row gap-2 justify-end py-4">
-        <.button navigate={~p"/loans/activate"}>
-          <.icon name="hero-archive-box-mini" /> Activate/Deactivate
-        </.button>
-        <.button navigate={~p"/loans/new"}>
-          <.icon name="hero-plus-circle-mini" /> Add Loan
-        </.button>
+        <div class="dropdown dropdown-end dropdown-hover">
+          <.button>
+            <.icon name="hero-bars-3-mini" />
+          </.button>
+          <ul class="dropdown-content menu bg-base-100 rounded-box shadow-sm space-y-1 z-1">
+            <li>
+              <.button navigate={~p"/loans/activate"}>
+                <.icon name="hero-archive-box-mini" /> Activate/Deactivate
+              </.button>
+            </li>
+            <li>
+              <.button navigate={~p"/loans/new"}>
+                <.icon name="hero-plus-circle-mini" /> Add Loan
+              </.button>
+            </li>
+          </ul>
+        </div>
       </div>
 
       <div class="flex flex-col gap-2 items-center">
