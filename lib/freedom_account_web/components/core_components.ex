@@ -371,13 +371,8 @@ defmodule FreedomAccountWeb.CoreComponents do
   end
 
   defp input_focus_classes do
-    classes =
-      for state <- ~w(focus focus-within),
-          style <- ~w(border-primary outline-2 outline-offset-0 outline-primary outline-solid) do
-        "#{state}:#{style}"
-      end
-
-    Enum.join(classes, " ")
+    "focus:border-primary focus:outline-2 focus:outline-offset-0 focus:outline-primary focus:outline-solid" <>
+      "focus-within:border-primary focus-within:outline-2 focus-within:outline-offset-0 focus-within:outline-primary focus-within:outline-solid"
   end
 
   @doc """
