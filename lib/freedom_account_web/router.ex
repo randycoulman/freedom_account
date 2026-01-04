@@ -22,38 +22,38 @@ defmodule FreedomAccountWeb.Router do
     get "/", HomeController, :redirect_to_fund_list
 
     live_session :default, on_mount: Hooks.LoadInitialData do
-      live "/account/edit", AccountLive.Form, :edit
+      live "/account/edit", AccountLive.Form
 
-      live "/funds", FundLive.Index, :index
+      live "/funds", FundLive.Index
       live "/funds/new", FundLive.Form, :new
 
-      live "/funds/activate", FundLive.ActivationForm, :activate
-      live "/funds/budget", FundLive.BudgetForm, :edit
-      live "/funds/regular_deposit", FundLive.RegularDepositForm, :new
-      live "/funds/regular_withdrawal", FundLive.RegularWithdrawalForm, :new
+      live "/funds/activate", FundLive.ActivationForm
+      live "/funds/budget", FundLive.BudgetForm
+      live "/funds/regular_deposit", FundLive.RegularDepositForm
+      live "/funds/regular_withdrawal", FundLive.RegularWithdrawalForm
 
-      live "/funds/:id", FundLive.Show, :show
+      live "/funds/:id", FundLive.Show
       live "/funds/:id/edit", FundLive.Form, :edit
 
-      live "/funds/:id/deposits/new", FundLive.DepositForm, :new
-      live "/funds/:id/transactions/:transaction_id/edit", FundLive.TransactionForm, :edit
-      live "/funds/:id/withdrawals/new", FundLive.WithdrawalForm, :new
+      live "/funds/:id/deposits/new", FundLive.DepositForm
+      live "/funds/:id/transactions/:transaction_id/edit", FundLive.TransactionForm
+      live "/funds/:id/withdrawals/new", FundLive.WithdrawalForm
 
-      live "/loans", LoanLive.Index, :index
+      live "/loans", LoanLive.Index
       live "/loans/new", LoanLive.Form, :new
 
-      live "/loans/activate", LoanLive.ActivationForm, :activate
+      live "/loans/activate", LoanLive.ActivationForm
 
-      live "/loans/:id", LoanLive.Show, :show
+      live "/loans/:id", LoanLive.Show
       live "/loans/:id/edit", LoanLive.Form, :edit
 
-      live "/loans/:id/loans/new", LoanLive.LoanForm, :new
-      live "/loans/:id/payments/new", LoanLive.PaymentForm, :new
-      live "/loans/:id/transactions/:transaction_id/edit", LoanLive.TransactionForm, :edit
+      live "/loans/:id/loans/new", LoanLive.LoanForm
+      live "/loans/:id/payments/new", LoanLive.PaymentForm
+      live "/loans/:id/transactions/:transaction_id/edit", LoanLive.TransactionForm
 
-      live "/transactions", TransactionLive.Index, :index
+      live "/transactions", TransactionLive.Index
 
-      live "/transactions/:id/edit", TransactionLive.TransactionForm, :edit
+      live "/transactions/:id/edit", TransactionLive.TransactionForm
     end
   end
 
