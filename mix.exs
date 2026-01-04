@@ -78,7 +78,7 @@ defmodule FreedomAccount.MixProject do
   defp deps do
     [
       {:assertions, "~> 0.22.0", only: [:test]},
-      {:bandit, "~> 1.8"},
+      {:bandit, "~> 1.10"},
       {:boundary, "~> 0.10.4"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
@@ -94,7 +94,7 @@ defmodule FreedomAccount.MixProject do
        github: "tailwindlabs/heroicons", tag: "v2.2.0", sparse: "optimized", app: false, compile: false, depth: 1},
       {:jason, "~> 1.2"},
       {:lazy_html, ">= 0.1.0", only: :test},
-      {:mix_test_interactive, "~> 5.0", only: :dev, runtime: false},
+      {:mix_test_interactive, "~> 5.1", only: :dev, runtime: false},
       {:nimble_csv, "~> 1.3"},
       {:paginator, "~> 1.2"},
       {:phoenix_ecto, "~> 4.7"},
@@ -107,8 +107,8 @@ defmodule FreedomAccount.MixProject do
       # This is here to resolve a conflict with paginator's dependencies
       {:plug_crypto, "~> 2.1", override: true},
       {:postgrex, ">= 0.0.0"},
-      {:process_tree, "~> 0.2.0"},
-      {:styler, "~> 1.9", only: [:dev, :test], runtime: false},
+      {:process_tree, "~> 0.3.0"},
+      {:styler, "~> 1.10", only: [:dev, :test], runtime: false},
       {:tailwind, "~> 0.4.1", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 1.1"},
       {:telemetry_poller, "~> 1.3"},
