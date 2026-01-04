@@ -110,7 +110,15 @@ defmodule FreedomAccount.Factory do
   def memo, do: Faker.Lorem.sentence()
 
   @spec money :: Money.t()
-  def money, do: Money.new("#{Enum.random(0..499)}.#{Enum.random(0..99)}", :usd)
+  def money do
+    result = Money.new("#{Enum.random(0..499)}.#{Enum.random(0..99)}", :usd)
+
+    if Money.zero?(result) do
+      money()
+    else
+      result
+    end
+  end
 
   @spec one_of(list()) :: term()
   def one_of(items), do: Enum.random(items)
