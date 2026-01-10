@@ -3,7 +3,7 @@ x-app-env-files: &app_env_files
   - ./config/docker_prod.env
   - ./config/docker_prod_secret.env
 
-x-app-image: &app_image freedom_account:1.11.0
+x-app-image: &app_image freedom_account:1.12.0
 
 services:
   app:
