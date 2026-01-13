@@ -4,7 +4,6 @@ defmodule FreedomAccountWeb.TransactionLive.TransactionFormTest do
   alias FreedomAccount.Factory
   alias FreedomAccount.MoneyUtils
   alias FreedomAccount.Transactions
-  alias Phoenix.HTML.Safe
 
   setup [:create_account, :create_fund, :create_loan]
 
@@ -55,9 +54,9 @@ defmodule FreedomAccountWeb.TransactionLive.TransactionFormTest do
       |> assert_has(field_value("#transaction_line_items_0_amount", line_item1.amount))
       |> assert_has(field_value("#transaction_line_items_1_amount", line_item2.amount))
       |> assert_has(field_value("#transaction_line_items_2_amount", line_item3.amount))
-      |> assert_has("label", text: Safe.to_iodata(fund1))
-      |> assert_has("label", text: Safe.to_iodata(fund2))
-      |> assert_has("label", text: Safe.to_iodata(fund3))
+      |> assert_has("label", text: fund1)
+      |> assert_has("label", text: fund2)
+      |> assert_has("label", text: fund3)
       |> fill_in("Date", with: new_date)
       |> fill_in("Memo", with: new_memo)
       |> fill_in("Amount 0", with: new_amount1)
@@ -97,7 +96,7 @@ defmodule FreedomAccountWeb.TransactionLive.TransactionFormTest do
       |> visit(~p"/transactions/#{transaction}/edit?type=loan")
       |> assert_has(page_title(), text: "Edit Loan Transaction")
       |> assert_has(heading(), text: "Edit Loan Transaction")
-      |> assert_has(role("loan"), text: Safe.to_iodata(loan))
+      |> assert_has(role("loan"), text: loan)
       |> assert_has(field_value("#loan_transaction_date", transaction.date))
       |> assert_has(field_value("#loan_transaction_memo", transaction.memo))
       |> assert_has(field_value("#loan_transaction_amount", transaction.amount))

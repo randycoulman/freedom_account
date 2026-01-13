@@ -5,7 +5,6 @@ defmodule FreedomAccountWeb.FundTransactionListTest do
   alias FreedomAccount.LocalTime
   alias FreedomAccount.MoneyUtils
   alias FreedomAccountWeb.FundTransactionList
-  alias Phoenix.HTML.Safe
 
   setup [:create_account, :create_fund]
 
@@ -74,7 +73,7 @@ defmodule FreedomAccountWeb.FundTransactionListTest do
       |> click_link("#txn-#{line_item.id} td", deposit.memo)
       |> assert_path(~p"/funds/#{fund}/transactions/#{deposit}/edit")
       |> click_link("Cancel")
-      |> assert_has(heading(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: fund)
     end
 
     test "deletes transaction in listing", %{conn: conn, fund: fund} do
@@ -84,7 +83,7 @@ defmodule FreedomAccountWeb.FundTransactionListTest do
       conn
       |> visit(~p"/funds/#{fund}")
       |> click_link(action_link("#txn-#{line_item.id}"), "Delete")
-      |> assert_has(heading(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: fund)
       |> assert_has(heading(), text: "$0.00")
       |> assert_has(sidebar_fund_balance(fund), text: "$0.00")
       |> refute_has("#txn-#{line_item.id}")

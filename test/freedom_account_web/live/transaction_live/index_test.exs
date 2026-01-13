@@ -5,7 +5,6 @@ defmodule FreedomAccountWeb.TransactionLive.IndexTest do
   alias FreedomAccount.LocalTime
   alias FreedomAccount.MoneyUtils
   alias FreedomAccountWeb.TransactionLive
-  alias Phoenix.HTML.Safe
 
   setup [:create_account, :create_fund, :create_loan]
 
@@ -32,14 +31,14 @@ defmodule FreedomAccountWeb.TransactionLive.IndexTest do
       |> assert_has(role("in"), text: MoneyUtils.format(deposit_line_item.amount))
       |> assert_has(table_cell(), text: "#{withdrawal.date}")
       |> assert_has(table_cell(), text: withdrawal.memo)
-      |> assert_has(table_cell(), count: 2, text: Safe.to_iodata(fund))
+      |> assert_has(table_cell(), count: 2, text: fund)
       |> assert_has(role("out"), text: MoneyUtils.format(withdrawal_line_item.amount))
       |> assert_has(table_cell(), text: "#{lend.date}")
       |> assert_has(table_cell(), text: lend.memo)
       |> assert_has(role("out"), text: MoneyUtils.format(lend.amount))
       |> assert_has(table_cell(), text: "#{payment.date}")
       |> assert_has(table_cell(), text: payment.memo)
-      |> assert_has(table_cell(), count: 2, text: Safe.to_iodata(loan))
+      |> assert_has(table_cell(), count: 2, text: loan)
       |> assert_has(role("in"), text: MoneyUtils.format(payment.amount))
       |> assert_has(table_cell(), text: MoneyUtils.format(balance))
     end

@@ -5,7 +5,6 @@ defmodule FreedomAccountWeb.FundLive.FormTest do
 
   alias FreedomAccount.Factory
   alias FreedomAccount.MoneyUtils
-  alias Phoenix.HTML.Safe
 
   setup [:create_account]
 
@@ -128,14 +127,14 @@ defmodule FreedomAccountWeb.FundLive.FormTest do
       conn
       |> visit(~p"/funds/#{fund}/edit?return_to=show")
       |> click_button("Save Fund")
-      |> assert_has(heading(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: fund)
     end
 
     test "returns to individual fund view when specified on cancel", %{conn: conn, fund: fund} do
       conn
       |> visit(~p"/funds/#{fund}/edit?return_to=show")
       |> click_link("Cancel")
-      |> assert_has(heading(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: fund)
     end
   end
 end

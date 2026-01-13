@@ -5,7 +5,6 @@ defmodule FreedomAccountWeb.LoanTransactionListTest do
   alias FreedomAccount.LocalTime
   alias FreedomAccount.MoneyUtils
   alias FreedomAccountWeb.LoanTransactionList
-  alias Phoenix.HTML.Safe
 
   setup [:create_account, :create_loan]
 
@@ -71,7 +70,7 @@ defmodule FreedomAccountWeb.LoanTransactionListTest do
       |> click_link("#txn-#{transaction.id} td", transaction.memo)
       |> assert_path(~p"/loans/#{loan}/transactions/#{transaction}/edit")
       |> click_link("Cancel")
-      |> assert_has(heading(), text: Safe.to_iodata(loan))
+      |> assert_has(heading(), text: loan)
     end
 
     test "deletes transaction in listing", %{conn: conn, loan: loan} do
@@ -80,7 +79,7 @@ defmodule FreedomAccountWeb.LoanTransactionListTest do
       conn
       |> visit(~p"/loans/#{loan}")
       |> click_link(action_link("#txn-#{transaction.id}"), "Delete")
-      |> assert_has(heading(), text: Safe.to_iodata(loan))
+      |> assert_has(heading(), text: loan)
       |> assert_has(heading(), text: "$0.00")
       |> assert_has(sidebar_loan_balance(loan), text: "$0.00")
       |> refute_has("#txn-#{transaction.id}")

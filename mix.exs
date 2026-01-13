@@ -102,7 +102,7 @@ defmodule FreedomAccount.MixProject do
       {:phoenix_live_dashboard, "~> 0.8.7"},
       {:phoenix_live_reload, "~> 1.6", only: :dev},
       {:phoenix_live_view, "~> 1.1"},
-      {:phoenix_test, "~> 0.9.1", only: :test, runtime: false},
+      {:phoenix_test, "~> 0.10.0", only: :test, runtime: false},
       {:phoenix, "~> 1.8"},
       # This is here to resolve a conflict with paginator's dependencies
       {:plug_crypto, "~> 2.1", override: true},

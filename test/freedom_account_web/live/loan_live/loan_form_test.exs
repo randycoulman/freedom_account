@@ -5,7 +5,6 @@ defmodule FreedomAccountWeb.LoanLive.LoanFormTest do
 
   alias FreedomAccount.Factory
   alias FreedomAccount.MoneyUtils
-  alias Phoenix.HTML.Safe
 
   describe "lending money" do
     setup [:create_account, :create_loan]
@@ -27,7 +26,7 @@ defmodule FreedomAccountWeb.LoanLive.LoanFormTest do
       |> fill_in("Amount", with: amount)
       |> click_button("Lend Money")
       |> assert_has(flash(:info), text: "Money lent successfully")
-      |> assert_has(heading(), text: Safe.to_iodata(loan))
+      |> assert_has(heading(), text: loan)
       |> assert_has(heading(), text: MoneyUtils.format(balance))
       |> assert_has(account_balance(), text: MoneyUtils.format(account_balance))
       |> assert_has(sidebar_loan_balance(loan), text: MoneyUtils.format(balance))
@@ -48,7 +47,7 @@ defmodule FreedomAccountWeb.LoanLive.LoanFormTest do
       |> fill_in("Memo", with: memo)
       |> fill_in("Amount", with: amount)
       |> click_link("Cancel")
-      |> assert_has(heading(), text: Safe.to_iodata(loan))
+      |> assert_has(heading(), text: loan)
       |> assert_has(heading(), text: :usd |> Money.zero() |> MoneyUtils.format())
       |> assert_has(heading(), text: MoneyUtils.format(fund.current_balance))
       |> assert_has(sidebar_loan_balance(loan), text: :usd |> Money.zero() |> MoneyUtils.format())

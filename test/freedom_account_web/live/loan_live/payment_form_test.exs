@@ -7,7 +7,6 @@ defmodule FreedomAccountWeb.LoanLive.PaymentFormTest do
 
   alias FreedomAccount.Factory
   alias FreedomAccount.MoneyUtils
-  alias Phoenix.HTML.Safe
 
   describe "accepting a payment on a loan" do
     setup [:create_account, :create_loan]
@@ -32,7 +31,7 @@ defmodule FreedomAccountWeb.LoanLive.PaymentFormTest do
       |> fill_in("Amount", with: amount)
       |> click_button("Receive Payment")
       |> assert_has(flash(:info), text: "Payment successful")
-      |> assert_has(heading(), text: Safe.to_iodata(loan))
+      |> assert_has(heading(), text: loan)
       |> assert_has(heading(), text: MoneyUtils.format(balance))
       |> assert_has(account_balance(), text: MoneyUtils.format(account_balance))
       |> assert_has(sidebar_loan_balance(loan), text: MoneyUtils.format(balance))
@@ -58,7 +57,7 @@ defmodule FreedomAccountWeb.LoanLive.PaymentFormTest do
       |> fill_in("Memo", with: memo)
       |> fill_in("Amount", with: amount)
       |> click_link("Cancel")
-      |> assert_has(heading(), text: Safe.to_iodata(loan))
+      |> assert_has(heading(), text: loan)
       |> assert_has(heading(), text: MoneyUtils.format(balance))
       |> assert_has(account_balance(), text: MoneyUtils.format(account_balance))
       |> assert_has(sidebar_loan_balance(loan), text: MoneyUtils.format(balance))

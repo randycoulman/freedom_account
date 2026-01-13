@@ -35,7 +35,7 @@ defmodule FreedomAccountWeb.AccountLiveTest do
       |> click_button("Save Account")
       |> assert_has(flash(:info), text: "Account updated successfully")
       |> visit(~p"/account/edit")
-      |> assert_has(selected_option("#default-fund"), text: Safe.to_iodata(default_fund))
+      |> assert_has(selected_option("#default-fund"), text: default_fund)
     end
 
     test "does not update account settings on cancel", %{account: account, conn: conn} do

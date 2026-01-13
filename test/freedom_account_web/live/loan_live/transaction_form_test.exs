@@ -3,7 +3,6 @@ defmodule FreedomAccountWeb.LoanLive.TransactionFormTest do
 
   alias FreedomAccount.Factory
   alias FreedomAccount.MoneyUtils
-  alias Phoenix.HTML.Safe
 
   setup [:create_account, :create_loan]
 
@@ -18,7 +17,7 @@ defmodule FreedomAccountWeb.LoanLive.TransactionFormTest do
       |> visit(~p"/loans/#{loan}/transactions/#{transaction}/edit")
       |> assert_has(page_title(), text: "Edit Loan Transaction")
       |> assert_has(heading(), text: "Edit Loan Transaction")
-      |> assert_has(role("loan"), text: Safe.to_iodata(loan))
+      |> assert_has(role("loan"), text: loan)
       |> assert_has(field_value("#loan_transaction_date", transaction.date))
       |> assert_has(field_value("#loan_transaction_memo", transaction.memo))
       |> assert_has(field_value("#loan_transaction_amount", transaction.amount))
@@ -27,7 +26,7 @@ defmodule FreedomAccountWeb.LoanLive.TransactionFormTest do
       |> fill_in("Amount", with: new_amount)
       |> click_button("Save Transaction")
       |> assert_has(flash(:info), text: "Transaction updated successfully")
-      |> assert_has(heading(), text: Safe.to_iodata(loan))
+      |> assert_has(heading(), text: loan)
       |> assert_has(heading(), text: MoneyUtils.format(new_amount))
       |> assert_has(sidebar_loan_balance(loan), text: MoneyUtils.format(new_amount))
       |> assert_has(table_cell(), text: "#{new_date}")
@@ -47,7 +46,7 @@ defmodule FreedomAccountWeb.LoanLive.TransactionFormTest do
       |> fill_in("Memo", with: new_memo)
       |> fill_in("Amount", with: new_amount)
       |> click_link("Cancel")
-      |> assert_has(heading(), text: Safe.to_iodata(loan))
+      |> assert_has(heading(), text: loan)
       |> assert_has(heading(), text: MoneyUtils.format(transaction.amount))
       |> assert_has(sidebar_loan_balance(loan), text: MoneyUtils.format(transaction.amount))
     end

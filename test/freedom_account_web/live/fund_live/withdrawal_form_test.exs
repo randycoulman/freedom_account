@@ -7,7 +7,6 @@ defmodule FreedomAccountWeb.FundLive.WithdrawalFormTest do
 
   alias FreedomAccount.Factory
   alias FreedomAccount.MoneyUtils
-  alias Phoenix.HTML.Safe
 
   describe "making a withdrawal" do
     setup [:create_account, :create_fund]
@@ -27,7 +26,7 @@ defmodule FreedomAccountWeb.FundLive.WithdrawalFormTest do
       |> visit(~p"/funds/#{fund}/withdrawals/new")
       |> assert_has(page_title(), text: "Withdraw")
       |> assert_has(heading(), text: "Withdraw")
-      |> assert_has("label", text: Safe.to_iodata(fund))
+      |> assert_has("label", text: fund)
       |> refute_has("#transaction-total")
       |> fill_in("Date", with: date)
       |> fill_in("Memo", with: memo)
@@ -36,7 +35,7 @@ defmodule FreedomAccountWeb.FundLive.WithdrawalFormTest do
       |> fill_in("Amount 0", with: amount)
       |> click_button("Make Withdrawal")
       |> assert_has(flash(:info), text: "Withdrawal successful")
-      |> assert_has(heading(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: fund)
       |> assert_has(heading(), text: MoneyUtils.format(balance))
       |> assert_has(heading(), text: MoneyUtils.format(account_balance))
       |> assert_has(sidebar_fund_balance(fund), text: MoneyUtils.format(balance))
@@ -61,7 +60,7 @@ defmodule FreedomAccountWeb.FundLive.WithdrawalFormTest do
       |> fill_in("Memo", with: memo)
       |> fill_in("Amount 0", with: amount)
       |> click_link("Cancel")
-      |> assert_has(heading(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: fund)
       |> assert_has(heading(), text: MoneyUtils.format(deposit_amount))
       |> assert_has(heading(), text: MoneyUtils.format(account_balance))
       |> assert_has(sidebar_fund_balance(fund), text: MoneyUtils.format(deposit_amount))

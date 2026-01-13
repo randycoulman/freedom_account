@@ -19,7 +19,7 @@ defmodule FreedomAccountWeb.FundLive.ShowTest do
       |> visit(~p"/funds")
       |> click_link(fund_card(fund), fund.name)
       |> assert_has(page_title(), text: Safe.to_iodata(fund))
-      |> assert_has(heading(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: fund)
       |> assert_has(heading(), text: "$0.00")
       |> assert_has(fund_subtitle(), text: "#{fund.budget}")
       |> assert_has(fund_subtitle(), text: "#{fund.times_per_year}")
@@ -32,7 +32,7 @@ defmodule FreedomAccountWeb.FundLive.ShowTest do
     test "displays fund", %{conn: conn, fund: fund} do
       conn
       |> visit(~p"/funds/#{fund}")
-      |> assert_has(heading(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: fund)
     end
 
     test "allows editing fund", %{conn: conn, fund: fund} do
@@ -41,7 +41,7 @@ defmodule FreedomAccountWeb.FundLive.ShowTest do
       |> click_link("Edit Details")
       |> assert_path(~p"/funds/#{fund}/edit")
       |> click_link("Cancel")
-      |> assert_has(heading(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: fund)
     end
 
     test "allows depositing money to a fund", %{conn: conn, fund: fund} do
@@ -50,7 +50,7 @@ defmodule FreedomAccountWeb.FundLive.ShowTest do
       |> click_link("Deposit")
       |> assert_path(~p"/funds/#{fund}/deposits/new")
       |> click_link("Cancel")
-      |> assert_has(heading(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: fund)
     end
 
     test "allows withdrawing money from a fund", %{conn: conn, fund: fund} do
@@ -62,7 +62,7 @@ defmodule FreedomAccountWeb.FundLive.ShowTest do
       |> refute_has(flash(:error))
       |> assert_path(~p"/funds/#{fund}/withdrawals/new")
       |> click_link("Cancel")
-      |> assert_has(heading(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: fund)
     end
   end
 end

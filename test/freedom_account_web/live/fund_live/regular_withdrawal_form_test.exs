@@ -3,7 +3,6 @@ defmodule FreedomAccountWeb.FundLive.RegularWithdrawalFormTest do
 
   alias FreedomAccount.Factory
   alias FreedomAccount.MoneyUtils
-  alias Phoenix.HTML.Safe
 
   describe "making a regular withdrawal" do
     setup [:create_account, :create_funds]
@@ -27,9 +26,9 @@ defmodule FreedomAccountWeb.FundLive.RegularWithdrawalFormTest do
       |> assert_has(page_title(), text: "Regular Withdrawal")
       |> assert_has(heading(), text: "Regular Withdrawal")
       |> assert_has("#transaction-total", text: :usd |> Money.zero() |> MoneyUtils.format())
-      |> assert_has("label", text: Safe.to_iodata(fund1))
-      |> assert_has("label", text: Safe.to_iodata(fund2))
-      |> assert_has("label", text: Safe.to_iodata(fund3))
+      |> assert_has("label", text: fund1)
+      |> assert_has("label", text: fund2)
+      |> assert_has("label", text: fund3)
       |> fill_in("Date", with: "")
       |> assert_has(field_error("#transaction_date"), text: "can't be blank")
       |> fill_in("Date", with: Factory.date())

@@ -5,7 +5,6 @@ defmodule FreedomAccountWeb.LoanLive.FormTest do
 
   alias FreedomAccount.Factory
   alias FreedomAccount.MoneyUtils
-  alias Phoenix.HTML.Safe
 
   setup [:create_account]
 
@@ -114,14 +113,14 @@ defmodule FreedomAccountWeb.LoanLive.FormTest do
       conn
       |> visit(~p"/loans/#{loan}/edit?return_to=show")
       |> click_button("Save Loan")
-      |> assert_has(heading(), text: Safe.to_iodata(loan))
+      |> assert_has(heading(), text: loan)
     end
 
     test "returns to individual loan view when specified on cancel", %{conn: conn, loan: loan} do
       conn
       |> visit(~p"/loans/#{loan}/edit?return_to=show")
       |> click_link("Cancel")
-      |> assert_has(heading(), text: Safe.to_iodata(loan))
+      |> assert_has(heading(), text: loan)
     end
   end
 end

@@ -4,7 +4,6 @@ defmodule FreedomAccountWeb.FundLive.TransactionFormTest do
   alias FreedomAccount.Factory
   alias FreedomAccount.MoneyUtils
   alias FreedomAccount.Transactions
-  alias Phoenix.HTML.Safe
 
   setup [:create_account, :create_fund]
 
@@ -29,7 +28,7 @@ defmodule FreedomAccountWeb.FundLive.TransactionFormTest do
       |> fill_in("Amount 0", with: new_amount)
       |> click_button("Save Transaction")
       |> assert_has(flash(:info), text: "Transaction updated successfully")
-      |> assert_has(heading(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: fund)
       |> assert_has(heading(), text: MoneyUtils.format(new_amount))
       |> assert_has(sidebar_fund_balance(fund), text: MoneyUtils.format(new_amount))
       |> assert_has(table_cell(), text: "#{new_date}")
@@ -55,9 +54,9 @@ defmodule FreedomAccountWeb.FundLive.TransactionFormTest do
       |> assert_has(field_value("#transaction_line_items_0_amount", line_item1.amount))
       |> assert_has(field_value("#transaction_line_items_1_amount", line_item2.amount))
       |> assert_has(field_value("#transaction_line_items_2_amount", line_item3.amount))
-      |> assert_has("label", text: Safe.to_iodata(fund1))
-      |> assert_has("label", text: Safe.to_iodata(fund2))
-      |> assert_has("label", text: Safe.to_iodata(fund3))
+      |> assert_has("label", text: fund1)
+      |> assert_has("label", text: fund2)
+      |> assert_has("label", text: fund3)
       |> fill_in("Date", with: new_date)
       |> fill_in("Memo", with: new_memo)
       |> fill_in("Amount 0", with: new_amount1)
@@ -83,7 +82,7 @@ defmodule FreedomAccountWeb.FundLive.TransactionFormTest do
       |> fill_in("Memo", with: new_memo)
       |> fill_in("Amount 0", with: new_amount)
       |> click_link("Cancel")
-      |> assert_has(heading(), text: Safe.to_iodata(fund))
+      |> assert_has(heading(), text: fund)
       |> assert_has(heading(), text: MoneyUtils.format(line_item.amount))
       |> assert_has(sidebar_fund_balance(fund), text: MoneyUtils.format(line_item.amount))
     end
