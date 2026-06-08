@@ -88,7 +88,7 @@ defmodule FreedomAccount.MixProject do
       {:ex_machina, "~> 2.8", only: :test},
       {:ex_money, "~> 5.23", runtime: false},
       {:ex_money_sql, "~> 1.11"},
-      {:faker, "~> 0.18.0", only: :test},
+      {:faker_fork, "~> 0.19.1", only: :test},
       {:gettext, "~> 1.0"},
       {:heroicons,
        github: "tailwindlabs/heroicons", tag: "v2.2.0", sparse: "optimized", app: false, compile: false, depth: 1},
