@@ -17,9 +17,6 @@ config :esbuild,
   ],
   version: "0.25.4"
 
-config :ex_money,
-  default_cldr_backend: FreedomAccount.Cldr
-
 # Configure the endpoint
 config :freedom_account, FreedomAccountWeb.Endpoint,
   adapter: Bandit.PhoenixAdapter,
