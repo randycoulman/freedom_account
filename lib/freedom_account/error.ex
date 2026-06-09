@@ -7,8 +7,6 @@ defmodule FreedomAccount.Error do
   """
   use Boundary, exports: [InvariantError, NotAllowedError, NotFoundError, ServiceError]
 
-  require Logger
-
   defmodule InvariantError do
     @moduledoc false
     @enforce_keys [:message]

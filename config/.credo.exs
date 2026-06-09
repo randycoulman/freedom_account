@@ -129,7 +129,7 @@
           {Credo.Check.Refactor.MatchInCondition, []},
           {Credo.Check.Refactor.MapMap, []},
           {Credo.Check.Refactor.Nesting, []},
-          {Credo.Check.Refactor.PassAsyncInTestCases, []},
+          {Credo.Check.Refactor.PassAsyncInTestCases, force_comment_on_explicit_false: true},
           {Credo.Check.Refactor.RejectFilter, []},
           {Credo.Check.Refactor.UtcNowTruncate, []},
           {Credo.Check.Refactor.FilterFilter, []},
@@ -155,11 +155,13 @@
           {Credo.Check.Warning.UnusedFileOperation, []},
           {Credo.Check.Warning.UnusedKeywordOperation, []},
           {Credo.Check.Warning.UnusedListOperation, []},
+          {Credo.Check.Warning.UnusedMapOperation, []},
           {Credo.Check.Warning.UnusedPathOperation, []},
           {Credo.Check.Warning.UnusedRegexOperation, []},
           {Credo.Check.Warning.UnusedStringOperation, []},
           {Credo.Check.Warning.UnusedTupleOperation, []},
-          {Credo.Check.Warning.WrongTestFileExtension, []}
+          {Credo.Check.Warning.WrongTestFileExtension, []},
+          {Credo.Check.Warning.WrongTestFilename, []}
         ],
         disabled: [
           #
@@ -174,6 +176,7 @@
           {Credo.Check.Readability.PreferImplicitTry, []},
           {Credo.Check.Readability.UnnecessaryAliasExpansion, []},
           {Credo.Check.Readability.WithSingleClause, []},
+          {Credo.Check.Refactor.CondInsteadOfIfElse, []},
           {Credo.Check.Refactor.CondStatements, []},
           {Credo.Check.Refactor.FilterCount, []},
           {Credo.Check.Refactor.MapJoin, []},
@@ -207,6 +210,7 @@
           {Credo.Check.Warning.LeakyEnvironment, []},
           {Credo.Check.Warning.MapGetUnsafePass, []},
           {Credo.Check.Warning.UnsafeToAtom, []}
+          # {Credo.Check.Warning.UnusedOperation, [{MyMagicModule, [:fun1, :fun2]}]}
 
           # {Credo.Check.Refactor.MapInto, []},
 
