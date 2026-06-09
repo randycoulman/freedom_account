@@ -1,5 +1,5 @@
 defmodule FreedomAccountWeb.Hooks.LoadInitialData.CacheTest do
-  use FreedomAccount.DataCase, async: false
+  use FreedomAccount.DataCase, async: true
 
   alias FreedomAccount.Factory
   alias FreedomAccount.Funds
