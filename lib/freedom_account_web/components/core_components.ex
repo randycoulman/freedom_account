@@ -96,7 +96,13 @@ defmodule FreedomAccountWeb.CoreComponents do
   ## Examples
 
       <.flash kind={:info} flash={@flash} />
-      <.flash kind={:info} phx-mounted={show("#flash")}>Welcome Back!</.flash>
+      <.flash
+        id="welcome-back"
+        kind={:info}
+        phx-mounted={show("#welcome-back") |> JS.remove_attribute("hidden")}
+        hidden>
+        Welcome Back!
+      </.flash>
   """
   attr :id, :string, doc: "the optional id of flash container"
   attr :flash, :map, default: %{}, doc: "the map of flash messages to display"
@@ -278,7 +284,7 @@ defmodule FreedomAccountWeb.CoreComponents do
 
     ~H"""
     <div class="fieldset mb-2">
-      <label>
+      <label for={@id}>
         <input
           type="hidden"
           name={@name}
@@ -306,7 +312,7 @@ defmodule FreedomAccountWeb.CoreComponents do
   def input(%{type: "select"} = assigns) do
     ~H"""
     <div class="fieldset mb-2">
-      <label>
+      <label for={@id}>
         <span :if={@label} class={["label mb-1", @label_class]}>{@label}</span>
         <select
           id={@id}
@@ -330,7 +336,7 @@ defmodule FreedomAccountWeb.CoreComponents do
   def input(%{type: "textarea"} = assigns) do
     ~H"""
     <div class="fieldset mb-2">
-      <label>
+      <label for={@id}>
         <span :if={@label} class={["label mb-1", @label_class]}>{@label}</span>
         <textarea
           id={@id}
@@ -351,7 +357,7 @@ defmodule FreedomAccountWeb.CoreComponents do
   def input(assigns) do
     ~H"""
     <div class="fieldset mb-2">
-      <label>
+      <label for={@id}>
         <span :if={@label} class={["label mb-1", @label_class]}>{@label}</span>
         <input
           type={@type}
