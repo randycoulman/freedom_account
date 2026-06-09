@@ -108,7 +108,7 @@ defmodule FreedomAccount.MixProject do
       {:plug_crypto, "~> 2.1", override: true},
       {:postgrex, ">= 0.0.0"},
       {:process_tree, "~> 0.3.0"},
-      {:styler, "~> 1.10", only: [:dev, :test], runtime: false},
+      {:styler, "~> 1.11", only: [:dev, :test], runtime: false},
       {:tailwind, "~> 0.4.1", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 1.1"},
       {:telemetry_poller, "~> 1.3"},
