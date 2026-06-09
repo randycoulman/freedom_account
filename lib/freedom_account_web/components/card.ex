@@ -1,7 +1,6 @@
 defmodule FreedomAccountWeb.Card do
   @moduledoc false
   use FreedomAccountWeb, :html
-  use Phoenix.Component
 
   # credo:disable-for-this-file Credo.Check.Readability.Specs
   # Reason: All component functions take a map of assigns that is fully
