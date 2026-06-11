@@ -101,7 +101,7 @@ defmodule FreedomAccount.MixProject do
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_dashboard, "~> 0.8.7"},
       {:phoenix_live_reload, "~> 1.6", only: :dev},
-      {:phoenix_live_view, "~> 1.1"},
+      {:phoenix_live_view, "~> 1.2"},
       {:phoenix_test, "~> 0.11.1", only: :test, runtime: false},
       {:phoenix, "~> 1.8"},
       # This is here to resolve a conflict with paginator's dependencies
@@ -109,7 +109,7 @@ defmodule FreedomAccount.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:process_tree, "~> 0.3.0"},
       {:styler, "~> 1.11", only: [:dev, :test], runtime: false},
-      {:tailwind, "~> 0.4.1", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.5.0", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 1.1"},
       {:telemetry_poller, "~> 1.3"},
       {:typed_ecto_schema, "~> 0.4.3"},
